@@ -3,29 +3,24 @@
  */
 package me.skidsense.hooks;
 
-import me.skidsense.hooks.EventHandler;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventTick;
 import me.skidsense.hooks.value.Event;
 import me.skidsense.module.Module;
+import net.minecraft.client.Minecraft;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import net.minecraft.client.Minecraft;
-import net.minecraft.profiler.Profiler;
 
 public class EventBus {
     private ConcurrentHashMap<Class<? extends Event>, List<Handler>> registry = new ConcurrentHashMap();
-    private final Comparator<Handler> comparator = (h, h1) -> Byte.compare(h.priority, h1.priority);
+    private final Comparator<Handler> comparator = Comparator.comparingInt(h -> h.priority);
     private final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final EventBus instance = new EventBus();
 
@@ -81,12 +76,12 @@ public class EventBus {
             for (Handler data : list) {
                 try {
                     if (list instanceof Module) {
-                        if (((Module)((Object)list)).isEnabled()) {
+                        if (((Module) list).isEnabled() || ((Module) list).keepReg) {
                             if (whiteListedEvents) {
-                            	Minecraft.getMinecraft().mcProfiler.startSection(((Module)((Object)list)).getName());
+                                Minecraft.getMinecraft().mcProfiler.startSection(((Module) list).getName());
                             }
                             if (whiteListedEvents) {
-                            	Minecraft.getMinecraft().mcProfiler.endSection();
+                                Minecraft.getMinecraft().mcProfiler.endSection();
                             }
                         }
                     } else {

@@ -1,16 +1,5 @@
 package me.skidsense.module;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-
-import javax.management.Notification;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.EnumChatFormatting;
-import org.lwjgl.input.Keyboard;
-
 import me.skidsense.Client;
 import me.skidsense.command.Command;
 import me.skidsense.hooks.EventBus;
@@ -22,18 +11,26 @@ import me.skidsense.management.FileManager;
 import me.skidsense.management.ModuleManager;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.util.MathUtil;
+import net.minecraft.client.Minecraft;
+import org.lwjgl.input.Keyboard;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 public class Module {
-   public String name;
-   public static String clickguicategory;
-   public static String clickguimodname;
-   public static String clickguivaluename;
-   public static String clientname="Hide";
-   public static int lastX;
-   public static int lastY;
-   private String suffix;
-   private int color;
-   private String[] alias;
+	public boolean keepReg;
+	public String name;
+	public static String clickguicategory;
+	public static String clickguimodname;
+	public static String clickguivaluename;
+	public static String clientname = "Hide";
+	public static int lastX;
+	public static int lastY;
+	private String suffix;
+	private int color;
+	private String[] alias;
    private boolean enabled;
    public boolean enabledOnStartup = false;
    private int key,anim;
@@ -50,8 +47,9 @@ public class Module {
       this.suffix = "";
       this.key = 0;
       this.removed = false;
-      this.enabled = false;
-      this.values = new ArrayList();
+	   this.enabled = false;
+	   this.keepReg = false;
+	   this.values = new ArrayList();
    }
 
    public String getName() {
@@ -107,11 +105,11 @@ public class Module {
 			if(anim == -1) {
 				anim = 0; 
 			}
-         EventBus.getInstance().register(new Object[]{this});
-   	  Notifications.getManager().post(this.getName() + " §aEnabled");
+	      EventBus.getInstance().register(this);
+	      Notifications.getManager().post(this.getName() + " §aEnabled");
       } else {
-         EventBus.getInstance().unregister(new Object[]{this});
-      	  Notifications.getManager().post(this.getName() + " §cDisable");
+	      EventBus.getInstance().unregister(this);
+	      Notifications.getManager().post(this.getName() + " §cDisable");
          this.onDisable();
       }
 
@@ -149,9 +147,9 @@ public class Module {
       String content = "";
 
       Module m;
-      for(Iterator var4 = ModuleManager.getModules().iterator(); var4.hasNext(); content = content + String.format("%s:%s%s", new Object[]{m.getName(), Keyboard.getKeyName(m.getKey()), System.lineSeparator()})) {
-         m = (Module)var4.next();
-      }
+	   for (Iterator var4 = ModuleManager.getModules().iterator(); var4.hasNext(); content = content + String.format("%s:%s%s", m.getName(), Keyboard.getKeyName(m.getKey()), System.lineSeparator())) {
+		   m = (Module) var4.next();
+	   }
 
       FileManager.save("Binds.txt", content, false);
    }
@@ -173,9 +171,9 @@ public class Module {
             v = (Value)var4.next();
             if(!(v instanceof Mode)) {
                if(options.isEmpty()) {
-                  options = String.valueOf(options) + v.getName();
+	               options = options + v.getName();
                } else {
-                  options = String.valueOf(options) + String.format(", %s", new Object[]{v.getName()});
+	               options = options + String.format(", %s", v.getName());
                }
             }
          }
@@ -185,7 +183,7 @@ public class Module {
          while(true) {
             do {
                if(!var4.hasNext()) {
-                  Client.instance.getCommandManager().add(new Module$1(this, this.name, this.alias, String.format("%s%s", new Object[]{options.isEmpty()?"":String.format("%s,", new Object[]{options}), other.isEmpty()?"":String.format("%s", new Object[]{other})}), "Setup this module"));
+	               Client.instance.getCommandManager().add(new Module$1(this, this.name, this.alias, String.format("%s%s", options.isEmpty() ? "" : String.format("%s,", options), other.isEmpty() ? "" : String.format("%s", other)), "Setup this module"));
                   return;
                }
 
@@ -199,9 +197,9 @@ public class Module {
             for(int i = 0; i < length; ++i) {
                Enum e = modes[i];
                if(other.isEmpty()) {
-                  other = String.valueOf(other) + e.name().toLowerCase();
+	               other = other + e.name().toLowerCase();
                } else {
-                  other = String.valueOf(other) + String.format(", %s", new Object[]{e.name().toLowerCase()});
+	               other = other + String.format(", %s", e.name().toLowerCase());
                }
             }
          }
@@ -236,8 +234,8 @@ class Module$1 extends Command {
 	         }
 
 	         if(option != null) {
-	            option.setValue(Boolean.valueOf(!((Boolean)option.getValue()).booleanValue()));
-	            Client.sendMessage(String.format("> %s has been set to %s", new Object[]{option.getName(), option.getValue()}));
+		         option.setValue(Boolean.valueOf(!((Boolean) option.getValue()).booleanValue()));
+		         Client.sendMessage(String.format("> %s has been set to %s", option.getName(), option.getValue()));
 	         } else {
 	            var6 = this.m.values.iterator();
 
@@ -250,9 +248,9 @@ class Module$1 extends Command {
 
 	            if(fuck != null) {
 	               if(MathUtil.parsable(args[1], (byte) 4)) {
-	                  double v1 = MathUtil.round(Double.parseDouble(args[1]), 1);
-	                  fuck.setValue(Double.valueOf(v1 > ((Double)fuck.getMaximum()).doubleValue()?((Double)fuck.getMaximum()).doubleValue():v1));
-	                  Client.sendMessage(String.format("> %s has been set to %s", new Object[]{fuck.getName(), fuck.getValue()}));
+		               double v1 = MathUtil.round(Double.parseDouble(args[1]), 1);
+		               fuck.setValue(Double.valueOf(v1 > fuck.getMaximum().doubleValue() ? fuck.getMaximum().doubleValue() : v1));
+		               Client.sendMessage(String.format("> %s has been set to %s", fuck.getName(), fuck.getValue()));
 	               } else {
 	                  Client.sendMessage("> " + args[1] + " is not a number");
 	               }
@@ -269,8 +267,8 @@ class Module$1 extends Command {
 
 	            if(xd != null) {
 	               if(xd.isValid(args[1])) {
-	                  xd.setMode(args[1]);
-	                  Client.sendMessage(String.format("> %s set to %s", new Object[]{xd.getName(), xd.getModeAsString()}));
+		               xd.setMode(args[1]);
+		               Client.sendMessage(String.format("> %s set to %s", xd.getName(), xd.getModeAsString()));
 	               } else {
 	                  Client.sendMessage("> " + args[1] + " is an invalid mode");
 	               }
@@ -296,15 +294,15 @@ class Module$1 extends Command {
 	            String fuck2 = option.getName().substring(1);
 	            String xd2 = option.getName().substring(0, 1).toUpperCase();
 	            if(((Boolean)option.getValue()).booleanValue()) {
-	               Client.sendMessage(String.format("> %s has been set to \u00a7a%s", new Object[]{xd2 + fuck2, option.getValue()}));
+		            Client.sendMessage(String.format("> %s has been set to \u00a7a%s", xd2 + fuck2, option.getValue()));
 	            } else {
-	               Client.sendMessage(String.format("> %s has been set to \u00a7c%s", new Object[]{xd2 + fuck2, option.getValue()}));
+		            Client.sendMessage(String.format("> %s has been set to \u00a7c%s", xd2 + fuck2, option.getValue()));
 	            }
 	         } else {
 	            this.syntaxError("Valid .<module> <setting> <mode if needed>");
 	         }
 	      } else {
-	         Client.sendMessage(String.format("%s Values: \n %s", new Object[]{this.getName().substring(0, 1).toUpperCase() + this.getName().substring(1).toLowerCase(), this.getSyntax(), "false"}));
+		      Client.sendMessage(String.format("%s Values: \n %s", this.getName().substring(0, 1).toUpperCase() + this.getName().substring(1).toLowerCase(), this.getSyntax(), "false"));
 	      }
 
 	      return null;
