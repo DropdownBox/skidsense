@@ -6,24 +6,15 @@ package me.skidsense.management;
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.command.Command;
-import me.skidsense.command.commands.AutoLTest;
-import me.skidsense.command.commands.Bind;
-import me.skidsense.command.commands.Cheats;
-import me.skidsense.command.commands.ClientName;
-import me.skidsense.command.commands.Enchant;
-import me.skidsense.command.commands.Help;
-import me.skidsense.command.commands.Toggle;
-import me.skidsense.command.commands.VClip;
+import me.skidsense.command.commands.*;
 import me.skidsense.hooks.EventBus;
 import me.skidsense.hooks.EventHandler;
 import me.skidsense.hooks.events.EventChat;
-import me.skidsense.management.Manager;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class CommandManager
 implements Manager {
@@ -31,9 +22,9 @@ implements Manager {
 
     @Override
     public void init() {
-    	SplashProgress.setProgress(2, "CommandManager Init");
-        this.commands = new ArrayList<Command>();
-        this.commands.add(new Command("test", new String[]{"test"}, "", "testing"){
+        SplashProgress.setProgress(2, "CommandManager Init");
+        this.commands = new ArrayList<>();
+        this.commands.add(new Command("test", new String[]{"test"}, "", "testing") {
 
             @Override
             public String execute(String[] args) {
@@ -71,10 +62,7 @@ implements Manager {
                 }
                 ++n2;
             }
-            if (!c2.getName().equalsIgnoreCase(name) && !isAlias) {
-                return false;
-            }
-            return true;
+            return c2.getName().equalsIgnoreCase(name) || isAlias;
         }).findFirst();
     }
 
