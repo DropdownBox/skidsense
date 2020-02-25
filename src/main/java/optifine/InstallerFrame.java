@@ -1,25 +1,10 @@
 package optifine;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.LayoutManager;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
 
 public class InstallerFrame extends JFrame
 {
@@ -85,7 +70,7 @@ public class InstallerFrame extends JFrame
         {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             InstallerFrame installerframe = new InstallerFrame();
-            Utils.centerWindow(installerframe, (Component)null);
+            Utils.centerWindow(installerframe, null);
             installerframe.show();
         }
         catch (Exception exception)
@@ -107,7 +92,7 @@ public class InstallerFrame extends JFrame
             jtextarea.setFont(font1);
             JScrollPane jscrollpane = new JScrollPane(jtextarea);
             jscrollpane.setPreferredSize(new Dimension(600, 400));
-            JOptionPane.showMessageDialog((Component)null, jscrollpane, "Error", 0);
+            JOptionPane.showMessageDialog(null, jscrollpane, "Error", 0);
         }
     }
 
@@ -127,7 +112,7 @@ public class InstallerFrame extends JFrame
             jtextarea.setFont(font1);
             JScrollPane jscrollpane = new JScrollPane(jtextarea);
             jscrollpane.setPreferredSize(new Dimension(600, 400));
-            JOptionPane.showMessageDialog((Component)null, jscrollpane, "Error", 0);
+            JOptionPane.showMessageDialog(null, jscrollpane, "Error", 0);
         }
     }
 
@@ -185,7 +170,7 @@ public class InstallerFrame extends JFrame
             {
                 this.ivjPanelCenter = new JPanel();
                 this.ivjPanelCenter.setName("PanelCenter");
-                this.ivjPanelCenter.setLayout((LayoutManager)null);
+                this.ivjPanelCenter.setLayout(null);
                 this.ivjPanelCenter.add(this.getLabelOfVersion(), this.getLabelOfVersion().getName());
                 this.ivjPanelCenter.add(this.getLabelMcVersion(), this.getLabelMcVersion().getName());
                 this.ivjPanelCenter.add(this.getTextArea(), this.getTextArea().getName());
@@ -396,8 +381,7 @@ public class InstallerFrame extends JFrame
         }
     }
 
-    private void initConnections() throws Exception
-    {
+    private void initConnections() {
         this.getButtonFolder().addActionListener(this.ivjEventHandler);
         this.getButtonInstall().addActionListener(this.ivjEventHandler);
         this.getButtonExtract().addActionListener(this.ivjEventHandler);

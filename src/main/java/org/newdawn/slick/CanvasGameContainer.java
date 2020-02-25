@@ -1,16 +1,15 @@
 package org.newdawn.slick;
 
-import java.awt.Canvas;
-
-import javax.swing.SwingUtilities;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.newdawn.slick.util.Log;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
  * A game container that displays the game on an AWT Canvas.
- * 
+ *
  * @author kevin
  */
 public class CanvasGameContainer extends Canvas {
@@ -51,21 +50,20 @@ public class CanvasGameContainer extends Canvas {
 
 	/**
 	 * Start the game container rendering
-	 * 
-	 * @throws SlickException Indicates a failure during game execution
+	 *
 	 */
-	public void start() throws SlickException {
+	public void start() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					Input.disableControllers();
-					
+
 					try {
 						Display.setParent(CanvasGameContainer.this);
 					} catch (LWJGLException e) {
 						throw new SlickException("Failed to setParent of canvas", e);
 					}
-					
+
 					container.setup();
 					scheduleUpdate();
 				} catch (SlickException e) {

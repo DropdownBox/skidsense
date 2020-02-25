@@ -39,9 +39,9 @@ public class SpriteSheetFontTest extends BasicGame {
    }
 
    /**
-    * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer,int)
+    * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
     */
-   public void update(GameContainer container, int delta) throws SlickException {
+   public void update(GameContainer container, int delta) {
    }
 
    /**

@@ -1,12 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.ScalableGame;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 /**
  * A test for a scalable game
@@ -21,32 +15,32 @@ public class ScalableTest extends BasicGame {
 	public ScalableTest() {
 		super("Scalable Test For Widescreen");
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container) {
 	}
 
 	/**
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta) throws SlickException {
+	public void update(GameContainer container, int delta) {
 	}
 
 	/**
 	 * @see org.newdawn.slick.Game#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g) throws SlickException {
-		g.setColor(new Color(0.4f,0.6f,0.8f));
-		g.fillRect(0,0, 1024,568);
+	public void render(GameContainer container, Graphics g) {
+		g.setColor(new Color(0.4f, 0.6f, 0.8f));
+		g.fillRect(0, 0, 1024, 568);
 		g.setColor(Color.white);
-		g.drawRect(5,5, 1024-10,568-10);
-		
+		g.drawRect(5, 5, 1024 - 10, 568 - 10);
+
 		g.setColor(Color.white);
-		g.drawString(container.getInput().getMouseX()+","+container.getInput().getMouseY(), 10, 400);
+		g.drawString(container.getInput().getMouseX() + "," + container.getInput().getMouseY(), 10, 400);
 		g.setColor(Color.red);
-		g.fillOval(container.getInput().getMouseX()-10,container.getInput().getMouseY()-10,20,20);
+		g.fillOval(container.getInput().getMouseX() - 10, container.getInput().getMouseY() - 10,20,20);
 	}
 	
 	/**

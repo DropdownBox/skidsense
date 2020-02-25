@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.network.Packet;
@@ -36,26 +35,24 @@ public class S2CPacketSpawnGlobalEntity implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.entityId = buf.readVarIntFromBuffer();
-        this.type = buf.readByte();
-        this.x = buf.readInt();
-        this.y = buf.readInt();
-        this.z = buf.readInt();
+    public void readPacketData(PacketBuffer buf) {
+	    this.entityId = buf.readVarIntFromBuffer();
+	    this.type = buf.readByte();
+	    this.x = buf.readInt();
+	    this.y = buf.readInt();
+	    this.z = buf.readInt();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeVarIntToBuffer(this.entityId);
-        buf.writeByte(this.type);
-        buf.writeInt(this.x);
-        buf.writeInt(this.y);
-        buf.writeInt(this.z);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeVarIntToBuffer(this.entityId);
+		buf.writeByte(this.type);
+		buf.writeInt(this.x);
+		buf.writeInt(this.y);
+		buf.writeInt(this.z);
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

@@ -1,19 +1,13 @@
 package org.newdawn.slick.tests;
-	
-import java.util.ArrayList;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.util.Log;
+
+import java.util.ArrayList;
 
 /**
  * A test for input
- * 
+ *
  * @author kevin
  */
 public class InputTest extends BasicGame {
@@ -55,11 +49,11 @@ public class InputTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container) {
 		if (container instanceof AppGameContainer) {
 			app = (AppGameContainer) container;
 		}
-		
+
 		input = container.getInput();
 		x = 300;
 		y = 300;

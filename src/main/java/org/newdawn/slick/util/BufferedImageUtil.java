@@ -1,10 +1,5 @@
 package org.newdawn.slick.util;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
 import org.newdawn.slick.opengl.ImageIOImageData;
 import org.newdawn.slick.opengl.InternalTextureLoader;
 import org.newdawn.slick.opengl.Texture;
@@ -12,10 +7,15 @@ import org.newdawn.slick.opengl.TextureImpl;
 import org.newdawn.slick.opengl.renderer.Renderer;
 import org.newdawn.slick.opengl.renderer.SGL;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 /**
  * This is a utility class that allows you to convert a BufferedImage into a
  * texture.
- * 
+ *
  * @author James Chambers (Jimmy)
  * @author Jeremy Adams (elias_naur)
  * @author Kevin Glass (kevglass)
@@ -83,13 +83,12 @@ public class BufferedImageUtil {
 	 * @param magFilter
 	 *            The magnification filter
 	 * @return The loaded texture
-	 * @throws IOException
-	 *             Indicates a failure to access the resource
 	 */
 	public static Texture getTexture(String resourceName,
-			BufferedImage resourceimage, int target, int dstPixelFormat,
-			int minFilter, int magFilter) throws IOException {
-		ImageIOImageData data = new ImageIOImageData();int srcPixelFormat = 0;
+	                                 BufferedImage resourceimage, int target, int dstPixelFormat,
+	                                 int minFilter, int magFilter) {
+		ImageIOImageData data = new ImageIOImageData();
+		int srcPixelFormat = 0;
 
 		// create the texture ID for this texture
 		int textureID = InternalTextureLoader.createTextureID();

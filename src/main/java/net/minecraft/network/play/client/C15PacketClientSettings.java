@@ -1,6 +1,5 @@
 package net.minecraft.network.play.client;
 
-import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -30,26 +29,24 @@ public class C15PacketClientSettings implements Packet<INetHandlerPlayServer>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.lang = buf.readStringFromBuffer(7);
-        this.view = buf.readByte();
-        this.chatVisibility = EntityPlayer.EnumChatVisibility.getEnumChatVisibility(buf.readByte());
-        this.enableColors = buf.readBoolean();
-        this.modelPartFlags = buf.readUnsignedByte();
+    public void readPacketData(PacketBuffer buf) {
+	    this.lang = buf.readStringFromBuffer(7);
+	    this.view = buf.readByte();
+	    this.chatVisibility = EntityPlayer.EnumChatVisibility.getEnumChatVisibility(buf.readByte());
+	    this.enableColors = buf.readBoolean();
+	    this.modelPartFlags = buf.readUnsignedByte();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeString(this.lang);
-        buf.writeByte(this.view);
-        buf.writeByte(this.chatVisibility.getChatVisibility());
-        buf.writeBoolean(this.enableColors);
-        buf.writeByte(this.modelPartFlags);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeString(this.lang);
+		buf.writeByte(this.view);
+		buf.writeByte(this.chatVisibility.getChatVisibility());
+		buf.writeBoolean(this.enableColors);
+		buf.writeByte(this.modelPartFlags);
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

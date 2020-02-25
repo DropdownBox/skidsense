@@ -3,12 +3,6 @@ package net.minecraft.world.chunk;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -18,12 +12,7 @@ import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ClassInheritanceMultiMap;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ReportedException;
+import net.minecraft.util.*;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
@@ -35,8 +24,14 @@ import net.minecraft.world.gen.ChunkProviderDebug;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Chunk
-{
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+public class Chunk {
     private static final Logger logger = LogManager.getLogger();
 
     /**
@@ -110,10 +105,10 @@ public class Chunk
         this.blockBiomeArray = new byte[256];
         this.precipitationHeightMap = new int[256];
         this.updateSkylightColumns = new boolean[256];
-        this.chunkTileEntityMap = Maps.<BlockPos, TileEntity>newHashMap();
+        this.chunkTileEntityMap = Maps.newHashMap();
         this.queuedLightChecks = 4096;
-        this.tileEntityPosQueue = Queues.<BlockPos>newConcurrentLinkedQueue();
-        this.entityLists = (ClassInheritanceMultiMap[])(new ClassInheritanceMultiMap[16]);
+        this.tileEntityPosQueue = Queues.newConcurrentLinkedQueue();
+        this.entityLists = (ClassInheritanceMultiMap[]) (new ClassInheritanceMultiMap[16]);
         this.worldObj = worldIn;
         this.xPosition = x;
         this.zPosition = z;
@@ -124,8 +119,8 @@ public class Chunk
             this.entityLists[i] = new ClassInheritanceMultiMap(Entity.class);
         }
 
-        Arrays.fill((int[])this.precipitationHeightMap, (int) - 999);
-        Arrays.fill(this.blockBiomeArray, (byte) - 1);
+        Arrays.fill(this.precipitationHeightMap, -999);
+        Arrays.fill(this.blockBiomeArray, (byte) -1);
     }
 
     public Chunk(World worldIn, ChunkPrimer primer, int x, int z)
@@ -554,8 +549,7 @@ public class Chunk
             CrashReportCategory crashreportcategory = reportedexception.getCrashReport().makeCategory("Block being got");
             crashreportcategory.addCrashSectionCallable("Location", new Callable<String>()
             {
-                public String call() throws Exception
-                {
+                public String call() {
                     return CrashReportCategory.getCoordinateInfo(new BlockPos(Chunk.this.xPosition * 16 + x, y, Chunk.this.zPosition * 16 + z));
                 }
             });
@@ -574,8 +568,7 @@ public class Chunk
             CrashReportCategory crashreportcategory = reportedexception.getCrashReport().makeCategory("Block being got");
             crashreportcategory.addCrashSectionCallable("Location", new Callable<String>()
             {
-                public String call() throws Exception
-                {
+                public String call() {
                     return CrashReportCategory.getCoordinateInfo(pos);
                 }
             });
@@ -626,8 +619,7 @@ public class Chunk
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being got");
                 crashreportcategory.addCrashSectionCallable("Location", new Callable<String>()
                 {
-                    public String call() throws Exception
-                    {
+                    public String call() {
                         return CrashReportCategory.getCoordinateInfo(pos);
                     }
                 });
@@ -852,7 +844,7 @@ public class Chunk
 
         if (i != this.xPosition || j != this.zPosition)
         {
-            logger.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.xPosition + ", " + this.zPosition + "), " + entityIn, new Object[] {entityIn});
+            logger.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.xPosition + ", " + this.zPosition + "), " + entityIn, entityIn);
             entityIn.setDead();
         }
 
@@ -917,7 +909,7 @@ public class Chunk
 
     public TileEntity getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType p_177424_2_)
     {
-        TileEntity tileentity = (TileEntity)this.chunkTileEntityMap.get(pos);
+        TileEntity tileentity = this.chunkTileEntityMap.get(pos);
 
         if (tileentity == null)
         {
@@ -959,7 +951,7 @@ public class Chunk
         {
             if (this.chunkTileEntityMap.containsKey(pos))
             {
-                ((TileEntity)this.chunkTileEntityMap.get(pos)).invalidate();
+                this.chunkTileEntityMap.get(pos).invalidate();
             }
 
             tileEntityIn.validate();
@@ -971,7 +963,7 @@ public class Chunk
     {
         if (this.isChunkLoaded)
         {
-            TileEntity tileentity = (TileEntity)this.chunkTileEntityMap.remove(pos);
+            TileEntity tileentity = this.chunkTileEntityMap.remove(pos);
 
             if (tileentity != null)
             {
@@ -1233,7 +1225,7 @@ public class Chunk
 
         while (!this.tileEntityPosQueue.isEmpty())
         {
-            BlockPos blockpos = (BlockPos)this.tileEntityPosQueue.poll();
+            BlockPos blockpos = this.tileEntityPosQueue.poll();
 
             if (this.getTileEntity(blockpos, Chunk.EnumCreateEntityType.CHECK) == null && this.getBlock(blockpos).hasTileEntity())
             {
@@ -1697,10 +1689,9 @@ public class Chunk
         this.inhabitedTime = newInhabitedTime;
     }
 
-    public static enum EnumCreateEntityType
-    {
+    public enum EnumCreateEntityType {
         IMMEDIATE,
         QUEUED,
-        CHECK;
+        CHECK
     }
 }

@@ -1,11 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 /**
  * A test for basic image rendering
@@ -82,16 +77,16 @@ public class ImageCornerTest extends BasicGame {
 	 */
 	public static void main(String[] argv) {
 		boolean sharedContextTest = false;
-		
+
 		try {
 			AppGameContainer container = new AppGameContainer(new ImageCornerTest());
-			container.setDisplayMode(800,600,false);
+			container.setDisplayMode(800, 600, false);
 			container.start();
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void update(GameContainer container, int delta) throws SlickException {
+	public void update(GameContainer container, int delta) {
 	}
 }

@@ -1,13 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.ImageBuffer;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 /**
  * A test for image buffer maniupulation rendering
@@ -24,18 +17,18 @@ public class ImageBufferTest extends BasicGame {
 	public ImageBufferTest() {
 		super("Image Buffer Test");
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
-		ImageBuffer buffer = new ImageBuffer(320,200);
-		for (int x=0;x<320;x++) {
-			for (int y=0;y<200;y++) {
+	public void init(GameContainer container) {
+		ImageBuffer buffer = new ImageBuffer(320, 200);
+		for (int x = 0; x < 320; x++) {
+			for (int y = 0; y < 200; y++) {
 				if (y == 20) {
-					buffer.setRGBA(x, y, 255,255,255,255);
+					buffer.setRGBA(x, y, 255, 255, 255, 255);
 				} else {
-					buffer.setRGBA(x, y, x,y,0,255);
+					buffer.setRGBA(x, y, x, y, 0, 255);
 				}
 			}
 		}

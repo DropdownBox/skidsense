@@ -1,20 +1,26 @@
 package net.minecraft.network.play.client;
 
-import java.io.IOException;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 
-public class C0EPacketClickWindow implements Packet<INetHandlerPlayServer>
-{
-    /** The id of the window which was clicked. 0 for player inventory. */
-    private int windowId;
+import java.io.IOException;
 
-    /** Id of the clicked slot */
-    private int slotId;
+public class C0EPacketClickWindow implements Packet<INetHandlerPlayServer> {
+	/**
+	 * The id of the window which was clicked. 0 for player inventory.
+	 */
+	private int windowId;
 
-    /** Button used */
+	/**
+	 * Id of the clicked slot
+	 */
+	private int slotId;
+
+	/**
+	 * Button used
+	 */
     private int usedButton;
 
     /** A unique number for the action, used for transaction handling */
@@ -61,17 +67,16 @@ public class C0EPacketClickWindow implements Packet<INetHandlerPlayServer>
         this.clickedItem = buf.readItemStackFromBuffer();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeByte(this.windowId);
-        buf.writeShort(this.slotId);
-        buf.writeByte(this.usedButton);
-        buf.writeShort(this.actionNumber);
-        buf.writeByte(this.mode);
-        buf.writeItemStackToBuffer(this.clickedItem);
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeByte(this.windowId);
+		buf.writeShort(this.slotId);
+		buf.writeByte(this.usedButton);
+		buf.writeShort(this.actionNumber);
+		buf.writeByte(this.mode);
+		buf.writeItemStackToBuffer(this.clickedItem);
     }
 
     public int getWindowId()

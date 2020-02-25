@@ -1,15 +1,6 @@
 package optifine.xdelta;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PushbackInputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 public class Delta
 {
@@ -17,11 +8,10 @@ public class Delta
     public static final boolean debug = false;
     public static final int buff_size = 1024;
 
-    public static void computeDelta(SeekableSource source, InputStream targetIS, int targetLength, DiffWriter output) throws IOException, DeltaException
-    {
-        int i = (int)source.length();
+    public static void computeDelta(SeekableSource source, InputStream targetIS, int targetLength, DiffWriter output) throws IOException {
+        int i = (int) source.length();
         Checksum checksum = new Checksum();
-        checksum.generateChecksums((InputStream)(new SeekableSourceInputStream(source)), i);
+        checksum.generateChecksums(new SeekableSourceInputStream(source), i);
         source.seek(0L);
         PushbackInputStream pushbackinputstream = new PushbackInputStream(new BufferedInputStream(targetIS), 1024);
         boolean flag = false;
@@ -47,7 +37,7 @@ public class Delta
                     boolean flag2 = true;
                     int k1 = j1 * 16;
                     int l1 = 15;
-                    source.seek((long)k1);
+                    source.seek(k1);
 
                     if (!flag1 && source.read(abyte2, 0, 16) != -1)
                     {
@@ -193,7 +183,7 @@ public class Delta
 
     public static void computeDelta(byte[] source, InputStream targetIS, int targetLength, DiffWriter output) throws IOException, DeltaException
     {
-        computeDelta((SeekableSource)(new ByteArraySeekableSource(source)), targetIS, targetLength, output);
+        computeDelta(new ByteArraySeekableSource(source), targetIS, targetLength, output);
     }
 
     public static void computeDelta(File sourceFile, File targetFile, DiffWriter output) throws IOException, DeltaException

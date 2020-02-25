@@ -1,19 +1,18 @@
 package net.minecraft.network.play.client;
 
-import java.io.IOException;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 
-public class C10PacketCreativeInventoryAction implements Packet<INetHandlerPlayServer>
-{
-    private int slotId;
-    private ItemStack stack;
+import java.io.IOException;
 
-    public C10PacketCreativeInventoryAction()
-    {
-    }
+public class C10PacketCreativeInventoryAction implements Packet<INetHandlerPlayServer> {
+	private int slotId;
+	private ItemStack stack;
+
+	public C10PacketCreativeInventoryAction() {
+	}
 
     public C10PacketCreativeInventoryAction(int slotIdIn, ItemStack stackIn)
     {
@@ -38,14 +37,13 @@ public class C10PacketCreativeInventoryAction implements Packet<INetHandlerPlayS
         this.stack = buf.readItemStackFromBuffer();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeShort(this.slotId);
-        buf.writeItemStackToBuffer(this.stack);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeShort(this.slotId);
+		buf.writeItemStackToBuffer(this.stack);
+	}
 
     public int getSlotId()
     {

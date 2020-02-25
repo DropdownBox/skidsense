@@ -1,14 +1,13 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Set;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 
-public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient>
-{
+import java.util.EnumSet;
+import java.util.Set;
+
+public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient> {
     private double x;
     private double y;
     private double z;
@@ -33,8 +32,7 @@ public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) {
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
@@ -46,8 +44,7 @@ public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient>
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) {
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
@@ -94,8 +91,7 @@ public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient>
         return this.field_179835_f;
     }
 
-    public static enum EnumFlags
-    {
+    public enum EnumFlags {
         X(0),
         Y(1),
         Z(2),
@@ -104,8 +100,7 @@ public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient>
 
         private int field_180058_f;
 
-        private EnumFlags(int p_i45992_3_)
-        {
+        EnumFlags(int p_i45992_3_) {
             this.field_180058_f = p_i45992_3_;
         }
 
@@ -121,7 +116,7 @@ public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient>
 
         public static Set<S08PacketPlayerPosLook.EnumFlags> func_180053_a(int p_180053_0_)
         {
-            Set<S08PacketPlayerPosLook.EnumFlags> set = EnumSet.<S08PacketPlayerPosLook.EnumFlags>noneOf(S08PacketPlayerPosLook.EnumFlags.class);
+            Set<S08PacketPlayerPosLook.EnumFlags> set = EnumSet.noneOf(S08PacketPlayerPosLook.EnumFlags.class);
 
             for (S08PacketPlayerPosLook.EnumFlags s08packetplayerposlook$enumflags : values())
             {

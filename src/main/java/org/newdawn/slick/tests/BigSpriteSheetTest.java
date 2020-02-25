@@ -1,14 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.BigImage;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.*;
 
 /**
  * A test for big images used as sprites sheets
@@ -81,7 +73,7 @@ public class BigSpriteSheetTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta) throws SlickException {
+	public void update(GameContainer container, int delta) {
 		if (container.getInput().isKeyPressed(Input.KEY_SPACE)) {
 			oldMethod = !oldMethod;
 		}

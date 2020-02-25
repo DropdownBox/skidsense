@@ -1,12 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 /**
  * A test to demonstrate world clipping as opposed to screen clipping
@@ -28,34 +22,32 @@ public class ClipTest extends BasicGame {
 	public ClipTest() {
 		super("Clip Test");
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container) {
 	}
 
 	/**
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta)
-			throws SlickException {
+	public void update(GameContainer container, int delta) {
 		ang += delta * 0.01f;
 	}
 
 	/**
 	 * @see org.newdawn.slick.Game#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g)
-			throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		g.setColor(Color.white);
 		g.drawString("1 - No Clipping", 100, 10);
 		g.drawString("2 - Screen Clipping", 100, 30);
 		g.drawString("3 - World Clipping", 100, 50);
-		
+
 		if (world) {
 			g.drawString("WORLD CLIPPING ENABLED", 200, 80);
-		} 
+		}
 		if (clip) {
 			g.drawString("SCREEN CLIPPING ENABLED", 200, 80);
 		}

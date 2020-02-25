@@ -1,11 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.geom.MorphShape;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
@@ -38,14 +33,14 @@ public class MorphShapeTest extends BasicGame {
 	/**
 	 * @see BasicGame#init(GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
-		a = new Rectangle(100,100,50,200);
-		a = a.transform(Transform.createRotateTransform(0.1f,100,100));
-		b = new Rectangle(200,100,50,200);
-		b = b.transform(Transform.createRotateTransform(-0.6f,100,100));
-		c = new Rectangle(300,100,50,200);
-		c = c.transform(Transform.createRotateTransform(-0.2f,100,100));
-		
+	public void init(GameContainer container) {
+		a = new Rectangle(100, 100, 50, 200);
+		a = a.transform(Transform.createRotateTransform(0.1f, 100, 100));
+		b = new Rectangle(200, 100, 50, 200);
+		b = b.transform(Transform.createRotateTransform(-0.6f, 100, 100));
+		c = new Rectangle(300, 100, 50, 200);
+		c = c.transform(Transform.createRotateTransform(-0.2f, 100, 100));
+
 		morph = new MorphShape(a);
 		morph.addShape(b);
 		morph.addShape(c);
@@ -56,8 +51,7 @@ public class MorphShapeTest extends BasicGame {
 	/**
 	 * @see BasicGame#update(GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta)
-			throws SlickException {
+	public void update(GameContainer container, int delta) {
 		time += delta * 0.001f;
 		morph.setMorphTime(time);
 	}
@@ -65,8 +59,7 @@ public class MorphShapeTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.Game#render(GameContainer, Graphics)
 	 */
-	public void render(GameContainer container, Graphics g)
-			throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		g.setColor(Color.green);
 		g.draw(a);
 		g.setColor(Color.red);

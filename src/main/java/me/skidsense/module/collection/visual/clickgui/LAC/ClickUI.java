@@ -4,24 +4,19 @@
 package me.skidsense.module.collection.visual.clickgui.LAC;
 
 import com.google.common.collect.Lists;
-
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
-
-import java.awt.Color;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.function.Consumer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class ClickUI
 extends GuiScreen {
@@ -88,14 +83,14 @@ extends GuiScreen {
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        if (keyCode == 1 && !binding) {
-            this.mc.displayGuiScreen(null);
-            return;
-        }
-        windows.forEach(w2 -> w2.key(typedChar, keyCode));
-    }
+	@Override
+	protected void keyTyped(char typedChar, int keyCode) {
+		if (keyCode == 1 && !binding) {
+			this.mc.displayGuiScreen(null);
+			return;
+		}
+		windows.forEach(w2 -> w2.key(typedChar, keyCode));
+	}
 
     public synchronized void sendToFront(Window window) {
         int panelIndex = 0;

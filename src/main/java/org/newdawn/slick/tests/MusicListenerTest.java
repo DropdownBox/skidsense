@@ -1,13 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.Music;
-import org.newdawn.slick.MusicListener;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 /**
  * A test for music listeners which notify you when the music has eneded
@@ -45,7 +38,7 @@ public class MusicListenerTest extends BasicGame implements MusicListener {
 	/**
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta) throws SlickException {
+	public void update(GameContainer container, int delta) {
 	}
 
 	/**
@@ -61,11 +54,11 @@ public class MusicListenerTest extends BasicGame implements MusicListener {
 	public void musicSwapped(Music music, Music newMusic) {
 		musicSwapped = true;
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.Game#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g) throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		g.drawString("Press M to play music", 100, 100);
 		g.drawString("Press S to stream music", 100, 150);
 		if (musicEnded) {

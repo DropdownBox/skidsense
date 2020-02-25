@@ -1,31 +1,20 @@
 package org.newdawn.slick.svg;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Transform;
-import org.newdawn.slick.svg.inkscape.DefsProcessor;
-import org.newdawn.slick.svg.inkscape.ElementProcessor;
-import org.newdawn.slick.svg.inkscape.EllipseProcessor;
-import org.newdawn.slick.svg.inkscape.GroupProcessor;
-import org.newdawn.slick.svg.inkscape.LineProcessor;
-import org.newdawn.slick.svg.inkscape.PathProcessor;
-import org.newdawn.slick.svg.inkscape.PolygonProcessor;
-import org.newdawn.slick.svg.inkscape.RectProcessor;
-import org.newdawn.slick.svg.inkscape.UseProcessor;
+import org.newdawn.slick.svg.inkscape.*;
 import org.newdawn.slick.util.ResourceLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 /**
  * A loader specifically for the SVG that is produced from Inkscape
@@ -152,7 +141,7 @@ public class InkscapeLoader implements Loader {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			builder.setEntityResolver(new EntityResolver() {
 				public InputSource resolveEntity(String publicId,
-						String systemId) throws SAXException, IOException {
+				                                 String systemId) {
 					return new InputSource(
 							new ByteArrayInputStream(new byte[0]));
 				}

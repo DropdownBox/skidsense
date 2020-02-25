@@ -1,20 +1,10 @@
 package org.newdawn.slick.tests;
 
+import org.newdawn.slick.*;
+import org.newdawn.slick.geom.*;
+
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Circle;
-import org.newdawn.slick.geom.GeomUtil;
-import org.newdawn.slick.geom.GeomUtilListener;
-import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.geom.Shape;
-import org.newdawn.slick.geom.Vector2f;
 
 /**
  * A test to try shape building from multiple tiles
@@ -348,11 +338,11 @@ public class GeomUtilTileTest extends BasicGame implements GeomUtilListener {
 		
 		return false;
 	}
-	
+
 	/**
 	 * @see BasicGame#init(GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container) {
 		util.setListener(this);
 		init();
 		//container.setVSync(true);
@@ -361,15 +351,13 @@ public class GeomUtilTileTest extends BasicGame implements GeomUtilListener {
 	/**
 	 * @see BasicGame#update(GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta)
-			throws SlickException {
+	public void update(GameContainer container, int delta) {
 	}
 
 	/**
 	 * @see org.newdawn.slick.Game#render(GameContainer, Graphics)
 	 */
-	public void render(GameContainer container, Graphics g)
-			throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		g.setColor(Color.green);
 		for (int i = 0; i < original.size(); i++) {
 			Shape shape = (Shape) original.get(i);

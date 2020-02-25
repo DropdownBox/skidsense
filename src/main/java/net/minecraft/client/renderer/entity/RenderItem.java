@@ -1,33 +1,9 @@
 package net.minecraft.client.renderer.entity;
 
-import java.util.List;
-import java.util.concurrent.Callable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirt;
-import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockFlower;
-import net.minecraft.block.BlockHugeMushroom;
-import net.minecraft.block.BlockPlanks;
-import net.minecraft.block.BlockPrismarine;
-import net.minecraft.block.BlockQuartz;
-import net.minecraft.block.BlockRedSandstone;
-import net.minecraft.block.BlockSand;
-import net.minecraft.block.BlockSandStone;
-import net.minecraft.block.BlockSilverfish;
-import net.minecraft.block.BlockStone;
-import net.minecraft.block.BlockStoneBrick;
-import net.minecraft.block.BlockStoneSlab;
-import net.minecraft.block.BlockStoneSlabNew;
-import net.minecraft.block.BlockTallGrass;
-import net.minecraft.block.BlockWall;
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemTransformVec3f;
@@ -47,17 +23,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemFishFood;
-import net.minecraft.item.ItemPotion;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumWorldBlockLayer;
-import net.minecraft.util.ReportedException;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3i;
+import net.minecraft.item.*;
+import net.minecraft.util.*;
 import optifine.Config;
 import optifine.CustomColors;
 import optifine.CustomItems;
@@ -65,14 +32,20 @@ import optifine.Reflector;
 import shadersmod.client.Shaders;
 import shadersmod.client.ShadersRender;
 
-public class RenderItem implements IResourceManagerReloadListener
-{
+import java.util.List;
+import java.util.concurrent.Callable;
+
+public class RenderItem implements IResourceManagerReloadListener {
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
-    /** False when the renderer is rendering the item's effects into a GUI */
+    /**
+     * False when the renderer is rendering the item's effects into a GUI
+     */
     private boolean notRenderingEffectsInGUI = true;
 
-    /** Defines the zLevel of rendering of item on GUI. */
+    /**
+     * Defines the zLevel of rendering of item on GUI.
+     */
     public float zLevel;
     private final ItemModelMesher itemModelMesher;
     private final TextureManager textureManager;
@@ -138,9 +111,8 @@ public class RenderItem implements IResourceManagerReloadListener
         this.renderModel(model, -1, stack);
     }
 
-    public void renderModel(IBakedModel model, int color)
-    {
-        this.renderModel(model, color, (ItemStack)null);
+    public void renderModel(IBakedModel model, int color) {
+        this.renderModel(model, color, null);
     }
 
     private void renderModel(IBakedModel model, int color, ItemStack stack)
@@ -165,9 +137,8 @@ public class RenderItem implements IResourceManagerReloadListener
         this.renderQuads(worldrenderer, model.getGeneralQuads(), color, stack);
         tessellator.draw();
 
-        if (flag1)
-        {
-            worldrenderer.setBlockLayer((EnumWorldBlockLayer)null);
+        if (flag1) {
+            worldrenderer.setBlockLayer(null);
             GlStateManager.bindCurrentTexture();
         }
     }
@@ -318,7 +289,7 @@ public class RenderItem implements IResourceManagerReloadListener
     public boolean shouldRenderItemIn3D(ItemStack stack)
     {
         IBakedModel ibakedmodel = this.itemModelMesher.getItemModel(stack);
-        return ibakedmodel == null ? false : ibakedmodel.isGui3d();
+        return ibakedmodel != null && ibakedmodel.isGui3d();
     }
 
     private void preTransform(ItemStack stack)
@@ -514,35 +485,33 @@ public class RenderItem implements IResourceManagerReloadListener
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering item");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being rendered");
-                crashreportcategory.addCrashSectionCallable("Item Type", new Callable()
-                {
+                crashreportcategory.addCrashSectionCallable("Item Type", new Callable() {
                     private static final String __OBFID = "CL_00001004";
-                    public String call() throws Exception
-                    {
-                        return String.valueOf((Object)stack.getItem());
+
+                    public String call() {
+                        return String.valueOf(stack.getItem());
                     }
                 });
                 crashreportcategory.addCrashSectionCallable("Item Aux", new Callable()
                 {
                     private static final String __OBFID = "CL_00001005";
-                    public String call() throws Exception
-                    {
+
+                    public String call() {
                         return String.valueOf(stack.getMetadata());
                     }
                 });
-                crashreportcategory.addCrashSectionCallable("Item NBT", new Callable()
-                {
+                crashreportcategory.addCrashSectionCallable("Item NBT", new Callable() {
                     private static final String __OBFID = "CL_00001006";
-                    public String call() throws Exception
-                    {
-                        return String.valueOf((Object)stack.getTagCompound());
+
+                    public String call() {
+                        return String.valueOf(stack.getTagCompound());
                     }
                 });
                 crashreportcategory.addCrashSectionCallable("Item Foil", new Callable()
                 {
                     private static final String __OBFID = "CL_00001007";
-                    public String call() throws Exception
-                    {
+
+                    public String call() {
                         return String.valueOf(stack.hasEffect());
                     }
                 });
@@ -553,9 +522,8 @@ public class RenderItem implements IResourceManagerReloadListener
         }
     }
 
-    public void renderItemOverlays(FontRenderer fr, ItemStack stack, int xPosition, int yPosition)
-    {
-        this.renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, (String)null);
+    public void renderItemOverlays(FontRenderer fr, ItemStack stack, int xPosition, int yPosition) {
+        this.renderItemOverlayIntoGUI(fr, stack, xPosition, yPosition, null);
     }
 
     /**
@@ -584,9 +552,8 @@ public class RenderItem implements IResourceManagerReloadListener
 
             boolean flag = stack.isItemDamaged();
 
-            if (Reflector.ForgeItem_showDurabilityBar.exists())
-            {
-                flag = Reflector.callBoolean(stack.getItem(), Reflector.ForgeItem_showDurabilityBar, new Object[] {stack});
+            if (Reflector.ForgeItem_showDurabilityBar.exists()) {
+                flag = Reflector.callBoolean(stack.getItem(), Reflector.ForgeItem_showDurabilityBar, stack);
             }
 
             if (flag)
@@ -594,9 +561,8 @@ public class RenderItem implements IResourceManagerReloadListener
                 int i = (int)Math.round(13.0D - (double)stack.getItemDamage() * 13.0D / (double)stack.getMaxDamage());
                 int j = (int)Math.round(255.0D - (double)stack.getItemDamage() * 255.0D / (double)stack.getMaxDamage());
 
-                if (Reflector.ForgeItem_getDurabilityForDisplay.exists())
-                {
-                    double d0 = Reflector.callDouble(stack.getItem(), Reflector.ForgeItem_getDurabilityForDisplay, new Object[] {stack});
+                if (Reflector.ForgeItem_getDurabilityForDisplay.exists()) {
+                    double d0 = Reflector.callDouble(stack.getItem(), Reflector.ForgeItem_getDurabilityForDisplay, stack);
                     i = (int)Math.round(13.0D - d0 * 13.0D);
                     j = (int)Math.round(255.0D - d0 * 255.0D);
                 }
@@ -638,13 +604,12 @@ public class RenderItem implements IResourceManagerReloadListener
      * @param blue Blue component of the color
      * @param alpha Alpha component of the color
      */
-    private void draw(WorldRenderer renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha)
-    {
+    private void draw(WorldRenderer renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
         renderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        renderer.pos((double)(x + 0), (double)(y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos((double)(x + 0), (double)(y + height), 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos((double)(x + width), (double)(y + height), 0.0D).color(red, green, blue, alpha).endVertex();
-        renderer.pos((double)(x + width), (double)(y + 0), 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x + 0, y + 0, 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x + 0, y + height, 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x + width, y + height, 0.0D).color(red, green, blue, alpha).endVertex();
+        renderer.pos(x + width, y + 0, 0.0D).color(red, green, blue, alpha).endVertex();
         Tessellator.getInstance().draw();
     }
 
@@ -1200,9 +1165,8 @@ public class RenderItem implements IResourceManagerReloadListener
         this.registerBlock(Blocks.red_mushroom_block, BlockHugeMushroom.EnumType.ALL_INSIDE.getMetadata(), "red_mushroom_block");
         this.registerBlock(Blocks.dragon_egg, "dragon_egg");
 
-        if (Reflector.ModelLoader_onRegisterItems.exists())
-        {
-            Reflector.call(Reflector.ModelLoader_onRegisterItems, new Object[] {this.itemModelMesher});
+        if (Reflector.ModelLoader_onRegisterItems.exists()) {
+            Reflector.call(Reflector.ModelLoader_onRegisterItems, this.itemModelMesher);
         }
     }
 

@@ -1,19 +1,18 @@
 package optifine;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
-import java.util.List;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 
-public class GuiMessage extends GuiScreen
-{
+import java.util.List;
+
+public class GuiMessage extends GuiScreen {
     private GuiScreen parentScreen;
     private String messageLine1;
     private String messageLine2;
-    private final List<String> listLines2 = Lists.<String>newArrayList();
+    private final List<String> listLines2 = Lists.newArrayList();
     protected String confirmButtonText;
     private int ticksUntilEnable;
 
@@ -22,7 +21,7 @@ public class GuiMessage extends GuiScreen
         this.parentScreen = p_i54_1_;
         this.messageLine1 = p_i54_2_;
         this.messageLine2 = p_i54_3_;
-        this.confirmButtonText = I18n.format("gui.done", new Object[0]);
+        this.confirmButtonText = I18n.format("gui.done");
     }
 
     /**
@@ -39,8 +38,7 @@ public class GuiMessage extends GuiScreen
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
+    protected void actionPerformed(GuiButton button) {
         Config.getMinecraft().displayGuiScreen(this.parentScreen);
     }
 

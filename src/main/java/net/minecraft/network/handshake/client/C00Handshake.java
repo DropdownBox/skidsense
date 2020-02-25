@@ -1,6 +1,5 @@
 package net.minecraft.network.handshake.client;
 
-import java.io.IOException;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -28,8 +27,7 @@ public class C00Handshake implements Packet<INetHandlerHandshakeServer>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) {
         this.protocolVersion = buf.readVarIntFromBuffer();
         this.ip = buf.readStringFromBuffer(255);
         this.port = buf.readUnsignedShort();
@@ -39,8 +37,7 @@ public class C00Handshake implements Packet<INetHandlerHandshakeServer>
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) {
         buf.writeVarIntToBuffer(this.protocolVersion);
         buf.writeString(this.ip);
         buf.writeShort(this.port);

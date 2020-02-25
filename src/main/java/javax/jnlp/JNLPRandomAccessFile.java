@@ -4,43 +4,79 @@ package javax.jnlp;
 
 public interface JNLPRandomAccessFile {
 
-  public void close() throws java.io.IOException;
-  public long length() throws java.io.IOException;
-  public long getFilePointer() throws java.io.IOException;
-  public int read() throws java.io.IOException;
-  public int read(byte[] b, int off, int len) throws java.io.IOException;
-  public int read(byte[] b) throws java.io.IOException;
-  public void readFully(byte[] b) throws java.io.IOException;
-  public void readFully(byte[] b, int off, int len) throws java.io.IOException;
-  public int skipBytes(int n) throws java.io.IOException;
-  public boolean readBoolean() throws java.io.IOException;
-  public byte readByte() throws java.io.IOException;
-  public int readUnsignedByte() throws java.io.IOException;
-  public short readShort() throws java.io.IOException;
-  public int readUnsignedShort() throws java.io.IOException;
-  public char readChar() throws java.io.IOException;
-  public int readInt() throws java.io.IOException;
-  public long readLong() throws java.io.IOException;
-  public float readFloat() throws java.io.IOException;
-  public double readDouble() throws java.io.IOException;
-  public java.lang.String readLine() throws java.io.IOException;
-  public java.lang.String readUTF() throws java.io.IOException;
-  public void seek(long pos) throws java.io.IOException;
-  public void setLength(long newLength) throws java.io.IOException;
-  public void write(int b) throws java.io.IOException;
-  public void write(byte[] b) throws java.io.IOException;
-  public void write(byte[] b, int off, int len) throws java.io.IOException;
-  public void writeBoolean(boolean v) throws java.io.IOException;
-  public void writeByte(int v) throws java.io.IOException;
-  public void writeShort(int v) throws java.io.IOException;
-  public void writeChar(int v) throws java.io.IOException;
-  public void writeInt(int v) throws java.io.IOException;
-  public void writeLong(long v) throws java.io.IOException;
-  public void writeFloat(float v) throws java.io.IOException;
-  public void writeDouble(double v) throws java.io.IOException;
-  public void writeBytes(java.lang.String s) throws java.io.IOException;
-  public void writeChars(java.lang.String s) throws java.io.IOException;
-  public void writeUTF(java.lang.String str) throws java.io.IOException;
+  void close();
+
+  long length();
+
+  long getFilePointer();
+
+  int read();
+
+  int read(byte[] b, int off, int len);
+
+  int read(byte[] b);
+
+  void readFully(byte[] b);
+
+  void readFully(byte[] b, int off, int len);
+
+  int skipBytes(int n);
+
+  boolean readBoolean();
+
+  byte readByte();
+
+  int readUnsignedByte();
+
+  short readShort();
+
+  int readUnsignedShort();
+
+  char readChar();
+
+  int readInt();
+
+  long readLong();
+
+  float readFloat();
+
+  double readDouble();
+
+  java.lang.String readLine();
+
+  java.lang.String readUTF();
+
+  void seek(long pos);
+
+  void setLength(long newLength);
+
+  void write(int b);
+
+  void write(byte[] b);
+
+  void write(byte[] b, int off, int len);
+
+  void writeBoolean(boolean v);
+
+  void writeByte(int v);
+
+  void writeShort(int v);
+
+  void writeChar(int v);
+
+  void writeInt(int v);
+
+  void writeLong(long v);
+
+  void writeFloat(float v);
+
+  void writeDouble(double v);
+
+  void writeBytes(java.lang.String s);
+
+  void writeChars(java.lang.String s);
+
+  void writeUTF(java.lang.String str);
 
 }
 

@@ -1,7 +1,6 @@
 package org.newdawn.slick.gui;
 
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
 
 /**
  * Renamed to provide backwards compatibility
@@ -68,8 +67,8 @@ public abstract class BasicComponent extends AbstractComponent {
 	/**
 	 * @see org.newdawn.slick.gui.AbstractComponent#render(org.newdawn.slick.gui.GUIContext, org.newdawn.slick.Graphics)
 	 */
-	public void render(GUIContext container, Graphics g) throws SlickException {
-		renderImpl(container,g);
+	public void render(GUIContext container, Graphics g) {
+		renderImpl(container, g);
 	}
 
 	/**

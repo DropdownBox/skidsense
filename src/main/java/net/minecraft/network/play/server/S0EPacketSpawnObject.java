@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -87,18 +86,17 @@ public class S0EPacketSpawnObject implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.entityId = buf.readVarIntFromBuffer();
-        this.type = buf.readByte();
-        this.x = buf.readInt();
-        this.y = buf.readInt();
-        this.z = buf.readInt();
-        this.pitch = buf.readByte();
-        this.yaw = buf.readByte();
-        this.field_149020_k = buf.readInt();
+    public void readPacketData(PacketBuffer buf) {
+	    this.entityId = buf.readVarIntFromBuffer();
+	    this.type = buf.readByte();
+	    this.x = buf.readInt();
+	    this.y = buf.readInt();
+	    this.z = buf.readInt();
+	    this.pitch = buf.readByte();
+	    this.yaw = buf.readByte();
+	    this.field_149020_k = buf.readInt();
 
-        if (this.field_149020_k > 0)
+	    if (this.field_149020_k > 0)
         {
             this.speedX = buf.readShort();
             this.speedY = buf.readShort();
@@ -106,21 +104,20 @@ public class S0EPacketSpawnObject implements Packet<INetHandlerPlayClient>
         }
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeVarIntToBuffer(this.entityId);
-        buf.writeByte(this.type);
-        buf.writeInt(this.x);
-        buf.writeInt(this.y);
-        buf.writeInt(this.z);
-        buf.writeByte(this.pitch);
-        buf.writeByte(this.yaw);
-        buf.writeInt(this.field_149020_k);
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeVarIntToBuffer(this.entityId);
+		buf.writeByte(this.type);
+		buf.writeInt(this.x);
+		buf.writeInt(this.y);
+		buf.writeInt(this.z);
+		buf.writeByte(this.pitch);
+		buf.writeByte(this.yaw);
+		buf.writeInt(this.field_149020_k);
 
-        if (this.field_149020_k > 0)
+		if (this.field_149020_k > 0)
         {
             buf.writeShort(this.speedX);
             buf.writeShort(this.speedY);

@@ -2,12 +2,8 @@ package net.minecraft.client.gui;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-
 import me.skidsense.alt.GuiAltManager;
 import me.skidsense.proxy.GuiProxy;
-
-import java.io.IOException;
-import java.util.List;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
@@ -18,8 +14,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
-public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
-{
+import java.io.IOException;
+import java.util.List;
+
+public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback {
     private static final Logger logger = LogManager.getLogger();
     private final OldServerPinger oldServerPinger = new OldServerPinger();
     private GuiScreen parentScreen;
@@ -93,16 +91,15 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
         this.serverListSelector.handleMouseInput();
     }
 
-    public void createButtons()
-    {
-    	this.buttonList.add(new GuiButton(997, 5, 8, 98, 20, "AltManager"));
-        this.buttonList.add(this.btnEditServer = new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit", new Object[0])));
-        this.buttonList.add(this.btnDeleteServer = new GuiButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete", new Object[0])));
-        this.buttonList.add(this.btnSelectServer = new GuiButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select", new Object[0])));
-        this.buttonList.add(new GuiButton(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct", new Object[0])));
-        this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add", new Object[0])));
-        this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh", new Object[0])));
-        this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel", new Object[0])));
+    public void createButtons() {
+        this.buttonList.add(new GuiButton(997, 5, 8, 98, 20, "AltManager"));
+        this.buttonList.add(this.btnEditServer = new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit")));
+        this.buttonList.add(this.btnDeleteServer = new GuiButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete")));
+        this.buttonList.add(this.btnSelectServer = new GuiButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select")));
+        this.buttonList.add(new GuiButton(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct")));
+        this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add")));
+        this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh")));
+        this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.format("gui.cancel")));
         buttonList.add(new GuiButton(9929, width - 104, 8, 98, 20, "Proxy"));
         this.selectServer(this.serverListSelector.func_148193_k());
     }
@@ -143,23 +140,19 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if (button.enabled)
-        {
+    protected void actionPerformed(GuiButton button) {
+        if (button.enabled) {
             GuiListExtended.IGuiListEntry guilistextended$iguilistentry = this.serverListSelector.func_148193_k() < 0 ? null : this.serverListSelector.getListEntry(this.serverListSelector.func_148193_k());
 
-            if (button.id == 2 && guilistextended$iguilistentry instanceof ServerListEntryNormal)
-            {
-                String s4 = ((ServerListEntryNormal)guilistextended$iguilistentry).getServerData().serverName;
+            if (button.id == 2 && guilistextended$iguilistentry instanceof ServerListEntryNormal) {
+                String s4 = ((ServerListEntryNormal) guilistextended$iguilistentry).getServerData().serverName;
 
-                if (s4 != null)
-                {
+                if (s4 != null) {
                     this.deletingServer = true;
-                    String s = I18n.format("selectServer.deleteQuestion", new Object[0]);
-                    String s1 = "\'" + s4 + "\' " + I18n.format("selectServer.deleteWarning", new Object[0]);
-                    String s2 = I18n.format("selectServer.deleteButton", new Object[0]);
-                    String s3 = I18n.format("gui.cancel", new Object[0]);
+                    String s = I18n.format("selectServer.deleteQuestion");
+                    String s1 = "'" + s4 + "' " + I18n.format("selectServer.deleteWarning");
+                    String s2 = I18n.format("selectServer.deleteButton");
+                    String s3 = I18n.format("gui.cancel");
                     GuiYesNo guiyesno = new GuiYesNo(this, s, s1, s2, s3, this.serverListSelector.func_148193_k());
                     this.mc.displayGuiScreen(guiyesno);
                 }
@@ -175,12 +168,12 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
             else if (button.id == 4)
             {
                 this.directConnect = true;
-                this.mc.displayGuiScreen(new GuiScreenServerList(this, this.selectedServer = new ServerData(I18n.format("selectServer.defaultName", new Object[0]), "", false)));
+                this.mc.displayGuiScreen(new GuiScreenServerList(this, this.selectedServer = new ServerData(I18n.format("selectServer.defaultName"), "", false)));
             }
             else if (button.id == 3)
             {
                 this.addingServer = true;
-                this.mc.displayGuiScreen(new GuiScreenAddServer(this, this.selectedServer = new ServerData(I18n.format("selectServer.defaultName", new Object[0]), "", false)));
+                this.mc.displayGuiScreen(new GuiScreenAddServer(this, this.selectedServer = new ServerData(I18n.format("selectServer.defaultName"), "", false)));
             }
             else if (button.id == 7 && guilistextended$iguilistentry instanceof ServerListEntryNormal)
             {
@@ -366,7 +359,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
                 }
                 else
                 {
-                    this.actionPerformed((GuiButton)this.buttonList.get(2));
+                    this.actionPerformed(this.buttonList.get(2));
                 }
             }
             else
@@ -384,7 +377,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
         this.hoveringText = null;
         this.drawDefaultBackground();
         this.serverListSelector.drawScreen(mouseX, mouseY, partialTicks);
-        this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.title", new Object[0]), this.width / 2, 20, 16777215);
+        this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.title"), this.width / 2, 20, 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
 
         if (this.hoveringText != null)

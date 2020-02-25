@@ -1,11 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 /**
  * A test for basic image rendering
@@ -24,13 +19,13 @@ public class KeyRepeatTest extends BasicGame {
 	public KeyRepeatTest() {
 		super("KeyRepeatTest");
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container) {
 		input = container.getInput();
-		input.enableKeyRepeat(300,100);
+		input.enableKeyRepeat(300, 100);
 	}
 
 	/**

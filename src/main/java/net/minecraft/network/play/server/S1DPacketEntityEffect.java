@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -39,26 +38,24 @@ public class S1DPacketEntityEffect implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.entityId = buf.readVarIntFromBuffer();
-        this.effectId = buf.readByte();
-        this.amplifier = buf.readByte();
-        this.duration = buf.readVarIntFromBuffer();
-        this.hideParticles = buf.readByte();
+    public void readPacketData(PacketBuffer buf) {
+	    this.entityId = buf.readVarIntFromBuffer();
+	    this.effectId = buf.readByte();
+	    this.amplifier = buf.readByte();
+	    this.duration = buf.readVarIntFromBuffer();
+	    this.hideParticles = buf.readByte();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeVarIntToBuffer(this.entityId);
-        buf.writeByte(this.effectId);
-        buf.writeByte(this.amplifier);
-        buf.writeVarIntToBuffer(this.duration);
-        buf.writeByte(this.hideParticles);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeVarIntToBuffer(this.entityId);
+		buf.writeByte(this.effectId);
+		buf.writeByte(this.amplifier);
+		buf.writeVarIntToBuffer(this.duration);
+		buf.writeByte(this.hideParticles);
+	}
 
     public boolean func_149429_c()
     {

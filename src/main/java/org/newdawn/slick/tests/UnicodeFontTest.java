@@ -1,18 +1,8 @@
 
 package org.newdawn.slick.tests;
 
-import java.io.IOException;
-
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.UnicodeFont;
+import org.newdawn.slick.*;
 import org.newdawn.slick.font.effects.ColorEffect;
-import org.newdawn.slick.font.effects.ShadowEffect;
 
 /**
  * A simple test of the unicode font functionality provided
@@ -84,12 +74,11 @@ public class UnicodeFontTest extends BasicGame {
 
 	/**
 	 * Entry point to our simple test
-	 * 
+	 *
 	 * @param args The arguments supplied to the test
-	 * @throws SlickException Indicates a failure loading or processing resources 
-	 * @throws IOException Indicates a failure loading the font
+	 * @throws SlickException Indicates a failure loading or processing resources
 	 */
-	public static void main(String[] args) throws SlickException, IOException {
+	public static void main(String[] args) throws SlickException {
 		Input.disableControllers();
 		AppGameContainer container = new AppGameContainer(new UnicodeFontTest());
 		container.setDisplayMode(512, 600, false);

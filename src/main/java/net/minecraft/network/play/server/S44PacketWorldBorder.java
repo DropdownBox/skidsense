@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -38,19 +37,17 @@ public class S44PacketWorldBorder implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.action = (S44PacketWorldBorder.Action)buf.readEnumValue(S44PacketWorldBorder.Action.class);
+    public void readPacketData(PacketBuffer buf) {
+	    this.action = buf.readEnumValue(Action.class);
 
-        switch (this.action)
-        {
-            case SET_SIZE:
-                this.targetSize = buf.readDouble();
-                break;
+	    switch (this.action) {
+		    case SET_SIZE:
+			    this.targetSize = buf.readDouble();
+			    break;
 
-            case LERP_SIZE:
-                this.diameter = buf.readDouble();
-                this.targetSize = buf.readDouble();
+		    case LERP_SIZE:
+			    this.diameter = buf.readDouble();
+			    this.targetSize = buf.readDouble();
                 this.timeUntilTarget = buf.readVarLong();
                 break;
 
@@ -79,21 +76,19 @@ public class S44PacketWorldBorder implements Packet<INetHandlerPlayClient>
         }
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeEnumValue(this.action);
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeEnumValue(this.action);
 
-        switch (this.action)
-        {
-            case SET_SIZE:
-                buf.writeDouble(this.targetSize);
-                break;
+		switch (this.action) {
+			case SET_SIZE:
+				buf.writeDouble(this.targetSize);
+				break;
 
-            case LERP_SIZE:
-                buf.writeDouble(this.diameter);
+			case LERP_SIZE:
+				buf.writeDouble(this.diameter);
                 buf.writeDouble(this.targetSize);
                 buf.writeVarLong(this.timeUntilTarget);
                 break;
@@ -173,13 +168,12 @@ public class S44PacketWorldBorder implements Packet<INetHandlerPlayClient>
         }
     }
 
-    public static enum Action
-    {
-        SET_SIZE,
-        LERP_SIZE,
-        SET_CENTER,
-        INITIALIZE,
-        SET_WARNING_TIME,
-        SET_WARNING_BLOCKS;
-    }
+	public enum Action {
+		SET_SIZE,
+		LERP_SIZE,
+		SET_CENTER,
+		INITIALIZE,
+		SET_WARNING_TIME,
+		SET_WARNING_BLOCKS
+	}
 }

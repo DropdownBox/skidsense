@@ -1,11 +1,6 @@
 package net.minecraft.world.gen.structure;
 
 import com.google.common.collect.Maps;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.Callable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.nbt.NBTBase;
@@ -20,8 +15,13 @@ import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.storage.MapStorage;
 import optifine.Reflector;
 
-public abstract class MapGenStructure extends MapGenBase
-{
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.Callable;
+
+public abstract class MapGenStructure extends MapGenBase {
     private MapGenStructureData structureData;
 
     /**
@@ -29,7 +29,7 @@ public abstract class MapGenStructure extends MapGenBase
      * generation, the structure generator can avoid generating structures that intersect ones that have already been
      * placed.
      */
-    protected Map<Long, StructureStart> structureMap = Maps.<Long, StructureStart>newHashMap();
+    protected Map<Long, StructureStart> structureMap = Maps.newHashMap();
     private static final String __OBFID = "CL_00000505";
     private LongHashMap structureLongMap = new LongHashMap();
 
@@ -60,28 +60,26 @@ public abstract class MapGenStructure extends MapGenBase
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Exception preparing structure feature");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Feature being prepared");
-                crashreportcategory.addCrashSectionCallable("Is feature chunk", new Callable()
-                {
+                crashreportcategory.addCrashSectionCallable("Is feature chunk", new Callable() {
                     private static final String __OBFID = "CL_00000506";
-                    public String call() throws Exception
-                    {
+
+                    public String call() {
                         return MapGenStructure.this.canSpawnStructureAtCoords(chunkX, chunkZ) ? "True" : "False";
                     }
                 });
-                crashreportcategory.addCrashSection("Chunk location", String.format("%d,%d", new Object[] {Integer.valueOf(chunkX), Integer.valueOf(chunkZ)}));
-                crashreportcategory.addCrashSectionCallable("Chunk pos hash", new Callable()
-                {
+                crashreportcategory.addCrashSection("Chunk location", String.format("%d,%d", Integer.valueOf(chunkX), Integer.valueOf(chunkZ)));
+                crashreportcategory.addCrashSectionCallable("Chunk pos hash", new Callable() {
                     private static final String __OBFID = "CL_00000507";
-                    public String call() throws Exception
-                    {
+
+                    public String call() {
                         return String.valueOf(ChunkCoordIntPair.chunkXZ2Int(chunkX, chunkZ));
                     }
                 });
                 crashreportcategory.addCrashSectionCallable("Structure type", new Callable()
                 {
                     private static final String __OBFID = "CL_00000508";
-                    public String call() throws Exception
-                    {
+
+                    public String call() {
                         return MapGenStructure.this.getClass().getCanonicalName();
                     }
                 });
@@ -174,7 +172,7 @@ public abstract class MapGenStructure extends MapGenBase
         long k = (long)(pos.getX() >> 4) * i;
         long l = (long)(pos.getZ() >> 4) * j;
         this.rand.setSeed(k ^ l ^ worldIn.getSeed());
-        this.recursiveGenerate(worldIn, pos.getX() >> 4, pos.getZ() >> 4, 0, 0, (ChunkPrimer)null);
+        this.recursiveGenerate(worldIn, pos.getX() >> 4, pos.getZ() >> 4, 0, 0, null);
         double d0 = Double.MAX_VALUE;
         BlockPos blockpos = null;
 
@@ -182,7 +180,7 @@ public abstract class MapGenStructure extends MapGenBase
         {
             if (structurestart.isSizeableStructure())
             {
-                StructureComponent structurecomponent = (StructureComponent)structurestart.getComponents().get(0);
+                StructureComponent structurecomponent = structurestart.getComponents().get(0);
                 BlockPos blockpos1 = structurecomponent.getBoundingBoxCenter();
                 double d1 = blockpos1.distanceSq(pos);
 

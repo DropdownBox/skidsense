@@ -1,13 +1,5 @@
 package org.newdawn.slick.openal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
-import org.lwjgl.BufferUtils;
-import org.newdawn.slick.util.Log;
-
 import com.jcraft.jogg.Packet;
 import com.jcraft.jogg.Page;
 import com.jcraft.jogg.StreamState;
@@ -16,6 +8,13 @@ import com.jcraft.jorbis.Block;
 import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
+import org.lwjgl.BufferUtils;
+import org.newdawn.slick.util.Log;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * An input stream that can extract ogg data. This class is a bit of an experiment with continuations
@@ -280,15 +279,13 @@ public class OggInputStream extends InputStream implements AudioInputStream {
 		
 		return true;
 	}
-	
+
 	/**
 	 * Decode the OGG file as shown in the jogg/jorbis examples
-	 * 
-	 * @throws IOException Indicates a failure to read from the supplied stream
 	 */
-	private void readPCM() throws IOException {
+	private void readPCM() {
 		boolean wrote = false;
-		
+
 		while (true) { // we repeat if the bitstream is chained
 			if (endOfBitStream) {
 				if (!getPageAndPacket()) {
@@ -469,14 +466,14 @@ public class OggInputStream extends InputStream implements AudioInputStream {
 	/**
 	 * @see java.io.InputStream#read(byte[], int, int)
 	 */
-	public int read(byte[] b, int off, int len) throws IOException {
-		for (int i=0;i<len;i++) {
+	public int read(byte[] b, int off, int len) {
+		for (int i = 0; i < len; i++) {
 			try {
 				int value = read();
 				if (value >= 0) {
 					b[i] = (byte) value;
 				} else {
-					if (i == 0) {						
+					if (i == 0) {
 						return -1;
 					} else {
 						return i;
@@ -497,10 +494,10 @@ public class OggInputStream extends InputStream implements AudioInputStream {
 	public int read(byte[] b) throws IOException {
 		return read(b, 0, b.length);
 	}
-	
+
 	/**
 	 * @see java.io.InputStream#close()
 	 */
-	public void close() throws IOException {
+	public void close() {
 	}
 }

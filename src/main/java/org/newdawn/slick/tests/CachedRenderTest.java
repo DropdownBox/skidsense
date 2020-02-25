@@ -1,13 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.CachedRender;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 /**
  * A simple test to show performance gains from cache operations in situtations where
@@ -29,17 +22,17 @@ public class CachedRenderTest extends BasicGame {
 	public CachedRenderTest() {
 		super("Cached Render Test");
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
 	 */
-	public void init(final GameContainer container) throws SlickException {
+	public void init(final GameContainer container) {
 		operations = new Runnable() {
 			public void run() {
-				for (int i=0;i<100;i++) {
-					int c = i+100;
-					container.getGraphics().setColor(new Color(c,c,c,c));
-					container.getGraphics().drawOval((i*5)+50,(i*3)+50,100,100);
+				for (int i = 0; i < 100; i++) {
+					int c = i + 100;
+					container.getGraphics().setColor(new Color(c, c, c, c));
+					container.getGraphics().drawOval((i * 5) + 50, (i * 3) + 50, 100, 100);
 				}
 			}
 		};
@@ -50,7 +43,7 @@ public class CachedRenderTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta) throws SlickException {
+	public void update(GameContainer container, int delta) {
 		if (container.getInput().isKeyPressed(Input.KEY_SPACE)) {
 			drawCached = !drawCached;
 		}
@@ -59,7 +52,7 @@ public class CachedRenderTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.Game#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g) throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		g.setColor(Color.white);
 		g.drawString("Press space to toggle caching", 10, 130);
 		if (drawCached) {

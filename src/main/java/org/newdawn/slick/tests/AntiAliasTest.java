@@ -1,11 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 /**
  * Test to view the effects of antialiasing on cirles
@@ -24,28 +19,28 @@ public class AntiAliasTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container) {
 		container.getGraphics().setBackground(Color.green);
 	}
 
 	/**
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta) throws SlickException {
+	public void update(GameContainer container, int delta) {
 	}
 
 	/**
 	 * @see org.newdawn.slick.Game#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g) throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		g.setAntiAlias(true);
 		g.setColor(Color.red);
-		g.drawOval(100,100,100,100);
-		g.fillOval(300,100,100,100);
+		g.drawOval(100, 100, 100, 100);
+		g.fillOval(300, 100, 100, 100);
 		g.setAntiAlias(false);
 		g.setColor(Color.red);
-		g.drawOval(100,300,100,100);
-		g.fillOval(300,300,100,100);
+		g.drawOval(100, 300, 100, 100);
+		g.fillOval(300, 300,100,100);
 	}
 
 	/**

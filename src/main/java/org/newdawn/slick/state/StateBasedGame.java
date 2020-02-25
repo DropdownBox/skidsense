@@ -1,19 +1,14 @@
 package org.newdawn.slick.state;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
-import org.newdawn.slick.Game;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.InputListener;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.state.transition.EmptyTransition;
 import org.newdawn.slick.state.transition.Transition;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 /**
- * A state based game isolated different stages of the game (menu, ingame, hiscores, etc) into 
+ * A state based game isolated different stages of the game (menu, ingame, hiscores, etc) into
  * different states so they can be easily managed and maintained.
  *
  * @author kevin
@@ -47,13 +42,17 @@ public abstract class StateBasedGame implements Game, InputListener {
 			public int getID() {
 				return -1;
 			}
-			public void init(GameContainer container, StateBasedGame game) throws SlickException {
+
+			public void init(GameContainer container, StateBasedGame game) {
 			}
-			public void render(StateBasedGame game, Graphics g) throws SlickException {
+
+			public void render(StateBasedGame game, Graphics g) {
 			}
-			public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+
+			public void update(GameContainer container, StateBasedGame game, int delta) {
 			}
-			public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
+
+			public void render(GameContainer container, StateBasedGame game, Graphics g) {
 			}
 		};
 	}
@@ -178,12 +177,11 @@ public abstract class StateBasedGame implements Game, InputListener {
 
 	/**
 	 * Initialise the list of states making up this game
-	 * 
+	 *
 	 * @param container The container holding the game
-	 * @throws SlickException Indicates a failure to initialise the state based game resources
 	 */
-	public abstract void initStatesList(GameContainer container) throws SlickException;
-	
+	public abstract void initStatesList(GameContainer container);
+
 	/**
 	 * @see org.newdawn.slick.Game#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
@@ -210,27 +208,25 @@ public abstract class StateBasedGame implements Game, InputListener {
 	/**
 	 * User hook for rendering at the before the current state
 	 * and/or transition have been rendered
-	 * 
+	 *
 	 * @param container The container in which the game is hosted
 	 * @param g The graphics context on which to draw
-	 * @throws SlickException Indicates a failure within render
 	 */
-	protected void preRenderState(GameContainer container, Graphics g) throws SlickException {
+	protected void preRenderState(GameContainer container, Graphics g) {
 		// NO-OP
 	}
-	
+
 	/**
 	 * User hook for rendering at the game level after the current state
 	 * and/or transition have been rendered
-	 * 
+	 *
 	 * @param container The container in which the game is hosted
 	 * @param g The graphics context on which to draw
-	 * @throws SlickException Indicates a failure within render
 	 */
-	protected void postRenderState(GameContainer container, Graphics g) throws SlickException {
+	protected void postRenderState(GameContainer container, Graphics g) {
 		// NO-OP
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
@@ -273,27 +269,25 @@ public abstract class StateBasedGame implements Game, InputListener {
 	/**
 	 * User hook for updating at the game before the current state
 	 * and/or transition have been updated
-	 * 
+	 *
 	 * @param container The container in which the game is hosted
 	 * @param delta The amount of time in milliseconds since last update
-	 * @throws SlickException Indicates a failure within render
 	 */
-	protected void preUpdateState(GameContainer container, int delta) throws SlickException {
+	protected void preUpdateState(GameContainer container, int delta) {
 		// NO-OP
 	}
-	
+
 	/**
 	 * User hook for rendering at the game level after the current state
 	 * and/or transition have been updated
-	 * 
+	 *
 	 * @param container The container in which the game is hosted
 	 * @param delta The amount of time in milliseconds since last update
-	 * @throws SlickException Indicates a failure within render
 	 */
-	protected void postUpdateState(GameContainer container, int delta) throws SlickException {
+	protected void postUpdateState(GameContainer container, int delta) {
 		// NO-OP
 	}
-	
+
 	/**
 	 * Check if the game is transitioning between states
 	 * 

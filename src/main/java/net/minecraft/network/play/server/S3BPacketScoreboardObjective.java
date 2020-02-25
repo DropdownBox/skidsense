@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -29,32 +28,28 @@ public class S3BPacketScoreboardObjective implements Packet<INetHandlerPlayClien
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.objectiveName = buf.readStringFromBuffer(16);
-        this.field_149342_c = buf.readByte();
+    public void readPacketData(PacketBuffer buf) {
+	    this.objectiveName = buf.readStringFromBuffer(16);
+	    this.field_149342_c = buf.readByte();
 
-        if (this.field_149342_c == 0 || this.field_149342_c == 2)
-        {
-            this.objectiveValue = buf.readStringFromBuffer(32);
-            this.type = IScoreObjectiveCriteria.EnumRenderType.func_178795_a(buf.readStringFromBuffer(16));
-        }
+	    if (this.field_149342_c == 0 || this.field_149342_c == 2) {
+		    this.objectiveValue = buf.readStringFromBuffer(32);
+		    this.type = IScoreObjectiveCriteria.EnumRenderType.func_178795_a(buf.readStringFromBuffer(16));
+	    }
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeString(this.objectiveName);
-        buf.writeByte(this.field_149342_c);
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeString(this.objectiveName);
+		buf.writeByte(this.field_149342_c);
 
-        if (this.field_149342_c == 0 || this.field_149342_c == 2)
-        {
-            buf.writeString(this.objectiveValue);
-            buf.writeString(this.type.func_178796_a());
-        }
-    }
+		if (this.field_149342_c == 0 || this.field_149342_c == 2) {
+			buf.writeString(this.objectiveValue);
+			buf.writeString(this.type.func_178796_a());
+		}
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

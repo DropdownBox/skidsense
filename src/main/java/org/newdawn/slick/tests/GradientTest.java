@@ -1,12 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.fills.GradientFill;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Rectangle;
@@ -46,21 +40,21 @@ public class GradientTest extends BasicGame {
 	public GradientTest() {
 		super("Gradient Test");
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container) {
 		this.container = container;
-	
-		rect = new Rectangle(400,100,200,150);
-		round = new RoundedRectangle(150,100,200,150,50);
-		round2 = new RoundedRectangle(150,300,200,150,50);
-		center = new Rectangle(350,250,100,100);
-		
+
+		rect = new Rectangle(400, 100, 200, 150);
+		round = new RoundedRectangle(150, 100, 200, 150, 50);
+		round2 = new RoundedRectangle(150, 300, 200, 150, 50);
+		center = new Rectangle(350, 250, 100, 100);
+
 		poly = new Polygon();
-		poly.addPoint(400,350);
-		poly.addPoint(550,320);
+		poly.addPoint(400, 350);
+		poly.addPoint(550, 320);
 		poly.addPoint(600,380);
 		poly.addPoint(620,450);
 		poly.addPoint(500,450);

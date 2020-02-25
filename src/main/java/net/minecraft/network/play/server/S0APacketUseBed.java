@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -28,20 +27,18 @@ public class S0APacketUseBed implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.playerID = buf.readVarIntFromBuffer();
-        this.bedPos = buf.readBlockPos();
+    public void readPacketData(PacketBuffer buf) {
+	    this.playerID = buf.readVarIntFromBuffer();
+	    this.bedPos = buf.readBlockPos();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeVarIntToBuffer(this.playerID);
-        buf.writeBlockPos(this.bedPos);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeVarIntToBuffer(this.playerID);
+		buf.writeBlockPos(this.bedPos);
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

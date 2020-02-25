@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -24,20 +23,18 @@ public class S2BPacketChangeGameState implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.state = buf.readUnsignedByte();
-        this.field_149141_c = buf.readFloat();
+    public void readPacketData(PacketBuffer buf) {
+	    this.state = buf.readUnsignedByte();
+	    this.field_149141_c = buf.readFloat();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeByte(this.state);
-        buf.writeFloat(this.field_149141_c);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeByte(this.state);
+		buf.writeFloat(this.field_149141_c);
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

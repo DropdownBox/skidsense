@@ -1,13 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.util.FastTrig;
 
@@ -66,16 +59,16 @@ public class GraphicsTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.BasicGame#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g) throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		g.setColor(Color.white);
-		
+
 		g.setAntiAlias(true);
-		for (int x=0;x<360;x+=10) {
-			g.drawLine(700,100,(int) (700+(Math.cos(Math.toRadians(x))*100)),
-							   (int) (100+(Math.sin(Math.toRadians(x))*100)));
+		for (int x = 0; x < 360; x += 10) {
+			g.drawLine(700, 100, (int) (700 + (Math.cos(Math.toRadians(x)) * 100)),
+					(int) (100 + (Math.sin(Math.toRadians(x)) * 100)));
 		}
 		g.setAntiAlias(false);
-		
+
 		g.setColor(Color.yellow);
 		g.drawString("The Graphics Test!", 300, 50);
 		g.setColor(Color.white);

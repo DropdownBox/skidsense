@@ -1,16 +1,15 @@
 package net.minecraft.network.play.server;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
-import java.util.Collection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Team;
 
-public class S3EPacketTeams implements Packet<INetHandlerPlayClient>
-{
+import java.util.Collection;
+
+public class S3EPacketTeams implements Packet<INetHandlerPlayClient> {
     private String name = "";
     private String displayName = "";
     private String prefix = "";
@@ -25,14 +24,14 @@ public class S3EPacketTeams implements Packet<INetHandlerPlayClient>
     {
         this.nameTagVisibility = Team.EnumVisible.ALWAYS.internalName;
         this.color = -1;
-        this.players = Lists.<String>newArrayList();
+        this.players = Lists.newArrayList();
     }
 
     public S3EPacketTeams(ScorePlayerTeam teamIn, int actionIn)
     {
         this.nameTagVisibility = Team.EnumVisible.ALWAYS.internalName;
         this.color = -1;
-        this.players = Lists.<String>newArrayList();
+        this.players = Lists.newArrayList();
         this.name = teamIn.getRegisteredName();
         this.action = actionIn;
 
@@ -56,7 +55,7 @@ public class S3EPacketTeams implements Packet<INetHandlerPlayClient>
     {
         this.nameTagVisibility = Team.EnumVisible.ALWAYS.internalName;
         this.color = -1;
-        this.players = Lists.<String>newArrayList();
+        this.players = Lists.newArrayList();
 
         if (actionIn != 3 && actionIn != 4)
         {
@@ -77,13 +76,11 @@ public class S3EPacketTeams implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) {
         this.name = buf.readStringFromBuffer(16);
         this.action = buf.readByte();
 
-        if (this.action == 0 || this.action == 2)
-        {
+        if (this.action == 0 || this.action == 2) {
             this.displayName = buf.readStringFromBuffer(32);
             this.prefix = buf.readStringFromBuffer(16);
             this.suffix = buf.readStringFromBuffer(16);
@@ -106,13 +103,11 @@ public class S3EPacketTeams implements Packet<INetHandlerPlayClient>
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) {
         buf.writeString(this.name);
         buf.writeByte(this.action);
 
-        if (this.action == 0 || this.action == 2)
-        {
+        if (this.action == 0 || this.action == 2) {
             buf.writeString(this.displayName);
             buf.writeString(this.prefix);
             buf.writeString(this.suffix);

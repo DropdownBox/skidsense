@@ -1,21 +1,16 @@
 package org.newdawn.slick.tests;
 
-import java.io.IOException;
-
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.particles.ConfigurableEmitter;
 import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 
+import java.io.IOException;
+
 /**
  * A test for duplicating a ConfigurableEmitter several times
- * @author Tommy
  *
+ * @author Tommy
  */
 public class DuplicateEmitterTest extends BasicGame {
 
@@ -70,14 +65,14 @@ public class DuplicateEmitterTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta) throws SlickException {
+	public void update(GameContainer container, int delta) {
 		explosionSystem.update(delta);
 	}
 
 	/**
 	 * @see org.newdawn.slick.BasicGame#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g) throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		explosionSystem.render();
 	}
 

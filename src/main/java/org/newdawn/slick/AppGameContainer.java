@@ -1,11 +1,5 @@
 package org.newdawn.slick;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -16,17 +10,17 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 import org.newdawn.slick.openal.SoundStore;
-import org.newdawn.slick.opengl.CursorLoader;
-import org.newdawn.slick.opengl.ImageData;
-import org.newdawn.slick.opengl.ImageIOImageData;
-import org.newdawn.slick.opengl.InternalTextureLoader;
-import org.newdawn.slick.opengl.LoadableImageData;
-import org.newdawn.slick.opengl.TGAImageData;
+import org.newdawn.slick.opengl.*;
 import org.newdawn.slick.util.Log;
 import org.newdawn.slick.util.ResourceLoader;
 
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
 /**
- * A game container that will display the game as an stand alone 
+ * A game container that will display the game as an stand alone
  * application.
  *
  * @author kevin
@@ -399,13 +393,15 @@ public class AppGameContainer extends GameContainer {
 	
 	/**
 	 * Strategy for overloading game loop context handling
-	 * 
-	 * @throws SlickException Indicates a game failure
+	 *
 	 */
-	protected void gameLoop() throws SlickException {
+	protected void gameLoop() {
 		int delta = getDelta();
 		if (!Display.isVisible() && updateOnlyOnVisible) {
-			try { Thread.sleep(100); } catch (Exception e) {}
+			try {
+				Thread.sleep(100);
+			} catch (Exception e) {
+			}
 		} else {
 			try {
 				updateAndRender(delta);
@@ -501,10 +497,10 @@ public class AppGameContainer extends GameContainer {
 		/**
 		 * @see java.io.OutputStream#write(int)
 		 */
-		public void write(int b) throws IOException {
+		public void write(int b) {
 			// null implemetnation
 		}
-		
+
 	}
 
 	/**

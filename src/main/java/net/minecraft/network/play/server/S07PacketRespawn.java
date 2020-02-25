@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -38,29 +37,26 @@ public class S07PacketRespawn implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.dimensionID = buf.readInt();
-        this.difficulty = EnumDifficulty.getDifficultyEnum(buf.readUnsignedByte());
-        this.gameType = WorldSettings.GameType.getByID(buf.readUnsignedByte());
-        this.worldType = WorldType.parseWorldType(buf.readStringFromBuffer(16));
+    public void readPacketData(PacketBuffer buf) {
+	    this.dimensionID = buf.readInt();
+	    this.difficulty = EnumDifficulty.getDifficultyEnum(buf.readUnsignedByte());
+	    this.gameType = WorldSettings.GameType.getByID(buf.readUnsignedByte());
+	    this.worldType = WorldType.parseWorldType(buf.readStringFromBuffer(16));
 
-        if (this.worldType == null)
-        {
-            this.worldType = WorldType.DEFAULT;
-        }
+	    if (this.worldType == null) {
+		    this.worldType = WorldType.DEFAULT;
+	    }
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeInt(this.dimensionID);
-        buf.writeByte(this.difficulty.getDifficultyId());
-        buf.writeByte(this.gameType.getID());
-        buf.writeString(this.worldType.getWorldTypeName());
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeInt(this.dimensionID);
+		buf.writeByte(this.difficulty.getDifficultyId());
+		buf.writeByte(this.gameType.getID());
+		buf.writeString(this.worldType.getWorldTypeName());
+	}
 
     public int getDimensionID()
     {

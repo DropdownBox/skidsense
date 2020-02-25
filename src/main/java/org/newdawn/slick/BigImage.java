@@ -1,18 +1,18 @@
 package org.newdawn.slick;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
 import org.lwjgl.BufferUtils;
 import org.newdawn.slick.opengl.ImageData;
 import org.newdawn.slick.opengl.ImageDataFactory;
 import org.newdawn.slick.opengl.LoadableImageData;
 import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.renderer.SGL;
 import org.newdawn.slick.opengl.renderer.Renderer;
+import org.newdawn.slick.opengl.renderer.SGL;
 import org.newdawn.slick.util.OperationNotSupportedException;
 import org.newdawn.slick.util.ResourceLoader;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 /**
  * An image implementation that handles loaded images that are larger than the 
@@ -21,7 +21,7 @@ import org.newdawn.slick.util.ResourceLoader;
  * using OpenGL. However, in the rare circumstances where this isn't possible
  * this implementation can be used to draw a tiled version of the image built
  * from several smaller textures. 
- * 
+ *
  * This implementation does come with limitations and some performance impact
  * however - so use only when absolutely required.
  *
@@ -532,10 +532,10 @@ public class BigImage extends Image {
 
 	/**
 	 * Not supported in BigImage
-	 * 
+	 *
 	 * @see org.newdawn.slick.Image#getGraphics()
 	 */
-	public Graphics getGraphics() throws SlickException {
+	public Graphics getGraphics() {
 		throw new OperationNotSupportedException("Can't use big images as offscreen buffers");
 	}
 

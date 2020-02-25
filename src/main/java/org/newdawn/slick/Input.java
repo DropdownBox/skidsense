@@ -1,12 +1,5 @@
 package org.newdawn.slick;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Controller;
 import org.lwjgl.input.Controllers;
@@ -15,13 +8,21 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.newdawn.slick.util.Log;
 
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+
 /**
  * A wrapped for all keyboard, mouse and controller input
  *
  * @author kevin
  */
 public class Input {
-	/** The controller index to pass to check all controllers */
+	/**
+	 * The controller index to pass to check all controllers
+	 */
 	public static final int ANY_CONTROLLER = -1;
 	
 	/** The maximum number of buttons on controllers */
@@ -1070,7 +1071,7 @@ public class Input {
 		/**
 		 * @see java.io.OutputStream#write(int)
 		 */
-		public void write(int b) throws IOException {
+		public void write(int b) {
 			// null implemetnation
 		}
 		

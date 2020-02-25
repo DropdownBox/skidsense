@@ -1,6 +1,5 @@
 package net.minecraft.network.play.client;
 
-import java.io.IOException;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -33,30 +32,26 @@ public class C02PacketUseEntity implements Packet<INetHandlerPlayServer>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) {
         this.entityId = buf.readVarIntFromBuffer();
-        this.action = (C02PacketUseEntity.Action)buf.readEnumValue(C02PacketUseEntity.Action.class);
+        this.action = buf.readEnumValue(Action.class);
 
-        if (this.action == C02PacketUseEntity.Action.INTERACT_AT)
-        {
-            this.hitVec = new Vec3((double)buf.readFloat(), (double)buf.readFloat(), (double)buf.readFloat());
+        if (this.action == C02PacketUseEntity.Action.INTERACT_AT) {
+            this.hitVec = new Vec3(buf.readFloat(), buf.readFloat(), buf.readFloat());
         }
     }
 
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) {
         buf.writeVarIntToBuffer(this.entityId);
         buf.writeEnumValue(this.action);
 
-        if (this.action == C02PacketUseEntity.Action.INTERACT_AT)
-        {
-            buf.writeFloat((float)this.hitVec.xCoord);
-            buf.writeFloat((float)this.hitVec.yCoord);
-            buf.writeFloat((float)this.hitVec.zCoord);
+        if (this.action == C02PacketUseEntity.Action.INTERACT_AT) {
+            buf.writeFloat((float) this.hitVec.xCoord);
+            buf.writeFloat((float) this.hitVec.yCoord);
+            buf.writeFloat((float) this.hitVec.zCoord);
         }
     }
 
@@ -83,10 +78,9 @@ public class C02PacketUseEntity implements Packet<INetHandlerPlayServer>
         return this.hitVec;
     }
 
-    public static enum Action
-    {
+    public enum Action {
         INTERACT,
         ATTACK,
-        INTERACT_AT;
+        INTERACT_AT
     }
 }

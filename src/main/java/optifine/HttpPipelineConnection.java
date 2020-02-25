@@ -1,10 +1,6 @@
 package optifine;
 
-import java.io.BufferedOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Proxy;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -107,27 +103,23 @@ public class HttpPipelineConnection
         }
     }
 
-    public synchronized OutputStream getOutputStream() throws IOException, InterruptedException
-    {
-        while (this.outputStream == null)
-        {
-            this.checkTimeout();
-            this.wait(1000L);
-        }
+	public synchronized OutputStream getOutputStream() throws InterruptedException {
+		while (this.outputStream == null) {
+			this.checkTimeout();
+			this.wait(1000L);
+		}
 
-        return this.outputStream;
-    }
+		return this.outputStream;
+	}
 
-    public synchronized InputStream getInputStream() throws IOException, InterruptedException
-    {
-        while (this.inputStream == null)
-        {
-            this.checkTimeout();
-            this.wait(1000L);
-        }
+	public synchronized InputStream getInputStream() throws InterruptedException {
+		while (this.inputStream == null) {
+			this.checkTimeout();
+			this.wait(1000L);
+		}
 
-        return this.inputStream;
-    }
+		return this.inputStream;
+	}
 
     public synchronized HttpPipelineRequest getNextRequestSend() throws InterruptedException, IOException
     {
@@ -156,11 +148,11 @@ public class HttpPipelineConnection
 
         if (p_getNextRequest_2_)
         {
-            return (HttpPipelineRequest)p_getNextRequest_1_.remove(0);
+	        return p_getNextRequest_1_.remove(0);
         }
         else
         {
-            return (HttpPipelineRequest)p_getNextRequest_1_.get(0);
+	        return p_getNextRequest_1_.get(0);
         }
     }
 
@@ -300,7 +292,7 @@ public class HttpPipelineConnection
 
                         if (j > 0)
                         {
-                            this.keepaliveTimeoutMs = (long)(j * 1000);
+	                        this.keepaliveTimeoutMs = j * 1000;
                         }
                     }
 
@@ -370,7 +362,6 @@ public class HttpPipelineConnection
             }
             catch (IOException var3)
             {
-                ;
             }
 
             this.socket = null;
@@ -385,14 +376,14 @@ public class HttpPipelineConnection
         {
             if (!this.responseReceived)
             {
-                HttpPipelineRequest httppipelinerequest = (HttpPipelineRequest)this.listRequests.remove(0);
+	            HttpPipelineRequest httppipelinerequest = this.listRequests.remove(0);
                 httppipelinerequest.getHttpListener().failed(httppipelinerequest.getHttpRequest(), p_terminateRequests_1_);
                 httppipelinerequest.setClosed(true);
             }
 
             while (this.listRequests.size() > 0)
             {
-                HttpPipelineRequest httppipelinerequest1 = (HttpPipelineRequest)this.listRequests.remove(0);
+	            HttpPipelineRequest httppipelinerequest1 = this.listRequests.remove(0);
                 HttpPipeline.addRequest(httppipelinerequest1);
             }
         }
@@ -400,7 +391,7 @@ public class HttpPipelineConnection
 
     public synchronized boolean isClosed()
     {
-        return this.terminated ? true : this.countRequests >= this.keepaliveMaxCount;
+	    return this.terminated || this.countRequests >= this.keepaliveMaxCount;
     }
 
     public int getCountRequests()

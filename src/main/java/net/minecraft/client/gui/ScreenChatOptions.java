@@ -1,6 +1,5 @@
 package net.minecraft.client.gui;
 
-import java.io.IOException;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 
@@ -24,7 +23,7 @@ public class ScreenChatOptions extends GuiScreen
     public void initGui()
     {
         int i = 0;
-        this.field_146401_i = I18n.format("options.chat.title", new Object[0]);
+        this.field_146401_i = I18n.format("options.chat.title");
 
         for (GameSettings.Options gamesettings$options : field_146399_a)
         {
@@ -40,24 +39,20 @@ public class ScreenChatOptions extends GuiScreen
             ++i;
         }
 
-        this.buttonList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 120, I18n.format("gui.done", new Object[0])));
+        this.buttonList.add(new GuiButton(200, this.width / 2 - 100, this.height / 6 + 120, I18n.format("gui.done")));
     }
 
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if (button.enabled)
-        {
-            if (button.id < 100 && button instanceof GuiOptionButton)
-            {
-                this.game_settings.setOptionValue(((GuiOptionButton)button).returnEnumOptions(), 1);
+    protected void actionPerformed(GuiButton button) {
+        if (button.enabled) {
+            if (button.id < 100 && button instanceof GuiOptionButton) {
+                this.game_settings.setOptionValue(((GuiOptionButton) button).returnEnumOptions(), 1);
                 button.displayString = this.game_settings.getKeyBinding(GameSettings.Options.getEnumOptions(button.id));
             }
 
-            if (button.id == 200)
-            {
+            if (button.id == 200) {
                 this.mc.gameSettings.saveOptions();
                 this.mc.displayGuiScreen(this.parentScreen);
             }

@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.block.Block;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -29,24 +28,22 @@ public class S24PacketBlockAction implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.blockPosition = buf.readBlockPos();
-        this.instrument = buf.readUnsignedByte();
-        this.pitch = buf.readUnsignedByte();
-        this.block = Block.getBlockById(buf.readVarIntFromBuffer() & 4095);
+    public void readPacketData(PacketBuffer buf) {
+	    this.blockPosition = buf.readBlockPos();
+	    this.instrument = buf.readUnsignedByte();
+	    this.pitch = buf.readUnsignedByte();
+	    this.block = Block.getBlockById(buf.readVarIntFromBuffer() & 4095);
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeBlockPos(this.blockPosition);
-        buf.writeByte(this.instrument);
-        buf.writeByte(this.pitch);
-        buf.writeVarIntToBuffer(Block.getIdFromBlock(this.block) & 4095);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeBlockPos(this.blockPosition);
+		buf.writeByte(this.instrument);
+		buf.writeByte(this.pitch);
+		buf.writeVarIntToBuffer(Block.getIdFromBlock(this.block) & 4095);
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

@@ -2,11 +2,6 @@ package net.minecraft.client.particle;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -20,30 +15,33 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.ReportedException;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import optifine.Config;
 import optifine.Reflector;
 
-public class EffectRenderer
-{
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.Callable;
+
+public class EffectRenderer {
     private static final ResourceLocation particleTextures = new ResourceLocation("textures/particle/particles.png");
 
-    /** Reference to the World object. */
+    /**
+     * Reference to the World object.
+     */
     protected World worldObj;
     private List<EntityFX>[][] fxLayers = new List[4][];
-    private List<EntityParticleEmitter> particleEmitters = Lists.<EntityParticleEmitter>newArrayList();
+    private List<EntityParticleEmitter> particleEmitters = Lists.newArrayList();
     private TextureManager renderer;
 
-    /** RNG. */
+    /**
+     * RNG.
+     */
     private Random rand = new Random();
-    private Map<Integer, IParticleFactory> particleTypes = Maps.<Integer, IParticleFactory>newHashMap();
+    private Map<Integer, IParticleFactory> particleTypes = Maps.newHashMap();
     public EffectRenderer(World worldIn, TextureManager rendererIn)
     {
         this.worldObj = worldIn;
@@ -128,9 +126,8 @@ public class EffectRenderer
      * @param zSpeed Z speed of the particle
      * @param parameters Parameters for the particle (color for redstone, ...)
      */
-    public EntityFX spawnEffectParticle(int particleId, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters)
-    {
-        IParticleFactory iparticlefactory = (IParticleFactory)this.particleTypes.get(Integer.valueOf(particleId));
+    public EntityFX spawnEffectParticle(int particleId, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+        IParticleFactory iparticlefactory = this.particleTypes.get(Integer.valueOf(particleId));
 
         if (iparticlefactory != null)
         {
@@ -230,16 +227,16 @@ public class EffectRenderer
             crashreportcategory.addCrashSectionCallable("Particle", new Callable()
             {
                 private static final String __OBFID = "CL_00000916";
-                public String call() throws Exception
-                {
+
+                public String call() {
                     return particle.toString();
                 }
             });
             crashreportcategory.addCrashSectionCallable("Particle Type", new Callable()
             {
                 private static final String __OBFID = "CL_00000917";
-                public String call() throws Exception
-                {
+
+                public String call() {
                     return i == 0 ? "MISC_TEXTURE" : (i == 1 ? "TERRAIN_TEXTURE" : (i == 3 ? "ENTITY_PARTICLE_TEXTURE" : "Unknown - " + i));
                 }
             });
@@ -300,7 +297,7 @@ public class EffectRenderer
 
                     for (int l = 0; l < this.fxLayers[j][k].size(); ++l)
                     {
-                        final EntityFX entityfx = (EntityFX)this.fxLayers[j][k].get(l);
+                        final EntityFX entityfx = this.fxLayers[j][k].get(l);
 
                         try
                         {
@@ -313,16 +310,16 @@ public class EffectRenderer
                             crashreportcategory.addCrashSectionCallable("Particle", new Callable()
                             {
                                 private static final String __OBFID = "CL_00000918";
-                                public String call() throws Exception
-                                {
+
+                                public String call() {
                                     return entityfx.toString();
                                 }
                             });
                             crashreportcategory.addCrashSectionCallable("Particle Type", new Callable()
                             {
                                 private static final String __OBFID = "CL_00000919";
-                                public String call() throws Exception
-                                {
+
+                                public String call() {
                                     return j == 0 ? "MISC_TEXTURE" : (j == 1 ? "TERRAIN_TEXTURE" : (j == 3 ? "ENTITY_PARTICLE_TEXTURE" : "Unknown - " + j));
                                 }
                             });
@@ -386,11 +383,10 @@ public class EffectRenderer
     {
         boolean flag;
 
-        if (Reflector.ForgeBlock_addDestroyEffects.exists() && Reflector.ForgeBlock_isAir.exists())
-        {
+        if (Reflector.ForgeBlock_addDestroyEffects.exists() && Reflector.ForgeBlock_isAir.exists()) {
             Block block = state.getBlock();
-            Reflector.callBoolean(block, Reflector.ForgeBlock_isAir, new Object[] {this.worldObj, pos});
-            flag = !Reflector.callBoolean(block, Reflector.ForgeBlock_isAir, new Object[] {this.worldObj, pos}) && !Reflector.callBoolean(block, Reflector.ForgeBlock_addDestroyEffects, new Object[] {this.worldObj, pos, this});
+            Reflector.callBoolean(block, Reflector.ForgeBlock_isAir, this.worldObj, pos);
+            flag = !Reflector.callBoolean(block, Reflector.ForgeBlock_isAir, this.worldObj, pos) && !Reflector.callBoolean(block, Reflector.ForgeBlock_addDestroyEffects, this.worldObj, pos, this);
         }
         else
         {
@@ -521,10 +517,9 @@ public class EffectRenderer
         return false;
     }
 
-    public void addBlockHitEffects(BlockPos p_addBlockHitEffects_1_, MovingObjectPosition p_addBlockHitEffects_2_)
-    {
+    public void addBlockHitEffects(BlockPos p_addBlockHitEffects_1_, MovingObjectPosition p_addBlockHitEffects_2_) {
         Block block = this.worldObj.getBlockState(p_addBlockHitEffects_1_).getBlock();
-        boolean flag = Reflector.callBoolean(block, Reflector.ForgeBlock_addHitEffects, new Object[] {this.worldObj, p_addBlockHitEffects_2_, this});
+        boolean flag = Reflector.callBoolean(block, Reflector.ForgeBlock_addHitEffects, this.worldObj, p_addBlockHitEffects_2_, this);
 
         if (block != null && !flag)
         {

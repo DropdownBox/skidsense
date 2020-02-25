@@ -32,10 +32,9 @@ public class CommandToggleDownfall extends CommandBase
     /**
      * Callback when the command is invoked
      */
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException
-    {
+    public void processCommand(ICommandSender sender, String[] args) {
         this.toggleDownfall();
-        notifyOperators(sender, this, "commands.downfall.success", new Object[0]);
+        notifyOperators(sender, this, "commands.downfall.success");
     }
 
     /**

@@ -1,19 +1,11 @@
 package org.newdawn.slick.tests;
 
-import java.nio.FloatBuffer;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.AngelCodeFont;
-import org.newdawn.slick.Animation;
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.*;
 import org.newdawn.slick.opengl.SlickCallable;
+
+import java.nio.FloatBuffer;
 
 /**
  * A test for slick callables giving the chance to perform normal GL in mid Slick render
@@ -21,9 +13,13 @@ import org.newdawn.slick.opengl.SlickCallable;
  * @author kevin
  */
 public class SlickCallableTest extends BasicGame {
-	/** The image to be draw using normal Slick */
+	/**
+	 * The image to be draw using normal Slick
+	 */
 	private Image image;
-	/** The image to be draw using normal Slick */
+	/**
+	 * The image to be draw using normal Slick
+	 */
 	private Image back;
 	/** The rotation of the cog */
 	private float rot;
@@ -64,7 +60,7 @@ public class SlickCallableTest extends BasicGame {
 		font.drawString(100,200,"Text Drawn before the callable");
 		
 		SlickCallable callable = new SlickCallable() {
-			protected void performGLOperations() throws SlickException {
+			protected void performGLOperations() {
 				renderGL();
 			}
 		};

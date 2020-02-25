@@ -1,9 +1,16 @@
 
 package org.newdawn.slick.font;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.UnicodeFont;
+import org.newdawn.slick.font.effects.Effect;
+import org.newdawn.slick.opengl.TextureImpl;
+import org.newdawn.slick.opengl.renderer.Renderer;
+import org.newdawn.slick.opengl.renderer.SGL;
+
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -14,15 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-
-import org.newdawn.slick.Color;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.UnicodeFont;
-import org.newdawn.slick.font.effects.Effect;
-import org.newdawn.slick.opengl.TextureImpl;
-import org.newdawn.slick.opengl.renderer.Renderer;
-import org.newdawn.slick.opengl.renderer.SGL;
 
 /**
  * Stores a number of glyphs on a single texture.
@@ -187,20 +185,19 @@ public class GlyphPage {
 
 	/**
 	 * Loads a single glyph to the backing texture, if it fits.
-	 * 
-	 * @param glyph The glyph to be rendered
-	 * @param width The expected width of the glyph
+	 *
+	 * @param glyph  The glyph to be rendered
+	 * @param width  The expected width of the glyph
 	 * @param height The expected height of the glyph
-	 * @throws SlickException if the glyph could not be rendered.
 	 */
-	private void renderGlyph(Glyph glyph, int width, int height) throws SlickException {
+	private void renderGlyph(Glyph glyph, int width, int height) {
 		// Draw the glyph to the scratch image using Java2D.
 		scratchGraphics.setComposite(AlphaComposite.Clear);
 		scratchGraphics.fillRect(0, 0, MAX_GLYPH_SIZE, MAX_GLYPH_SIZE);
 		scratchGraphics.setComposite(AlphaComposite.SrcOver);
 		scratchGraphics.setColor(java.awt.Color.white);
-		for (Iterator iter = unicodeFont.getEffects().iterator(); iter.hasNext();)
-			((Effect)iter.next()).draw(scratchImage, scratchGraphics, unicodeFont, glyph);
+		for (Iterator iter = unicodeFont.getEffects().iterator(); iter.hasNext(); )
+			((Effect) iter.next()).draw(scratchImage, scratchGraphics, unicodeFont, glyph);
 		glyph.setShape(null); // The shape will never be needed again.
 
 		WritableRaster raster = scratchImage.getRaster();

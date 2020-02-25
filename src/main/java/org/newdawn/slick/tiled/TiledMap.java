@@ -1,14 +1,5 @@
 package org.newdawn.slick.tiled;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Properties;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.util.Log;
@@ -18,7 +9,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * This class is intended to parse TilED maps. TilED is a generic tool for tile map editing and can
@@ -518,7 +515,7 @@ public class TiledMap {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			builder.setEntityResolver(new EntityResolver() {
 				public InputSource resolveEntity(String publicId,
-						String systemId) throws SAXException, IOException {					
+				                                 String systemId) {
 					return new InputSource(new ByteArrayInputStream(new byte[0]));
 				}
 			});
@@ -928,14 +925,13 @@ public class TiledMap {
 	  
 	  /** the properties of this group */
 	  public Properties props;
-	
-	 /**
-	 * Create a new group based on the XML definition
-	 *
-	 * @param element The XML element describing the layer
-	 * @throws SlickException Indicates a failure to parse the XML group
-	 */
-	 public GroupObject(Element element) throws SlickException {
+
+		/**
+		 * Create a new group based on the XML definition
+		 *
+		 * @param element The XML element describing the layer
+		 */
+		public GroupObject(Element element) {
 			name = element.getAttribute("name");
 			type = element.getAttribute("type");
 			x = Integer.parseInt(element.getAttribute("x"));

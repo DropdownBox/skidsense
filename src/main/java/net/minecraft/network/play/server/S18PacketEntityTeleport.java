@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -46,30 +45,28 @@ public class S18PacketEntityTeleport implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.entityId = buf.readVarIntFromBuffer();
-        this.posX = buf.readInt();
-        this.posY = buf.readInt();
-        this.posZ = buf.readInt();
-        this.yaw = buf.readByte();
-        this.pitch = buf.readByte();
-        this.onGround = buf.readBoolean();
+    public void readPacketData(PacketBuffer buf) {
+	    this.entityId = buf.readVarIntFromBuffer();
+	    this.posX = buf.readInt();
+	    this.posY = buf.readInt();
+	    this.posZ = buf.readInt();
+	    this.yaw = buf.readByte();
+	    this.pitch = buf.readByte();
+	    this.onGround = buf.readBoolean();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeVarIntToBuffer(this.entityId);
-        buf.writeInt(this.posX);
-        buf.writeInt(this.posY);
-        buf.writeInt(this.posZ);
-        buf.writeByte(this.yaw);
-        buf.writeByte(this.pitch);
-        buf.writeBoolean(this.onGround);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeVarIntToBuffer(this.entityId);
+		buf.writeInt(this.posX);
+		buf.writeInt(this.posY);
+		buf.writeInt(this.posZ);
+		buf.writeByte(this.yaw);
+		buf.writeByte(this.pitch);
+		buf.writeBoolean(this.onGround);
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

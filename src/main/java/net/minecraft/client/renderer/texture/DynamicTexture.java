@@ -1,20 +1,23 @@
 package net.minecraft.client.renderer.texture;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import net.minecraft.client.resources.IResourceManager;
 import optifine.Config;
 import shadersmod.client.ShadersTex;
 
-public class DynamicTexture extends AbstractTexture
-{
-    private final int[] dynamicTextureData;
+import java.awt.image.BufferedImage;
 
-    /** width of this icon in pixels */
-    private final int width;
+public class DynamicTexture extends AbstractTexture {
+	private final int[] dynamicTextureData;
 
-    /** height of this icon in pixels */
-    private final int height;
+	/**
+	 * width of this icon in pixels
+	 */
+	private final int width;
+
+	/**
+	 * height of this icon in pixels
+	 */
+	private final int height;
     private static final String __OBFID = "CL_00001048";
     private boolean shadersInitialized;
 
@@ -43,8 +46,7 @@ public class DynamicTexture extends AbstractTexture
         }
     }
 
-    public void loadTexture(IResourceManager resourceManager) throws IOException
-    {
+	public void loadTexture(IResourceManager resourceManager) {
     }
 
     public void updateDynamicTexture()

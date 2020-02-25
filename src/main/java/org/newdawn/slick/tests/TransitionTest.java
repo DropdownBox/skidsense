@@ -1,22 +1,9 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.BlobbyTransition;
-import org.newdawn.slick.state.transition.FadeInTransition;
-import org.newdawn.slick.state.transition.FadeOutTransition;
-import org.newdawn.slick.state.transition.HorizontalSplitTransition;
-import org.newdawn.slick.state.transition.RotateTransition;
-import org.newdawn.slick.state.transition.SelectTransition;
-import org.newdawn.slick.state.transition.Transition;
-import org.newdawn.slick.state.transition.VerticalSplitTransition;
+import org.newdawn.slick.state.transition.*;
 import org.newdawn.slick.util.Log;
 
 /**
@@ -43,11 +30,11 @@ public class TransitionTest extends StateBasedGame {
 	public TransitionTest() {
 		super("Transition Test - Hit Space To Transition");
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.state.StateBasedGame#initStatesList(org.newdawn.slick.GameContainer)
 	 */
-	public void initStatesList(GameContainer container) throws SlickException {
+	public void initStatesList(GameContainer container) {
 		addState(new ImageState(0, "testdata/wallpaper/paper1.png", 1));
 		addState(new ImageState(1, "testdata/wallpaper/paper2.png", 2));
 		addState(new ImageState(2, "testdata/bigimage.tga", 0));
@@ -125,16 +112,16 @@ public class TransitionTest extends StateBasedGame {
 		/**
 		 * @see org.newdawn.slick.state.GameState#render(org.newdawn.slick.GameContainer, org.newdawn.slick.state.StateBasedGame, org.newdawn.slick.Graphics)
 		 */
-		public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-			image.draw(0,0,800,600);
+		public void render(GameContainer container, StateBasedGame game, Graphics g) {
+			image.draw(0, 0, 800, 600);
 			g.setColor(Color.red);
-			g.fillRect(-50,200,50,50);
+			g.fillRect(-50, 200, 50, 50);
 		}
 
 		/**
 		 * @see org.newdawn.slick.state.GameState#update(org.newdawn.slick.GameContainer, org.newdawn.slick.state.StateBasedGame, int)
 		 */
-		public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+		public void update(GameContainer container, StateBasedGame game, int delta) {
 			if (container.getInput().isKeyPressed(Input.KEY_SPACE)) {
 				Transition[] pair = getNextTransitionPair();
 				game.enterState(next, pair[0], pair[1]);

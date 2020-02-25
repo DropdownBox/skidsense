@@ -1,14 +1,13 @@
 package org.newdawn.slick.gui;
 
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.util.InputAdapter;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.util.InputAdapter;
 
 /**
  * The utility class to handle all the input related gubbins for basic GUI
@@ -85,16 +84,12 @@ public abstract class AbstractComponent extends InputAdapter {
 
 	/**
 	 * Render this component to the screen
-	 * 
-	 * @param container
-	 *            The container displaying this component
-	 * @param g
-	 *            The graphics context used to render to the display
-	 * @throws SlickException
-	 *             If there has been an error rendering the component
+	 *
+	 * @param container The container displaying this component
+	 * @param g         The graphics context used to render to the display
 	 */
 	public abstract void render(GUIContext container, Graphics g)
-			throws SlickException;
+	;
 
 	/**
 	 * Moves the component.

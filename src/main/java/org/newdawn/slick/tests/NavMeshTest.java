@@ -1,23 +1,14 @@
 package org.newdawn.slick.tests;
 
-import java.io.IOException;
-
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.util.Bootstrap;
 import org.newdawn.slick.util.ResourceLoader;
 import org.newdawn.slick.util.pathfinding.Mover;
 import org.newdawn.slick.util.pathfinding.PathFindingContext;
 import org.newdawn.slick.util.pathfinding.TileBasedMap;
-import org.newdawn.slick.util.pathfinding.navmesh.Link;
-import org.newdawn.slick.util.pathfinding.navmesh.NavMesh;
-import org.newdawn.slick.util.pathfinding.navmesh.NavMeshBuilder;
-import org.newdawn.slick.util.pathfinding.navmesh.NavPath;
-import org.newdawn.slick.util.pathfinding.navmesh.Space;
+import org.newdawn.slick.util.pathfinding.navmesh.*;
+
+import java.io.IOException;
 
 /**
  * A test to show nav-mesh generation on tile based maps.
@@ -72,12 +63,11 @@ public class NavMeshTest extends BasicGame implements PathFindingContext {
 		
 		System.out.println("Navmesh shapes: "+navMesh.getSpaceCount());
 	}
-	
+
 	/**
 	 * Update data map etc
 	 */
-	public void update(GameContainer container, int delta)
-			throws SlickException {
+	public void update(GameContainer container, int delta) {
 		if (container.getInput().isKeyPressed(Input.KEY_1)) {
 			showLinks = !showLinks;
 		}
@@ -88,18 +78,17 @@ public class NavMeshTest extends BasicGame implements PathFindingContext {
 
 	/**
 	 * Render the game - in this case render the map and diagnostic data
-	 * 
+	 *
 	 * @param container The container we're running the game in
-	 * @param g The graphics context on which to render
+	 * @param g         The graphics context on which to render
 	 */
-	public void render(GameContainer container, Graphics g)
-			throws SlickException {
-		g.translate(50,50);
-		for (int x=0;x<50;x++) {
-			for (int y=0;y<50;y++) {
+	public void render(GameContainer container, Graphics g) {
+		g.translate(50, 50);
+		for (int x = 0; x < 50; x++) {
+			for (int y = 0; y < 50; y++) {
 				if (dataMap.blocked(this, x, y)) {
 					g.setColor(Color.gray);
-					g.fillRect((x*10)+1,(y*10)+1,8,8);
+					g.fillRect((x * 10) + 1, (y * 10) + 1, 8, 8);
 				}
 			}
 		}

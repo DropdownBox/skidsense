@@ -1,9 +1,6 @@
 package net.minecraft.client.multiplayer;
 
 import com.google.common.collect.Sets;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -24,22 +21,17 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.ChunkCoordIntPair;
-import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.*;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.SaveDataMemoryStorage;
 import net.minecraft.world.storage.SaveHandlerMP;
 import net.minecraft.world.storage.WorldInfo;
-import optifine.BlockPosM;
-import optifine.Config;
-import optifine.CustomGuis;
-import optifine.DynamicLights;
-import optifine.PlayerControllerOF;
-import optifine.Reflector;
+import optifine.*;
+
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 public class WorldClient extends World
 {
@@ -74,7 +66,7 @@ public class WorldClient extends World
         this.mapStorage = new SaveDataMemoryStorage();
         this.calculateInitialSkylight();
         this.calculateInitialWeather();
-        Reflector.postForgeBusEvent(Reflector.WorldEvent_Load_Constructor, new Object[] {this});
+        Reflector.postForgeBusEvent(Reflector.WorldEvent_Load_Constructor, this);
 
         if (this.mc.playerController != null && this.mc.playerController.getClass() == PlayerControllerMP.class)
         {
@@ -223,10 +215,7 @@ public class WorldClient extends World
     {
         super.onEntityAdded(entityIn);
 
-        if (this.entitySpawnQueue.contains(entityIn))
-        {
-            this.entitySpawnQueue.remove(entityIn);
-        }
+        this.entitySpawnQueue.remove(entityIn);
     }
 
     protected void onEntityRemoved(Entity entityIn)
@@ -279,12 +268,12 @@ public class WorldClient extends World
      */
     public Entity getEntityByID(int id)
     {
-        return (Entity)(id == this.mc.thePlayer.getEntityId() ? this.mc.thePlayer : super.getEntityByID(id));
+        return id == this.mc.thePlayer.getEntityId() ? this.mc.thePlayer : super.getEntityByID(id);
     }
 
     public Entity removeEntityFromWorld(int entityID)
     {
-        Entity entity = (Entity)this.entitiesById.removeObject(entityID);
+        Entity entity = this.entitiesById.removeObject(entityID);
 
         if (entity != null)
         {
@@ -343,7 +332,7 @@ public class WorldClient extends World
 
             if (flag && iblockstate.getBlock() == Blocks.barrier)
             {
-                this.spawnParticle(EnumParticleTypes.BARRIER, (double)((float)j + 0.5F), (double)((float)k + 0.5F), (double)((float)l + 0.5F), 0.0D, 0.0D, 0.0D, new int[0]);
+                this.spawnParticle(EnumParticleTypes.BARRIER, (float) j + 0.5F, (float) k + 0.5F, (float) l + 0.5F, 0.0D, 0.0D, 0.0D);
             }
         }
     }
@@ -357,7 +346,7 @@ public class WorldClient extends World
 
         for (int i = 0; i < this.unloadedEntityList.size(); ++i)
         {
-            Entity entity = (Entity)this.unloadedEntityList.get(i);
+            Entity entity = this.unloadedEntityList.get(i);
             int j = entity.chunkCoordX;
             int k = entity.chunkCoordZ;
 
@@ -369,14 +358,14 @@ public class WorldClient extends World
 
         for (int l = 0; l < this.unloadedEntityList.size(); ++l)
         {
-            this.onEntityRemoved((Entity)this.unloadedEntityList.get(l));
+            this.onEntityRemoved(this.unloadedEntityList.get(l));
         }
 
         this.unloadedEntityList.clear();
 
         for (int i1 = 0; i1 < this.loadedEntityList.size(); ++i1)
         {
-            Entity entity1 = (Entity)this.loadedEntityList.get(i1);
+            Entity entity1 = this.loadedEntityList.get(i1);
 
             if (entity1.ridingEntity != null)
             {
@@ -430,16 +419,16 @@ public class WorldClient extends World
         crashreportcategory.addCrashSectionCallable("Server brand", new Callable()
         {
             private static final String __OBFID = "CL_00000885";
-            public String call() throws Exception
-            {
+
+            public String call() {
                 return WorldClient.this.mc.thePlayer.getClientBrand();
             }
         });
         crashreportcategory.addCrashSectionCallable("Server type", new Callable()
         {
             private static final String __OBFID = "CL_00000886";
-            public String call() throws Exception
-            {
+
+            public String call() {
                 return WorldClient.this.mc.getIntegratedServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server";
             }
         });

@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.Packet;
@@ -27,20 +26,18 @@ public class S23PacketBlockChange implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.blockPosition = buf.readBlockPos();
-        this.blockState = (IBlockState)Block.BLOCK_STATE_IDS.getByValue(buf.readVarIntFromBuffer());
+    public void readPacketData(PacketBuffer buf) {
+	    this.blockPosition = buf.readBlockPos();
+	    this.blockState = Block.BLOCK_STATE_IDS.getByValue(buf.readVarIntFromBuffer());
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeBlockPos(this.blockPosition);
-        buf.writeVarIntToBuffer(Block.BLOCK_STATE_IDS.get(this.blockState));
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeBlockPos(this.blockPosition);
+		buf.writeVarIntToBuffer(Block.BLOCK_STATE_IDS.get(this.blockState));
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

@@ -1,6 +1,5 @@
 package net.minecraft.world.gen.layer;
 
-import java.util.concurrent.Callable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.util.ReportedException;
@@ -8,12 +7,17 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.gen.ChunkProviderSettings;
 
-public abstract class GenLayer
-{
-    /** seed from World#getWorldSeed that is used in the LCG prng */
+import java.util.concurrent.Callable;
+
+public abstract class GenLayer {
+    /**
+     * seed from World#getWorldSeed that is used in the LCG prng
+     */
     private long worldGenSeed;
 
-    /** parent GenLayer that was provided via the constructor */
+    /**
+     * parent GenLayer that was provided via the constructor
+     */
     protected GenLayer parent;
 
     /**
@@ -75,9 +79,8 @@ public abstract class GenLayer
         GenLayerSmooth genlayersmooth = new GenLayerSmooth(1000L, genlayerriver);
         genlayerhills = new GenLayerRareBiome(1001L, genlayerhills);
 
-        for (int k = 0; k < i; ++k)
-        {
-            genlayerhills = new GenLayerZoom((long)(1000 + k), genlayerhills);
+        for (int k = 0; k < i; ++k) {
+            genlayerhills = new GenLayerZoom(1000 + k, genlayerhills);
 
             if (k == 0)
             {
@@ -180,9 +183,8 @@ public abstract class GenLayer
             final BiomeGenBase biomegenbase = BiomeGenBase.getBiome(biomeIDA);
             final BiomeGenBase biomegenbase1 = BiomeGenBase.getBiome(biomeIDB);
 
-            try
-            {
-                return biomegenbase != null && biomegenbase1 != null ? biomegenbase.isEqualTo(biomegenbase1) : false;
+            try {
+                return (biomegenbase != null && biomegenbase1 != null) && biomegenbase.isEqualTo(biomegenbase1);
             }
             catch (Throwable throwable)
             {
@@ -190,18 +192,14 @@ public abstract class GenLayer
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Biomes being compared");
                 crashreportcategory.addCrashSection("Biome A ID", Integer.valueOf(biomeIDA));
                 crashreportcategory.addCrashSection("Biome B ID", Integer.valueOf(biomeIDB));
-                crashreportcategory.addCrashSectionCallable("Biome A", new Callable<String>()
-                {
-                    public String call() throws Exception
-                    {
-                        return String.valueOf((Object)biomegenbase);
+                crashreportcategory.addCrashSectionCallable("Biome A", new Callable<String>() {
+                    public String call() {
+                        return String.valueOf(biomegenbase);
                     }
                 });
-                crashreportcategory.addCrashSectionCallable("Biome B", new Callable<String>()
-                {
-                    public String call() throws Exception
-                    {
-                        return String.valueOf((Object)biomegenbase1);
+                crashreportcategory.addCrashSectionCallable("Biome B", new Callable<String>() {
+                    public String call() {
+                        return String.valueOf(biomegenbase1);
                     }
                 });
                 throw new ReportedException(crashreport);
@@ -232,8 +230,7 @@ public abstract class GenLayer
     /**
      * returns the most frequently occurring number of the set, or a random number from those provided
      */
-    protected int selectModeOrRandom(int p_151617_1_, int p_151617_2_, int p_151617_3_, int p_151617_4_)
-    {
-        return p_151617_2_ == p_151617_3_ && p_151617_3_ == p_151617_4_ ? p_151617_2_ : (p_151617_1_ == p_151617_2_ && p_151617_1_ == p_151617_3_ ? p_151617_1_ : (p_151617_1_ == p_151617_2_ && p_151617_1_ == p_151617_4_ ? p_151617_1_ : (p_151617_1_ == p_151617_3_ && p_151617_1_ == p_151617_4_ ? p_151617_1_ : (p_151617_1_ == p_151617_2_ && p_151617_3_ != p_151617_4_ ? p_151617_1_ : (p_151617_1_ == p_151617_3_ && p_151617_2_ != p_151617_4_ ? p_151617_1_ : (p_151617_1_ == p_151617_4_ && p_151617_2_ != p_151617_3_ ? p_151617_1_ : (p_151617_2_ == p_151617_3_ && p_151617_1_ != p_151617_4_ ? p_151617_2_ : (p_151617_2_ == p_151617_4_ && p_151617_1_ != p_151617_3_ ? p_151617_2_ : (p_151617_3_ == p_151617_4_ && p_151617_1_ != p_151617_2_ ? p_151617_3_ : this.selectRandom(new int[] {p_151617_1_, p_151617_2_, p_151617_3_, p_151617_4_}))))))))));
+    protected int selectModeOrRandom(int p_151617_1_, int p_151617_2_, int p_151617_3_, int p_151617_4_) {
+        return p_151617_2_ == p_151617_3_ && p_151617_3_ == p_151617_4_ ? p_151617_2_ : (p_151617_1_ == p_151617_2_ && p_151617_1_ == p_151617_3_ ? p_151617_1_ : (p_151617_1_ == p_151617_2_ && p_151617_1_ == p_151617_4_ ? p_151617_1_ : (p_151617_1_ == p_151617_3_ && p_151617_1_ == p_151617_4_ ? p_151617_1_ : (p_151617_1_ == p_151617_2_ && p_151617_3_ != p_151617_4_ ? p_151617_1_ : (p_151617_1_ == p_151617_3_ && p_151617_2_ != p_151617_4_ ? p_151617_1_ : (p_151617_1_ == p_151617_4_ && p_151617_2_ != p_151617_3_ ? p_151617_1_ : (p_151617_2_ == p_151617_3_ && p_151617_1_ != p_151617_4_ ? p_151617_2_ : (p_151617_2_ == p_151617_4_ && p_151617_1_ != p_151617_3_ ? p_151617_2_ : (p_151617_3_ == p_151617_4_ && p_151617_1_ != p_151617_2_ ? p_151617_3_ : this.selectRandom(p_151617_1_, p_151617_2_, p_151617_3_, p_151617_4_))))))))));
     }
 }

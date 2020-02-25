@@ -117,14 +117,13 @@ public class SelectTransition implements Transition {
 	/**
 	 * @see org.newdawn.slick.state.transition.Transition#update(org.newdawn.slick.state.StateBasedGame, org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(StateBasedGame game, GameContainer container, int delta)
-			throws SlickException {
+	public void update(StateBasedGame game, GameContainer container, int delta) {
 		if (!init) {
 			init = true;
-			xp2 = (container.getWidth()/2)+50;
-			yp2 = (container.getHeight()/4);
+			xp2 = (container.getWidth() / 2) + 50;
+			yp2 = (container.getHeight() / 4);
 		}
-		
+
 		if (!moveBackDone) {
 			if (scale1 > 0.4f) {
 				scale1 -= delta * 0.002f;

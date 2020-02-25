@@ -115,8 +115,6 @@ public abstract class SlickCallable {
 	/**
 	 * Perform the GL operations that this callable is intended to. This operations should
 	 * not effect the slick OpenGL state.
-	 * 
-	 * @throws SlickException Indicates a failure of some sort. This is user exception
 	 */
-	protected abstract void performGLOperations() throws SlickException;
+	protected abstract void performGLOperations();
 }

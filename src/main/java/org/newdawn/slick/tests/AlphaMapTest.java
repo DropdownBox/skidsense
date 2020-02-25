@@ -1,12 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 
 /**
  * A test to demonstrate world clipping as opposed to screen clipping
@@ -38,24 +32,22 @@ public class AlphaMapTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta)
-			throws SlickException {
+	public void update(GameContainer container, int delta) {
 	}
 
 	/**
 	 * @see org.newdawn.slick.Game#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g)
-			throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		g.clearAlphaMap();
 		g.setDrawMode(Graphics.MODE_NORMAL);
-		textureMap.draw(10,50);
+		textureMap.draw(10, 50);
 		g.setColor(Color.red);
-		g.fillRect(290,40,200,200);
+		g.fillRect(290, 40, 200, 200);
 		g.setColor(Color.white);
 		// write only alpha
 		g.setDrawMode(Graphics.MODE_ALPHA_MAP);
-		alphaMap.draw(300,50);
+		alphaMap.draw(300, 50);
 		g.setDrawMode(Graphics.MODE_ALPHA_BLEND);
 		textureMap.draw(300,50);
 		g.setDrawMode(Graphics.MODE_NORMAL);

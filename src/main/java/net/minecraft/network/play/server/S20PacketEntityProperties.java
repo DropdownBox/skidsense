@@ -1,23 +1,21 @@
 package net.minecraft.network.play.server;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 
-public class S20PacketEntityProperties implements Packet<INetHandlerPlayClient>
-{
-    private int entityId;
-    private final List<S20PacketEntityProperties.Snapshot> field_149444_b = Lists.<S20PacketEntityProperties.Snapshot>newArrayList();
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
-    public S20PacketEntityProperties()
-    {
+public class S20PacketEntityProperties implements Packet<INetHandlerPlayClient> {
+    private int entityId;
+    private final List<S20PacketEntityProperties.Snapshot> field_149444_b = Lists.newArrayList();
+
+    public S20PacketEntityProperties() {
     }
 
     public S20PacketEntityProperties(int entityIdIn, Collection<IAttributeInstance> p_i45236_2_)
@@ -33,16 +31,14 @@ public class S20PacketEntityProperties implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) {
         this.entityId = buf.readVarIntFromBuffer();
         int i = buf.readInt();
 
-        for (int j = 0; j < i; ++j)
-        {
+        for (int j = 0; j < i; ++j) {
             String s = buf.readStringFromBuffer(64);
             double d0 = buf.readDouble();
-            List<AttributeModifier> list = Lists.<AttributeModifier>newArrayList();
+            List<AttributeModifier> list = Lists.newArrayList();
             int k = buf.readVarIntFromBuffer();
 
             for (int l = 0; l < k; ++l)
@@ -58,13 +54,11 @@ public class S20PacketEntityProperties implements Packet<INetHandlerPlayClient>
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) {
         buf.writeVarIntToBuffer(this.entityId);
         buf.writeInt(this.field_149444_b.size());
 
-        for (S20PacketEntityProperties.Snapshot s20packetentityproperties$snapshot : this.field_149444_b)
-        {
+        for (S20PacketEntityProperties.Snapshot s20packetentityproperties$snapshot : this.field_149444_b) {
             buf.writeString(s20packetentityproperties$snapshot.func_151409_a());
             buf.writeDouble(s20packetentityproperties$snapshot.func_151410_b());
             buf.writeVarIntToBuffer(s20packetentityproperties$snapshot.func_151408_c().size());

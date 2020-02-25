@@ -1,5 +1,13 @@
 package org.newdawn.slick.openal;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.Sys;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.OpenALException;
+import org.newdawn.slick.util.Log;
+import org.newdawn.slick.util.ResourceLoader;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,14 +17,6 @@ import java.nio.IntBuffer;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.Sys;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.OpenALException;
-import org.newdawn.slick.util.Log;
-import org.newdawn.slick.util.ResourceLoader;
 
 /**
  * Responsible for holding and playing the sounds used in the game.
@@ -645,9 +645,8 @@ public class SoundStore {
 				buffer = buf.get(0);
 			} catch (Exception e) {
 				Log.error(e);
-				IOException x = new IOException("Failed to load: "+ref);
-				x.initCause(e);
-				
+				IOException x = new IOException("Failed to load: " + ref, e);
+
 				throw x;
 			}
 		}
@@ -718,9 +717,8 @@ public class SoundStore {
 				buffer = buf.get(0);
 			} catch (Exception e) {
 				Log.error(e);
-				IOException x = new IOException("Failed to load: "+ref);
-				x.initCause(e);
-				
+				IOException x = new IOException("Failed to load: " + ref, e);
+
 				throw x;
 			}
 		}
@@ -734,19 +732,18 @@ public class SoundStore {
 
 	/**
 	 * Get the Sound based on a specified OGG file
-	 * 
+	 *
 	 * @param ref The reference to the OGG file in the classpath
 	 * @return The Sound read from the OGG file
-	 * @throws IOException Indicates a failure to load the OGG
 	 */
-	public Audio getOggStream(String ref) throws IOException {
+	public Audio getOggStream(String ref) {
 		if (!soundWorks) {
 			return new NullAudio();
 		}
-		
+
 		setMOD(null);
 		setStream(null);
-		
+
 		if (currentMusic != -1) {
 			AL10.alSourceStop(sources.get(0));
 		}
@@ -759,19 +756,18 @@ public class SoundStore {
 
 	/**
 	 * Get the Sound based on a specified OGG file
-	 * 
+	 *
 	 * @param ref The reference to the OGG file in the classpath
 	 * @return The Sound read from the OGG file
-	 * @throws IOException Indicates a failure to load the OGG
 	 */
-	public Audio getOggStream(URL ref) throws IOException {
+	public Audio getOggStream(URL ref) {
 		if (!soundWorks) {
 			return new NullAudio();
 		}
-		
+
 		setMOD(null);
 		setStream(null);
-		
+
 		if (currentMusic != -1) {
 			AL10.alSourceStop(sources.get(0));
 		}

@@ -1,13 +1,13 @@
 package org.newdawn.slick.opengl.pbuffer;
 
-import java.util.HashMap;
-
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.Pbuffer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.util.Log;
+
+import java.util.HashMap;
 
 /**
  * A factory to produce an appropriate render to texture graphics context based on current
@@ -16,7 +16,9 @@ import org.newdawn.slick.util.Log;
  * @author kevin
  */
 public class GraphicsFactory {
-	/** The graphics list of graphics contexts created */
+	/**
+	 * The graphics list of graphics contexts created
+	 */
 	private static HashMap graphics = new HashMap();
 	/** True if pbuffers are supported */
 	private static boolean pbuffer = true;
@@ -94,16 +96,15 @@ public class GraphicsFactory {
 		
 		return g;
 	}
-	
+
 	/**
 	 * Release any graphics context that is assocaited with the given image
-	 * 
+	 *
 	 * @param image The image to release
-	 * @throws SlickException Indicates a failure to release the context
 	 */
-	public static void releaseGraphicsForImage(Image image) throws SlickException {
+	public static void releaseGraphicsForImage(Image image) {
 		Graphics g = (Graphics) graphics.remove(image.getTexture());
-		
+
 		if (g != null) {
 			g.destroy();
 		}

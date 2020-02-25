@@ -1,27 +1,24 @@
 package net.minecraft.world.storage;
 
-import java.io.File;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.MinecraftException;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.storage.IChunkLoader;
 
-public class SaveHandlerMP implements ISaveHandler
-{
-    /**
-     * Loads and returns the world info
-     */
-    public WorldInfo loadWorldInfo()
-    {
-        return null;
-    }
+import java.io.File;
 
-    /**
-     * Checks the session lock to prevent save collisions
-     */
-    public void checkSessionLock() throws MinecraftException
-    {
-    }
+public class SaveHandlerMP implements ISaveHandler {
+	/**
+	 * Loads and returns the world info
+	 */
+	public WorldInfo loadWorldInfo() {
+		return null;
+	}
+
+	/**
+	 * Checks the session lock to prevent save collisions
+	 */
+	public void checkSessionLock() {
+	}
 
     /**
      * initializes and returns the chunk loader for the specified world provider

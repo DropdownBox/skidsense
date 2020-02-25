@@ -1,22 +1,19 @@
 package net.minecraft.command.server;
 
-import java.util.List;
-
 import cn.margele.mlproject.impl.MinecraftServer;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 
-public class CommandListBans extends CommandBase
-{
+import java.util.List;
+
+public class CommandListBans extends CommandBase {
     /**
      * Gets the name of the command
      */
-    public String getCommandName()
-    {
+    public String getCommandName() {
         return "banlist";
     }
 
@@ -47,22 +44,18 @@ public class CommandListBans extends CommandBase
     /**
      * Callback when the command is invoked
      */
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException
-    {
-        if (args.length >= 1 && args[0].equalsIgnoreCase("ips"))
-        {
-            sender.addChatMessage(new ChatComponentTranslation("commands.banlist.ips", new Object[] {Integer.valueOf(MinecraftServer.getServer().getConfigurationManager().getBannedIPs().getKeys().length)}));
+    public void processCommand(ICommandSender sender, String[] args) {
+        if (args.length >= 1 && args[0].equalsIgnoreCase("ips")) {
+            sender.addChatMessage(new ChatComponentTranslation("commands.banlist.ips", Integer.valueOf(MinecraftServer.getServer().getConfigurationManager().getBannedIPs().getKeys().length)));
             sender.addChatMessage(new ChatComponentText(joinNiceString(MinecraftServer.getServer().getConfigurationManager().getBannedIPs().getKeys())));
-        }
-        else
-        {
-            sender.addChatMessage(new ChatComponentTranslation("commands.banlist.players", new Object[] {Integer.valueOf(MinecraftServer.getServer().getConfigurationManager().getBannedPlayers().getKeys().length)}));
+        } else {
+            sender.addChatMessage(new ChatComponentTranslation("commands.banlist.players", Integer.valueOf(MinecraftServer.getServer().getConfigurationManager().getBannedPlayers().getKeys().length)));
             sender.addChatMessage(new ChatComponentText(joinNiceString(MinecraftServer.getServer().getConfigurationManager().getBannedPlayers().getKeys())));
         }
     }
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"players", "ips"}): null;
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, "players", "ips") : null;
     }
 }

@@ -1,21 +1,10 @@
 package org.newdawn.slick.tests;
 
-import java.util.ArrayList;
-
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Circle;
-import org.newdawn.slick.geom.Ellipse;
-import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.RoundedRectangle;
-import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.*;
+import org.newdawn.slick.geom.*;
 import org.newdawn.slick.opengl.renderer.Renderer;
+
+import java.util.ArrayList;
 
 /**
  * A geomertry test
@@ -23,9 +12,13 @@ import org.newdawn.slick.opengl.renderer.Renderer;
  * @author kevin
  */
 public class ShapeTest extends BasicGame {
-    /** rectangle to display */
+    /**
+     * rectangle to display
+     */
     private Rectangle rect;
-    /** rounded rectangle to display */
+    /**
+     * rounded rectangle to display
+     */
     private RoundedRectangle roundRect;
     /** ellipse to display */
     private Ellipse ellipse;
@@ -33,13 +26,21 @@ public class ShapeTest extends BasicGame {
     private Circle circle;
     /** polygon to display */
     private Polygon polygon;
-    /** list for drawing the shapes*/
+    /**
+     * list for drawing the shapes
+     */
     private ArrayList shapes;
-    /** track key presses */
-    private boolean keys[];
-    /** since no modifiers, use this for shifted characters */
-    private char lastChar[];
-    /** The polgon randomly generated */
+    /**
+     * track key presses
+     */
+    private boolean[] keys;
+    /**
+     * since no modifiers, use this for shifted characters
+     */
+    private char[] lastChar;
+    /**
+     * The polgon randomly generated
+     */
     private Polygon randomShape = new Polygon();
     
     /**
@@ -61,14 +62,14 @@ public class ShapeTest extends BasicGame {
 		randomShape.addPoint(0 + (int)(Math.random() * change), size - (int)(Math.random() * change));
 	
 		// center polygon
-		randomShape.setCenterX(x);
-		randomShape.setCenterY(y);
-	}
-	
+        randomShape.setCenterX(x);
+        randomShape.setCenterY(y);
+    }
+
     /**
      * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
      */
-    public void init(GameContainer container) throws SlickException {
+    public void init(GameContainer container) {
         shapes = new ArrayList();
         rect = new Rectangle(10, 10, 100, 80);
         shapes.add(rect);

@@ -1,20 +1,19 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
-import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 
-public class S30PacketWindowItems implements Packet<INetHandlerPlayClient>
-{
-    private int windowId;
-    private ItemStack[] itemStacks;
+import java.io.IOException;
+import java.util.List;
 
-    public S30PacketWindowItems()
-    {
-    }
+public class S30PacketWindowItems implements Packet<INetHandlerPlayClient> {
+	private int windowId;
+	private ItemStack[] itemStacks;
+
+	public S30PacketWindowItems() {
+	}
 
     public S30PacketWindowItems(int windowIdIn, List<ItemStack> p_i45186_2_)
     {
@@ -23,7 +22,7 @@ public class S30PacketWindowItems implements Packet<INetHandlerPlayClient>
 
         for (int i = 0; i < this.itemStacks.length; ++i)
         {
-            ItemStack itemstack = (ItemStack)p_i45186_2_.get(i);
+	        ItemStack itemstack = p_i45186_2_.get(i);
             this.itemStacks[i] = itemstack == null ? null : itemstack.copy();
         }
     }
@@ -43,19 +42,17 @@ public class S30PacketWindowItems implements Packet<INetHandlerPlayClient>
         }
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeByte(this.windowId);
-        buf.writeShort(this.itemStacks.length);
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeByte(this.windowId);
+		buf.writeShort(this.itemStacks.length);
 
-        for (ItemStack itemstack : this.itemStacks)
-        {
-            buf.writeItemStackToBuffer(itemstack);
-        }
-    }
+		for (ItemStack itemstack : this.itemStacks) {
+			buf.writeItemStackToBuffer(itemstack);
+		}
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

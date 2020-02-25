@@ -1,26 +1,9 @@
 package optifine;
 
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.IntBuffer;
-import java.util.Iterator;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.renderer.texture.ITickableTextureObject;
-import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
@@ -33,8 +16,18 @@ import org.lwjgl.opengl.GLContext;
 import shadersmod.client.MultiTexID;
 import shadersmod.client.Shaders;
 
-public class TextureUtils
-{
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.IntBuffer;
+import java.util.Iterator;
+
+public class TextureUtils {
     public static final String texGrassTop = "grass_top";
     public static final String texStone = "stone";
     public static final String texDirt = "dirt";
@@ -163,7 +156,7 @@ public class TextureUtils
                 BufferedImage bufferedimage = new BufferedImage(i, j * 2, 2);
                 Graphics2D graphics2d = bufferedimage.createGraphics();
                 graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                graphics2d.drawImage(p_fixTextureDimensions_1_, 0, 0, i, j, (ImageObserver)null);
+                graphics2d.drawImage(p_fixTextureDimensions_1_, 0, 0, i, j, null);
                 return bufferedimage;
             }
         }
@@ -177,7 +170,6 @@ public class TextureUtils
 
         for (i = 1; i < p_ceilPowerOfTwo_0_; i *= 2)
         {
-            ;
         }
 
         return i;
@@ -278,15 +270,14 @@ public class TextureUtils
 
         ITickableTextureObject itickabletextureobject = new ITickableTextureObject()
         {
-            public void tick()
-            {
+            public void tick() {
                 TextureAnimations.updateCustomAnimations();
             }
-            public void loadTexture(IResourceManager resourceManager) throws IOException
-            {
+
+            public void loadTexture(IResourceManager resourceManager) {
             }
-            public int getGlTextureId()
-            {
+
+            public int getGlTextureId() {
                 return 0;
             }
             public void setBlurMipmap(boolean p_174936_1_, boolean p_174936_2_)
@@ -415,7 +406,7 @@ public class TextureUtils
         }
 
         graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, object);
-        graphics2d.drawImage(p_scaleImage_0_, 0, 0, p_scaleImage_1_, k, (ImageObserver)null);
+        graphics2d.drawImage(p_scaleImage_0_, 0, 0, p_scaleImage_1_, k, null);
         return bufferedimage;
     }
 
@@ -449,7 +440,7 @@ public class TextureUtils
                 }
 
                 graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, object);
-                graphics2d.drawImage(p_scaleToPowerOfTwo_0_, 0, 0, k, l, (ImageObserver)null);
+                graphics2d.drawImage(p_scaleToPowerOfTwo_0_, 0, 0, k, l, null);
                 return bufferedimage;
             }
         }
@@ -476,7 +467,6 @@ public class TextureUtils
 
                 for (k = i; k < p_scaleMinTo_1_; k *= 2)
                 {
-                    ;
                 }
 
                 int l = j * k / i;
@@ -484,7 +474,7 @@ public class TextureUtils
                 Graphics2D graphics2d = bufferedimage.createGraphics();
                 Object object = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
                 graphics2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, object);
-                graphics2d.drawImage(p_scaleMinTo_0_, 0, 0, k, l, (ImageObserver)null);
+                graphics2d.drawImage(p_scaleMinTo_0_, 0, 0, k, l, null);
                 return bufferedimage;
             }
         }
@@ -571,14 +561,14 @@ public class TextureUtils
             int l = j * k;
             IntBuffer intbuffer = BufferUtils.createIntBuffer(l);
             int[] aint = new int[l];
-            GL11.glGetTexImage(GL11.GL_TEXTURE_2D, i1, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer)intbuffer);
+            GL11.glGetTexImage(GL11.GL_TEXTURE_2D, i1, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, intbuffer);
             intbuffer.get(aint);
             BufferedImage bufferedimage = new BufferedImage(j, k, 2);
             bufferedimage.setRGB(0, 0, j, k, aint, 0, j);
 
             try
             {
-                ImageIO.write(bufferedimage, "png", (File)file4);
+                ImageIO.write(bufferedimage, "png", file4);
                 Config.dbg("Exported: " + file4);
             }
             catch (Exception exception)
@@ -593,7 +583,7 @@ public class TextureUtils
     {
         for (int i = 65536; i > 0; i >>= 1)
         {
-            GL11.glTexImage2D(GL11.GL_PROXY_TEXTURE_2D, 0, GL11.GL_RGBA, i, i, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (IntBuffer)((IntBuffer)null));
+            GL11.glTexImage2D(GL11.GL_PROXY_TEXTURE_2D, 0, GL11.GL_RGBA, i, i, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, null);
             int j = GL11.glGetError();
             int k = GL11.glGetTexLevelParameteri(GL11.GL_PROXY_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
 

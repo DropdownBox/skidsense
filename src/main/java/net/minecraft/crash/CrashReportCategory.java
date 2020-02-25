@@ -1,28 +1,27 @@
 package net.minecraft.crash;
 
 import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockPos;
 
-public class CrashReportCategory
-{
+import java.util.List;
+import java.util.concurrent.Callable;
+
+public class CrashReportCategory {
     private final CrashReport crashReport;
     private final String name;
-    private final List<CrashReportCategory.Entry> children = Lists.<CrashReportCategory.Entry>newArrayList();
+    private final List<CrashReportCategory.Entry> children = Lists.newArrayList();
     private StackTraceElement[] stackTrace = new StackTraceElement[0];
 
-    public CrashReportCategory(CrashReport report, String name)
-    {
+    public CrashReportCategory(CrashReport report, String name) {
         this.crashReport = report;
         this.name = name;
     }
 
     public static String getCoordinateInfo(double x, double y, double z)
     {
-        return String.format("%.2f,%.2f,%.2f - %s", new Object[] {Double.valueOf(x), Double.valueOf(y), Double.valueOf(z), getCoordinateInfo(new BlockPos(x, y, z))});
+        return String.format("%.2f,%.2f,%.2f - %s", Double.valueOf(x), Double.valueOf(y), Double.valueOf(z), getCoordinateInfo(new BlockPos(x, y, z)));
     }
 
     public static String getCoordinateInfo(BlockPos pos)
@@ -34,7 +33,7 @@ public class CrashReportCategory
 
         try
         {
-            stringbuilder.append(String.format("World: (%d,%d,%d)", new Object[] {Integer.valueOf(i), Integer.valueOf(j), Integer.valueOf(k)}));
+            stringbuilder.append(String.format("World: (%d,%d,%d)", Integer.valueOf(i), Integer.valueOf(j), Integer.valueOf(k)));
         }
         catch (Throwable var17)
         {
@@ -54,7 +53,7 @@ public class CrashReportCategory
             int j2 = i1 << 4;
             int k2 = (l + 1 << 4) - 1;
             int l2 = (i1 + 1 << 4) - 1;
-            stringbuilder.append(String.format("Chunk: (at %d,%d,%d in %d,%d; contains blocks %d,0,%d to %d,255,%d)", new Object[] {Integer.valueOf(j1), Integer.valueOf(k1), Integer.valueOf(l1), Integer.valueOf(l), Integer.valueOf(i1), Integer.valueOf(i2), Integer.valueOf(j2), Integer.valueOf(k2), Integer.valueOf(l2)}));
+            stringbuilder.append(String.format("Chunk: (at %d,%d,%d in %d,%d; contains blocks %d,0,%d to %d,255,%d)", Integer.valueOf(j1), Integer.valueOf(k1), Integer.valueOf(l1), Integer.valueOf(l), Integer.valueOf(i1), Integer.valueOf(i2), Integer.valueOf(j2), Integer.valueOf(k2), Integer.valueOf(l2)));
         }
         catch (Throwable var16)
         {
@@ -75,7 +74,7 @@ public class CrashReportCategory
             int i5 = k3 << 9;
             int j5 = (j3 + 1 << 9) - 1;
             int i3 = (k3 + 1 << 9) - 1;
-            stringbuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,0,%d to %d,255,%d)", new Object[] {Integer.valueOf(j3), Integer.valueOf(k3), Integer.valueOf(l3), Integer.valueOf(i4), Integer.valueOf(j4), Integer.valueOf(k4), Integer.valueOf(l4), Integer.valueOf(i5), Integer.valueOf(j5), Integer.valueOf(i3)}));
+            stringbuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,0,%d to %d,255,%d)", Integer.valueOf(j3), Integer.valueOf(k3), Integer.valueOf(l3), Integer.valueOf(i4), Integer.valueOf(j4), Integer.valueOf(k4), Integer.valueOf(l4), Integer.valueOf(i5), Integer.valueOf(j5), Integer.valueOf(i3)));
         }
         catch (Throwable var15)
         {
@@ -217,37 +216,28 @@ public class CrashReportCategory
         final int i = Block.getIdFromBlock(blockIn);
         category.addCrashSectionCallable("Block type", new Callable<String>()
         {
-            public String call() throws Exception
-            {
-                try
-                {
-                    return String.format("ID #%d (%s // %s)", new Object[] {Integer.valueOf(i), blockIn.getUnlocalizedName(), blockIn.getClass().getCanonicalName()});
-                }
-                catch (Throwable var2)
-                {
+            public String call() {
+                try {
+                    return String.format("ID #%d (%s // %s)", Integer.valueOf(i), blockIn.getUnlocalizedName(), blockIn.getClass().getCanonicalName());
+                } catch (Throwable var2) {
                     return "ID #" + i;
                 }
             }
         });
         category.addCrashSectionCallable("Block data value", new Callable<String>()
         {
-            public String call() throws Exception
-            {
-                if (blockData < 0)
-                {
+            public String call() {
+                if (blockData < 0) {
                     return "Unknown? (Got " + blockData + ")";
-                }
-                else
-                {
-                    String s = String.format("%4s", new Object[] {Integer.toBinaryString(blockData)}).replace(" ", "0");
-                    return String.format("%1$d / 0x%1$X / 0b%2$s", new Object[] {Integer.valueOf(blockData), s});
+                } else {
+                    String s = String.format("%4s", Integer.toBinaryString(blockData)).replace(" ", "0");
+                    return String.format("%1$d / 0x%1$X / 0b%2$s", Integer.valueOf(blockData), s);
                 }
             }
         });
         category.addCrashSectionCallable("Block location", new Callable<String>()
         {
-            public String call() throws Exception
-            {
+            public String call() {
                 return CrashReportCategory.getCoordinateInfo(pos);
             }
         });
@@ -257,15 +247,13 @@ public class CrashReportCategory
     {
         category.addCrashSectionCallable("Block", new Callable<String>()
         {
-            public String call() throws Exception
-            {
+            public String call() {
                 return state.toString();
             }
         });
         category.addCrashSectionCallable("Block location", new Callable<String>()
         {
-            public String call() throws Exception
-            {
+            public String call() {
                 return CrashReportCategory.getCoordinateInfo(pos);
             }
         });

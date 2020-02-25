@@ -1,17 +1,19 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.BlockPos;
 
-public class S35PacketUpdateTileEntity implements Packet<INetHandlerPlayClient>
-{
+import java.io.IOException;
+
+public class S35PacketUpdateTileEntity implements Packet<INetHandlerPlayClient> {
     private BlockPos blockPos;
 
-    /** Used only for vanilla tile entities */
+    /**
+     * Used only for vanilla tile entities
+     */
     private int metadata;
     private NBTTagCompound nbt;
 
@@ -39,10 +41,9 @@ public class S35PacketUpdateTileEntity implements Packet<INetHandlerPlayClient>
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) {
         buf.writeBlockPos(this.blockPos);
-        buf.writeByte((byte)this.metadata);
+        buf.writeByte((byte) this.metadata);
         buf.writeNBTTagCompoundToBuffer(this.nbt);
     }
 

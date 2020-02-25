@@ -1,18 +1,16 @@
 package net.minecraft.network.play.client;
 
-import io.netty.buffer.ByteBuf;
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 
-public class C17PacketCustomPayload implements Packet<INetHandlerPlayServer>
-{
+import java.io.IOException;
+
+public class C17PacketCustomPayload implements Packet<INetHandlerPlayServer> {
     private String channel;
     private PacketBuffer data;
 
-    public C17PacketCustomPayload()
-    {
+    public C17PacketCustomPayload() {
     }
 
     public C17PacketCustomPayload(String channelIn, PacketBuffer dataIn)
@@ -47,10 +45,9 @@ public class C17PacketCustomPayload implements Packet<INetHandlerPlayServer>
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) {
         buf.writeString(this.channel);
-        buf.writeBytes((ByteBuf)this.data);
+        buf.writeBytes(this.data);
     }
 
     /**

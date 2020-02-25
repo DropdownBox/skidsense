@@ -1,14 +1,14 @@
 package net.minecraft.client.gui;
 
-import java.io.IOException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 
-public class GuiControls extends GuiScreen
-{
-    private static final GameSettings.Options[] optionsArr = new GameSettings.Options[] {GameSettings.Options.INVERT_MOUSE, GameSettings.Options.SENSITIVITY, GameSettings.Options.TOUCHSCREEN};
+import java.io.IOException;
+
+public class GuiControls extends GuiScreen {
+    private static final GameSettings.Options[] optionsArr = new GameSettings.Options[]{GameSettings.Options.INVERT_MOUSE, GameSettings.Options.SENSITIVITY, GameSettings.Options.TOUCHSCREEN};
 
     /**
      * A reference to the screen object that created this. Used for navigating between screens.
@@ -35,22 +35,17 @@ public class GuiControls extends GuiScreen
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    public void initGui()
-    {
+    public void initGui() {
         this.keyBindingList = new GuiKeyBindingList(this, this.mc);
-        this.buttonList.add(new GuiButton(200, this.width / 2 - 155, this.height - 29, 150, 20, I18n.format("gui.done", new Object[0])));
-        this.buttonList.add(this.buttonReset = new GuiButton(201, this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.format("controls.resetAll", new Object[0])));
-        this.screenTitle = I18n.format("controls.title", new Object[0]);
+        this.buttonList.add(new GuiButton(200, this.width / 2 - 155, this.height - 29, 150, 20, I18n.format("gui.done")));
+        this.buttonList.add(this.buttonReset = new GuiButton(201, this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.format("controls.resetAll")));
+        this.screenTitle = I18n.format("controls.title");
         int i = 0;
 
-        for (GameSettings.Options gamesettings$options : optionsArr)
-        {
-            if (gamesettings$options.getEnumFloat())
-            {
+        for (GameSettings.Options gamesettings$options : optionsArr) {
+            if (gamesettings$options.getEnumFloat()) {
                 this.buttonList.add(new GuiOptionSlider(gamesettings$options.returnEnumOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options));
-            }
-            else
-            {
+            } else {
                 this.buttonList.add(new GuiOptionButton(gamesettings$options.returnEnumOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options, this.options.getKeyBinding(gamesettings$options)));
             }
 
@@ -70,16 +65,11 @@ public class GuiControls extends GuiScreen
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
-        if (button.id == 200)
-        {
+    protected void actionPerformed(GuiButton button) {
+        if (button.id == 200) {
             this.mc.displayGuiScreen(this.parentScreen);
-        }
-        else if (button.id == 201)
-        {
-            for (KeyBinding keybinding : this.mc.gameSettings.keyBindings)
-            {
+        } else if (button.id == 201) {
+            for (KeyBinding keybinding : this.mc.gameSettings.keyBindings) {
                 keybinding.setKeyCode(keybinding.getKeyCodeDefault());
             }
 

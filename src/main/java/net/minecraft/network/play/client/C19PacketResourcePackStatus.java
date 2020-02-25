@@ -1,6 +1,5 @@
 package net.minecraft.network.play.client;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
@@ -28,20 +27,18 @@ public class C19PacketResourcePackStatus implements Packet<INetHandlerPlayServer
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.hash = buf.readStringFromBuffer(40);
-        this.status = (C19PacketResourcePackStatus.Action)buf.readEnumValue(C19PacketResourcePackStatus.Action.class);
+    public void readPacketData(PacketBuffer buf) {
+	    this.hash = buf.readStringFromBuffer(40);
+	    this.status = buf.readEnumValue(Action.class);
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeString(this.hash);
-        buf.writeEnumValue(this.status);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeString(this.hash);
+		buf.writeEnumValue(this.status);
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.
@@ -51,11 +48,10 @@ public class C19PacketResourcePackStatus implements Packet<INetHandlerPlayServer
         handler.handleResourcePackStatus(this);
     }
 
-    public static enum Action
-    {
-        SUCCESSFULLY_LOADED,
-        DECLINED,
-        FAILED_DOWNLOAD,
-        ACCEPTED;
-    }
+	public enum Action {
+		SUCCESSFULLY_LOADED,
+		DECLINED,
+		FAILED_DOWNLOAD,
+		ACCEPTED
+	}
 }

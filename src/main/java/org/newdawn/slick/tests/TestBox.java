@@ -1,16 +1,10 @@
 package org.newdawn.slick.tests;
 
-import java.util.ArrayList;
-
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.opengl.SlickCallable;
 import org.newdawn.slick.util.Log;
+
+import java.util.ArrayList;
 
 /**
  * A test box containing a bunch of tests that can be used for quickly sanity
@@ -19,7 +13,9 @@ import org.newdawn.slick.util.Log;
  * @author kevin
  */
 public class TestBox extends BasicGame {
-	/** The games that have been added */
+	/**
+	 * The games that have been added
+	 */
 	private ArrayList games = new ArrayList();
 	/** The current game */
 	private BasicGame currentGame;
@@ -82,13 +78,13 @@ public class TestBox extends BasicGame {
 	public void init(GameContainer c) throws SlickException {
 		if (games.size() == 0) {
 			currentGame = new BasicGame("NULL") {
-				public void init(GameContainer container) throws SlickException {
+				public void init(GameContainer container) {
 				}
 
-				public void update(GameContainer container, int delta) throws SlickException {
+				public void update(GameContainer container, int delta) {
 				}
 
-				public void render(GameContainer container, Graphics g) throws SlickException {
+				public void render(GameContainer container, Graphics g) {
 				}
 			};
 			currentGame.init(c);

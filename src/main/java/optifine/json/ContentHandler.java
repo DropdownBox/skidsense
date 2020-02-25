@@ -1,24 +1,22 @@
 package optifine.json;
 
-import java.io.IOException;
-
 public interface ContentHandler
 {
-    void startJSON() throws ParseException, IOException;
+    void startJSON();
 
-    void endJSON() throws ParseException, IOException;
+	void endJSON();
 
-    boolean startObject() throws ParseException, IOException;
+	boolean startObject();
 
-    boolean endObject() throws ParseException, IOException;
+	boolean endObject();
 
-    boolean startObjectEntry(String var1) throws ParseException, IOException;
+	boolean startObjectEntry(String var1);
 
-    boolean endObjectEntry() throws ParseException, IOException;
+	boolean endObjectEntry();
 
-    boolean startArray() throws ParseException, IOException;
+	boolean startArray();
 
-    boolean endArray() throws ParseException, IOException;
+	boolean endArray();
 
-    boolean primitive(Object var1) throws ParseException, IOException;
+	boolean primitive(Object var1);
 }

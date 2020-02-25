@@ -71,16 +71,14 @@ public class ScalableGame implements Game {
 	
 	/**
 	 * Recalculate the scale of the game
-	 * 
-	 * @throws SlickException Indicates a failure to reinit the game
 	 */
-	public void recalculateScale() throws SlickException {
+	public void recalculateScale() {
 		targetWidth = container.getWidth();
 		targetHeight = container.getHeight();
-		
+
 		if (maintainAspect) {
-			boolean normalIsWide = (normalWidth / normalHeight > 1.6 ? true : false);
-			boolean containerIsWide = ((float) targetWidth / (float) targetHeight > 1.6 ? true : false);
+			boolean normalIsWide = (normalWidth / normalHeight > 1.6);
+			boolean containerIsWide = ((float) targetWidth / (float) targetHeight > 1.6);
 			float wScale = targetWidth / normalWidth;
 			float hScale = targetHeight / normalHeight;
 

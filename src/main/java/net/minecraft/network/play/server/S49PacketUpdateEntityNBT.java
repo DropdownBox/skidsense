@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
@@ -8,14 +7,14 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.world.World;
 
-public class S49PacketUpdateEntityNBT implements Packet<INetHandlerPlayClient>
-{
-    private int entityId;
-    private NBTTagCompound tagCompound;
+import java.io.IOException;
 
-    public S49PacketUpdateEntityNBT()
-    {
-    }
+public class S49PacketUpdateEntityNBT implements Packet<INetHandlerPlayClient> {
+	private int entityId;
+	private NBTTagCompound tagCompound;
+
+	public S49PacketUpdateEntityNBT() {
+	}
 
     public S49PacketUpdateEntityNBT(int entityIdIn, NBTTagCompound tagCompoundIn)
     {
@@ -32,14 +31,13 @@ public class S49PacketUpdateEntityNBT implements Packet<INetHandlerPlayClient>
         this.tagCompound = buf.readNBTTagCompoundFromBuffer();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeVarIntToBuffer(this.entityId);
-        buf.writeNBTTagCompoundToBuffer(this.tagCompound);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeVarIntToBuffer(this.entityId);
+		buf.writeNBTTagCompoundToBuffer(this.tagCompound);
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

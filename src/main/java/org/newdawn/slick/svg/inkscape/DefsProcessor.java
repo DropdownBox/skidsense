@@ -1,16 +1,15 @@
 package org.newdawn.slick.svg.inkscape;
 
-import java.util.ArrayList;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.geom.Transform;
 import org.newdawn.slick.svg.Diagram;
 import org.newdawn.slick.svg.Gradient;
 import org.newdawn.slick.svg.Loader;
-import org.newdawn.slick.svg.ParsingException;
 import org.newdawn.slick.util.Log;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
 
 /**
  * A processor for the defs node
@@ -23,20 +22,16 @@ public class DefsProcessor implements ElementProcessor {
 	 * @see org.newdawn.slick.svg.inkscape.ElementProcessor#handles(org.w3c.dom.Element)
 	 */
 	public boolean handles(Element element) {
-		if (element.getNodeName().equals("defs")) {
-			return true;
-		}
-		
-		return false;
+		return element.getNodeName().equals("defs");
 	}
 
 	/**
 	 * @see org.newdawn.slick.svg.inkscape.ElementProcessor#process(org.newdawn.slick.svg.Loader, org.w3c.dom.Element, org.newdawn.slick.svg.Diagram, org.newdawn.slick.geom.Transform)
 	 */
-	public void process(Loader loader, Element element, Diagram diagram, Transform transform) throws ParsingException {
+	public void process(Loader loader, Element element, Diagram diagram, Transform transform) {
 		NodeList patterns = element.getElementsByTagName("pattern");
-		
-		for (int i=0;i<patterns.getLength();i++) {
+
+		for (int i = 0; i < patterns.getLength(); i++) {
 			Element pattern = (Element) patterns.item(i);
 			NodeList list = pattern.getElementsByTagName("image");
 			if (list.getLength() == 0) {

@@ -63,43 +63,40 @@ public abstract class CrossStateTransition implements Transition {
 	/**
 	 * @see org.newdawn.slick.state.transition.Transition#update(org.newdawn.slick.state.StateBasedGame, org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(StateBasedGame game, GameContainer container, int delta) throws SlickException {
+	public void update(StateBasedGame game, GameContainer container, int delta) {
 	}
 
 	/**
 	 * Notification that the transition is about to render the first state is the cross
 	 * transition.
-	 * 
-	 * @param game The game being rendered
+	 *
+	 * @param game      The game being rendered
 	 * @param container The container holding the game
-	 * @param g The graphic context used to render
-	 * @throws SlickException Indicates a failure to setup the rendering state - throw for anything that goes wrong
+	 * @param g         The graphic context used to render
 	 */
-	public void preRenderFirstState(StateBasedGame game, GameContainer container, Graphics g) throws SlickException {
+	public void preRenderFirstState(StateBasedGame game, GameContainer container, Graphics g) {
 	}
-	
+
 	/**
 	 * Notification that the transition is about to render the second state is the cross
 	 * transition.
-	 * 
-	 * @param game The game being rendered
+	 *
+	 * @param game      The game being rendered
 	 * @param container The container holding the game
-	 * @param g The graphic context used to render
-	 * @throws SlickException Indicates a failure to setup the rendering state - throw for anything that goes wrong
+	 * @param g         The graphic context used to render
 	 */
-	public void preRenderSecondState(StateBasedGame game, GameContainer container, Graphics g) throws SlickException {
+	public void preRenderSecondState(StateBasedGame game, GameContainer container, Graphics g) {
 	}
 
 	/**
 	 * Notification that the transition is has just rendered the second state is the cross
 	 * transition.
-	 * 
-	 * @param game The game being rendered
+	 *
+	 * @param game      The game being rendered
 	 * @param container The container holding the game
-	 * @param g The graphic context used to render
-	 * @throws SlickException Indicates a failure to setup the rendering state - throw for anything that goes wrong
-	 */	
-	public void postRenderSecondState(StateBasedGame game, GameContainer container, Graphics g) throws SlickException {
+	 * @param g         The graphic context used to render
+	 */
+	public void postRenderSecondState(StateBasedGame game, GameContainer container, Graphics g) {
 	}
 	
 }

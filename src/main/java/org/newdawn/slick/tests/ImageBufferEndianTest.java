@@ -1,18 +1,12 @@
 package org.newdawn.slick.tests;
+
+import org.newdawn.slick.*;
+
 import java.nio.ByteOrder;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.ImageBuffer;
-import org.newdawn.slick.SlickException;
-
 /**
- * Quick test for endianess in image buffers 
- * 
+ * Quick test for endianess in image buffers
+ *
  * @author thaaks
  */
 public class ImageBufferEndianTest extends BasicGame {
@@ -53,33 +47,33 @@ public class ImageBufferEndianTest extends BasicGame {
     * (non-Javadoc)
     * @see org.newdawn.slick.Game#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
     */
-   public void render(GameContainer container, Graphics g) throws SlickException {
-      g.setColor(Color.white);
-      g.drawString("Endianness is " + endian, 10, 100);
-      
-      g.drawString("Image below should be red", 10, 200);
-      g.drawImage(fromRed, 10, 220);
-      g.drawString("Image below should be blue", 410, 200);
-      g.drawImage(fromBlue, 410, 220);
+   public void render(GameContainer container, Graphics g) {
+	   g.setColor(Color.white);
+	   g.drawString("Endianness is " + endian, 10, 100);
+
+	   g.drawString("Image below should be red", 10, 200);
+	   g.drawImage(fromRed, 10, 220);
+	   g.drawString("Image below should be blue", 410, 200);
+	   g.drawImage(fromBlue, 410, 220);
    }
 
-   /*
-    * (non-Javadoc)
-    * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
-    */
-   public void init(GameContainer container) throws SlickException {
-      // detect what endian we have
-      if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
-             endian = "Big endian";
-          } else if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
-             endian = "Little endian";
-          } else
-             endian = "no idea";
-      
-      redImageBuffer = new ImageBuffer(100,100);
-      fillImageBufferWithColor(redImageBuffer, Color.red, 100, 100);
-      
-      blueImageBuffer = new ImageBuffer(100,100);
+	/*
+	 * (non-Javadoc)
+	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
+	 */
+	public void init(GameContainer container) {
+		// detect what endian we have
+		if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
+			endian = "Big endian";
+		} else if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
+			endian = "Little endian";
+		} else
+			endian = "no idea";
+
+		redImageBuffer = new ImageBuffer(100, 100);
+		fillImageBufferWithColor(redImageBuffer, Color.red, 100, 100);
+
+		blueImageBuffer = new ImageBuffer(100,100);
       fillImageBufferWithColor(blueImageBuffer, Color.blue, 100, 100);
       
       fromRed = redImageBuffer.getImage();
@@ -106,8 +100,8 @@ public class ImageBufferEndianTest extends BasicGame {
     * (non-Javadoc)
     * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
     */
-   public void update(GameContainer container, int delta) throws SlickException {
-      // nothing to do
+   public void update(GameContainer container, int delta) {
+	   // nothing to do
    }
 
 } 

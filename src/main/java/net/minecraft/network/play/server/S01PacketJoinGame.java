@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -38,17 +37,16 @@ public class S01PacketJoinGame implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.entityId = buf.readInt();
-        int i = buf.readUnsignedByte();
-        this.hardcoreMode = (i & 8) == 8;
-        i = i & -9;
-        this.gameType = WorldSettings.GameType.getByID(i);
-        this.dimension = buf.readByte();
-        this.difficulty = EnumDifficulty.getDifficultyEnum(buf.readUnsignedByte());
-        this.maxPlayers = buf.readUnsignedByte();
-        this.worldType = WorldType.parseWorldType(buf.readStringFromBuffer(16));
+    public void readPacketData(PacketBuffer buf) {
+	    this.entityId = buf.readInt();
+	    int i = buf.readUnsignedByte();
+	    this.hardcoreMode = (i & 8) == 8;
+	    i = i & -9;
+	    this.gameType = WorldSettings.GameType.getByID(i);
+	    this.dimension = buf.readByte();
+	    this.difficulty = EnumDifficulty.getDifficultyEnum(buf.readUnsignedByte());
+	    this.maxPlayers = buf.readUnsignedByte();
+	    this.worldType = WorldType.parseWorldType(buf.readStringFromBuffer(16));
 
         if (this.worldType == null)
         {
@@ -58,21 +56,19 @@ public class S01PacketJoinGame implements Packet<INetHandlerPlayClient>
         this.reducedDebugInfo = buf.readBoolean();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeInt(this.entityId);
-        int i = this.gameType.getID();
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeInt(this.entityId);
+		int i = this.gameType.getID();
 
-        if (this.hardcoreMode)
-        {
-            i |= 8;
-        }
+		if (this.hardcoreMode) {
+			i |= 8;
+		}
 
-        buf.writeByte(i);
-        buf.writeByte(this.dimension);
+		buf.writeByte(i);
+		buf.writeByte(this.dimension);
         buf.writeByte(this.difficulty.getDifficultyId());
         buf.writeByte(this.maxPlayers);
         buf.writeString(this.worldType.getWorldTypeName());

@@ -1,18 +1,9 @@
 package net.minecraft.server.integrated;
 
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.Futures;
-
 import cn.margele.mlproject.impl.ClientBrandRetriever;
 import cn.margele.mlproject.impl.MinecraftServer;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Queue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
-
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Futures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ThreadLanServerPing;
 import net.minecraft.command.ServerCommandManager;
@@ -22,26 +13,27 @@ import net.minecraft.profiler.PlayerUsageSnooper;
 import net.minecraft.util.CryptManager;
 import net.minecraft.util.HttpUtil;
 import net.minecraft.util.Util;
-import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.WorldManager;
-import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldServerMulti;
-import net.minecraft.world.WorldSettings;
-import net.minecraft.world.WorldType;
+import net.minecraft.world.*;
 import net.minecraft.world.demo.DemoWorldServer;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import optifine.Reflector;
 import optifine.WorldServerOF;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class IntegratedServer extends MinecraftServer
-{
+import java.io.File;
+import java.io.IOException;
+import java.util.Queue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+
+public class IntegratedServer extends MinecraftServer {
     private static final Logger logger = LogManager.getLogger();
 
-    /** The Minecraft instance. */
+    /**
+     * The Minecraft instance.
+     */
     private final Minecraft mc;
     private final WorldSettings theWorldSettings;
     private boolean isGamePaused;
@@ -84,16 +76,16 @@ public class IntegratedServer extends MinecraftServer
 
         if (Reflector.DimensionManager.exists())
         {
-            WorldServer worldserver = this.isDemo() ? (WorldServer)((WorldServer)(new DemoWorldServer(this, isavehandler, worldinfo, 0, this.theProfiler)).init()) : (WorldServer)(new WorldServerOF(this, isavehandler, worldinfo, 0, this.theProfiler)).init();
+            WorldServer worldserver = this.isDemo() ? (WorldServer) (new DemoWorldServer(this, isavehandler, worldinfo, 0, this.theProfiler)).init() : (WorldServer) (new WorldServerOF(this, isavehandler, worldinfo, 0, this.theProfiler)).init();
             worldserver.initialize(this.theWorldSettings);
-            Integer[] ainteger = (Integer[])((Integer[])Reflector.call(Reflector.DimensionManager_getStaticDimensionIDs, new Object[0]));
+            Integer[] ainteger = Reflector.call(Reflector.DimensionManager_getStaticDimensionIDs, new Object[0]);
             Integer[] ainteger1 = ainteger;
             int i = ainteger.length;
 
             for (int j = 0; j < i; ++j)
             {
                 int k = ainteger1[j].intValue();
-                WorldServer worldserver1 = k == 0 ? worldserver : (WorldServer)((WorldServer)(new WorldServerMulti(this, isavehandler, k, worldserver, this.theProfiler)).init());
+                WorldServer worldserver1 = k == 0 ? worldserver : (WorldServer) (new WorldServerMulti(this, isavehandler, k, worldserver, this.theProfiler)).init();
                 worldserver1.addWorldAccess(new WorldManager(this, worldserver1));
 
                 if (!this.isSinglePlayer())
@@ -103,7 +95,7 @@ public class IntegratedServer extends MinecraftServer
 
                 if (Reflector.EventBus.exists())
                 {
-                    Reflector.postForgeBusEvent(Reflector.WorldEvent_Load_Constructor, new Object[] {worldserver1});
+                    Reflector.postForgeBusEvent(Reflector.WorldEvent_Load_Constructor, worldserver1);
                 }
             }
 
@@ -178,8 +170,7 @@ public class IntegratedServer extends MinecraftServer
     /**
      * Initialises the server and starts it.
      */
-    protected boolean startServer() throws IOException
-    {
+    protected boolean startServer() {
         logger.info("Starting integrated minecraft server version 1.8.9");
         this.setOnlineMode(true);
         this.setCanSpawnAnimals(true);
@@ -191,10 +182,9 @@ public class IntegratedServer extends MinecraftServer
 
         if (Reflector.FMLCommonHandler_handleServerAboutToStart.exists())
         {
-            Object object = Reflector.call(Reflector.FMLCommonHandler_instance, new Object[0]);
+            Object object = Reflector.call(Reflector.FMLCommonHandler_instance);
 
-            if (!Reflector.callBoolean(object, Reflector.FMLCommonHandler_handleServerAboutToStart, new Object[] {this}))
-            {
+            if (!Reflector.callBoolean(object, Reflector.FMLCommonHandler_handleServerAboutToStart, this)) {
                 return false;
             }
         }
@@ -204,14 +194,14 @@ public class IntegratedServer extends MinecraftServer
 
         if (Reflector.FMLCommonHandler_handleServerStarting.exists())
         {
-            Object object1 = Reflector.call(Reflector.FMLCommonHandler_instance, new Object[0]);
+            Object object1 = Reflector.call(Reflector.FMLCommonHandler_instance);
 
             if (Reflector.FMLCommonHandler_handleServerStarting.getReturnType() == Boolean.TYPE)
             {
-                return Reflector.callBoolean(object1, Reflector.FMLCommonHandler_handleServerStarting, new Object[] {this});
+                return Reflector.callBoolean(object1, Reflector.FMLCommonHandler_handleServerStarting, this);
             }
 
-            Reflector.callVoid(object1, Reflector.FMLCommonHandler_handleServerStarting, new Object[] {this});
+            Reflector.callVoid(object1, Reflector.FMLCommonHandler_handleServerStarting, this);
         }
 
         return true;
@@ -250,7 +240,7 @@ public class IntegratedServer extends MinecraftServer
 
             if (this.mc.gameSettings.renderDistanceChunks != this.getConfigurationManager().getViewDistance())
             {
-                logger.info("Changing view distance to {}, from {}", new Object[] {Integer.valueOf(this.mc.gameSettings.renderDistanceChunks), Integer.valueOf(this.getConfigurationManager().getViewDistance())});
+                logger.info("Changing view distance to {}, from {}", Integer.valueOf(this.mc.gameSettings.renderDistanceChunks), Integer.valueOf(this.getConfigurationManager().getViewDistance()));
                 this.getConfigurationManager().setViewDistance(this.mc.gameSettings.renderDistanceChunks);
             }
 
@@ -261,12 +251,12 @@ public class IntegratedServer extends MinecraftServer
 
                 if (!worldinfo.isDifficultyLocked() && worldinfo1.getDifficulty() != worldinfo.getDifficulty())
                 {
-                    logger.info("Changing difficulty to {}, from {}", new Object[] {worldinfo1.getDifficulty(), worldinfo.getDifficulty()});
+                    logger.info("Changing difficulty to {}, from {}", worldinfo1.getDifficulty(), worldinfo.getDifficulty());
                     this.setDifficultyForAllWorlds(worldinfo1.getDifficulty());
                 }
                 else if (worldinfo1.isDifficultyLocked() && !worldinfo.isDifficultyLocked())
                 {
-                    logger.info("Locking difficulty to {}", new Object[] {worldinfo1.getDifficulty()});
+                    logger.info("Locking difficulty to {}", worldinfo1.getDifficulty());
 
                     for (WorldServer worldserver : this.worldServers)
                     {
@@ -358,26 +348,23 @@ public class IntegratedServer extends MinecraftServer
         report.getCategory().addCrashSectionCallable("Type", new Callable()
         {
             private static final String __OBFID = "CL_00001130";
-            public String call() throws Exception
-            {
+
+            public String call() {
                 return "Integrated Server (map_client.txt)";
             }
         });
         report.getCategory().addCrashSectionCallable("Is Modded", new Callable()
         {
             private static final String __OBFID = "CL_00001131";
-            public String call() throws Exception
-            {
+
+            public String call() {
                 String s = ClientBrandRetriever.getClientModName();
 
-                if (!s.equals("vanilla"))
-                {
-                    return "Definitely; Client brand changed to \'" + s + "\'";
-                }
-                else
-                {
+                if (!s.equals("vanilla")) {
+                    return "Definitely; Client brand changed to '" + s + "'";
+                } else {
                     s = IntegratedServer.this.getServerModName();
-                    return !s.equals("vanilla") ? "Definitely; Server brand changed to \'" + s + "\'" : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated" : "Probably not. Jar signature remains and both client + server brands are untouched.");
+                    return !s.equals("vanilla") ? "Definitely; Server brand changed to '" + s + "'" : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated" : "Probably not. Jar signature remains and both client + server brands are untouched.");
                 }
             }
         });
@@ -423,7 +410,6 @@ public class IntegratedServer extends MinecraftServer
             }
             catch (IOException var5)
             {
-                ;
             }
 
             if (i <= 0)
@@ -431,7 +417,7 @@ public class IntegratedServer extends MinecraftServer
                 i = 25564;
             }
 
-            this.getNetworkSystem().addLanEndpoint((InetAddress)null, i);
+            this.getNetworkSystem().addLanEndpoint(null, i);
             logger.info("Started on " + i);
             this.isPublic = true;
             this.lanServerPing = new ThreadLanServerPing(this.getMOTD(), i + "");

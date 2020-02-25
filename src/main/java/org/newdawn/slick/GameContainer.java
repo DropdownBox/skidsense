@@ -1,8 +1,5 @@
 package org.newdawn.slick;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Cursor;
@@ -19,6 +16,9 @@ import org.newdawn.slick.opengl.renderer.SGL;
 import org.newdawn.slick.util.Log;
 import org.newdawn.slick.util.ResourceLoader;
 
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * A generic game container that handles the game loop, fps recording and
  * managing the input system
@@ -26,7 +26,9 @@ import org.newdawn.slick.util.ResourceLoader;
  * @author kevin
  */
 public abstract class GameContainer implements GUIContext {
-	/** The renderer to use for all GL operations */
+	/**
+	 * The renderer to use for all GL operations
+	 */
 	protected static SGL GL = Renderer.get();
 	/** The shared drawable if any */
 	protected static Drawable SHARED_DRAWABLE;
@@ -745,17 +747,15 @@ public abstract class GameContainer implements GUIContext {
 		}
 		lastGame = game;
 	}
-	
+
 	/**
 	 * Initialise the system components, OpenGL and OpenAL.
-	 * 
-	 * @throws SlickException Indicates a failure to create a native handler
 	 */
-	protected void initSystem() throws SlickException {
+	protected void initSystem() {
 		initGL();
 		setMusicVolume(1.0f);
 		setSoundVolume(1.0f);
-		
+
 		graphics = new Graphics(width, height);
 		defaultFont = graphics.getFont();
 	}

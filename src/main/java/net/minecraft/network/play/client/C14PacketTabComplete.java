@@ -1,6 +1,5 @@
 package net.minecraft.network.play.client;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
@@ -18,7 +17,7 @@ public class C14PacketTabComplete implements Packet<INetHandlerPlayServer>
 
     public C14PacketTabComplete(String msg)
     {
-        this(msg, (BlockPos)null);
+        this(msg, null);
     }
 
     public C14PacketTabComplete(String msg, BlockPos target)
@@ -30,13 +29,11 @@ public class C14PacketTabComplete implements Packet<INetHandlerPlayServer>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) {
         this.message = buf.readStringFromBuffer(32767);
         boolean flag = buf.readBoolean();
 
-        if (flag)
-        {
+        if (flag) {
             this.targetBlock = buf.readBlockPos();
         }
     }
@@ -44,14 +41,12 @@ public class C14PacketTabComplete implements Packet<INetHandlerPlayServer>
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) {
         buf.writeString(StringUtils.substring(this.message, 0, 32767));
         boolean flag = this.targetBlock != null;
         buf.writeBoolean(flag);
 
-        if (flag)
-        {
+        if (flag) {
             buf.writeBlockPos(this.targetBlock);
         }
     }

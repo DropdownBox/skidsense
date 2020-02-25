@@ -1,16 +1,14 @@
 package net.minecraft.client.gui;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
 import me.skidsense.alt.GuiAltManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class GuiDisconnected extends GuiScreen {
     private String reason;
@@ -25,17 +23,19 @@ public class GuiDisconnected extends GuiScreen {
     
     public GuiDisconnected(GuiScreen screen, String reason, IChatComponent component) {
         this.parentScreen = screen;
-        this.reason = I18n.format(reason, new Object[0]);
+        this.reason = I18n.format(reason);
         this.message = component;    
     }
-    public void setIp(String ip){
-    	this.ip = ip;
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
+
     /**
      * Fired when a key is typed (except F11 who toggle full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    protected void keyTyped(char typedChar, int keyCode) {
     }
 
     /**
@@ -46,20 +46,19 @@ public class GuiDisconnected extends GuiScreen {
     	this.buttonList.add(new GuiButton(997, 5, 8, 98, 20, "AltManager"));
         this.multilineMessage = this.fontRendererObj.listFormattedStringToWidth(this.message.getFormattedText(), this.width - 50);
         this.field_175353_i = this.multilineMessage.size() * this.fontRendererObj.FONT_HEIGHT;
-        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 2 + this.field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT, I18n.format("gui.toMenu", new Object[0])));
+        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 2 + this.field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT, I18n.format("gui.toMenu")));
         //this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 2 + this.field_175353_i/2 + 25 + this.fontRendererObj.FONT_HEIGHT, "ReConnect"));
     }
 
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(GuiButton button) {
         if (button.id == 0) {
             this.mc.displayGuiScreen(this.parentScreen);
         }
-        if (button.id == 997)
-        {
+        if (button.id == 997) {
             this.mc.displayGuiScreen(new GuiAltManager());
         }
-        if(button.id == 1){
-        	connectToLastServer();
+        if (button.id == 1) {
+            connectToLastServer();
         }
     }
 

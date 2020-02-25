@@ -1,19 +1,7 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.command.BasicCommand;
-import org.newdawn.slick.command.Command;
-import org.newdawn.slick.command.ControllerButtonControl;
-import org.newdawn.slick.command.ControllerDirectionControl;
-import org.newdawn.slick.command.InputProvider;
-import org.newdawn.slick.command.InputProviderListener;
-import org.newdawn.slick.command.KeyControl;
-import org.newdawn.slick.command.MouseButtonControl;
+import org.newdawn.slick.*;
+import org.newdawn.slick.command.*;
 
 /**
  * A test for abstract input via InputProvider
@@ -38,14 +26,14 @@ public class InputProviderTest extends BasicGame implements InputProviderListene
 	public InputProviderTest() {
 		super("InputProvider Test");
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.BasicGame#init(org.newdawn.slick.GameContainer)
 	 */
-	public void init(GameContainer container) throws SlickException {
+	public void init(GameContainer container) {
 		provider = new InputProvider(container.getInput());
 		provider.addListener(this);
-		
+
 		provider.bindCommand(new KeyControl(Input.KEY_LEFT), run);
 		provider.bindCommand(new KeyControl(Input.KEY_A), run);
 		provider.bindCommand(new ControllerDirectionControl(0, ControllerDirectionControl.LEFT), run);

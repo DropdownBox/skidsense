@@ -1,10 +1,10 @@
 package shadersmod.client;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import net.minecraft.util.BlockPos;
 import optifine.BlockPosM;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class IteratorAxis implements Iterator<BlockPos>
 {
@@ -28,38 +28,35 @@ public class IteratorAxis implements Iterator<BlockPos>
         this.zDelta = zDelta;
         this.xStart = posStart.getX();
         this.xEnd = posEnd.getX();
-        this.yStart = (double)posStart.getY();
-        this.yEnd = (double)posEnd.getY() - 0.5D;
-        this.zStart = (double)posStart.getZ();
-        this.zEnd = (double)posEnd.getZ() - 0.5D;
+        this.yStart = posStart.getY();
+        this.yEnd = (double) posEnd.getY() - 0.5D;
+        this.zStart = posStart.getZ();
+        this.zEnd = (double) posEnd.getZ() - 0.5D;
         this.xNext = this.xStart;
         this.yNext = this.yStart;
         this.zNext = this.zStart;
         this.hasNext = this.xNext < this.xEnd && this.yNext < this.yEnd && this.zNext < this.zEnd;
     }
 
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return this.hasNext;
     }
 
-    public BlockPos next()
-    {
-        if (!this.hasNext)
-        {
-            throw new NoSuchElementException();
-        }
-        else
-        {
-            this.pos.setXyz((double)this.xNext, this.yNext, this.zNext);
-            this.nextPos();
-            this.hasNext = this.xNext < this.xEnd && this.yNext < this.yEnd && this.zNext < this.zEnd;
-            return this.pos;
+    public static void main(String[] args) {
+        BlockPos blockpos = new BlockPos(-2, 10, 20);
+        BlockPos blockpos1 = new BlockPos(2, 12, 22);
+        double d0 = -0.5D;
+        double d1 = 0.5D;
+        IteratorAxis iteratoraxis = new IteratorAxis(blockpos, blockpos1, d0, d1);
+        System.out.println("Start: " + blockpos + ", end: " + blockpos1 + ", yDelta: " + d0 + ", zDelta: " + d1);
+
+        while (iteratoraxis.hasNext()) {
+            BlockPos blockpos2 = iteratoraxis.next();
+            System.out.println("" + blockpos2);
         }
     }
 
-    private void nextPos()
-    {
+    private void nextPos() {
         ++this.zNext;
 
         if (this.zNext >= this.zEnd)
@@ -80,7 +77,6 @@ public class IteratorAxis implements Iterator<BlockPos>
 
                 if (this.xNext >= this.xEnd)
                 {
-                    ;
                 }
             }
         }
@@ -91,19 +87,14 @@ public class IteratorAxis implements Iterator<BlockPos>
         throw new RuntimeException("Not implemented");
     }
 
-    public static void main(String[] args) throws Exception
-    {
-        BlockPos blockpos = new BlockPos(-2, 10, 20);
-        BlockPos blockpos1 = new BlockPos(2, 12, 22);
-        double d0 = -0.5D;
-        double d1 = 0.5D;
-        IteratorAxis iteratoraxis = new IteratorAxis(blockpos, blockpos1, d0, d1);
-        System.out.println("Start: " + blockpos + ", end: " + blockpos1 + ", yDelta: " + d0 + ", zDelta: " + d1);
-
-        while (iteratoraxis.hasNext())
-        {
-            BlockPos blockpos2 = iteratoraxis.next();
-            System.out.println("" + blockpos2);
+    public BlockPos next() {
+        if (!this.hasNext) {
+            throw new NoSuchElementException();
+        } else {
+            this.pos.setXyz(this.xNext, this.yNext, this.zNext);
+            this.nextPos();
+            this.hasNext = this.xNext < this.xEnd && this.yNext < this.yEnd && this.zNext < this.zEnd;
+            return this.pos;
         }
     }
 }

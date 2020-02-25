@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -21,28 +20,24 @@ public class S3APacketTabComplete implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.matches = new String[buf.readVarIntFromBuffer()];
+    public void readPacketData(PacketBuffer buf) {
+	    this.matches = new String[buf.readVarIntFromBuffer()];
 
-        for (int i = 0; i < this.matches.length; ++i)
-        {
-            this.matches[i] = buf.readStringFromBuffer(32767);
-        }
+	    for (int i = 0; i < this.matches.length; ++i) {
+		    this.matches[i] = buf.readStringFromBuffer(32767);
+	    }
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeVarIntToBuffer(this.matches.length);
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeVarIntToBuffer(this.matches.length);
 
-        for (String s : this.matches)
-        {
-            buf.writeString(s);
-        }
-    }
+		for (String s : this.matches) {
+			buf.writeString(s);
+		}
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

@@ -1,28 +1,23 @@
 package net.minecraft.client.resources;
 
 import com.google.common.collect.ImmutableSet;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-import java.util.Set;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 import optifine.ReflectorForge;
 
-public class DefaultResourcePack implements IResourcePack
-{
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.util.Map;
+import java.util.Set;
+
+public class DefaultResourcePack implements IResourcePack {
     public static final Set defaultResourceDomains = ImmutableSet.of("minecraft", "realms");
     private final Map mapAssets;
     private static final String __OBFID = "CL_00001073";
 
-    public DefaultResourcePack(Map mapAssetsIn)
-    {
+    public DefaultResourcePack(Map mapAssetsIn) {
         this.mapAssets = mapAssetsIn;
     }
 
@@ -49,9 +44,8 @@ public class DefaultResourcePack implements IResourcePack
         }
     }
 
-    public InputStream getInputStreamAssets(ResourceLocation location) throws IOException, FileNotFoundException
-    {
-        File file1 = (File)this.mapAssets.get(location.toString());
+    public InputStream getInputStreamAssets(ResourceLocation location) throws IOException {
+        File file1 = (File) this.mapAssets.get(location.toString());
         return file1 != null && file1.isFile() ? new FileInputStream(file1) : null;
     }
 
@@ -72,18 +66,13 @@ public class DefaultResourcePack implements IResourcePack
         return defaultResourceDomains;
     }
 
-    public IMetadataSection getPackMetadata(IMetadataSerializer metadataSerializer, String metadataSectionName) throws IOException
-    {
-        try
-        {
-            FileInputStream fileinputstream = new FileInputStream((File)this.mapAssets.get("pack.mcmeta"));
+    public IMetadataSection getPackMetadata(IMetadataSerializer metadataSerializer, String metadataSectionName) {
+        try {
+            FileInputStream fileinputstream = new FileInputStream((File) this.mapAssets.get("pack.mcmeta"));
             return AbstractResourcePack.readMetadata(metadataSerializer, fileinputstream, metadataSectionName);
-        }
-        catch (RuntimeException var4)
-        {
+        } catch (RuntimeException var4) {
             return null;
-        }
-        catch (FileNotFoundException var5)
+        } catch (FileNotFoundException var5)
         {
             return null;
         }

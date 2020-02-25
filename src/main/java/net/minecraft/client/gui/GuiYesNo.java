@@ -1,19 +1,18 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
-import java.util.List;
 import net.minecraft.client.resources.I18n;
 
-public class GuiYesNo extends GuiScreen
-{
+import java.util.List;
+
+public class GuiYesNo extends GuiScreen {
     /**
      * A reference to the screen object that created this. Used for navigating between screens.
      */
     protected GuiYesNoCallback parentScreen;
     protected String messageLine1;
     private String messageLine2;
-    private final List<String> field_175298_s = Lists.<String>newArrayList();
+    private final List<String> field_175298_s = Lists.newArrayList();
 
     /** The text shown for the first button in GuiYesNo */
     protected String confirmButtonText;
@@ -23,14 +22,13 @@ public class GuiYesNo extends GuiScreen
     protected int parentButtonClickedId;
     private int ticksUntilEnable;
 
-    public GuiYesNo(GuiYesNoCallback p_i1082_1_, String p_i1082_2_, String p_i1082_3_, int p_i1082_4_)
-    {
+    public GuiYesNo(GuiYesNoCallback p_i1082_1_, String p_i1082_2_, String p_i1082_3_, int p_i1082_4_) {
         this.parentScreen = p_i1082_1_;
         this.messageLine1 = p_i1082_2_;
         this.messageLine2 = p_i1082_3_;
         this.parentButtonClickedId = p_i1082_4_;
-        this.confirmButtonText = I18n.format("gui.yes", new Object[0]);
-        this.cancelButtonText = I18n.format("gui.no", new Object[0]);
+        this.confirmButtonText = I18n.format("gui.yes");
+        this.cancelButtonText = I18n.format("gui.no");
     }
 
     public GuiYesNo(GuiYesNoCallback p_i1083_1_, String p_i1083_2_, String p_i1083_3_, String p_i1083_4_, String p_i1083_5_, int p_i1083_6_)
@@ -58,8 +56,7 @@ public class GuiYesNo extends GuiScreen
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
+    protected void actionPerformed(GuiButton button) {
         this.parentScreen.confirmClicked(button.id == 0, this.parentButtonClickedId);
     }
 

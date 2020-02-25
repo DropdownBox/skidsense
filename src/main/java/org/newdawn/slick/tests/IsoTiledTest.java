@@ -35,17 +35,15 @@ public class IsoTiledTest extends BasicGame {
 	 * (non-Javadoc)
 	 * @see org.newdawn.slick.BasicGame#update(org.newdawn.slick.GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta)
-			throws SlickException {
+	public void update(GameContainer container, int delta) {
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.newdawn.slick.Game#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g)
-			throws SlickException {
-		tilemap.render(350,150);
+	public void render(GameContainer container, Graphics g) {
+		tilemap.render(350, 150);
 	}
 
 	/**

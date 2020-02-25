@@ -1,14 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AngelCodeFont;
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.opengl.pbuffer.GraphicsFactory;
 
 /**
@@ -72,20 +64,20 @@ public class ImageGraphicsTest extends BasicGame {
 		
 		System.out.println(preloaded.getColor(50,50));
 	}
-	
+
 	/**
 	 * @see org.newdawn.slick.BasicGame#render(org.newdawn.slick.GameContainer, org.newdawn.slick.Graphics)
 	 */
-	public void render(GameContainer container, Graphics g) throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 
 		// RENDERING TO AN IMAGE AND THEN DRAWING IT TO THE DISPLAY
 		// Draw graphics and text onto our graphics context from the Image target
-		gTarget.setBackground(new Color(0,0,0,0));
+		gTarget.setBackground(new Color(0, 0, 0, 0));
 		gTarget.clear();
-		gTarget.rotate(200,160,ang);
+		gTarget.rotate(200, 160, ang);
 		gTarget.setFont(testFont);
 		gTarget.fillRect(10, 10, 50, 50);
-		gTarget.drawString("HELLO WORLD",10,10);
+		gTarget.drawString("HELLO WORLD", 10, 10);
 
 		gTarget.drawImage(testImage,100,150);
 		gTarget.drawImage(testImage,100,50);

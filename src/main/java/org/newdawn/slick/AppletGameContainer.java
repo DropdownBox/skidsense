@@ -1,18 +1,5 @@
 package org.newdawn.slick;
 
-import java.applet.Applet;
-import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.TextArea;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.ByteBuffer;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Cursor;
@@ -25,6 +12,14 @@ import org.newdawn.slick.opengl.CursorLoader;
 import org.newdawn.slick.opengl.ImageData;
 import org.newdawn.slick.opengl.InternalTextureLoader;
 import org.newdawn.slick.util.Log;
+
+import java.applet.Applet;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.ByteBuffer;
 
 /**
  * A game container that displays the game as an applet. Note however that the
@@ -323,13 +318,13 @@ public class AppletGameContainer extends Applet {
       public Applet getApplet() {
          return AppletGameContainer.this;
       }
-      
-      /**
-       * @see org.newdawn.slick.GameContainer#setIcon(java.lang.String)
-       */
-      public void setIcon(String ref) throws SlickException {
-         // unsupported in an applet
-      }
+
+	   /**
+	    * @see org.newdawn.slick.GameContainer#setIcon(java.lang.String)
+	    */
+	   public void setIcon(String ref) {
+		   // unsupported in an applet
+	   }
 
       /**
        * @see org.newdawn.slick.GameContainer#setMouseGrabbed(boolean)
@@ -393,13 +388,13 @@ public class AppletGameContainer extends Applet {
  			 throw new SlickException("Failed to set mouse cursor", e);
           }
        }
-      
-      /**
-       * @see org.newdawn.slick.GameContainer#setIcons(java.lang.String[])
-       */
-      public void setIcons(String[] refs) throws SlickException {
-         // unsupported in an applet
-      }
+
+	   /**
+	    * @see org.newdawn.slick.GameContainer#setIcons(java.lang.String[])
+	    */
+	   public void setIcons(String[] refs) {
+		   // unsupported in an applet
+	   }
 
       /**
        * @see org.newdawn.slick.GameContainer#setMouseCursor(org.newdawn.slick.opengl.ImageData, int, int)
@@ -436,16 +431,16 @@ public class AppletGameContainer extends Applet {
          return Display.isFullscreen();
       }
 
-      public void setFullscreen(boolean fullscreen) throws SlickException {
-         if (fullscreen == isFullscreen()) {
-            return;
-         }
+	   public void setFullscreen(boolean fullscreen) {
+		   if (fullscreen == isFullscreen()) {
+			   return;
+		   }
 
-         try {
-            if (fullscreen) {
-               // get current screen resolution
-               int screenWidth = Display.getDisplayMode().getWidth();
-               int screenHeight = Display.getDisplayMode().getHeight();
+		   try {
+			   if (fullscreen) {
+				   // get current screen resolution
+				   int screenWidth = Display.getDisplayMode().getWidth();
+				   int screenHeight = Display.getDisplayMode().getHeight();
 
                // calculate aspect ratio
                float gameAspectRatio = (float) width / height;

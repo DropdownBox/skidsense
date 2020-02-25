@@ -1,6 +1,5 @@
 package net.minecraft.network.play.server;
 
-import java.io.IOException;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -25,20 +24,18 @@ public class S19PacketEntityHeadLook implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
-        this.entityId = buf.readVarIntFromBuffer();
-        this.yaw = buf.readByte();
+    public void readPacketData(PacketBuffer buf) {
+	    this.entityId = buf.readVarIntFromBuffer();
+	    this.yaw = buf.readByte();
     }
 
-    /**
-     * Writes the raw packet data to the data stream.
-     */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
-        buf.writeVarIntToBuffer(this.entityId);
-        buf.writeByte(this.yaw);
-    }
+	/**
+	 * Writes the raw packet data to the data stream.
+	 */
+	public void writePacketData(PacketBuffer buf) {
+		buf.writeVarIntToBuffer(this.entityId);
+		buf.writeByte(this.yaw);
+	}
 
     /**
      * Passes this Packet on to the NetHandler for processing.

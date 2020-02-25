@@ -1,8 +1,6 @@
 package net.minecraft.tileentity;
 
 import com.google.common.collect.Maps;
-import java.util.Map;
-import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockJukebox;
 import net.minecraft.block.state.IBlockState;
@@ -15,19 +13,25 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TileEntity
-{
-    private static final Logger logger = LogManager.getLogger();
-    private static Map < String, Class <? extends TileEntity >> nameToClassMap = Maps. < String, Class <? extends TileEntity >> newHashMap();
-    private static Map < Class <? extends TileEntity > , String > classToNameMap = Maps. < Class <? extends TileEntity > , String > newHashMap();
+import java.util.Map;
+import java.util.concurrent.Callable;
 
-    /** the instance of the world the tile entity is in. */
+public abstract class TileEntity {
+    private static final Logger logger = LogManager.getLogger();
+    private static Map<String, Class<? extends TileEntity>> nameToClassMap = Maps.newHashMap();
+    private static Map<Class<? extends TileEntity>, String> classToNameMap = Maps.newHashMap();
+
+    /**
+     * the instance of the world the tile entity is in.
+     */
     protected World worldObj;
     protected BlockPos pos = BlockPos.ORIGIN;
     protected boolean tileEntityInvalid;
     private int blockMetadata = -1;
 
-    /** the Block type that this TileEntity is contained within */
+    /**
+     * the Block type that this TileEntity is contained within
+     */
     protected Block blockType;
 
     /**
@@ -75,16 +79,37 @@ public abstract class TileEntity
         this.pos = new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
     }
 
-    public void writeToNBT(NBTTagCompound compound)
-    {
-        String s = (String)classToNameMap.get(this.getClass());
+    /**
+     * Creates a new entity and loads its data from the specified NBT.
+     */
+    public static TileEntity createAndLoadEntity(NBTTagCompound nbt) {
+        TileEntity tileentity = null;
 
-        if (s == null)
-        {
-            throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
+        try {
+            Class<? extends TileEntity> oclass = nameToClassMap.get(nbt.getString("id"));
+
+            if (oclass != null) {
+                tileentity = oclass.newInstance();
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
-        else
-        {
+
+        if (tileentity != null) {
+            tileentity.readFromNBT(nbt);
+        } else {
+            logger.warn("Skipping BlockEntity with id " + nbt.getString("id"));
+        }
+
+        return tileentity;
+    }
+
+    public void writeToNBT(NBTTagCompound compound) {
+        String s = classToNameMap.get(this.getClass());
+
+        if (s == null) {
+            throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
+        } else {
             compound.setString("id", s);
             compound.setInteger("x", this.pos.getX());
             compound.setInteger("y", this.pos.getY());
@@ -92,43 +117,8 @@ public abstract class TileEntity
         }
     }
 
-    /**
-     * Creates a new entity and loads its data from the specified NBT.
-     */
-    public static TileEntity createAndLoadEntity(NBTTagCompound nbt)
-    {
-        TileEntity tileentity = null;
-
-        try
-        {
-            Class <? extends TileEntity > oclass = (Class)nameToClassMap.get(nbt.getString("id"));
-
-            if (oclass != null)
-            {
-                tileentity = (TileEntity)oclass.newInstance();
-            }
-        }
-        catch (Exception exception)
-        {
-            exception.printStackTrace();
-        }
-
-        if (tileentity != null)
-        {
-            tileentity.readFromNBT(nbt);
-        }
-        else
-        {
-            logger.warn("Skipping BlockEntity with id " + nbt.getString("id"));
-        }
-
-        return tileentity;
-    }
-
-    public int getBlockMetadata()
-    {
-        if (this.blockMetadata == -1)
-        {
+    public int getBlockMetadata() {
+        if (this.blockMetadata == -1) {
             IBlockState iblockstate = this.worldObj.getBlockState(this.pos);
             this.blockMetadata = iblockstate.getBlock().getMetaFromState(iblockstate);
         }
@@ -232,48 +222,36 @@ public abstract class TileEntity
 
     public void addInfoToCrashReport(CrashReportCategory reportCategory)
     {
-        reportCategory.addCrashSectionCallable("Name", new Callable<String>()
-        {
-            public String call() throws Exception
-            {
-                return (String)TileEntity.classToNameMap.get(TileEntity.this.getClass()) + " // " + TileEntity.this.getClass().getCanonicalName();
+        reportCategory.addCrashSectionCallable("Name", new Callable<String>() {
+            public String call() {
+                return TileEntity.classToNameMap.get(TileEntity.this.getClass()) + " // " + TileEntity.this.getClass().getCanonicalName();
             }
         });
 
         if (this.worldObj != null)
         {
             CrashReportCategory.addBlockInfo(reportCategory, this.pos, this.getBlockType(), this.getBlockMetadata());
-            reportCategory.addCrashSectionCallable("Actual block type", new Callable<String>()
-            {
-                public String call() throws Exception
-                {
+            reportCategory.addCrashSectionCallable("Actual block type", new Callable<String>() {
+                public String call() {
                     int i = Block.getIdFromBlock(TileEntity.this.worldObj.getBlockState(TileEntity.this.pos).getBlock());
 
-                    try
-                    {
-                        return String.format("ID #%d (%s // %s)", new Object[] {Integer.valueOf(i), Block.getBlockById(i).getUnlocalizedName(), Block.getBlockById(i).getClass().getCanonicalName()});
-                    }
-                    catch (Throwable var3)
-                    {
+                    try {
+                        return String.format("ID #%d (%s // %s)", Integer.valueOf(i), Block.getBlockById(i).getUnlocalizedName(), Block.getBlockById(i).getClass().getCanonicalName());
+                    } catch (Throwable var3) {
                         return "ID #" + i;
                     }
                 }
             });
-            reportCategory.addCrashSectionCallable("Actual block data value", new Callable<String>()
-            {
-                public String call() throws Exception
-                {
+            reportCategory.addCrashSectionCallable("Actual block data value", new Callable<String>() {
+                public String call() {
                     IBlockState iblockstate = TileEntity.this.worldObj.getBlockState(TileEntity.this.pos);
                     int i = iblockstate.getBlock().getMetaFromState(iblockstate);
 
-                    if (i < 0)
-                    {
+                    if (i < 0) {
                         return "Unknown? (Got " + i + ")";
-                    }
-                    else
-                    {
-                        String s = String.format("%4s", new Object[] {Integer.toBinaryString(i)}).replace(" ", "0");
-                        return String.format("%1$d / 0x%1$X / 0b%2$s", new Object[] {Integer.valueOf(i), s});
+                    } else {
+                        String s = String.format("%4s", Integer.toBinaryString(i)).replace(" ", "0");
+                        return String.format("%1$d / 0x%1$X / 0b%2$s", Integer.valueOf(i), s);
                     }
                 }
             });

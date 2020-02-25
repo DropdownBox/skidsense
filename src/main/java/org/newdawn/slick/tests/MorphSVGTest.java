@@ -1,10 +1,6 @@
 package org.newdawn.slick.tests;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
+import org.newdawn.slick.*;
 import org.newdawn.slick.svg.Diagram;
 import org.newdawn.slick.svg.InkscapeLoader;
 import org.newdawn.slick.svg.SVGMorph;
@@ -48,10 +44,9 @@ public class MorphSVGTest extends BasicGame {
 	/**
 	 * @see BasicGame#update(GameContainer, int)
 	 */
-	public void update(GameContainer container, int delta)
-			throws SlickException {
+	public void update(GameContainer container, int delta) {
 		morph.updateMorphTime(delta * 0.003f);
-		
+
 		x += delta * 0.2f;
 		if (x > 550) {
 			x = -450;
@@ -61,8 +56,7 @@ public class MorphSVGTest extends BasicGame {
 	/**
 	 * @see org.newdawn.slick.Game#render(GameContainer, Graphics)
 	 */
-	public void render(GameContainer container, Graphics g)
-			throws SlickException {
+	public void render(GameContainer container, Graphics g) {
 		g.translate(x, 0);
 		SimpleDiagramRenderer.render(g, morph);
 	}

@@ -8,25 +8,20 @@
 package me.skidsense.proxy;
 
 import me.skidsense.Client;
-import me.skidsense.proxy.ProxySocket;
+import net.minecraft.client.multiplayer.GuiConnecting;
+import net.minecraft.util.ChatComponentText;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.multiplayer.GuiConnecting;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class TransparentProxy {
     private final int listenerPort;
-    private Logger logger = LogManager.getLogger((String)"AC-Proxy");
+    private Logger logger = LogManager.getLogger("AC-Proxy");
     private ServerSocket listener;
     private Socket client;
     private Socket server;
@@ -39,7 +34,7 @@ public class TransparentProxy {
         this.listenerPort = listenerPort;
     }
 
-    public void start(String proxy, int proxyPort, String ip, int port) throws Exception {
+    public void start(String proxy, int proxyPort, String ip, int port) {
         this.failed = false;
         this.ready = false;
         if (this.running) {

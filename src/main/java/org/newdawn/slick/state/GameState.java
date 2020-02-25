@@ -14,58 +14,51 @@ import org.newdawn.slick.SlickException;
 public interface GameState extends InputListener {
 	/**
 	 * Get the ID of this state
-	 * 
+	 *
 	 * @return The game unique ID of this state
 	 */
-	public int getID();
-	
+	int getID();
+
 	/**
 	 * Initialise the state. It should load any resources it needs at this stage
-	 * 
+	 *
 	 * @param container The container holding the game
-	 * @param game The game holding this state
+	 * @param game      The game holding this state
 	 * @throws SlickException Indicates a failure to initialise a resource for this state
 	 */
-	public void init(GameContainer container, StateBasedGame game) throws SlickException;
-	
+	void init(GameContainer container, StateBasedGame game) throws SlickException;
+
 	/**
 	 * Render this state to the game's graphics context
-	 * 
+	 *
 	 * @param container The container holding the game
-	 * @param game The game holding this state
-	 * @param g The graphics context to render to
-	 * @throws SlickException Indicates a failure to render an artifact
+	 * @param game      The game holding this state
+	 * @param g         The graphics context to render to
 	 */
-	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException;
-	
+	void render(GameContainer container, StateBasedGame game, Graphics g);
+
 	/**
 	 * Update the state's logic based on the amount of time thats passed
-	 * 
+	 *
 	 * @param container The container holding the game
-	 * @param game The game holding this state
-	 * @param delta The amount of time thats passed in millisecond since last update
-	 * @throws SlickException Indicates an internal error that will be reported through the
-	 * standard framework mechanism
+	 * @param game      The game holding this state
+	 * @param delta     The amount of time thats passed in millisecond since last update
 	 */
-	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException ;
-	
+	void update(GameContainer container, StateBasedGame game, int delta);
+
 	/**
 	 * Notification that we've entered this game state
-	 * 
+	 *
 	 * @param container The container holding the game
 	 * @param game The game holding this state
-	 * @throws SlickException Indicates an internal error that will be reported through the
-	 * standard framework mechanism
 	 */
-	public void enter(GameContainer container, StateBasedGame game) throws SlickException;
+	void enter(GameContainer container, StateBasedGame game);
 
 	/**
 	 * Notification that we're leaving this game state
-	 * 
+	 *
 	 * @param container The container holding the game
 	 * @param game The game holding this state
-	 * @throws SlickException Indicates an internal error that will be reported through the
-	 * standard framework mechanism
 	 */
-	public void leave(GameContainer container, StateBasedGame game) throws SlickException;
+	void leave(GameContainer container, StateBasedGame game);
 }

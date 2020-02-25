@@ -1,21 +1,19 @@
 package net.minecraft.network.play.server;
 
 import com.google.common.collect.Maps;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Map.Entry;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 
-public class S37PacketStatistics implements Packet<INetHandlerPlayClient>
-{
+import java.util.Map;
+import java.util.Map.Entry;
+
+public class S37PacketStatistics implements Packet<INetHandlerPlayClient> {
     private Map<StatBase, Integer> field_148976_a;
 
-    public S37PacketStatistics()
-    {
+    public S37PacketStatistics() {
     }
 
     public S37PacketStatistics(Map<StatBase, Integer> p_i45173_1_)
@@ -34,18 +32,15 @@ public class S37PacketStatistics implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) throws IOException
-    {
+    public void readPacketData(PacketBuffer buf) {
         int i = buf.readVarIntFromBuffer();
-        this.field_148976_a = Maps.<StatBase, Integer>newHashMap();
+        this.field_148976_a = Maps.newHashMap();
 
-        for (int j = 0; j < i; ++j)
-        {
+        for (int j = 0; j < i; ++j) {
             StatBase statbase = StatList.getOneShotStat(buf.readStringFromBuffer(32767));
             int k = buf.readVarIntFromBuffer();
 
-            if (statbase != null)
-            {
+            if (statbase != null) {
                 this.field_148976_a.put(statbase, Integer.valueOf(k));
             }
         }
@@ -54,14 +49,12 @@ public class S37PacketStatistics implements Packet<INetHandlerPlayClient>
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) throws IOException
-    {
+    public void writePacketData(PacketBuffer buf) {
         buf.writeVarIntToBuffer(this.field_148976_a.size());
 
-        for (Entry<StatBase, Integer> entry : this.field_148976_a.entrySet())
-        {
-            buf.writeString(((StatBase)entry.getKey()).statId);
-            buf.writeVarIntToBuffer(((Integer)entry.getValue()).intValue());
+        for (Entry<StatBase, Integer> entry : this.field_148976_a.entrySet()) {
+            buf.writeString(entry.getKey().statId);
+            buf.writeVarIntToBuffer(entry.getValue().intValue());
         }
     }
 
