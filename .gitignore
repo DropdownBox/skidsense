@@ -1,0 +1,10 @@
+# Project exclude paths
+/.gradle/
+/build/
+/out/
+/saves/
+/shaderpacks/
+/resourcepacks/
+/logs/
+/options.txt
+/optionsof.txt
