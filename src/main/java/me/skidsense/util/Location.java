@@ -2,6 +2,7 @@ package me.skidsense.util;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockPos;
 
 public class Location {
@@ -28,25 +29,33 @@ public class Location {
    }
 
    public Location(BlockPos pos) {
-      this.x = (double)pos.getX();
-      this.y = (double)pos.getY();
-      this.z = (double)pos.getZ();
+      this.x = (double) pos.getX();
+      this.y = (double) pos.getY();
+      this.z = (double) pos.getZ();
       this.yaw = 0.0F;
       this.pitch = 0.0F;
    }
 
    public Location(int x, int y, int z) {
-      this.x = (double)x;
-      this.y = (double)y;
-      this.z = (double)z;
+      this.x = (double) x;
+      this.y = (double) y;
+      this.z = (double) z;
       this.yaw = 0.0F;
       this.pitch = 0.0F;
    }
 
+   public Location(EntityLivingBase entity) {
+      this.x = entity.posX;
+      this.y = entity.posY;
+      this.z = entity.posZ;
+      this.yaw = 0.0f;
+      this.pitch = 0.0f;
+   }
+
    public Location add(int x, int y, int z) {
-      this.x += (double)x;
-      this.y += (double)y;
-      this.z += (double)z;
+      this.x += (double) x;
+      this.y += (double) y;
+      this.z += (double) z;
       return this;
    }
 
@@ -58,9 +67,9 @@ public class Location {
    }
 
    public Location subtract(int x, int y, int z) {
-      this.x -= (double)x;
-      this.y -= (double)y;
-      this.z -= (double)z;
+      this.x -= (double) x;
+      this.y -= (double) y;
+      this.z -= (double) z;
       return this;
    }
 

@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+
+import me.skidsense.hooks.EventBus;
+import me.skidsense.hooks.events.EventLivingUpdate;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -264,6 +267,7 @@ public abstract class EntityLivingBase extends Entity
      */
     public void onEntityUpdate()
     {
+        EventBus.getInstance().call(new EventLivingUpdate((EntityLivingBase) (Object) this));
         this.prevSwingProgress = this.swingProgress;
         super.onEntityUpdate();
         this.worldObj.theProfiler.startSection("livingEntityBaseTick");
