@@ -78,7 +78,7 @@ public class IntegratedServer extends MinecraftServer {
         {
             WorldServer worldserver = this.isDemo() ? (WorldServer) (new DemoWorldServer(this, isavehandler, worldinfo, 0, this.theProfiler)).init() : (WorldServer) (new WorldServerOF(this, isavehandler, worldinfo, 0, this.theProfiler)).init();
             worldserver.initialize(this.theWorldSettings);
-            Integer[] ainteger = Reflector.call(Reflector.DimensionManager_getStaticDimensionIDs, new Object[0]);
+            Integer[] ainteger = (Integer[]) Reflector.call(Reflector.DimensionManager_getStaticDimensionIDs, new Object[0]);
             Integer[] ainteger1 = ainteger;
             int i = ainteger.length;
 

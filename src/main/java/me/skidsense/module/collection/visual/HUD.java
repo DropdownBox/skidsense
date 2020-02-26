@@ -48,10 +48,10 @@ import net.minecraft.util.ResourceLocation;
 
 public class HUD
 extends Module {
-    private Option<Boolean> info = new Option<Boolean>("Information", "information", true);
-    public Option<Boolean> tabgui = new Option<Boolean>("Tabgui", "Tabgui", false);
-    private Numbers<Double> rainbowspeed = new Numbers<Double>("Rainbow", "Rainbow", 0.5, 0.0, 1.0, 0.1);
-    public Mode<Enum> color = new Mode("ColorMode", "ColorMode", (Enum[])colormode.values(), (Enum)colormode.Client);
+    private Option<Boolean> info = new Option<>("Information", "information", true);
+    public Option<Boolean> tabgui = new Option<>("Tabgui", "Tabgui", false);
+    private Numbers<Double> rainbowspeed = new Numbers<>("Rainbow", "Rainbow", 0.5, 0.0, 1.0, 0.1);
+    public Mode<Enum<?>> color = new Mode("ColorMode", "ColorMode", colormode.values(), colormode.Client);
     public static boolean shouldMove;
     public static boolean useFont;
     private double anima;

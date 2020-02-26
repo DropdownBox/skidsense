@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 
 public class TextureAtlasSprite {
     private final String iconName;
-    protected List framesTextureData = Lists.newArrayList();
+    protected List<int[][]> framesTextureData = Lists.newArrayList();
     protected int[][] interpolatedFrameData;
     private AnimationMetadataSection animationMetadata;
     protected boolean rotated;
@@ -263,8 +263,8 @@ public class TextureAtlasSprite {
         int k = this.animationMetadata.getFrameIndex((this.frameCounter + 1) % j);
 
         if (i != k && k >= 0 && k < this.framesTextureData.size()) {
-            int[][] aint = this.framesTextureData.get(i);
-            int[][] aint1 = this.framesTextureData.get(k);
+            int[][] aint = (int[][]) this.framesTextureData.get(i);
+            int[][] aint1 = (int[][]) this.framesTextureData.get(k);
 
             if (this.interpolatedFrameData == null || this.interpolatedFrameData.length != aint.length) {
                 this.interpolatedFrameData = new int[aint.length][];
@@ -295,7 +295,7 @@ public class TextureAtlasSprite {
 
     public int[][] getFrameTextureData(int index)
     {
-        return this.framesTextureData.get(index);
+        return (int[][]) this.framesTextureData.get(index);
     }
 
     public int getFrameCount()
@@ -404,7 +404,7 @@ public class TextureAtlasSprite {
 
             for (int l1 = 0; l1 < this.framesTextureData.size(); ++l1)
             {
-                int[][] aint1 = this.framesTextureData.get(l1);
+                int[][] aint1 = (int[][]) this.framesTextureData.get(l1);
 
                 if (aint1 != null && !this.iconName.startsWith("minecraft:blocks/leaves_"))
                 {

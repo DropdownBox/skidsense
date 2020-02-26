@@ -199,12 +199,7 @@ public class Delta
         catch (IOException ioexception)
         {
             throw ioexception;
-        }
-        catch (DeltaException deltaexception)
-        {
-            throw deltaexception;
-        }
-        finally
+        } finally
         {
             output.flush();
             seekablesource.close();

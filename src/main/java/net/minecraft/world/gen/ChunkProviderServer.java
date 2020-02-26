@@ -209,12 +209,7 @@ public class ChunkProviderServer implements IChunkProvider
             {
                 chunkIn.setLastSaveTime(this.worldObj.getTotalWorldTime());
                 this.chunkLoader.saveChunk(this.worldObj, chunkIn);
-            }
-            catch (IOException ioexception)
-            {
-                logger.error((String)"Couldn\'t save chunk", (Throwable)ioexception);
-            }
-            catch (MinecraftException minecraftexception)
+            } catch (MinecraftException minecraftexception)
             {
                 logger.error((String)"Couldn\'t save chunk; already in use by another instance of Minecraft?", (Throwable)minecraftexception);
             }

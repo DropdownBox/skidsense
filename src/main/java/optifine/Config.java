@@ -901,7 +901,7 @@ public class Config {
             list1.add(resourcepackrepository.getResourcePackInstance());
         }
 
-        IResourcePack[] airesourcepack = list1.toArray(new IResourcePack[list1.size()]);
+        IResourcePack[] airesourcepack = (IResourcePack[]) list1.toArray(new IResourcePack[list1.size()]);
         return airesourcepack;
     }
 
@@ -1216,7 +1216,7 @@ public class Config {
             list.add(s);
         }
 
-        String[] astring = list.toArray(new String[list.size()]);
+        String[] astring = (String[]) list.toArray(new String[list.size()]);
         return astring;
     }
 
@@ -1246,7 +1246,7 @@ public class Config {
                     }
                 }
 
-                DisplayMode[] adisplaymode2 = list.toArray(new DisplayMode[list.size()]);
+                DisplayMode[] adisplaymode2 = (DisplayMode[]) list.toArray(new DisplayMode[list.size()]);
                 Arrays.sort(adisplaymode2, new DisplayModeComparator());
                 return adisplaymode2;
             }
@@ -1303,7 +1303,7 @@ public class Config {
             }
         }
 
-        DisplayMode[] adisplaymode = list.toArray(new DisplayMode[list.size()]);
+        DisplayMode[] adisplaymode = (DisplayMode[]) list.toArray(new DisplayMode[list.size()]);
         return adisplaymode;
     }
 
@@ -1466,7 +1466,7 @@ public class Config {
 
             if (s == null)
             {
-                String[] astring = list.toArray(new String[list.size()]);
+                String[] astring = (String[]) list.toArray(new String[list.size()]);
                 return astring;
             }
 
@@ -1998,7 +1998,7 @@ public class Config {
         {
             int i = p_addObjectToArray_0_.length;
             int j = i + 1;
-            Object[] aobject = Array.newInstance(p_addObjectToArray_0_.getClass().getComponentType(), j);
+            Object[] aobject = (Object[]) Array.newInstance(p_addObjectToArray_0_.getClass().getComponentType(), j);
             System.arraycopy(p_addObjectToArray_0_, 0, aobject, 0, i);
             aobject[i] = p_addObjectToArray_1_;
             return aobject;
@@ -2009,7 +2009,7 @@ public class Config {
     {
         List list = new ArrayList(Arrays.asList(p_addObjectToArray_0_));
         list.add(p_addObjectToArray_2_, p_addObjectToArray_1_);
-        Object[] aobject = Array.newInstance(p_addObjectToArray_0_.getClass().getComponentType(), list.size());
+        Object[] aobject = (Object[]) Array.newInstance(p_addObjectToArray_0_.getClass().getComponentType(), list.size());
         return list.toArray(aobject);
     }
 
@@ -2027,7 +2027,7 @@ public class Config {
         {
             int i = p_addObjectsToArray_0_.length;
             int j = i + p_addObjectsToArray_1_.length;
-            Object[] aobject = Array.newInstance(p_addObjectsToArray_0_.getClass().getComponentType(), j);
+            Object[] aobject = (Object[]) Array.newInstance(p_addObjectsToArray_0_.getClass().getComponentType(), j);
             System.arraycopy(p_addObjectsToArray_0_, 0, aobject, 0, i);
             System.arraycopy(p_addObjectsToArray_1_, 0, aobject, i, p_addObjectsToArray_1_.length);
             return aobject;

@@ -82,16 +82,10 @@ public class CanvasGameContainer extends Canvas {
 			return;
 		}
 		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					container.gameLoop();
-				} catch (SlickException e) {
-					e.printStackTrace();
-				}
-				container.checkDimensions();
-				scheduleUpdate();
-			}
+		SwingUtilities.invokeLater(() -> {
+			container.gameLoop();
+			container.checkDimensions();
+			scheduleUpdate();
 		});
 	}
 	/**
