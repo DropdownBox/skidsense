@@ -1,6 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Start" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="Start" />
+    <module name="empty.main" />
     <option name="VM_PARAMETERS" value="-Djava.library.path=$PROJECT_DIR$/natives\" />
     <method v="2">
       <option name="Make" enabled="true" />
