@@ -101,12 +101,6 @@ public class KillAura extends Module {
 
 	@Override
 	public void onEnable() {
-		new Thread(new Runnable() { 
-			@Override 
-			public void run() {
-				System.gc(); 
-			} 
-		}).start();
 		this.rotation = new float[] { this.mc.thePlayer.rotationYaw, this.mc.thePlayer.rotationPitch };
 	}
 	@EventHandler
