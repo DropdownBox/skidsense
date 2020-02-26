@@ -26,7 +26,7 @@ public class DamageParticle extends Module {
 	private List<Particles> particles = new ArrayList<Particles>();;
 
 	public DamageParticle() {
-		super("Damage Particle", new String[] { "Damage Particle" }, ModuleType.Visual);
+		super("Hurt Particle", new String[] { "Damage Particle" }, ModuleType.Visual);
 	}
 
 	@EventHandler
