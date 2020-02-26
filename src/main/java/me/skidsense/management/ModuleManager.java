@@ -92,7 +92,6 @@ implements Manager {
         this.modules.add(new ItemEsp());
         this.modules.add(new ESP());
         this.modules.add(new HUD());
-        this.modules.add(new DamageParticle());
         this.modules.add(new ChestESP());
         this.modules.add(new Nametags());
         this.modules.add(new TargetHUD());
