@@ -15,7 +15,7 @@
  *       along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cc.hyperium.utils;
+package me.skidsense.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;

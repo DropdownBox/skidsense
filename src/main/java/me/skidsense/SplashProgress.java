@@ -17,7 +17,7 @@
 
 package me.skidsense;
 
-import cc.hyperium.utils.HyperiumFontRenderer;
+import me.skidsense.util.HyperiumFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
