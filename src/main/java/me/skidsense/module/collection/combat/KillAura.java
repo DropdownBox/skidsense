@@ -3,9 +3,11 @@ package me.skidsense.module.collection.combat;
 import java.util.function.ToDoubleFunction;
 
 import me.skidsense.Client;
+import me.skidsense.color.Colors;
 import me.skidsense.hooks.EventHandler;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender2D;
+import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -15,15 +17,18 @@ import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.player.Teams;
 import me.skidsense.util.BlockUtil;
+import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
 import me.skidsense.util.TimerUtil;
 import me.tojatta.api.utilities.vector.impl.Vector3;
 
 import java.util.Comparator;
 import java.util.ArrayList;
+
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
@@ -34,10 +39,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.potion.Potion;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -51,6 +52,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.item.ItemSword;
+import org.lwjgl.opengl.GL11;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Random;
@@ -220,6 +222,48 @@ public class KillAura extends Module {
 					new C08PacketPlayerBlockPlacement(new BlockPos(-0.6,-0.6,-0.6), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
+		}
+	}
+
+	@EventHandler
+	private void render(EventRender3D e) {
+		int hurtcolor;
+		boolean setcolor = target != null && target.hurtResistantTime <= 0;
+		if(target != null && setcolor) {
+			hurtcolor = Colors.getColor(new Color(255, 255, 255,255));
+			drawESP2(hurtcolor);
+		}else{
+			hurtcolor = Colors.getColor(new Color(255, 0, 0,255));
+			drawESP2(hurtcolor);
+		}
+	}
+
+	public void drawESP2(int color) {
+		if(target != null) {
+			double attackDelay;
+			double var31 = this.target.posX - this.target.prevPosX;
+			double var32 = this.target.posZ - this.target.prevPosZ;
+			attackDelay = this.target.posX + var31;
+			double var33 = attackDelay - RenderManager.renderPosX;
+			double var34 = this.target.posY + 1.0D;
+			double y = var34 - RenderManager.renderPosY;
+			double var39 = this.target.posZ + var32;
+			double var42 = var39 - RenderManager.renderPosZ;
+			double sin = Math.sin((double)System.currentTimeMillis() / 500.0D) * 50.0D;
+			double xA = sin / 100.0D;
+			double zA = sin / 100.0D;
+			double yA = sin / 100.0D;
+			RenderUtil.pre3D();
+			mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 2);
+			RenderUtil.glColor(color);
+			GL11.glLineWidth(3.0F);
+			if(this.target.hurtTime <= 0) {
+				RenderUtil.drawOutlinedBoundingBox(new AxisAlignedBB(var33 - xA, y - yA - 0.1D, var42 - xA, var33 + zA, y + yA + 0.1D, var42 + zA));
+			} else {
+				RenderUtil.drawOutlinedBoundingBox(new AxisAlignedBB(var33 - 0.2D, y - yA - 0.1D, var42 - 0.2D, var33 + 0.2D, y + yA + 0.2D, var42 + 0.2D));
+			}
+			GL11.glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+			RenderUtil.post3D();
 		}
 	}
 
