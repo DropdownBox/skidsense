@@ -72,10 +72,28 @@ extends Module {
     		ArrayList<Module> mods = (ArrayList<Module>) ((ArrayList<Module>) Client.instance.getModuleManager().getModules()).clone();
             Collections.sort(mods, new Comparator<Module>() { public int compare(Module m1, Module m2) { if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) > Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return -1; } if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) < Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return 1; } return 0; } }); 
             
-            String clientNameString = "Exusiai";
-            Client.fontManager.comfortaa18.drawStringWithShadow(clientNameString.substring(0,1), 4, (float)2, new Color(220,1,5).getRGB());
-            Client.fontManager.comfortaa18.drawStringWithShadow(clientNameString.substring(1,clientNameString.length()), Client.fontManager.comfortaa18.getStringWidth(clientNameString.substring(0,1))+5, (float)2, new Color(255,255,255).getRGB());
-            Client.fontManager.comfortaa18.drawStringWithShadow("#001", Client.fontManager.comfortaa18.getStringWidth(clientNameString)+8, 2, new Color(180,180,180).getRGB());
+
+	        String[] a;
+	        String first;
+	        String second;
+            if((a = Client.clientName.split("\\|")).length > 2){
+            	first = a[0];
+            	second = a[1];
+            } else {
+				try {
+					first = Client.clientName.substring(0, 1);
+				} catch (IndexOutOfBoundsException e){
+					first = "";
+				}
+            	try {
+		            second = Client.clientName.substring(1);
+	            } catch (IndexOutOfBoundsException e){
+            		second = "";
+	            }
+            }
+            Client.fontManager.comfortaa18.drawStringWithShadow(first, 4, (float)2, new Color(220,1,5).getRGB());
+            Client.fontManager.comfortaa18.drawStringWithShadow(second, Client.fontManager.comfortaa18.getStringWidth(first)+5, (float)2, new Color(255,255,255).getRGB());
+            Client.fontManager.comfortaa18.drawStringWithShadow("#001", Client.fontManager.comfortaa18.getStringWidth(Client.clientName)+8, 2, new Color(180,180,180).getRGB());
             /*Client.fontManager.comfortaa18.drawStringWithShadow("Skid", 4, (float)2, new Color(255,255,255).getRGB());
             Client.fontManager.comfortaa18.drawStringWithShadow("sense", Client.fontManager.comfortaa18.getStringWidth("Skid")+5, (float)2, new Color(220,1,5).getRGB());
             Client.fontManager.comfortaa18.drawStringWithShadow("#001", Client.fontManager.comfortaa18.getStringWidth("Skidsense")+7, 2, new Color(180,180,180).getRGB());*/
