@@ -21,6 +21,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.Display;
 
 public class Client {
 
@@ -36,7 +37,10 @@ public class Client {
 	private TabGUI tabui;
 	public static ResourceLocation CLIENT_CAPE = new ResourceLocation("skidsense/cape.png");
 	public static final ArrayList<ResourceLocation> gifLocations = new ArrayList<ResourceLocation>();
-
+	public static void renameClient(String s){
+		clientName = s;
+		Display.setTitle(String.format("%s [1.8.8]",s));
+	}
 	public void initiate() {
 		fontManager = fontMgr = new FontManager();
 		this.commandmanager = new CommandManager();

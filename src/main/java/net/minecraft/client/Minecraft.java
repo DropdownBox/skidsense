@@ -610,7 +610,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
     private void createDisplay() throws LWJGLException {
         Display.setResizable(true);
-        Display.setTitle("Exusiai [1.8.8]");
+        Display.setTitle(String.format("%s [1.8.8]",Client.clientName));
 
         try {
             Display.create((new PixelFormat()).withDepthBits(24));
