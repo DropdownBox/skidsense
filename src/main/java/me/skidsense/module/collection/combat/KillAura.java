@@ -230,7 +230,7 @@ public class KillAura extends Module {
 		int hurtcolor;
 		boolean setcolor = target != null && target.hurtResistantTime <= 0;
 		if(target != null && setcolor) {
-			hurtcolor = Colors.getColor(new Color(255, 255, 255,255));
+			hurtcolor = Colors.getColor(new Color(254, 255, 255,255));
 			drawESP2(hurtcolor);
 		}else{
 			hurtcolor = Colors.getColor(new Color(255, 0, 0,255));
