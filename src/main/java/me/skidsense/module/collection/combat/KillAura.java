@@ -392,7 +392,21 @@ public class KillAura extends Module {
 		return getDistanceBetweenAngles(this.mc.thePlayer.rotationPitch, rotateNCP(entity)[0]);
 	}
 
-	private float[] rotateNCP(Entity entity) {
+	public static float[] rotateNCP(Entity a1) {
+		if (a1 == null) {
+			return null;
+		} else {
+			double v1 = a1.posX - Minecraft.getMinecraft().thePlayer.posX;
+			double v3 = a1.posY + (double)a1.getEyeHeight() * 0.9D - (Minecraft.getMinecraft().thePlayer.posY + (double)Minecraft.getMinecraft().thePlayer.getEyeHeight());
+			double v5 = a1.posZ - Minecraft.getMinecraft().thePlayer.posZ;
+			double v7 = (double)MathHelper.ceiling_float_int((float) (v1 * v1 + v5 * v5));
+			float v9 = (float)(Math.atan2(v5, v1) * 180.0D / 3.141592653589793D) - 90.0F;
+			float v10 = (float)(-(Math.atan2(v3, v7) * 180.0D / 3.141592653589793D));
+			return new float[]{Minecraft.getMinecraft().thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(v9 - Minecraft.getMinecraft().thePlayer.rotationYaw), Minecraft.getMinecraft().thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(v10 - Minecraft.getMinecraft().thePlayer.rotationPitch)};
+		}
+	}
+
+	private float[] rotateNCP_backup(Entity entity) {
         double diffX = entity.posX - mc.thePlayer.posX;
         double diffY = entity.posY + (double)entity.getEyeHeight() * 0.9D - (mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight());
         double diffZ = entity.posZ - mc.thePlayer.posZ;
