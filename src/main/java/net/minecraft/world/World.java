@@ -3469,11 +3469,14 @@ public abstract class World implements IBlockAccess {
     }
 
     /**
+     * @author prplz/2pi
+     * @reason VoidFlickerFix
      * Returns horizon height for use in rendering the sky.
      */
     public double getHorizon()
     {
-        return this.worldInfo.getTerrainType() == WorldType.FLAT ? 0.0D : 63.0D;
+        return 0.0;
+        //return this.worldInfo.getTerrainType() == WorldType.FLAT ? 0.0D : 63.0D;
     }
 
     /**

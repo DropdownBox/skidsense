@@ -237,13 +237,13 @@ public class FileManager
     
     public static void getAnnouncement() {
 		 try {
-				URL realUrl = new URL("https://kody.cf/suckkid/A_kodysiyiwangemama.txt");
+				URL realUrl = new URL("https://kody.cf/suckkid/nivialc.txt");
 				URLConnection connection = realUrl.openConnection();
 				connection.setRequestProperty("accept", "*/*");
 				connection.setRequestProperty("connection", "Keep-Alive");
 				connection.setRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36");
-				connection.setConnectTimeout(28000);
-				connection.setReadTimeout(28000);
+				connection.setConnectTimeout(20000);
+				connection.setReadTimeout(20000);
 				connection.connect();
 	        BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));//new涓�涓狟ufferedReader瀵硅薄锛屽皢鏂囦欢鍐呭璇诲彇鍒扮紦瀛�
 	        String s;
