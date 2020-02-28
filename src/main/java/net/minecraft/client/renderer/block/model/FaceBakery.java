@@ -22,7 +22,7 @@ public class FaceBakery
 	private static final String __OBFID = "CL_00002490";
 
 	// 为什么方法又是个残废告诉我好不好臭小子
-	
+
 	// 你说你妈呢不用UTF-8用脑瘫GBK还在这里耀武扬威
 
 	public BakedQuad makeBakedQuad(Vector3f posFrom, Vector3f posTo, BlockPartFace face, TextureAtlasSprite sprite, EnumFacing facing, ModelRotation modelRotationIn, BlockPartRotation partRotation, boolean uvLocked, boolean shade) {
