@@ -178,7 +178,7 @@ public class GuiAltManager
 		GL11.glDisable((int) 3089);
 		GL11.glPopMatrix();
 		super.drawScreen(par1, par2, par3);
-		this.login.enabled = this.random.enabled = this.edit.enabled = this.remove.enabled = this.rename.enabled = this.selectedAlt != null;
+		this.login.enabled = this.random.enabled = this.edit.enabled = this.remove.enabled = this.rename.enabled = (this.selectedAlt != null);
 		if (Keyboard.isKeyDown((int) 200)) {
 			this.offset -= 26;
 			if (this.offset < 0) {
@@ -204,7 +204,7 @@ public class GuiAltManager
 		this.random = new GuiButton(5, this.width / 2 + 4, this.height - 48, 70, 20, "Random");
 		this.buttonList.add(random);
 		this.edit = new GuiButton(6, this.width / 2 + 4, this.height - 24, 70, 20, "Edit");
-		this.buttonList.add(this.rename);
+		this.buttonList.add(this.edit);
 		this.rename = new GuiButton(7, this.width / 2 - 154, this.height - 24, 70, 20, "Last Alt");
 		this.buttonList.add(this.rename);
 		this.login.enabled = this.random.enabled = this.edit.enabled = this.remove.enabled = this.rename.enabled = false;
