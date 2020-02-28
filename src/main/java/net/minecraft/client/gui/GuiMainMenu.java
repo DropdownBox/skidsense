@@ -23,8 +23,7 @@ public class GuiMainMenu extends GuiScreen {
 	      //this.memetext = "KawaiivaticAntiLeak Protected";
    }
 
-   @SuppressWarnings("unchecked")
-public void initGui() {
+   public void initGui() {
       super.initGui();
       this.buttonList.clear();
       String strSSP = I18n.format("Single");
