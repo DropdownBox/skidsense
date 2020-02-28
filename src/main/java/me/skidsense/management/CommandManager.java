@@ -19,7 +19,7 @@ import java.util.Optional;
 public class CommandManager
 implements Manager {
     private List<Command> commands;
-
+    public String PREFIX = ".";
     @Override
     public void init() {
         SplashProgress.setProgress(2, "CommandManager Init");
@@ -72,7 +72,7 @@ implements Manager {
 
     @EventHandler
     private void onChat(EventChat e) {
-        if (e.getMessage().length() > 1 && e.getMessage().startsWith(".")) {
+        if (e.getMessage().length() > 1 && e.getMessage().startsWith(PREFIX)) {
             e.setCancelled(true);
             String[] args = e.getMessage().trim().substring(1).split(" ");
             Optional<Command> possibleCmd = this.getCommandByName(args[0]);
@@ -82,7 +82,7 @@ implements Manager {
                     Client.sendMessage(result);
                 }
             } else {
-            	Client.sendMessage(String.format("Command not found Try '%shelp'", "."));
+            	Client.sendMessage(String.format("Command not found Try '%shelp'", PREFIX));
             }
         }
     }
