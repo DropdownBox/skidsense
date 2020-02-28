@@ -13,6 +13,7 @@ import me.skidsense.util.RenderUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
@@ -173,9 +174,9 @@ public class Xray
         return (float) yaw;
     }
     private void renderBlock(BlockPos pos,Color color,float alpha) {
-        double x = (double)pos.getX() - mc.getRenderManager().renderPosX;
-        double y = (double)pos.getY() - mc.getRenderManager().renderPosY;
-        double z = (double)pos.getZ() - mc.getRenderManager().renderPosZ;
+        double x = (double)pos.getX() - RenderManager.renderPosX;
+        double y = (double)pos.getY() - RenderManager.renderPosY;
+        double z = (double)pos.getZ() - RenderManager.renderPosZ;
         RenderUtil.drawSolidBlockESP(x, y, z, color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
 	

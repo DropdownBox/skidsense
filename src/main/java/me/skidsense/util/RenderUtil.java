@@ -658,46 +658,31 @@ public class RenderUtil {
 	public static void drawOutlinedBoundingBox(AxisAlignedBB aa) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+        BBDrawA(aa, tessellator, worldRenderer);
+    }
+
+    private static void BBDrawA(AxisAlignedBB aa, Tessellator tessellator, WorldRenderer worldRenderer) {
         worldRenderer.begin(3, DefaultVertexFormats.POSITION);
-        worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
+        BBDraw3(aa, worldRenderer);
         tessellator.draw();
         worldRenderer.begin(3, DefaultVertexFormats.POSITION);
-        worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
+        BBDraw2(aa, worldRenderer);
         tessellator.draw();
         worldRenderer.begin(1, DefaultVertexFormats.POSITION);
         worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
         worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
-        tessellator.draw();
+        BBDraw1(aa, tessellator, worldRenderer);
     }
 
-	public static void drawBoundingBox(AxisAlignedBB aa) {
+    public static void drawBoundingBox(AxisAlignedBB aa) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION);
         worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
         worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
-        tessellator.draw();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+        BBDraw1(aa, tessellator, worldRenderer);
+        worldRenderer.endVertex();
+        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION);
         worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
         worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
@@ -707,27 +692,22 @@ public class RenderUtil {
         worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
         tessellator.draw();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
-        worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
+        worldRenderer.endVertex();
+        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION);
+        BBDraw2(aa, worldRenderer);
         worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
         tessellator.draw();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
-        worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
-        worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
-        worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
+        worldRenderer.endVertex();
+        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION);
+        BBDraw3(aa, worldRenderer);
         worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
         tessellator.draw();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldRenderer.endVertex();
+        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION);
         worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
         worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
         worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
@@ -737,7 +717,8 @@ public class RenderUtil {
         worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
         tessellator.draw();
-        worldRenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldRenderer.endVertex();
+        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION);
         worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
         worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
         worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
@@ -746,10 +727,37 @@ public class RenderUtil {
         worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
         worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
+        tessellator.draw();
+        worldRenderer.endVertex();
+    }
+
+    private static void BBDraw3(AxisAlignedBB aa, WorldRenderer worldRenderer) {
+        worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
+        worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
+        worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
+        worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
+        worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
+    }
+
+    private static void BBDraw2(AxisAlignedBB aa, WorldRenderer worldRenderer) {
+        worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
+        worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
+        worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
+        worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
+        worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
+    }
+
+    private static void BBDraw1(AxisAlignedBB aa, Tessellator tessellator, WorldRenderer worldRenderer) {
+        worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
+        worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
+        worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
+        worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
+        worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
+        worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
         tessellator.draw();
     }
 
-	public static void pre3D() {
+    public static void pre3D() {
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -990,8 +998,11 @@ public class RenderUtil {
     // TODO 你这是什么傻逼FernFlower解出来的RenderUtil在这里耀武扬威呢不用GL11的常数你让我维护你妈呢
     public static void drawSolidBlockESP(double x, double y, double z, float red, float green, float blue, float alpha) {
         glInit(red, green, blue, alpha);
+        glEnable(GL_POLYGON_SMOOTH);
+        glHint(GL_POLYGON_SMOOTH_HINT,GL_NICEST);
         RenderUtil.drawBoundingBox(new AxisAlignedBB(x, y, z, x + 1.0, y + 1.0, z + 1.0));
         GL11.glDisable(2848);
+        glDisable(GL_POLYGON_SMOOTH);
         GL11.glEnable(3553);
         GL11.glEnable(2929);
         GL11.glDepthMask(true);
@@ -1161,30 +1172,7 @@ public class RenderUtil {
         public static void drawOutlinedBoundingBox(final AxisAlignedBB aa) {
             final Tessellator tessellator = Tessellator.getInstance();
             final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-            worldRenderer.begin(3, DefaultVertexFormats.POSITION);
-            worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
-            worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
-            worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
-            worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
-            worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
-            tessellator.draw();
-            worldRenderer.begin(3, DefaultVertexFormats.POSITION);
-            worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
-            worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
-            worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
-            worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
-            worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
-            tessellator.draw();
-            worldRenderer.begin(1, DefaultVertexFormats.POSITION);
-            worldRenderer.pos(aa.minX, aa.minY, aa.minZ).endVertex();
-            worldRenderer.pos(aa.minX, aa.maxY, aa.minZ).endVertex();
-            worldRenderer.pos(aa.maxX, aa.minY, aa.minZ).endVertex();
-            worldRenderer.pos(aa.maxX, aa.maxY, aa.minZ).endVertex();
-            worldRenderer.pos(aa.maxX, aa.minY, aa.maxZ).endVertex();
-            worldRenderer.pos(aa.maxX, aa.maxY, aa.maxZ).endVertex();
-            worldRenderer.pos(aa.minX, aa.minY, aa.maxZ).endVertex();
-            worldRenderer.pos(aa.minX, aa.maxY, aa.maxZ).endVertex();
-            tessellator.draw();
+            BBDrawA(aa, tessellator, worldRenderer);
         }
     }
 }
