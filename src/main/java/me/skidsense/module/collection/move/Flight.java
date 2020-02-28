@@ -45,7 +45,7 @@ extends Module {
 			for (int index = 0; index <= (UHC.getValue() ? 9 : 7); ++index) {
 
 				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
-						mc.thePlayer.posX, mc.thePlayer.posY + 0.41999998688697815, mc.thePlayer.posZ, false));
+						mc.thePlayer.posX, mc.thePlayer.posY + 0.410791087633169896, mc.thePlayer.posZ, false));
 				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
 						mc.thePlayer.posX, mc.thePlayer.posY + 0.015555072702198913, mc.thePlayer.posZ, false));
 				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(

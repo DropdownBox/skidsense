@@ -22,13 +22,12 @@ public class ResourcePackListEntryDefault extends ResourcePackListEntry
         super(resourcePacksGUIIn);
         this.field_148320_d = this.mc.getResourcePackRepository().rprDefaultResourcePack;
         DynamicTexture dynamictexture;
-
-        try
-        {
+        try {
             dynamictexture = new DynamicTexture(this.field_148320_d.getPackImage());
-        }
-        catch (IOException var4)
-        {
+        } catch (IOException var4) {
+            dynamictexture = TextureUtil.missingTexture;
+        } catch (NullPointerException var4) {
+            //如果pack.png则不存在抛出NullPointerException
             dynamictexture = TextureUtil.missingTexture;
         }
 
