@@ -70,7 +70,7 @@ public class Scaffold extends Module {
    public static List getBlacklistedBlocks() {
       return blacklistedBlocks;
    }
-
+   //TODO scaffold 狗ban了，需要修复
    public Scaffold() {
       super("Scaffold Walk", new String[]{"Scaffold", "ScaffoldWalk", "airwalk"}, ModuleType.Player);
       this.addValues(new Value[]{tower, silent, nosprint, swingItem, towermove, safe, down, pick});
