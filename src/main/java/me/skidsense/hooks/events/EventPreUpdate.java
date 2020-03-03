@@ -4,16 +4,16 @@ import me.skidsense.hooks.value.Event;
 
 public class EventPreUpdate
 extends Event {
-	public static float yaw;
-    public static float pitch;
+	public float yaw;
+    public float pitch;
     public double y;
-    private boolean ground;
+    private boolean onGround;
 
-    public EventPreUpdate(float yaw, float pitch, double y, boolean ground) {
+    public EventPreUpdate(float yaw, float pitch, double y, boolean onGround) {
         this.yaw = yaw;
         this.pitch = pitch;
         this.y = y;
-        this.ground = ground;
+        this.onGround = onGround;
     }
 
     public float getYaw() {
@@ -40,12 +40,12 @@ extends Event {
         this.y = y;
     }
 
-    public boolean isOnground() {
-        return this.ground;
+    public boolean isOnGround() {
+        return this.onGround;
     }
 
-    public void setOnground(boolean ground) {
-        this.ground = ground;
+    public void setOnGround(boolean ground) {
+        this.onGround = ground;
     }
 
 	public void setRotations(float[] rot, boolean b) {

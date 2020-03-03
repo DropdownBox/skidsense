@@ -1,18 +1,13 @@
 package me.skidsense.module.collection.player;
 
-import me.skidsense.Client;
 import me.skidsense.hooks.EventHandler;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
-import me.skidsense.hooks.value.Option;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
-import me.skidsense.util.MoveUtil;
-import me.skidsense.util.PlayerUtil;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
 public class NoFall
@@ -39,7 +34,7 @@ extends Module {
       				if(isBlockUnder()) {
                   	  Minecraft.getMinecraft().thePlayer.fallDistance = 0.0F;
       					Notifications.getManager().post("NoFall触发");
-                        e.setOnground(true);
+                        e.setOnGround(true);
       				}
                   }
                }

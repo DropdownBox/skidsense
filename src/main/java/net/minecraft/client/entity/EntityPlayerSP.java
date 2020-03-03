@@ -216,7 +216,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         boolean oldGround = this.onGround;
         this.rotationPitch = e.getPitch();
         this.rotationYaw = e.getYaw();
-        this.onGround = e.isOnground();
+        this.onGround = e.isOnGround();
         
         boolean flag = this.isSprinting();
 
@@ -264,19 +264,19 @@ public class EntityPlayerSP extends AbstractClientPlayer
             {
                 if (flag2 && flag3)
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, e.getY(), this.posZ, this.rotationYaw, this.rotationPitch, e.isOnground()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, e.getY(), this.posZ, this.rotationYaw, this.rotationPitch, e.isOnGround()));
                 }
                 else if (flag2)
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, e.getY(), this.posZ, e.isOnground()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, e.getY(), this.posZ, e.isOnGround()));
                 }
                 else if (flag3)
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, e.isOnground()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, e.isOnGround()));
                 }
                 else
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer(e.isOnground()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer(e.isOnGround()));
                 }
             }
             else
@@ -475,70 +475,57 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     protected boolean pushOutOfBlocks(double x, double y, double z)
     {
-        if (this.noClip)
-        {
-            return false;
-        }
-        else
-        {
+        if (!this.noClip) {
             BlockPos blockpos = new BlockPos(x, y, z);
-            double d0 = x - (double)blockpos.getX();
-            double d1 = z - (double)blockpos.getZ();
+            double d0 = x - (double) blockpos.getX();
+            double d1 = z - (double) blockpos.getZ();
 
-            if (!this.isOpenBlockSpace(blockpos))
-            {
+            if (!this.isOpenBlockSpace(blockpos)) {
                 int i = -1;
                 double d2 = 9999.0D;
 
-                if (this.isOpenBlockSpace(blockpos.west()) && d0 < d2)
-                {
+                if (this.isOpenBlockSpace(blockpos.west()) && d0 < d2) {
                     d2 = d0;
                     i = 0;
                 }
 
-                if (this.isOpenBlockSpace(blockpos.east()) && 1.0D - d0 < d2)
-                {
+                if (this.isOpenBlockSpace(blockpos.east()) && 1.0D - d0 < d2) {
                     d2 = 1.0D - d0;
                     i = 1;
                 }
 
-                if (this.isOpenBlockSpace(blockpos.north()) && d1 < d2)
-                {
+                if (this.isOpenBlockSpace(blockpos.north()) && d1 < d2) {
                     d2 = d1;
                     i = 4;
                 }
 
-                if (this.isOpenBlockSpace(blockpos.south()) && 1.0D - d1 < d2)
-                {
+                if (this.isOpenBlockSpace(blockpos.south()) && 1.0D - d1 < d2) {
                     d2 = 1.0D - d1;
                     i = 5;
                 }
 
                 float f = 0.1F;
 
-                if (i == 0)
-                {
-                    this.motionX = (double)(-f);
+                if (i == 0) {
+                    this.motionX = (double) (-f);
                 }
 
-                if (i == 1)
-                {
-                    this.motionX = (double)f;
+                if (i == 1) {
+                    this.motionX = (double) f;
                 }
 
-                if (i == 4)
-                {
-                    this.motionZ = (double)(-f);
+                if (i == 4) {
+                    this.motionZ = (double) (-f);
                 }
 
-                if (i == 5)
-                {
-                    this.motionZ = (double)f;
+                if (i == 5) {
+                    this.motionZ = (double) f;
                 }
+                return true;
             }
 
-            return false;
         }
+        return false;
     }
 
     /**
@@ -748,8 +735,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
     }
 
     public void setMoveSpeed(final EventMove event, final double speed) {
-        double forward = (double)this.mc.thePlayer.movementInput.moveForward;
-        double strafe = (double)this.mc.thePlayer.movementInput.moveStrafe;
+        double forward = MovementInput.moveForward;
+        double strafe = MovementInput.moveStrafe;
         float yaw = this.mc.thePlayer.rotationYaw;
         if (forward == 0.0 && strafe == 0.0) {
             event.setX(0.0);

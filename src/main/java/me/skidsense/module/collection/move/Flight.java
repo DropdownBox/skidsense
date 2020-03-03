@@ -25,7 +25,8 @@ import net.minecraft.util.MovementInput;
 
 public class Flight
 extends Module {
-    public Mode mode = new Mode("Mode", "mode", (Enum[])FlightMode.values(), (Enum)FlightMode.Guardian);
+    private static final EntityPlayerSP MoveUtil = null;
+	public Mode mode = new Mode("Mode", "Mode", FlightMode.values(), FlightMode.Guardian);
     private Option<Boolean> Stop = new Option("Stop", "Stop", Boolean.valueOf(true));
     private Option<Boolean> UHC = new Option("UHC", "UHC", Boolean.valueOf(true));
     int counter, level;
@@ -60,7 +61,7 @@ extends Module {
 
     @Override
     public void onEnable() {
-        if ( this.mode.getValue() == FlightMode.HypixelZoom) {
+        if ( this.mode.getValue() == FlightMode.Damage) {
         	damagePlayerNew();
         	if(!(Stop.getValue().booleanValue())){
                 b2 = true;
@@ -69,75 +70,59 @@ extends Module {
                 b2=false;
             }
         }
-        if(mode.getValue().equals(FlightMode.HypixelIBoost)){
-
-        }
-		level = 1;
-		moveSpeed = 0.1D;
-		FirstBoost = true;
-		//b2 = true;
-		lastDist = 0.0D;
-		posY=mc.thePlayer.posY;
     }
 
     @Override
     public void onDisable() {
-        if (this.mode.getValue() == FlightMode.Area51) {
-            this.mc.thePlayer.motionX = 0.0;
-            this.mc.thePlayer.motionZ = 0.0;
-        }
-        this.mc.timer.timerSpeed = 1.0f;
+        mc.timer.timerSpeed = 1.0f;
 		level = 1;
 		moveSpeed = 0.1D;
 		b2 = false;
 		lastDist = 0.0D;
     }
     private boolean canZoom() {
-        if (this.mc.thePlayer.moving() && this.mc.thePlayer.onGround) {
-            return true;
-        }
-        return false;
+	    return mc.thePlayer.moving() && mc.thePlayer.onGround;
     }
     @EventHandler
     private void onUpdate(EventPreUpdate e) {
         this.setSuffix(this.mode.getValue());
 
         if (this.mode.getValue() == FlightMode.Guardian) {
-            this.mc.timer.timerSpeed = 1.7f;
-            if (!this.mc.thePlayer.onGround && this.mc.thePlayer.ticksExisted % 2 == 0) {
-                this.mc.thePlayer.motionY = 0.04;
+            mc.timer.timerSpeed = 1.7f;
+            if (!mc.thePlayer.onGround && mc.thePlayer.ticksExisted % 2 == 0) {
+                mc.thePlayer.motionY = 0.04;
             }
-            if (this.mc.gameSettings.keyBindJump.pressed) {
-                this.mc.thePlayer.motionY += 1.0;
+            if (mc.gameSettings.keyBindJump.pressed) {
+                mc.thePlayer.motionY += 1.0;
             }
-            if (this.mc.gameSettings.keyBindSneak.pressed) {
-                this.mc.thePlayer.motionY -= 1.0;
+            if (mc.gameSettings.keyBindSneak.pressed) {
+                mc.thePlayer.motionY -= 1.0;
             }
-        } else if (this.mode.getValue() == FlightMode.Vanilla) {
-            this.mc.thePlayer.motionY = this.mc.thePlayer.movementInput.jump ? 1.0 : (this.mc.thePlayer.movementInput.sneak ? -1.0 : 0.0);
-            if (this.mc.thePlayer.moving()) {
-                MoveUtil.setSpeed(3.0);
+        } else if (this.mode.getValue() == FlightMode.Motion) {
+            mc.thePlayer.motionY = mc.thePlayer.movementInput.jump ? 1.0 : (mc.thePlayer.movementInput.sneak ? -1.0 : 0.0);
+            if (mc.thePlayer.moving()) {
+            	// FIXME
+                //mc.thePlayer.setSpeed(3.0);
             } else {
-            	MoveUtil.setSpeed(0.0);
+            	// FIXME
+                //mc.thePlayer.setSpeed(0.0);
             }
-        } else if (this.mode.getValue() == FlightMode.Area51) {
-            this.mc.thePlayer.motionY = this.mc.thePlayer.movementInput.jump ? 1.0 : (this.mc.thePlayer.movementInput.sneak ? -1.0 : 0.0);
-        } else if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.HypixelZoom) {
+        } else if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
 
             Minecraft.getMinecraft().thePlayer.motionY = 0.0D;
             if(mc.thePlayer.hurtResistantTime>=19
                     &&
                     !b2
                     &&
-                    this.mode.getValue() == FlightMode.HypixelZoom
+                    this.mode.getValue() == FlightMode.Damage
                     &&
                     (Stop.getValue().booleanValue()))
             {
                 b2=true;
-                this.mc.thePlayer.motionY = 0.40674447999965f;
+                mc.thePlayer.motionY = 0.40674447999965f;
             }
             if(!b2&&
-            this.mode.getValue() == FlightMode.HypixelZoom
+            this.mode.getValue() == FlightMode.Damage
                     &&
                     (Stop.getValue().booleanValue())){
                 mc.thePlayer.motionZ *= 0.0;
@@ -151,53 +136,26 @@ extends Module {
    			if (Minecraft.getMinecraft().gameSettings.keyBindSneak.pressed)
    				Minecraft.getMinecraft().thePlayer.motionY -= 0.5f;
    			e.setY(mc.thePlayer.posY+posY/10000000);
-        } else if (this.mode.getValue() == FlightMode.OldGuardianLongJumpFly && this.mc.thePlayer.moving() && !Client.instance.getModuleManager().getModuleByClass(Speed.class).isEnabled()) {
-            if (this.mc.thePlayer.isAirBorne) {
-                if (this.mc.thePlayer.ticksExisted % 12 == 0 && this.mc.theWorld.getBlockState(new BlockPos(this.mc.thePlayer.posX, this.mc.thePlayer.posY, this.mc.thePlayer.posZ)).getBlock() instanceof BlockAir) {
-                    MoveUtil.setSpeed(6.5);
-                    this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.mc.thePlayer.posX, this.mc.thePlayer.posY + 1.0E-9, this.mc.thePlayer.posZ, this.mc.thePlayer.onGround));
-                    this.mc.thePlayer.motionY = 0.455;
+        } else if (this.mode.getValue() == FlightMode.OldLongJumpFly && mc.thePlayer.moving() && !Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()) {
+            if (mc.thePlayer.isAirBorne) {
+                if (mc.thePlayer.ticksExisted % 12 == 0 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)).getBlock() instanceof BlockAir) {
+					// FIXME
+                	//mc.thePlayer.setSpeed(6.5);
+                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.0E-9, mc.thePlayer.posZ, mc.thePlayer.onGround));
+                    mc.thePlayer.motionY = 0.455;
                 } else {
-                	MoveUtil.setSpeed((float)Math.sqrt(this.mc.thePlayer.motionX * this.mc.thePlayer.motionX + this.mc.thePlayer.motionZ * this.mc.thePlayer.motionZ));
+                	// FIXME
+                	//MoveUtil.setSpeed((float)Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ));
                 }
             } else {
-                this.mc.thePlayer.motionX = 0.0;
-                this.mc.thePlayer.motionZ = 0.0;
-            }
-            if (this.mc.thePlayer.movementInput.jump) {
-                this.mc.thePlayer.motionY = 0.85;
-            } else if (this.mc.thePlayer.movementInput.sneak) {
-                this.mc.thePlayer.motionY = -0.85;
-            }
-        }
-        if(mode.getValue().equals(FlightMode.HypixelIBoost)){
-            mc.thePlayer.motionY=0;
-            ++counter;
-            if (Minecraft.getMinecraft().thePlayer.moveForward == 0
-                    && Minecraft.getMinecraft().thePlayer.moveStrafing == 0) {
-                Minecraft.getMinecraft().thePlayer.setPosition(
-                        Minecraft.getMinecraft().thePlayer.posX + 1.0D,
-                        Minecraft.getMinecraft().thePlayer.posY + 1.0D,
-                        Minecraft.getMinecraft().thePlayer.posZ + 1.0D);
-                Minecraft.getMinecraft().thePlayer.setPosition(Minecraft.getMinecraft().thePlayer.prevPosX,
-                        Minecraft.getMinecraft().thePlayer.prevPosY,
-                        Minecraft.getMinecraft().thePlayer.prevPosZ);
-                Minecraft.getMinecraft().thePlayer.motionX = 0.0D;
-                Minecraft.getMinecraft().thePlayer.motionZ = 0.0D;
-            }
-            Minecraft.getMinecraft().thePlayer.motionY = 0.0D;
-            if (Minecraft.getMinecraft().gameSettings.keyBindJump.pressed)
-                Minecraft.getMinecraft().thePlayer.motionY = 0d;
-            if (Minecraft.getMinecraft().gameSettings.keyBindSneak.pressed)
-                Minecraft.getMinecraft().thePlayer.motionY = 0d;
-            if (counter %2==0&&counter %2 != 1&&counter%10!=0) {
-                Minecraft.getMinecraft().thePlayer.setPosition(Minecraft.getMinecraft().thePlayer.posX,
-                        Minecraft.getMinecraft().thePlayer.posY + (1.2E-10D),
-                        Minecraft.getMinecraft().thePlayer.posZ);
+                mc.thePlayer.motionX = 0.0;
+                mc.thePlayer.motionZ = 0.0;
 
             }
-            if(counter%10==0){
-                hClip(lastDist*0.5);
+            if (mc.thePlayer.movementInput.jump) {
+                mc.thePlayer.motionY = 0.85;
+            } else if (mc.thePlayer.movementInput.sneak) {
+                mc.thePlayer.motionY = -0.85;
             }
         }
     }
@@ -250,53 +208,18 @@ extends Module {
     }
     @EventHandler
     public void onPost(EventPostUpdate e) {
-    	if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.HypixelZoom) {
+    	if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
  			double xDist = Minecraft.getMinecraft().thePlayer.posX
  					- Minecraft.getMinecraft().thePlayer.prevPosX;
  			double zDist = Minecraft.getMinecraft().thePlayer.posZ
  					- Minecraft.getMinecraft().thePlayer.prevPosZ;
  			lastDist = Math.sqrt(xDist * xDist + zDist * zDist);
     	}
-    	if(mode.getValue().equals(FlightMode.HypixelIBoost)){
-            double xDist = Minecraft.getMinecraft().thePlayer.posX
-                    - Minecraft.getMinecraft().thePlayer.prevPosX;
-            double zDist = Minecraft.getMinecraft().thePlayer.posZ
-                    - Minecraft.getMinecraft().thePlayer.prevPosZ;
-            lastDist = Math.sqrt(xDist * xDist + zDist * zDist);
-        }
     }int stage;
     private double distance;
     @EventHandler
     private void onMove(EventMove e) {
-        if(this.mode.getValue().equals(FlightMode.HypixelIBoost)){
-          /*  switch (this.stage) {
-                case 1: {
-                    this.mc.timer.timerSpeed = 1.22f;
-                    this.movementSpeed = 1.89 * MathUtil.getBaseMovementSpeed() - 0.005;
-                    this.distance += 1.0;
-                    if (this.distance == 1.0) {
-                        e.setY(e.getY() + 8.0E-6);
-                        break;
-                    }
-                    if (this.distance != 2.0) break;
-                    e.setY(e.getY() - 8.0E-6);
-                    this.distance = 0.0;
-                    break;
-                }
-                case 2: {
-                    this.movementSpeed = 1.175 * MathUtil.getBaseMovementSpeed() - 0.01;
-                    break;
-                }
-                default: {
-                    this.movementSpeed = (float)MathUtil.getBaseMovementSpeed();
-                }
-            }
-            this.movementSpeed = Math.max(this.movementSpeed, MathUtil.getBaseMovementSpeed());
-            this.mc.thePlayer.setMoveSpeed(e, this.movementSpeed);
-            ++this.stage;*/
-            this.mc.thePlayer.setMoveSpeed(e, getBaseMoveSpeed());
-        }
-		if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.HypixelZoom) {
+		if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
 			if (b2) {
 			    if(moveSpeed==7D){
                     if(!FirstBoost)moveSpeed =0.1D;
@@ -334,7 +257,7 @@ extends Module {
                     }
                 }
 
-				moveSpeed = this.mode.getValue() == FlightMode.HypixelZoom ? Math.max(moveSpeed, MathUtil.getBaseMovementSpeed()) : MathUtil.getBaseMovementSpeed();
+				moveSpeed = this.mode.getValue() == FlightMode.Damage ? Math.max(moveSpeed, MathUtil.getBaseMovementSpeed()) : MathUtil.getBaseMovementSpeed();
 				mc.thePlayer.setMoveSpeed(e,moveSpeed);
 
 			}
@@ -343,24 +266,18 @@ extends Module {
 
     double getBaseMoveSpeed() {
         double baseSpeed = 0.2873;
-        if (this.mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-            int amplifier = this.mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier();
+        if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+            int amplifier = mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier();
             baseSpeed *= 1.0 + 0.2 * (double)(amplifier + 1);
         }
         return baseSpeed;
     }
 
-    public static enum FlightMode {
-        Vanilla,
+    public enum FlightMode {
+        Motion,
         Guardian,
         Hypixel,
-        HypixelIBoost,
-        HypixelZoom,
-        Area51,
-        OldGuardianLongJumpFly,
-        GuardianLongJumpFly,
-        AGC;
+        Damage,
+        OldLongJumpFly
     }
-
 }
-
