@@ -44,6 +44,7 @@ import me.skidsense.module.collection.world.NoRotate;
 import me.skidsense.module.collection.world.SpeedMine;
 import me.skidsense.util.GLUtils;
 
+import java.lang.reflect.Field;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -57,8 +58,14 @@ implements Manager {
     public static List<Module> modules = new ArrayList<Module>();
     public static ArrayList<Module> sortedModList = new ArrayList<Module>();
     private boolean enabledNeededMod = true;
-    public boolean nicetry = true;
 
+    public void reflectionExample(Module module){
+        for (Field field : module.getClass().getFields()) {
+            if(field.getType().isAssignableFrom(Value.class)){
+                // doSomething();
+            }
+        }
+    }
     @Override
     public void init() {
     	SplashProgress.setProgress(5, "ModuleManager Init");
