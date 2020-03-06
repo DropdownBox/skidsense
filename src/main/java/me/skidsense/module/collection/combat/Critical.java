@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
+import org.greenrobot.eventbus.Subscribe;
 
 public class Critical extends Module {
 
@@ -21,19 +22,12 @@ public class Critical extends Module {
     }
 
     public static boolean canCrit() {
-        boolean b;
-        if (!mc.thePlayer.isOnLadder() 
-        	&& !mc.thePlayer.isInWater() 
-        	&& !mc.thePlayer.isPotionActive(Potion.blindness) 
-        	&& mc.thePlayer.ridingEntity == null 
-        	&& mc.thePlayer.onGround 
-        	&& !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
-            b = true;
-        }
-        else {
-            b = false;
-        }
-        return b;
+        return !mc.thePlayer.isOnLadder()
+		        && !mc.thePlayer.isInWater()
+		        && !mc.thePlayer.isPotionActive(Potion.blindness)
+		        && mc.thePlayer.ridingEntity == null
+		        && mc.thePlayer.onGround
+		        && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled();
     }
     
 	public static void doEditCrit() {
