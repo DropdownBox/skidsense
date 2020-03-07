@@ -5,6 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import me.skidsense.color.Colors;
+import me.skidsense.util.ClientUtil;
+import me.skidsense.util.MouseInputHandler;
+import me.skidsense.util.RenderUtil;
+import music.ui.CustomTextF;
+import music.ui.SongListSlot;
+import music.ui.TrackSlot;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -13,16 +20,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import javafx.scene.media.MediaPlayer;
-import me.theresa.Client;
-import me.theresa.music.MusicMgr;
-import me.theresa.music.api.CloudMusicAPI;
-import me.theresa.music.api.NeteaseAPI;
-import me.theresa.music.util.SongList;
-import me.theresa.utils.ClientUtil;
-import me.theresa.utils.ClientUtil.ChatType;
-import me.theresa.utils.Colors;
-import me.theresa.utils.RenderUtil;
-import me.theresa.utils.handler.MouseInputHandler;
+
+import music.MusicMgr;
+import music.api.CloudMusicAPI;
+import music.api.NeteaseAPI;
+import music.util.SongList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;

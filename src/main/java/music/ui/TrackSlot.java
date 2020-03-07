@@ -2,6 +2,7 @@ package music.ui;
 
 import java.awt.Color;
 
+import me.skidsense.util.RenderUtil;
 import me.theresa.Client;
 import music.MusicMgr;
 import music.util.Track;

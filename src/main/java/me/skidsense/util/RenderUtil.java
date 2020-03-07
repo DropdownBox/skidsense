@@ -49,7 +49,9 @@ public class RenderUtil {
     public static double interpolate(double newPos, double oldPos) {
         return oldPos + (newPos - oldPos) * (double)Client.mc.timer.renderPartialTicks;
     }
-
+    public static boolean isHovering(float mouseX,float mouseY,float boxX,float boxY,float boxX1,float boxY1){
+	    return (mouseX >= boxX && mouseX <= boxX1 && mouseY >= boxY && mouseY <= boxY1) || (mouseX <= boxX && mouseX >= boxX1 && mouseY <= boxY && mouseY >= boxY1);
+    }
     public static int getRandomRGB(double min, double max, float alpha) {
         return new Color((float)MathUtil.randomDouble(min, max), (float)MathUtil.randomDouble(min, max), (float)MathUtil.randomDouble(min, max), alpha).getRGB();
     }
