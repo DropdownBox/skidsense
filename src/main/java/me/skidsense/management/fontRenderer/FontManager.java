@@ -10,6 +10,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class FontManager {
 	private HashMap<String, HashMap<Float, UnicodeFontRenderer>> fonts = new HashMap();
+	private HashMap<String, HashMap<Float, ChFontRenderer>> chFonts = new HashMap();
 	public UnicodeFontRenderer verdana12;
 	public UnicodeFontRenderer verdana14;
 	public UnicodeFontRenderer verdana16;
@@ -29,7 +30,8 @@ public class FontManager {
 	public UnicodeFontRenderer sansation18;
 	public UnicodeFontRenderer sansation14;
 	public UnicodeFontRenderer sansation28;
-
+	public ChFontRenderer notoSans25;
+	public ChFontRenderer notoSans30;
     
 	
 	public FontManager() {
@@ -52,8 +54,35 @@ public class FontManager {
 		sansation14 = this.getFont("sansation", 14f);
 		sansation28 = this.getFont("sansation", 28f);
 		sansation16 = this.getFont("sansation", 16f);
+		notoSans25 = this.getChFont("notosans", 25f);
+		notoSans30 = this.getChFont("notosans", 30f);
 	}
-	
+
+	public ChFontRenderer getChFont(String name, float size) {
+		ChFontRenderer chFont = null;
+		try {
+			if (this.chFonts.containsKey(name) && this.chFonts.get(name).containsKey(Float.valueOf(size))) {
+				return this.chFonts.get(name).get(size);
+			}
+			//InputStream inputStream = this.getClass().getResourceAsStream("fonts/" + name + ".ttf");
+			InputStream inputStream = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("skidsense/fonts/" + name + ".ttf")).getInputStream();
+			Font font = null;
+			font = Font.createFont(0, inputStream);
+			chFont = new ChFontRenderer(font.deriveFont(size));
+			chFont.setUnicodeFlag(true);
+			chFont.setBidiFlag(Minecraft.getMinecraft().mcLanguageManager.isCurrentLanguageBidirectional());
+			HashMap<Float, ChFontRenderer> fontRendererHashMap = new HashMap<>();
+			if (this.chFonts.containsKey(name)) {
+				fontRendererHashMap.putAll(this.chFonts.get(name));
+			}
+			fontRendererHashMap.put(size, chFont);
+			this.chFonts.put(name, fontRendererHashMap);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return chFont;
+	}
 	public UnicodeFontRenderer getFont(String name, float size) {
         UnicodeFontRenderer unicodeFont = null;
         try {
@@ -69,9 +98,9 @@ public class FontManager {
             unicodeFont.setBidiFlag(Minecraft.getMinecraft().mcLanguageManager.isCurrentLanguageBidirectional());
             HashMap<Float, UnicodeFontRenderer> map = new HashMap<Float, UnicodeFontRenderer>();
             if (this.fonts.containsKey(name)) {
-                map.putAll((Map)this.fonts.get(name));
+                map.putAll(this.fonts.get(name));
             }
-            map.put(Float.valueOf(size), unicodeFont);
+            map.put(size, unicodeFont);
             this.fonts.put(name, map);
         }
         catch (Exception e) {
