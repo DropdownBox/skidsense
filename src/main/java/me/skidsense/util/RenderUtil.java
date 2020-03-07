@@ -99,6 +99,24 @@ public class RenderUtil {
         Gui.drawRect((int)(x + round / 2.0f), (int)(y - round / 2.0f - 0.5f), (int)(x2 - round / 2.0f), (int)(y2 - round / 2.0f), color);
         Gui.drawRect((int)(x + round / 2.0f), (int)y, (int)(x2 - round / 2.0f), (int)(y2 + round / 2.0f + 0.5f), color);
     }
+    public static Color reAlpha(Color cIn, float alpha){
+        return new Color(cIn.getRed()/255f,cIn.getGreen()/255f,cIn.getBlue()/255f,cIn.getAlpha() / 255f * alpha);
+    }
+    public static void drawRoundedRect(float x, float y, float x2, float y2, final float round, final Color color) {
+        x += (float)(round / 2.0f + 0.5);
+        y += (float)(round / 2.0f + 0.5);
+        x2 -= (float)(round / 2.0f + 0.5);
+        y2 -= (float)(round / 2.0f + 0.5);
+        Gui.drawRect((int)x, (int)y, (int)x2, (int)y2, color.getRGB());
+        circle(x2 - round / 2.0f, y + round / 2.0f, round, color);
+        circle(x + round / 2.0f, y2 - round / 2.0f, round, color);
+        circle(x + round / 2.0f, y + round / 2.0f, round, color);
+        circle(x2 - round / 2.0f, y2 - round / 2.0f, round, color);
+        Gui.drawRect((int)(x - round / 2.0f - 0.5f), (int)(y + round / 2.0f), (int)x2, (int)(y2 - round / 2.0f), color.getRGB());
+        Gui.drawRect((int)x, (int)(y + round / 2.0f), (int)(x2 + round / 2.0f + 0.5f), (int)(y2 - round / 2.0f), color.getRGB());
+        Gui.drawRect((int)(x + round / 2.0f), (int)(y - round / 2.0f - 0.5f), (int)(x2 - round / 2.0f), (int)(y2 - round / 2.0f), color.getRGB());
+        Gui.drawRect((int)(x + round / 2.0f), (int)y, (int)(x2 - round / 2.0f), (int)(y2 + round / 2.0f + 0.5f), color.getRGB());
+    }
     public static void circle(final float x, final float y, final float radius, final int fill) {
         arc(x, y, 0.0f, 360.0f, radius, fill);
     }
@@ -530,6 +548,27 @@ public class RenderUtil {
         GL11.glBlendFunc(770, 771);
         GL11.glEnable(2848);
         GL11.glColor4f(f22, f3, f4, f2);
+        GL11.glBegin(7);
+        GL11.glVertex2d(i2, h2);
+        GL11.glVertex2d(g2, h2);
+        GL11.glVertex2d(g2, j2);
+        GL11.glVertex2d(i2, j2);
+        GL11.glEnd();
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glDisable(2848);
+        GL11.glPopMatrix();
+    }
+    public static void glColor(Color color){
+        GL11.glColor4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+    }
+    public static void drawRect(float g2, float h2, float i2, float j2, Color col1) {
+        GL11.glPushMatrix();
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848);
+        glColor(col1);
         GL11.glBegin(7);
         GL11.glVertex2d(i2, h2);
         GL11.glVertex2d(g2, h2);
