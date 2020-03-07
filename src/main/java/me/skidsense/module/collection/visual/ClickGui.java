@@ -7,6 +7,7 @@ import me.skidsense.module.collection.visual.Animations.renderMode;
 import me.skidsense.module.collection.visual.KidFace.EmojiMode;
 import me.skidsense.module.collection.visual.clickgui.LAC.ClickUI;
 import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
+import music.ui.MusicWindow;
 import net.minecraft.util.ResourceLocation;
 
 public class ClickGui extends Module {
@@ -27,6 +28,9 @@ public class ClickGui extends Module {
 		case "LAC":
 			this.mc.displayGuiScreen(new ClickUI());
 			break;
+			case "test":
+				this.mc.displayGuiScreen(new MusicWindow());
+				break;
 		}
 		
 		this.setEnabled(false);
@@ -34,6 +38,7 @@ public class ClickGui extends Module {
 	
 	public static enum renderMode {
 		skidsense,
+		test,
 		LAC;
 	}
 }

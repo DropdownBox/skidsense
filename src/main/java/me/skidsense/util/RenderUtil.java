@@ -1116,6 +1116,18 @@ public class RenderUtil {
         GL11.glColor4f(red, green, blue, alpha);
     }
 
+    public static float getAnimationState(float animation, float finalState, float speed) {
+        float add = (float)((double)delta * speed);
+        animation = animation < finalState ? (animation + (double)add < finalState ? (animation += (double)add) : finalState) : (animation - (double)add > finalState ? (animation -= (double)add) : finalState);
+        return animation;
+    }
+
+    public static double getAnimationState(double animation, double finalState, double speed) {
+        float add = (float)((double)delta * speed);
+        animation = animation < finalState ? (animation + (double)add < finalState ? (animation += (double)add) : finalState) : (animation - (double)add > finalState ? (animation -= (double)add) : finalState);
+        return animation;
+    }
+
     public static class R3DUtils {
         public static void startDrawing() {
             GL11.glEnable(3042);

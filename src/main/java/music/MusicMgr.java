@@ -5,8 +5,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.darkmagician6.eventapi.EventManager;
-import com.darkmagician6.eventapi.EventTarget;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,16 +12,17 @@ import com.google.gson.JsonParser;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import me.theresa.Client;
-import me.theresa.events.EventUpdate;
-import me.theresa.music.api.CloudMusicAPI;
-import me.theresa.music.api.NeteaseAPI;
-import me.theresa.music.ui.TrackSlot;
+import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.management.notifications.Notification;
+import me.skidsense.management.notifications.Notifications;
+
+import music.api.CloudMusicAPI;
+import music.api.NeteaseAPI;
+import music.ui.TrackSlot;
 import music.util.Lyric;
 import music.util.SongList;
 import music.util.Track;
-import me.theresa.utils.ClientUtil;
-import me.theresa.utils.ClientUtil.ChatType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IImageBuffer;
 import net.minecraft.client.renderer.ThreadDownloadImageData;
@@ -112,20 +111,18 @@ public class MusicMgr {
 		instance = this;
 
 		musicFolder = new File(String.valueOf(Minecraft.getMinecraft().mcDataDir.toString()) + File.separator
-				+ Client.CLIENT_FILEMANAGER_NAME + File.separator + "music");
+				+ "skidsense" + File.separator + "music");
 		if (!musicFolder.exists()) {
 			musicFolder.mkdirs();
 		}
 		
 		imageFolder = new File(String.valueOf(Minecraft.getMinecraft().mcDataDir.toString()) + File.separator
-				+ Client.CLIENT_FILEMANAGER_NAME + File.separator + "image");
+				+ "skidsense" + File.separator + "image");
 		if (!imageFolder.exists()) {
 			imageFolder.mkdirs();
 		}
 
 		new JFXPanel();
-		
-		EventManager.register(this);
 
 	}
 
@@ -144,10 +141,10 @@ public class MusicMgr {
 					JsonObject two = one.get(i).getAsJsonObject();
 					this.allSongLists.add(CloudMusicAPI.INSTANCE.getSongs(two.get("id").getAsString()));
 				}
-				
+
 			} catch (Exception e) {}
 		} else {
-			ClientUtil.tellPlayer("请先登录账号", ChatType.ERROR);
+			Notifications.getManager().post("MusicPlayer "+"请先登录账号");
 		}
 	}
 
@@ -354,8 +351,8 @@ public class MusicMgr {
 	boolean mark = false;
 	boolean mark2 = false;
 
-	@EventTarget
-	public void updateLyric(EventUpdate event) {
+	@EventHandler
+	public void updateLyric(EventPreUpdate event) {
 		if (mediaPlayer != null) {
 			// TODO 翻译显示部分
 			long time = (long) (mediaPlayer.getCurrentTime().toMillis());
