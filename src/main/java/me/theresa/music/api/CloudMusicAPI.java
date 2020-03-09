@@ -1,4 +1,4 @@
-package music.api;
+package me.theresa.music.api;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -29,11 +29,11 @@ import com.google.gson.JsonParser;
 
 import joptsimple.internal.Strings;
 //import me.theresa.Client;
-import music.MusicMgr;
-import music.ui.TrackSlot;
-import music.util.Lyric;
-import music.util.SongList;
-import music.util.Track;
+import me.theresa.music.MusicMgr;
+import me.theresa.music.ui.TrackSlot;
+import me.theresa.music.util.Lyric;
+import me.theresa.music.util.SongList;
+import me.theresa.music.util.Track;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IImageBuffer;
 import net.minecraft.client.renderer.ThreadDownloadImageData;

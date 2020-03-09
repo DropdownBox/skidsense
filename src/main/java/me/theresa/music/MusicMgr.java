@@ -1,4 +1,4 @@
-package music;
+package me.theresa.music;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -14,15 +14,14 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import me.skidsense.hooks.EventHandler;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.management.notifications.Notification;
 import me.skidsense.management.notifications.Notifications;
 
-import music.api.CloudMusicAPI;
-import music.api.NeteaseAPI;
-import music.ui.TrackSlot;
-import music.util.Lyric;
-import music.util.SongList;
-import music.util.Track;
+import me.theresa.music.api.CloudMusicAPI;
+import me.theresa.music.api.NeteaseAPI;
+import me.theresa.music.ui.TrackSlot;
+import me.theresa.music.util.Lyric;
+import me.theresa.music.util.SongList;
+import me.theresa.music.util.Track;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IImageBuffer;
 import net.minecraft.client.renderer.ThreadDownloadImageData;
@@ -111,7 +110,7 @@ public class MusicMgr {
 		instance = this;
 
 		musicFolder = new File(String.valueOf(Minecraft.getMinecraft().mcDataDir.toString()) + File.separator
-				+ "skidsense" + File.separator + "music");
+				+ "skidsense" + File.separator + "me/theresa/music");
 		if (!musicFolder.exists()) {
 			musicFolder.mkdirs();
 		}

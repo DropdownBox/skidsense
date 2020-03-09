@@ -1,4 +1,4 @@
-package music.util;
+package me.theresa.music.util;
 
 public class Track {
 	private long id;

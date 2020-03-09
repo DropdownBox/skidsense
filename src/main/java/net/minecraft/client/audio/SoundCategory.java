@@ -6,7 +6,7 @@ import java.util.Map;
 public enum SoundCategory
 {
     MASTER("master", 0),
-    MUSIC("music", 1),
+    MUSIC("me/theresa/music", 1),
     RECORDS("record", 2),
     WEATHER("weather", 3),
     BLOCKS("block", 4),

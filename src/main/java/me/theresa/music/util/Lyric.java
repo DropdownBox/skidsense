@@ -1,4 +1,4 @@
-package music.util;
+package me.theresa.music.util;
 
 public class Lyric {
 	public String text;

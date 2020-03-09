@@ -1,10 +1,10 @@
-package music.ui;
+package me.theresa.music.ui;
 
 import me.skidsense.color.Colors;
 import me.skidsense.util.ClientUtil;
 import me.skidsense.util.RenderUtil;
-import music.MusicMgr;
-import music.util.SongList;
+import me.theresa.music.util.SongList;
+import me.theresa.music.MusicMgr;
 import net.minecraft.client.Minecraft;
 
 public class SongListSlot {

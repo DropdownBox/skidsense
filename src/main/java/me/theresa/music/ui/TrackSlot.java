@@ -1,11 +1,11 @@
-package music.ui;
+package me.theresa.music.ui;
 
 import java.awt.Color;
 
 import me.skidsense.color.Colors;
 import me.skidsense.util.RenderUtil;
-import music.MusicMgr;
-import music.util.Track;
+import me.theresa.music.MusicMgr;
+import me.theresa.music.util.Track;
 import me.skidsense.util.ClientUtil;
 import net.minecraft.client.Minecraft;
 

@@ -1,8 +1,8 @@
-package music.util;
+package me.theresa.music.util;
 
 import java.util.ArrayList;
 
-import music.ui.TrackSlot;
+import me.theresa.music.ui.TrackSlot;
 import net.minecraft.util.ResourceLocation;
 
 public class SongList {

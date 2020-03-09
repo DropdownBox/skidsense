@@ -1,4 +1,4 @@
-package music.ui;
+package me.theresa.music.ui;
 
 import java.awt.Color;
 

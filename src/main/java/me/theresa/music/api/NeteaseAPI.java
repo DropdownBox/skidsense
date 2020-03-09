@@ -1,4 +1,4 @@
-package music.api;
+package me.theresa.music.api;
 
 import java.math.BigInteger;
 import java.util.HashMap;
