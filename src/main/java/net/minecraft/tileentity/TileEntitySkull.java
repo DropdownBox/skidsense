@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 
 import java.util.UUID;
 import net.minecraft.nbt.NBTTagCompound;

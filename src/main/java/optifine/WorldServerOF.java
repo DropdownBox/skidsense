@@ -1,6 +1,6 @@
 package optifine;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import net.minecraft.network.play.server.S2BPacketChangeGameState;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.world.WorldServer;

@@ -1,6 +1,6 @@
 package net.minecraft.server.network;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;

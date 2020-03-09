@@ -10,7 +10,7 @@ import net.minecraft.util.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 
 public class CommandDebug extends CommandBase
 {

@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import cn.margele.mlproject.impl.ClientBrandRetriever;
+import net.minecraft.client.main.ClientBrandRetriever;
 
 public class VersionCheckThread extends Thread
 {

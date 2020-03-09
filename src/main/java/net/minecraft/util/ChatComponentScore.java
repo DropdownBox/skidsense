@@ -1,6 +1,6 @@
 package net.minecraft.util;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;

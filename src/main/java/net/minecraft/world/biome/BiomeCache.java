@@ -2,7 +2,7 @@ package net.minecraft.world.biome;
 
 import com.google.common.collect.Lists;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 
 import java.util.List;
 

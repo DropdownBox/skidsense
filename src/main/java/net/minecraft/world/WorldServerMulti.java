@@ -1,6 +1,6 @@
 package net.minecraft.world;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.village.VillageCollection;
 import net.minecraft.world.border.IBorderListener;

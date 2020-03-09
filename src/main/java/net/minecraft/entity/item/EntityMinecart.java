@@ -2,7 +2,7 @@ package net.minecraft.entity.item;
 
 import com.google.common.collect.Maps;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 
 import java.util.Map;
 import net.minecraft.block.Block;

@@ -1,7 +1,7 @@
 package net.minecraft.client;
 
-import cn.margele.mlproject.impl.ClientBrandRetriever;
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.client.main.ClientBrandRetriever;
+import net.minecraft.MinecraftServer;
 import com.google.common.collect.*;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;

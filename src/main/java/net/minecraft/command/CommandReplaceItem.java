@@ -2,7 +2,7 @@ package net.minecraft.command;
 
 import com.google.common.collect.Maps;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 
 import java.util.List;
 import java.util.Map;

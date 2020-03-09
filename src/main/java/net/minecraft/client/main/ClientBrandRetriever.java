@@ -1,4 +1,4 @@
-package cn.margele.mlproject.impl;
+package net.minecraft.client.main;
 
 public class ClientBrandRetriever
 {
