@@ -19,12 +19,12 @@ public class ClickGui extends Module {
 	@Override
 	public void onEnable() {
 		switch (this.mode.getValue().toString()) {
-		case "skidsense":
-			this.mc.displayGuiScreen(new ClickGUI());
-			break;
-		case "LAC":
-			this.mc.displayGuiScreen(new ClickUI());
-			break;
+			case "skidsense":
+				this.mc.displayGuiScreen(new ClickGUI());
+				break;
+			case "LAC":
+				this.mc.displayGuiScreen(new ClickUI());
+				break;
 			case "test":
 				this.mc.displayGuiScreen(new MusicWindow());
 				break;
