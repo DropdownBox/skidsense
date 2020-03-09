@@ -1,6 +1,6 @@
 package net.minecraft.server.network;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.status.INetHandlerStatusServer;
 import net.minecraft.network.status.client.C00PacketServerQuery;

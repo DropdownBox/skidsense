@@ -3,7 +3,7 @@ package net.minecraft.client.gui;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import cn.margele.mlproject.impl.ClientBrandRetriever;
+import net.minecraft.client.main.ClientBrandRetriever;
 
 import java.util.ArrayList;
 import java.util.Collection;

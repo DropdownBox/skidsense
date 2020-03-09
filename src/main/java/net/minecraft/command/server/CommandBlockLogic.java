@@ -1,6 +1,6 @@
 package net.minecraft.command.server;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandManager;

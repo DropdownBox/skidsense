@@ -1,7 +1,7 @@
 package net.minecraft.server.integrated;
 
-import cn.margele.mlproject.impl.ClientBrandRetriever;
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.client.main.ClientBrandRetriever;
+import net.minecraft.MinecraftServer;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import net.minecraft.client.Minecraft;

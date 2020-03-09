@@ -3,7 +3,7 @@ package net.minecraft.command.server;
 import java.util.Arrays;
 import java.util.List;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

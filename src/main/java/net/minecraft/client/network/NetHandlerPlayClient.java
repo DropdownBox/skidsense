@@ -5,7 +5,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.authlib.GameProfile;
 
-import cn.margele.mlproject.impl.ClientBrandRetriever;
+import net.minecraft.client.main.ClientBrandRetriever;
 import io.netty.buffer.Unpooled;
 import me.skidsense.hooks.EventBus;
 import me.skidsense.hooks.events.EventPacketSend;

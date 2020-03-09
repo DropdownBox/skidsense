@@ -2,7 +2,7 @@ package net.minecraft.command.server;
 
 import com.google.gson.JsonParseException;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 
 import java.util.List;
 import net.minecraft.command.CommandBase;

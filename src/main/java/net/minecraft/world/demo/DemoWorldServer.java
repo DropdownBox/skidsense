@@ -1,6 +1,6 @@
 package net.minecraft.world.demo;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;

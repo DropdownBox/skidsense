@@ -2,7 +2,7 @@ package net.minecraft.command;
 
 import java.util.List;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S19PacketEntityStatus;
 import net.minecraft.util.BlockPos;

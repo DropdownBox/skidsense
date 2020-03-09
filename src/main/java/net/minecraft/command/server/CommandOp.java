@@ -3,7 +3,7 @@ package net.minecraft.command.server;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 
 import java.util.List;
 import net.minecraft.command.CommandBase;

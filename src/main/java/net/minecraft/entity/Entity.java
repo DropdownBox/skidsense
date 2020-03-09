@@ -1,6 +1,6 @@
 package net.minecraft.entity;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import me.skidsense.Client;
 import me.skidsense.hooks.EventBus;
 import me.skidsense.hooks.events.EventStep;

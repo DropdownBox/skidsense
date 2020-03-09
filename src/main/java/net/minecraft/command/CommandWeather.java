@@ -3,7 +3,7 @@ package net.minecraft.command;
 import java.util.List;
 import java.util.Random;
 
-import cn.margele.mlproject.impl.MinecraftServer;
+import net.minecraft.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
