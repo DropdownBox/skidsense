@@ -30,27 +30,36 @@ archivesBaseName = "exoxiai"
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 compileJava.options.encoding = 'UTF-8'
-
+configurations{
+    inJar
+}
 dependencies {
     //compileOnly files("C:\\Program Files\\AdoptOpenJDK\\jdk-8.0.232.09-hotspot\\jre\\lib\\rt.jar")
     //compile "com.sparkjava:spark-core:2.8.0"
-    compile group: 'org.slick2d', name: 'slick2d-core', version: '1.0.2'
+    implementation group: 'org.slick2d', name: 'slick2d-core', version: '1.0.2'
+    inJar group: 'org.slick2d', name: 'slick2d-core', version: '1.0.2'
     //compile group: 'com.github.oshi', name: 'oshi-core', version: '4.4.0'
-    compile 'org.greenrobot:eventbus:3.2.0'
+    implementation 'org.greenrobot:eventbus:3.2.0'
+    inJar 'org.greenrobot:eventbus:3.2.0'
     compileOnly fileTree(include: ['*.jar'], dir: 'sbil')
     // https://mvnrepository.com/artifact/javax.vecmath/vecmath
     //compile group: 'javax.vecmath', name: 'vecmath', version: '1.5.2'
 
 }
 
-
+jar{
+    exclude "assets/minecraft/sounds"
+    exclude "exclude-*"
+    exclude "natives"
+}
 shadowJar {
     exclude "exclude-*"
     exclude "rt.jar"
 }
 task fatJar(type: Jar) {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.inJar.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+
 }
 
 
