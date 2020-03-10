@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 
 import me.skidsense.hooks.EventBus;
 import me.skidsense.hooks.events.EventRender2D;
+import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.management.notifications.Notifications;
 
 import java.util.ArrayList;
@@ -200,7 +201,8 @@ public class GuiIngame extends Gui
         }
 
         GlStateManager.disableBlend();
-
+        EventBus.getInstance().call(new EventRenderGui(scaledresolution));
+        GlStateManager.disableBlend();
         if (this.mc.thePlayer.getSleepTimer() > 0)
         {
             this.mc.mcProfiler.startSection("sleep");

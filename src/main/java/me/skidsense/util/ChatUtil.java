@@ -3,6 +3,7 @@ package me.skidsense.util;
 import me.skidsense.Client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
@@ -13,6 +14,10 @@ public class ChatUtil {
 
     private ChatUtil(ChatComponentText message) {
         this.message = message;
+    }
+
+    public static void sendChat_NoFilter(String text) {
+        Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C01PacketChatMessage(text));
     }
 
     public static String addFormat(String message, String regex) {

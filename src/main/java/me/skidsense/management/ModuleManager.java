@@ -29,14 +29,7 @@ import me.skidsense.module.collection.move.SafeWalk;
 import me.skidsense.module.collection.move.Speed;
 import me.skidsense.module.collection.move.Sprint;
 import me.skidsense.module.collection.move.Step;
-import me.skidsense.module.collection.player.AntiFall;
-import me.skidsense.module.collection.player.AntiVelocity;
-import me.skidsense.module.collection.player.AutoTool;
-import me.skidsense.module.collection.player.Blink;
-import me.skidsense.module.collection.player.InvCleaner;
-import me.skidsense.module.collection.player.NoFall;
-import me.skidsense.module.collection.player.Scaffold;
-import me.skidsense.module.collection.player.Teams;
+import me.skidsense.module.collection.player.*;
 import me.skidsense.module.collection.visual.*;
 import me.skidsense.module.collection.world.AutoL;
 import me.skidsense.module.collection.world.ChestStealer;
@@ -86,6 +79,7 @@ implements Manager {
         this.modules.add(new NoSlow());
         
         this.modules.add(new AntiFall());
+        this.modules.add(new AutoGG());
         this.modules.add(new AntiVelocity());
         this.modules.add(new Teams());
         this.modules.add(new NoFall());

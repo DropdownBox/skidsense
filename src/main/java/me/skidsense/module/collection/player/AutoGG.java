@@ -13,19 +13,21 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.play.server.S27PacketExplosion;
 import net.minecraft.network.play.server.S45PacketTitle;
 
-public class AntiVelocity
-extends Module {
+public class AutoGG extends Module {
 
-    public AntiVelocity() {
-        super("Anti KB", new String[]{"antivelocity", "antiknockback", "antikb"}, ModuleType.Player);
-        this.addValues();
+    public AutoGG() {
+        super("Auto GG", new String[]{"AutoGG"}, ModuleType.Player);
         this.setColor(new Color(191, 191, 191).getRGB());
     }
 
     @EventHandler
-    private void onPacket(EventPacketRecieve e) {
-        if (e.getPacket() instanceof S12PacketEntityVelocity || e.getPacket() instanceof S27PacketExplosion) {
-        	e.setCancelled(true);
+    private void onGGPacket(EventPacketRecieve e) {
+        if (e.getPacket() instanceof S45PacketTitle) {
+            String text = ((S45PacketTitle) e.getPacket()).getMessage().getUnformattedText();
+            Client.sendMessageWithoutPrefix(text);
+            if (text.contains("VICTORY") || text.contains("胜利")) {
+                ChatUtil.sendChat_NoFilter("/achat gg");
+            }
         }
     }
 }
