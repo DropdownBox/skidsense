@@ -14,7 +14,7 @@ extends Command {
     @Override
     public String execute(String[] args) {
         if (args.length == 0) {
-        	Notifications.getManager().post(AutoL.AbuseText.get(AutoL.random.nextInt(AutoL.AbuseText.size())));
+        	//Notifications.getManager().post(AutoL.AbuseText.get(AutoL.random.nextInt(AutoL.AbuseText.size())));
             //Client.sendMessageWithoutPrefix(AutoL.AbuseText.get(AutoL.random.nextInt(AutoL.AbuseText.size())));
     }
         return null;

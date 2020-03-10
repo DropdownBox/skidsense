@@ -1,5 +1,8 @@
 package me.skidsense.module.collection.move;
 
+import me.skidsense.util.MoveUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import org.lwjgl.input.Keyboard;
 
 import me.skidsense.hooks.EventHandler;
@@ -24,6 +27,10 @@ public class InvMove extends Module{
 			for (int length = (array = key).length, i = 0; i < length; ++i) {
 				KeyBinding b = array[i];
 				KeyBinding.setKeyBindState(b.getKeyCode(), Keyboard.isKeyDown(b.getKeyCode()));
+			}
+			Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C09PacketHeldItemChange(8));
+			if(MoveUtil.isMoving()){
+				Minecraft.getMinecraft().getNetHandler().addToSendQueue(new C09PacketHeldItemChange(Minecraft.getMinecraft().thePlayer.inventory.currentItem));
 			}
 		}
 	}

@@ -88,6 +88,7 @@ implements Manager {
         this.modules.add(new Scaffold());       
         
         this.modules.add(new Animations());
+        this.modules.add(new ArmorStatus());
         this.modules.add(new ClickGui());
         this.modules.add(new Xray());
         this.modules.add(new ItemEsp());
