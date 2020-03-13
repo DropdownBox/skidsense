@@ -1,5 +1,6 @@
 package net.minecraft.client.renderer.entity;
 
+import me.skidsense.util.TileEntityRendererChestHelper;
 import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -1196,6 +1197,54 @@ public class RenderItem implements IResourceManagerReloadListener {
             int j1 = Math.min(255, (int)(f2 * f6 / 255.0F));
             int k1 = Math.min(255, (int)(f3 * f7 / 255.0F));
             p_forgeHooksClient_putQuadColor_0_.putColorRGBA(p_forgeHooksClient_putQuadColor_0_.getColorIndex(4 - j), l, i1, j1, k1);
+        }
+    }
+
+    public void renderItemIntoGUIWithoutGlint(ItemStack p_175042_1_, int p_175042_2_, int p_175042_3_) {
+        IBakedModel var4 = this.itemModelMesher.getItemModel(p_175042_1_);
+        GlStateManager.pushMatrix();
+        this.textureManager.bindTexture(TextureMap.locationBlocksTexture);
+        this.textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.enableAlpha();
+        GlStateManager.alphaFunc(516, 0.1f);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(770, 771);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+        this.setupGuiTransform(p_175042_2_, p_175042_3_, var4.isGui3d());
+        var4.getItemCameraTransforms().applyTransform(ItemCameraTransforms.TransformType.GUI);
+        this.renderItemWithoutGlint(p_175042_1_, var4);
+        GlStateManager.disableAlpha();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.disableLighting();
+        GlStateManager.popMatrix();
+        this.textureManager.bindTexture(TextureMap.locationBlocksTexture);
+        this.textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+    }
+
+    public void renderItemWithoutGlint(ItemStack p_180454_1_, IBakedModel p_180454_2_) {
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(0.5f, 0.5f, 0.5f);
+        if (p_180454_2_.isBuiltInRenderer()) {
+            GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f);
+            GlStateManager.translate(-0.5f, -0.5f, -0.5f);
+            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+            GlStateManager.enableRescaleNormal();
+            TileEntityRendererChestHelper.instance.renderByItem(p_180454_1_);
+        }
+        else {
+            GlStateManager.translate(-0.5f, -0.5f, -0.5f);
+            this.renderModel(p_180454_2_, p_180454_1_);
+        }
+        GlStateManager.popMatrix();
+    }
+
+    public void renderItemAboveHead(ItemStack stack, int xPosition, int yPosition) {
+        if (stack != null) {
+            try {
+                this.renderItemIntoGUIWithoutGlint(stack, xPosition, yPosition);
+            }
+            catch (Throwable t) {}
         }
     }
 }

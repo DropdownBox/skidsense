@@ -302,7 +302,7 @@ public class InvCleaner extends Module {
             }
          }
 
-         if(!(stack.getItem() instanceof ItemBlock) || this.getBlockCount() <= ((Double)this.BlockCap.getValue()).intValue() && !Scaffold.getBlacklistedBlocks().contains(((ItemBlock)stack.getItem()).getBlock())) {
+         if(!(stack.getItem() instanceof ItemBlock) || this.getBlockCount() <= ((Double)this.BlockCap.getValue()).intValue() && !Scaffold.blacklistedBlocks.contains(((ItemBlock)stack.getItem()).getBlock())) {
             if(stack.getItem() instanceof ItemPotion && this.isBadPotion(stack)) {
                return true;
             } else if(stack.getItem() instanceof ItemFood && ((Boolean)this.Food.getValue()).booleanValue() && !(stack.getItem() instanceof ItemAppleGold)) {
@@ -337,7 +337,7 @@ public class InvCleaner extends Module {
             var10000 = mc;
             ItemStack is = Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(i).getStack();
             Item item = is.getItem();
-            if(is.getItem() instanceof ItemBlock && !Scaffold.getBlacklistedBlocks().contains(((ItemBlock)item).getBlock())) {
+            if(is.getItem() instanceof ItemBlock && !Scaffold.blacklistedBlocks.contains(((ItemBlock)item).getBlock())) {
                blockCount += is.stackSize;
             }
          }

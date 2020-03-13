@@ -1,5 +1,7 @@
 package net.minecraft.util;
 
+import me.skidsense.util.Vec3f;
+
 public class Vec3
 {
     /** X coordinate of Vec3D */
@@ -212,5 +214,9 @@ public class Vec3
 
     public Vec3 flat() {
         return new Vec3(this.xCoord, 0.0, this.zCoord);
+    }
+
+    public final Vec3 scale(float scale) {
+        return new Vec3(this.xCoord * (double)scale, this.yCoord * (double)scale, this.zCoord * (double)scale);
     }
 }

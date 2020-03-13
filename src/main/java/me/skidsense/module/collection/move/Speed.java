@@ -7,6 +7,7 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.Random;
 
+import me.skidsense.Client;
 import me.skidsense.hooks.EventHandler;
 import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPacketRecieve;
@@ -15,6 +16,7 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
+import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.BlockUtil;
 import me.skidsense.util.MoveUtil;
 import me.skidsense.util.TimerUtil;
@@ -131,47 +133,100 @@ public class Speed
         return this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer, this.mc.thePlayer.boundingBox.offset(0.0, motionY, 0.0));
     }
     @EventHandler
-    public void onMove(EventMove em){
-        if(mode.getValue() == SpeedMode.Hypixel){
-            if (Speed.mc.thePlayer.movementInput.moveForward == 0.0f && Speed.mc.thePlayer.movementInput.moveStrafe == 0.0f) {
-                this.speed = MoveUtil.defaultSpeed();
-            }
-            if (Speed.stage == 1 && Speed.mc.thePlayer.isCollidedVertically && (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f)) {
-                this.speed = 1.344521 + MoveUtil.defaultSpeed() - 0.01;
-            }
-            if (!BlockUtil.isInLiquid() && Speed.stage == 2 && Speed.mc.thePlayer.isCollidedVertically && MoveUtil.isOnGround(0.01) && (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f)) {
-                if (Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.jump)) {
-                    em.setY(Speed.mc.thePlayer.motionY = 0.40999998688698 + (Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1);
+    public void onHypixelMove(EventMove em) {
+        if (mode.getValue() == SpeedMode.Hypixel) {
+            if(mode.getValue() == SpeedMode.Hypixel){
+                //Sigma
+                if (Speed.mc.thePlayer.isCollidedHorizontally) {
+                    this.collided = true;
                 }
-                else {
-                    em.setY(Speed.mc.thePlayer.motionY = 0.40999998688698);
+                if (this.collided) {
+                    Speed.stage = -1;
                 }
-                Speed.mc.thePlayer.jump();
-                this.speed *= 1.34698;
-            }
-            else if (Speed.stage == 3) {
-                final double difference = 0.52 * (this.lastDist - MoveUtil.defaultSpeed());
-                this.speed = this.lastDist - difference;
-            }
-            else {
-                final List collidingList = Speed.mc.theWorld.getCollidingBoundingBoxes((Entity)Speed.mc.thePlayer, Speed.mc.thePlayer.boundingBox.offset(0.0, Speed.mc.thePlayer.motionY, 0.0));
-                if ((collidingList.size() > 0 || Speed.mc.thePlayer.isCollidedVertically) && Speed.stage > 0) {
-                    Speed.stage = ((Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f) ? 1 : 0);
+                if (this.stair > 0.0) {
+                    this.stair -= 0.25;
                 }
-                this.speed = this.lastDist - this.lastDist / 159.0;
-            }
-            this.speed = Math.max(this.speed, MoveUtil.defaultSpeed());
-            if (Speed.stage > 0) {
+                this.less -= ((this.less > 1.0) ? 0.12 : 0.11);
+                if (this.less < 0.0) {
+                    this.less = 0.0;
+                }
+                if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.01) && isMoving2()) {
+                    this.collided = Speed.mc.thePlayer.isCollidedHorizontally;
+                    if (Speed.stage >= 0 || this.collided) {
+                        Speed.stage = 0;
+                        final double a = 0.4086666 + MoveUtil.getJumpEffect() * 0.1;
+                        if (this.stair == 0.0) {
+                            Speed.mc.thePlayer.jump();
+                            em.setY(Speed.mc.thePlayer.motionY = a);
+                        }
+                        ++this.less;
+                        this.lessSlow = (this.less > 1.0 && !this.lessSlow);
+                        if (this.less > 1.12) {
+                            this.less = 1.11;
+                        }
+                    }
+                }
+                this.speed = this.getHypixelSpeed(Speed.stage) + 0.03066;
+                this.speed *= 0.8688;
+                if (this.stair > 0.0) {
+                    this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
+                }
+                if (Speed.stage < 0) {
+                    this.speed = MoveUtil.getBaseMoveSpeed();
+                }
+                if (this.lessSlow) {
+                    this.speed *= 0.91;
+                }
                 if (BlockUtil.isInLiquid()) {
                     this.speed = 0.1;
                 }
-                this.setMotion(em, this.speed);
-            }
-            if (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f) {
-                ++Speed.stage;
+                if (Speed.mc.thePlayer.moveForward != 0.0f || Speed.mc.thePlayer.moveStrafing != 0.0f) {
+                    if (Client.instance.getModuleManager().getModuleByClass((Class)AutoStrafe.class).isEnabled() && KillAura.target != null) {
+                        AutoStrafe.onStrafe(em, this.speed);
+                        ++Speed.stage;
+                    }
+                    else {
+                        this.setMotion(em, this.speed);
+                        ++Speed.stage;
+                    }
+                }
             }
         }
     }
+
+    private double getHypixelSpeed(final int stage) {
+        double value = MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;
+        final double firstvalue = 0.4145 + MoveUtil.getSpeedEffect() / 12.5;
+        final double decr = stage / 500.0 * 2.0;
+        if (stage == 0) {
+            if (this.timer.delay(300.0f)) {
+                this.timer.reset();
+            }
+            if (!this.lastCheck.delay(500.0f)) {
+                if (!this.shouldslow) {
+                    this.shouldslow = true;
+                }
+            }
+            else if (this.shouldslow) {
+                this.shouldslow = false;
+            }
+            value = 0.64 + (MoveUtil.getSpeedEffect() + 0.028 * MoveUtil.getSpeedEffect()) * 0.134;
+        }
+        else if (stage == 1) {
+            value = firstvalue;
+        }
+        else if (stage >= 2) {
+            value = firstvalue - decr;
+        }
+        if (this.shouldslow || !this.lastCheck.delay(500.0f) || this.collided) {
+            value = 0.2;
+            if (stage == 0) {
+                value = 0.0;
+            }
+        }
+        return Math.max(value, this.shouldslow ? value : (MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect()));
+    }
+
     @EventHandler
     public void onMovement(EventMove em){
         if(mode.getValue() == SpeedMode.Bhop){
@@ -248,7 +303,7 @@ public class Speed
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
                 gay2 += (double)((float)(mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
             }
-            if (this.canZoom() && this.stage == 2&&(mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
+            if (this.canZoom() && this.stage == 2 && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
                 if(!isInLiquid()){
                     this.mc.thePlayer.motionY = gay2;
                     em.setY(mc.thePlayer.motionY);
