@@ -1,4 +1,4 @@
-package me.skidsense.management.notifications.skid;
+package me.skidsense.management.animation;
 
 public class Translate {
    private float x;

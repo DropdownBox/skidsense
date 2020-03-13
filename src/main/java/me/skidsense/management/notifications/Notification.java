@@ -1,7 +1,7 @@
 package me.skidsense.management.notifications;
 
-import me.skidsense.management.notifications.skid.Opacity;
-import me.skidsense.management.notifications.skid.Translate;
+import me.skidsense.management.animation.Opacity;
+import me.skidsense.management.animation.Translate;
 
 public class Notification implements INotification {
    private String text;
