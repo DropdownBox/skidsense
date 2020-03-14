@@ -107,6 +107,11 @@ public class MathUtil {
         return max;
     }
 
+    public static int getMiddle(int i, int i1) {
+        return (i + i1) / 2;
+    }
+
+
     public static class NumberType {
         public static final byte SHORT = 0;
         public static final byte BYTE = 1;

@@ -40,20 +40,20 @@ extends Module {
 
 	public void damagePlayerNew() {
 		if (mc.thePlayer.onGround) {
-			EntityPlayerSP player = mc.thePlayer;
 			mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
 					mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
 			for (int index = 0; index <= (UHC.getValue() ? 9 : 7); ++index) {
-
+                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+						mc.thePlayer.posX, mc.thePlayer.posY + 0.410781087633169896, mc.thePlayer.posZ, false));
+                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+                        mc.thePlayer.posX, mc.thePlayer.posY + 0.034211255072711402, mc.thePlayer.posZ, false));
 				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
-						mc.thePlayer.posX, mc.thePlayer.posY + 0.410791087633169896, mc.thePlayer.posZ, false));
-				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
-						mc.thePlayer.posX, mc.thePlayer.posY + 0.015555072702198913, mc.thePlayer.posZ, false));
+						mc.thePlayer.posX, mc.thePlayer.posY + 0.014555072702198913, mc.thePlayer.posZ, false));
 				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
 						mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
 			}
 			mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
-					mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
+					    mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
 		}
 	}
 
@@ -65,7 +65,7 @@ extends Module {
         	damagePlayerNew();
         	if(!(Stop.getValue().booleanValue())){
                 b2 = true;
-                mc.thePlayer.motionY = 0.4067755549975;
+                //mc.thePlayer.motionY = 0.4067755549975;
             }else{
                 b2=false;
             }
@@ -119,7 +119,7 @@ extends Module {
                     (Stop.getValue().booleanValue()))
             {
                 b2=true;
-                mc.thePlayer.motionY = 0.40674447999965f;
+                //mc.thePlayer.motionY = 0.40674447999965f;
             }
             if(!b2&&
             this.mode.getValue() == FlightMode.Damage
@@ -136,27 +136,6 @@ extends Module {
    			if (Minecraft.getMinecraft().gameSettings.keyBindSneak.pressed)
    				Minecraft.getMinecraft().thePlayer.motionY -= 0.5f;
    			e.setY(mc.thePlayer.posY+posY/10000000);
-        } else if (this.mode.getValue() == FlightMode.OldLongJumpFly && mc.thePlayer.moving() && !Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()) {
-            if (mc.thePlayer.isAirBorne) {
-                if (mc.thePlayer.ticksExisted % 12 == 0 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)).getBlock() instanceof BlockAir) {
-					// FIXME
-                	//mc.thePlayer.setSpeed(6.5);
-                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.0E-9, mc.thePlayer.posZ, mc.thePlayer.onGround));
-                    mc.thePlayer.motionY = 0.455;
-                } else {
-                	// FIXME
-                	//MoveUtil.setSpeed((float)Math.sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ));
-                }
-            } else {
-                mc.thePlayer.motionX = 0.0;
-                mc.thePlayer.motionZ = 0.0;
-
-            }
-            if (mc.thePlayer.movementInput.jump) {
-                mc.thePlayer.motionY = 0.85;
-            } else if (mc.thePlayer.movementInput.sneak) {
-                mc.thePlayer.motionY = -0.85;
-            }
         }
     }
     public float getRealWalkYaw() {
@@ -215,8 +194,10 @@ extends Module {
  					- Minecraft.getMinecraft().thePlayer.prevPosZ;
  			lastDist = Math.sqrt(xDist * xDist + zDist * zDist);
     	}
-    }int stage;
+    }
+    private int stage;
     private double distance;
+
     @EventHandler
     private void onMove(EventMove e) {
 		if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
@@ -229,11 +210,10 @@ extends Module {
                             && Minecraft.getMinecraft().thePlayer.moveStrafing == 0.0F) {
                         if (level == 2) {
                             level = 3;
-                            moveSpeed *= 2.1499999D;
+                            moveSpeed *= 2.11D;
                         } else if (level == 3) {
                             level = 4;
-                            double difference = (0.011D)
-                                    * (lastDist - MathUtil.getBaseMovementSpeed());
+                            double difference = (0.01D) * (lastDist - MathUtil.getBaseMovementSpeed());
                             moveSpeed = lastDist - difference;
                         } else {
                             if (Minecraft.getMinecraft().theWorld
@@ -252,7 +232,7 @@ extends Module {
                                 .getAmplifier() + 1
                                 : 0;
                         double boost = Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed) ? 1.7
-                                : 2.1;
+                                : 2.0;
                         moveSpeed = boost * MathUtil.getBaseMovementSpeed();
                     }
                 }
@@ -277,7 +257,6 @@ extends Module {
         Motion,
         Guardian,
         Hypixel,
-        Damage,
-        OldLongJumpFly
+        Damage;
     }
 }

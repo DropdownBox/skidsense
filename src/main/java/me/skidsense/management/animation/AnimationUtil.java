@@ -1,4 +1,4 @@
-package me.skidsense.management.notifications.skid;
+package me.skidsense.management.animation;
 
 public class AnimationUtil {
    public static float calculateCompensation(float target, float current, long delta, int speed) {

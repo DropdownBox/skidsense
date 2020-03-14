@@ -25,6 +25,7 @@ import me.tojatta.api.utilities.vector.impl.Vector3;
 import java.util.Comparator;
 import java.util.ArrayList;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -72,7 +73,7 @@ public class KillAura extends Module {
 	public Option<Boolean> targetinfo = new Option<Boolean>("TargetInfo", "TargetInfo", true);
 	public static Numbers<Double> range = new Numbers<Double>("Range", "Range", 4.2, 3.5, 7.0, 0.1);
 	public Numbers<Double> cps = new Numbers<Double>("APS", "APS", 9.0, 1.0, 20.0, 1.0);
-	public Numbers<Double> hitsBeforeSwitch = new Numbers<Double>("Target", "Target", 3.0, 1.0, 20.0, 1.0);
+	public Numbers<Double> hitswitch = new Numbers<Double>("HitSwitch", "HitSwitch", 3.0, 1.0, 20.0, 1.0);
 	public Option<Boolean> walls = new Option<Boolean>("ThroughWalls", "ThroughWalls", true);
 	public Option<Boolean> autodisable = new Option<Boolean>("AutoDisable", "AutoDisable", true);
 	public static Numbers<Double> blockrange = new Numbers<Double>("BlockRange", "BlockRange", 8.0, 3.5, 8.0, 0.1);
@@ -97,58 +98,13 @@ public class KillAura extends Module {
 
 	public KillAura() {
 		super("Kill Aura", new String[] { "Aura","KillAura" }, ModuleType.Fight);
-		this.addValues(this.priority, this.mode,this.range, this.cps, this.blockrange, this.hitsBeforeSwitch, this.players, this.mobs, this.animals, this.invis,
+		this.addValues(this.priority, this.mode,this.range, this.cps, this.blockrange, this.hitswitch, this.players, this.mobs, this.animals, this.invis,
 				this.autoBlock, this.targetinfo, this.walls, this.autodisable);
 	}
 
 	@Override
 	public void onEnable() {
 		this.rotation = new float[] { this.mc.thePlayer.rotationYaw, this.mc.thePlayer.rotationPitch };
-	}
-	@EventHandler
-	    public void onEvent(EventRender2D e) {
-        final ScaledResolution res = new ScaledResolution(KillAura.mc);
-	    if (target != null &&
-            targetinfo.getValue()) {
-            double hpPercentage = target.getHealth() / target.getMaxHealth();
-            if (hpPercentage > 1)
-                hpPercentage = 1;
-            else if (hpPercentage < 0)
-                hpPercentage = 0;
-	        final int x = res.getScaledWidth() / 2 + 300;
-	        final int y = res.getScaledHeight() - 20;
-	    	Gui.drawRect(x/2+115, y/2+148, x/2+240, y/2+185, new Color(0,0,0,200).getRGB());
-			mc.fontRendererObj.drawStringWithShadow("Name: "+EnumChatFormatting.WHITE+KillAura.target.getName(), x/2+155, y/2+155, new Color(200,200,200).getRGB());
-			mc.fontRendererObj.drawStringWithShadow("Health: "+EnumChatFormatting.WHITE+(int)target.getHealth(), x/2+155, y/2+170, new Color(200,200,200).getRGB());
-	        final EntityLivingBase player = (EntityLivingBase) KillAura.target;
-	        GlStateManager.pushMatrix();
-	        GlStateManager.enableAlpha();
-	        GlStateManager.enableBlend();
-	        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-	        if(player instanceof EntityPlayer) {
-	        final List var5 = GuiPlayerTabOverlay.field_175252_a.sortedCopy((Iterable)mc.thePlayer.sendQueue.getPlayerInfoMap());
-	        for (final Object aVar5 : var5) {
-	            final NetworkPlayerInfo var6 = (NetworkPlayerInfo)aVar5;
-	            if (mc.theWorld.getPlayerEntityByUUID(var6.getGameProfile().getId()) == player) {
-	                mc.getTextureManager().bindTexture(var6.getLocationSkin());
-	                Gui.drawScaledCustomSizeModalRect(x/2+117, y/2+150, 8.0f, 8.0f, 8, 8, 32, 32, 64.0f, 64.0f);
-	                if (((EntityPlayer)player).isWearing(EnumPlayerModelParts.HAT)) {
-	                    Gui.drawScaledCustomSizeModalRect(x/2+117,y/2+150, 40.0f, 8.0f, 8, 8, 32, 32, 64.0f, 64.0f);
-	                }
-	                GlStateManager.bindTexture(0);
-	                break;
-	            }
-	        }
-	        
-	        }
-	        GlStateManager.popMatrix();
-			if(this.anima<=KillAura.target.getHealth()*6) {
-				 this.anima+=2;
-			 }if(this.anima>KillAura.target.getHealth()*6) {
-				 this.anima-=2;
-			 }
-			 Gui.drawRect(x/2+115, y/2+187, x/2+120+(hpPercentage * 1.2) * 100, y/2+185, new Color(225,20,20).getRGB());
-	    }
 	}
 	
 	@Override
@@ -164,6 +120,72 @@ public class KillAura extends Module {
 		target = null;
 	}
 
+	@EventHandler
+	public void onEvent(EventRender2D e) {
+		final ScaledResolution res = new ScaledResolution(KillAura.mc);
+		if (target != null &&
+				targetinfo.getValue()) {
+			double hpPercentage = target.getHealth() / target.getMaxHealth();
+			if (hpPercentage > 1)
+				hpPercentage = 1;
+			else if (hpPercentage < 0)
+				hpPercentage = 0;
+			final int x = res.getScaledWidth() / 2 + 300;
+			final int y = res.getScaledHeight() - 20;
+			Gui.drawRect(x/2+115, y/2+148, x/2+240, y/2+185, new Color(0,0,0,200).getRGB());
+			mc.fontRendererObj.drawStringWithShadow("Name: "+EnumChatFormatting.WHITE+KillAura.target.getName(), x/2+155, y/2+155, new Color(200,200,200).getRGB());
+			mc.fontRendererObj.drawStringWithShadow("Health: "+EnumChatFormatting.WHITE+(int)target.getHealth(), x/2+155, y/2+170, new Color(200,200,200).getRGB());
+			final EntityLivingBase player = (EntityLivingBase) KillAura.target;
+			GlStateManager.pushMatrix();
+			GlStateManager.enableAlpha();
+			GlStateManager.enableBlend();
+			GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+			if(player instanceof EntityPlayer) {
+				final List var5 = GuiPlayerTabOverlay.field_175252_a.sortedCopy((Iterable)mc.thePlayer.sendQueue.getPlayerInfoMap());
+				for (final Object aVar5 : var5) {
+					final NetworkPlayerInfo var6 = (NetworkPlayerInfo)aVar5;
+					if (mc.theWorld.getPlayerEntityByUUID(var6.getGameProfile().getId()) == player) {
+						mc.getTextureManager().bindTexture(var6.getLocationSkin());
+						Gui.drawScaledCustomSizeModalRect(x/2+117, y/2+150, 8.0f, 8.0f, 8, 8, 32, 32, 64.0f, 64.0f);
+						if (((EntityPlayer)player).isWearing(EnumPlayerModelParts.HAT)) {
+							Gui.drawScaledCustomSizeModalRect(x/2+117,y/2+150, 40.0f, 8.0f, 8, 8, 32, 32, 64.0f, 64.0f);
+						}
+						GlStateManager.bindTexture(0);
+						break;
+					}
+				}
+
+			}
+			GlStateManager.popMatrix();
+			if(this.anima<=KillAura.target.getHealth()*6) {
+				this.anima+=2;
+			}if(this.anima>KillAura.target.getHealth()*6) {
+				this.anima-=2;
+			}
+			Gui.drawRect(x/2+115, y/2+187, x/2+120+(hpPercentage * 1.2) * 100, y/2+185, new Color(225,20,20).getRGB());
+		}
+	}
+
+	@EventHandler
+	public void targetHud(EventRender2D event) {
+			ScaledResolution sr2 = new ScaledResolution(mc);
+			if (target != null) {
+				GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+				FontRenderer font = KillAura.mc.fontRendererObj;
+				font.drawStringWithShadow(target.getDisplayName().getFormattedText(), sr2.getScaledWidth() / 2 - font.getStringWidth(target.getName()) / 2, sr2.getScaledHeight() / 2 - 30, 16777215);
+				mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/icons.png"));
+				int i2 = 0;
+				while ((float)i2 < ((EntityLivingBase)target).getMaxHealth() / 2.0f) {
+					KillAura.mc.ingameGUI.drawTexturedModalRect((float)(sr2.getScaledWidth() / 2) - ((EntityLivingBase)target).getMaxHealth() / 2.0f * 10.0f / 2.0f + (float)(i2 * 10), (float)(sr2.getScaledHeight() / 2 - 20), 16, 0, 9, 9);
+					++i2;
+				}
+				i2 = 0;
+				while ((float)i2 < ((EntityLivingBase)target).getHealth() / 2.0f) {
+					KillAura.mc.ingameGUI.drawTexturedModalRect((float)(sr2.getScaledWidth() / 2) - ((EntityLivingBase)target).getMaxHealth() / 2.0f * 10.0f / 2.0f + (float)(i2 * 10), (float)(sr2.getScaledHeight() / 2 - 20), 52, 0, 9, 9);
+					++i2;
+				}
+			}
+	}
 	@EventHandler
 	public void onPreMotion(EventPreUpdate eventMotion) {
 		if (!this.mc.thePlayer.isEntityAlive() && this.autodisable.getValue()) {
@@ -215,9 +237,7 @@ public class KillAura extends Module {
 			this.attack();
 			timer.reset();
 		}
-		if (!this.getTargets(blockrange.getValue()).isEmpty() && this.canBlock() && !this.isBlocking
-				&& autoBlock.getValue()) {
-			this.mc.thePlayer.sendQueue.getNetworkManager();
+		if (!this.getTargets(blockrange.getValue()).isEmpty() && this.canBlock() && !this.isBlocking  && autoBlock.getValue()) {
 			mc.thePlayer.sendQueue.addToSendQueue(
 					new C08PacketPlayerBlockPlacement(new BlockPos(-0.6,-0.6,-0.6), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
@@ -320,7 +340,7 @@ public class KillAura extends Module {
 					.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
 		if (this.mode.getValue() == AuraMode.Switch) {
 			++this.hit;
-			if (this.hit >= this.hitsBeforeSwitch.getValue()) {
+			if (this.hit >= this.hitswitch.getValue()) {
 				this.attacktargets.add(target);
 				attacktarget = target;
 				this.hit = 0;
@@ -328,17 +348,11 @@ public class KillAura extends Module {
 		}
 		if (this.canBlock() && !this.isBlocking && autoBlock.getValue()) {
 			NetworkManager networkManager2 = this.mc.thePlayer.sendQueue.getNetworkManager();
-			BlockPos origin2;
 			networkManager2.sendPacket(
 					new C08PacketPlayerBlockPlacement(new BlockPos(-0.6,-0.6,-0.6), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
-	}
-
-	public boolean isOnGround(double n) {
-		return !this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer,
-				this.mc.thePlayer.getEntityBoundingBox().offset(0.0, -n, 0.0)).isEmpty();
 	}
 
 	private List<EntityLivingBase> getTargets(double n) {
@@ -354,12 +368,7 @@ public class KillAura extends Module {
 	}
 
 	public boolean canBlock() {
-		boolean b;
-		if (this.mc.thePlayer.getHeldItem() != null && this.mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) {
-			b = true;
-		} else {
-			b = false;
-		}
+		boolean b = this.mc.thePlayer.getHeldItem() != null && this.mc.thePlayer.getHeldItem().getItem() instanceof ItemSword;
 		return b;
 	}
 
@@ -481,9 +490,5 @@ public class KillAura extends Module {
 
 	enum AuraMode {
 		Switch, Single;
-	}
-
-	enum BlockMode {
-		WatchDog, NCP;
 	}
 }

@@ -27,7 +27,7 @@ public class MoveUtil {
         }
         return new BigDecimal(n).setScale(wfl, RoundingMode.HALF_UP).doubleValue();
     }
-    
+
 	public static double getBaseMoveSpeed() {
 		double baseSpeed = 0.2873D;
 		if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
