@@ -114,7 +114,7 @@ public enum ModelRotation implements IModelState, ITransformation
 
     public Optional<TRSRTransformation> apply(Optional<? extends IModelPart> p_apply_1_)
     {
-        return (Optional)Reflector.call(Reflector.ForgeHooksClient_applyTransform, this.getMatrix(), p_apply_1_);
+        return (Optional<TRSRTransformation>) Reflector.call(Reflector.ForgeHooksClient_applyTransform, this.getMatrix(), p_apply_1_);
     }
 
     public javax.vecmath.Matrix4f getMatrix()
