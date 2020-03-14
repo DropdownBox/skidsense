@@ -66,7 +66,7 @@ public class Window {
         }
     }
     public void render(int mouseX, int mouseY) {
-    	UnicodeFontRenderer font = Client.fontManager.sansation28;
+    	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.sansation28;
         int current = 0;
         for (Button b3 : this.buttons) {
             if (b3.expand) {

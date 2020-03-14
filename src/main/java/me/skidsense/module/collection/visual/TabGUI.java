@@ -54,13 +54,13 @@ implements Manager {
             }
             ++n2;
         }
-        Client.instance.getModuleManager();
+        //Client.getModuleManager();
         for (Module m : ModuleManager.getModules()) {
-        	UnicodeFontRenderer font = Client.fontManager.verdana16;
+        	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.verdana16;
             if (this.maxModule > font.getStringWidth(m.getName().toUpperCase()) + 4) continue;
             this.maxModule = font.getStringWidth(m.getName().toUpperCase()) + 4;
         }
-        Client.instance.getModuleManager();
+        //Client.getModuleManager();
         for (Module m : ModuleManager.getModules()) {
             if (m.getValues().isEmpty()) continue;
             for (Value val : m.getValues()) {
@@ -94,7 +94,7 @@ implements Manager {
                 int categoryY = this.height;
                 int moduleY = categoryY;
                 int valueY = categoryY;
-            	UnicodeFontRenderer font = Client.fontManager.zeroarr;
+            	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.zeroarr;
             	//Gui.drawRect(2, 2, 49, 13, new Color(0, 0, 0, 100).getRGB());
             	 Gui.drawRect(3,15, this.maxType+18, categoryY+this.maxType+21,new Color(16, 16, 16, 250).getRGB());
                // RenderUtil.drawRect(4,12,47,13,new Color(255,255,255).getRGB());

@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import org.newdawn.slick.font.Glyph;
 import org.newdawn.slick.font.GlyphPage;
 import org.newdawn.slick.font.HieroSettings;
+import org.newdawn.slick.font.effects.Effect;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureImpl;
 import org.newdawn.slick.opengl.renderer.Renderer;
@@ -94,7 +95,7 @@ public class UnicodeFont implements org.newdawn.slick.Font {
 	/** The glyphs queued up to be rendered */
 	private final List queuedGlyphs = new ArrayList(256);
 	/** The effects that need to be applied to the font */
-	private final List effects = new ArrayList();
+	private final List<Effect> effects = new ArrayList<>();
 	
 	/** The padding applied in pixels to the top of the glyph rendered area */
 	private int paddingTop;
@@ -909,7 +910,7 @@ public class UnicodeFont implements org.newdawn.slick.Font {
 	 * 
 	 * @return The list of effects to be applied to the font
 	 */
-	public List getEffects () {
+	public List<Effect> getEffects () {
 		return effects;
 	}
 

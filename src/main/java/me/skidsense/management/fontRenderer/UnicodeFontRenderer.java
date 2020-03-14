@@ -20,6 +20,7 @@ public class UnicodeFontRenderer extends FontRenderer {
         super(Minecraft.getMinecraft().gameSettings, new ResourceLocation("textures/font/ascii.png"), Minecraft.getMinecraft().getTextureManager(), false);
         this.font = new UnicodeFont(awtFont);
         this.font.addAsciiGlyphs();
+        //this.font.addGlyphs(0x4E00,0x9ffff);
         this.font.getEffects().add(new ColorEffect(Color.WHITE));
         try {
             this.font.loadGlyphs();

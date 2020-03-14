@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 
 import me.skidsense.Client;
 import me.skidsense.hooks.value.Value;
+import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
 import me.skidsense.module.Module;
 import me.skidsense.module.collection.visual.HUD;
 
@@ -83,7 +84,7 @@ public class Button {
     }
 
     public void click(int mouseX, int mouseY, int button) {
-        if (mouseX > this.x - 7 && mouseX < this.x + 85 && mouseY > this.y - 6 && mouseY < this.y + Client.fontManager.sansation14.getStringHeight(this.cheat.getName())+2) {
+        if (mouseX > this.x - 7 && mouseX < this.x + 85 && mouseY > this.y - 6 && mouseY < this.y + ((UnicodeFontRenderer) Client.fontManager.sansation14).getStringHeight(this.cheat.getName())+2) {
             if (button == 0) {
                 this.cheat.setEnabled(!this.cheat.isEnabled());
             }

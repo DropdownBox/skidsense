@@ -24,7 +24,7 @@ public class ValueButton {
    public int x;
    public int y;
    public double opacity = 0.0D;
-   public UnicodeFontRenderer mainfont = Client.fontManager.sansation14;
+   public UnicodeFontRenderer mainfont = (UnicodeFontRenderer) Client.fontManager.sansation14;
 
    public ValueButton(Value value, int x, int y) {
       this.value = value;

@@ -26,14 +26,12 @@ extends Module {
 
     @Override
     public void onDisable() {
-        this.mc.thePlayer.stepHeight = 0.6f;
+        mc.thePlayer.stepHeight = 0.6f;
     }
 
     public boolean canStep(){
-        Flight fly = (Flight) Client.instance.getModuleManager().getModuleByClass(Flight.class);
-        if(fly.isEnabled())
-            return false;
-        return true;
+        //Flight fly = (Flight) Client.getModuleManager().getModuleByClass(Flight.class);
+        return !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled();
     }
 
     @EventHandler
