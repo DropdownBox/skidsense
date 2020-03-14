@@ -8,14 +8,14 @@ public class Alt {
     private final String username;
     private String password;
 
-    public Alt(String username, String password) {
-        this(username, password, "");
-    }
+    //public Alt(String username, String password) {
+     //   this(username, password, "");
+    //}
 
-    public Alt(String username, String password, String mask) {
+    public Alt(String username, String password) {
         this.username = username;
         this.password = password;
-        this.mask = mask;
+        //this.mask = mask;
     }
 
     public String getMask() {

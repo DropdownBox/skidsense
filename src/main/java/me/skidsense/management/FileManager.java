@@ -1,30 +1,20 @@
 package me.skidsense.management;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import java.util.Iterator;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.io.Reader;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
-import java.io.PrintWriter;
-import java.io.FileWriter;
+
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.alt.Alt;
 import me.skidsense.module.collection.world.AutoL;
+import me.skidsense.util.EncryptionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 
-import java.io.File;
+import java.util.stream.Collectors;
 
 public class FileManager
 {
@@ -50,74 +40,39 @@ public class FileManager
     public static void loadLastAlt() {
         try {
             if (!FileManager.LASTALT.exists()) {
+                LASTALT.createNewFile();
                 final PrintWriter printWriter = new PrintWriter(new FileWriter(FileManager.LASTALT));
                 printWriter.println();
                 printWriter.close();
             }
             else if (FileManager.LASTALT.exists()) {
                 final BufferedReader bufferedReader = new BufferedReader(new FileReader(FileManager.LASTALT));
-                String s;
-                while ((s = bufferedReader.readLine()) != null) {
-                    if (s.contains("\t")) {
-                        s = s.replace("\t", "    ");
-                    }
-                    if (s.contains("    ")) {
-                        final String[] parts = s.split("    ");
-                        final String[] account = parts[1].split(":");
-                        if (account.length == 2) {
-                            Client.instance.getAltManager().setLastAlt(new Alt(account[0], account[1], parts[0]));
-                        }
-                        else {
-                            String pw = account[1];
-                            for (int i = 2; i < account.length; ++i) {
-                                pw = String.valueOf(pw) + ":" + account[i];
-                            }
-                            Client.instance.getAltManager().setLastAlt(new Alt(account[0], pw, parts[0]));
-                        }
-                    }
-                    else {
-                        final String[] account2 = s.split(":");
-                        if (account2.length == 1) {
-                            Client.instance.getAltManager().setLastAlt(new Alt(account2[0], ""));
-                        }
-                        else if (account2.length == 2) {
-                            Client.instance.getAltManager().setLastAlt(new Alt(account2[0], account2[1]));
-                        }
-                        else {
-                            String pw2 = account2[1];
-                            for (int j = 2; j < account2.length; ++j) {
-                                pw2 = String.valueOf(pw2) + ":" + account2[j];
-                            }
-                            Client.instance.getAltManager().setLastAlt(new Alt(account2[0], pw2));
-                        }
-                    }
+                String decrypted = EncryptionUtil.decrypt(bufferedReader.lines().collect(Collectors.joining("\n")));
+                String[] de;
+                if (decrypted != null) {
+                    de = decrypted.split("\n")[0].split(":");
+                    if(de.length == 2)
+                        AltManager.lastAlt = new Alt(de[0],de[1]);
                 }
-                bufferedReader.close();
+
             }
-        }
-        catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        catch (IOException e2) {
-            e2.printStackTrace();
         }
     }
     
     public static void saveLastAlt() {
         try {
-            final PrintWriter printWriter = new PrintWriter(FileManager.LASTALT);
-            final Alt alt = Client.instance.getAltManager().getLastAlt();
-            if (alt != null) {
-                if (alt.getMask().equals("")) {
-                    printWriter.println(String.valueOf(alt.getUsername()) + ":" + alt.getPassword());
-                }
-                else {
-                    printWriter.println(String.valueOf(alt.getMask()) + "    " + alt.getUsername() + ":" + alt.getPassword());
-                }
-            }
+
+            final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
+            //Client.instance.getAltManager();
+            final Alt alt = AltManager.lastAlt;
+            String s = "\n";
+            if(alt != null)
+                s = String.format("%s:%s\n", alt.getUsername(), alt.getPassword());
+            printWriter.write(Objects.requireNonNull(EncryptionUtil.encrypt(s)));
             printWriter.close();
-        }
-        catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -126,57 +81,23 @@ public class FileManager
         try {
             final BufferedReader bufferedReader = new BufferedReader(new FileReader(FileManager.ALT));
             if (!FileManager.ALT.exists()) {
-                final PrintWriter printWriter = new PrintWriter(new FileWriter(FileManager.ALT));
-                printWriter.println();
+                FileManager.ALT.createNewFile();
+                final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
+                printWriter.newLine();
                 printWriter.close();
             }
             else if (FileManager.ALT.exists()) {
-                String s;
-                while ((s = bufferedReader.readLine()) != null) {
-                    if (s.contains("\t")) {
-                        s = s.replace("\t", "    ");
-                    }
-                    if (s.contains("    ")) {
-                        final String[] parts = s.split("    ");
-                        final String[] account = parts[1].split(":");
-                        if (account.length == 2) {
-                            Client.instance.getAltManager();
-                            AltManager.getAlts().add(new Alt(account[0], account[1], parts[0]));
-                        }
-                        else {
-                            String pw = account[1];
-                            for (int i = 2; i < account.length; ++i) {
-                                pw = String.valueOf(pw) + ":" + account[i];
-                            }
-                            Client.instance.getAltManager();
-                            AltManager.getAlts().add(new Alt(account[0], pw, parts[0]));
-                        }
-                    }
-                    else {
-                        final String[] account2 = s.split(":");
-                        if (account2.length == 1) {
-                            Client.instance.getAltManager();
-                            AltManager.getAlts().add(new Alt(account2[0], ""));
-                        }
-                        else if (account2.length == 2) {
-                            try {
-                                Client.instance.getAltManager();
-                                AltManager.getAlts().add(new Alt(account2[0], account2[1]));
-                            }
-                            catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        else {
-                            String pw2 = account2[1];
-                            for (int j = 2; j < account2.length; ++j) {
-                                pw2 = String.valueOf(pw2) + ":" + account2[j];
-                            }
-                            Client.instance.getAltManager();
-                            AltManager.getAlts().add(new Alt(account2[0], pw2));
-                        }
-                    }
+               String s = bufferedReader.lines().collect(Collectors.joining("\n"));
+               s = EncryptionUtil.decrypt(s);
+                String[] strings = new String[0];
+                if (s != null) {
+                    strings = s.split("\n");
                 }
+                for (int i = 0; i < strings.length; i++) {
+                   String[] strings1 = strings[i].split(":");
+                   AltManager.alts.add(new Alt(strings1[0],strings1[1]));
+               }
+
             }
             bufferedReader.close();
         }
@@ -185,19 +106,15 @@ public class FileManager
     
     public static void saveAlts() {
         try {
-            final PrintWriter printWriter = new PrintWriter(FileManager.ALT);
-            Client.instance.getAltManager();
+            StringBuilder stringBuffer = new StringBuilder();
+            final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
+            //Client.instance.getAltManager();
             for (final Alt alt : AltManager.getAlts()) {
-                if (alt.getMask().equals("")) {
-                    printWriter.println(String.valueOf(alt.getUsername()) + ":" + alt.getPassword());
-                }
-                else {
-                    printWriter.println(String.valueOf(alt.getMask()) + "    " + alt.getUsername() + ":" + alt.getPassword());
-                }
+                stringBuffer.append(String.format("%s:%s\n", alt.getUsername(), alt.getPassword()));
             }
+            printWriter.write(Objects.requireNonNull(EncryptionUtil.encrypt(stringBuffer.toString())));
             printWriter.close();
-        }
-        catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

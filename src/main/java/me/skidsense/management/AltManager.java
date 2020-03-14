@@ -17,7 +17,7 @@ public class AltManager {
     public static void init() {
     	SplashProgress.setProgress(6, "AltManager Init");
         AltManager.setupAlts();
-        AltManager.getAlts();
+        //AltManager.getAlts();
     }
 
     public Alt getLastAlt() {
@@ -29,7 +29,7 @@ public class AltManager {
     }
 
     public static void setupAlts() {
-        alts = new ArrayList<Alt>();
+        alts = new ArrayList<>();
     }
 
     public static List<Alt> getAlts() {
