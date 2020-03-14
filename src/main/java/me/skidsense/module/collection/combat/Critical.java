@@ -5,16 +5,16 @@ import java.util.Random;
 
 import me.skidsense.Client;
 import me.skidsense.management.notifications.Notifications;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
-import org.greenrobot.eventbus.Subscribe;
+//import org.greenrobot.eventbus.Subscribe;
 
-public class Critical extends Module {
+public class Critical extends Mod {
 
     public Critical() {
         super("Critical", new String[]{"Critical"}, ModuleType.Fight);

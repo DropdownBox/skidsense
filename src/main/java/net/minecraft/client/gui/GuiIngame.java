@@ -4,7 +4,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-import me.skidsense.hooks.EventBus;
+import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventRender2D;
 
 import java.util.Collection;
@@ -363,7 +363,7 @@ public class GuiIngame extends Gui
         {
             this.overlayPlayerList.updatePlayerList(false);
         }
-        EventBus.getInstance().call(new EventRender2D(partialTicks));
+        EventManager.postAll(new EventRender2D(partialTicks));
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.disableLighting();
         GlStateManager.enableAlpha();

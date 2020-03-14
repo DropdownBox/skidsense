@@ -1,15 +1,14 @@
 package me.skidsense.module.collection.visual;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.GLUtils;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
@@ -24,13 +23,13 @@ import java.awt.*;
 import java.util.Iterator;
 
 public class ChestESP
-extends Module {
+extends Mod {
     public ChestESP() {
         super("Chest ESP", new String[]{"chesthack"}, ModuleType.Visual);
         this.setColor(new Color(90, 209, 165).getRGB());
     }
 
-    @EventHandler
+    @Sub
     public void onRender(EventRender3D eventRender) {
         Iterator var3;
     	var3 = this.mc.theWorld.loadedTileEntityList.iterator();

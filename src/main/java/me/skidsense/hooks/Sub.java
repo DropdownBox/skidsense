@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 
 @Retention(value=RetentionPolicy.RUNTIME)
 @Target(value={ElementType.METHOD})
-public @interface EventHandler {
+public @interface Sub {
     public byte priority() default 1;
 }
 

@@ -12,7 +12,7 @@ import com.google.gson.JsonParser;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.management.notifications.Notifications;
 
@@ -350,7 +350,7 @@ public class MusicMgr {
 	boolean mark = false;
 	boolean mark2 = false;
 
-	@EventHandler
+	@Sub
 	public void updateLyric(EventPreUpdate event) {
 		if (mediaPlayer != null) {
 			// TODO 翻译显示部分

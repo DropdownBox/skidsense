@@ -2,9 +2,8 @@ package me.skidsense.command.commands;
 
 import me.skidsense.Client;
 import me.skidsense.command.Command;
-import me.skidsense.management.ModuleManager;
 import me.skidsense.management.notifications.Notifications;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import org.lwjgl.input.Keyboard;
 
 public class Bind
@@ -16,7 +15,7 @@ extends Command {
     @Override
     public String execute(String[] args) {
         if (args.length >= 2) {
-            Module m = Client.instance.getModuleManager().getAlias(args[0]);
+            Mod m = Client.instance.getModuleManager().getAlias(args[0]);
             if (m != null) {
                 int k = Keyboard.getKeyIndex((String)args[1].toUpperCase());
                 m.setKey(k);

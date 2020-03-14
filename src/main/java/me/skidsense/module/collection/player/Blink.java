@@ -2,9 +2,9 @@ package me.skidsense.module.collection.player;
 
 import com.mojang.authlib.GameProfile;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketSend;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 
 import java.awt.Color;
@@ -21,7 +21,7 @@ import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 public class Blink
-extends Module {
+extends Mod {
     private EntityOtherPlayerMP blinkEntity;
     private List<Packet> packetList = new ArrayList<Packet>();
 
@@ -43,7 +43,7 @@ extends Module {
         this.mc.theWorld.addEntityToWorld(this.blinkEntity.getEntityId(), this.blinkEntity);
     }
 
-    @EventHandler
+    @Sub
     private void onPacketSend(EventPacketSend event) {
         if (event.getPacket() instanceof C0BPacketEntityAction || event.getPacket() instanceof C03PacketPlayer || event.getPacket() instanceof C02PacketUseEntity || event.getPacket() instanceof C0APacketAnimation || event.getPacket() instanceof C08PacketPlayerBlockPlacement) {
             this.packetList.add(event.getPacket());

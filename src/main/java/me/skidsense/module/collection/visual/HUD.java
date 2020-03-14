@@ -1,53 +1,33 @@
 package me.skidsense.module.collection.visual;
 
 import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.hooks.value.Value;
-import me.skidsense.management.FriendManager;
-import me.skidsense.management.ModuleManager;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Collections;
-import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.opengl.TextureLoader;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
 public class HUD
-extends Module {
+extends Mod {
     private Option<Boolean> info = new Option<>("Information", "information", true);
     private Numbers<Double> rainbowspeed = new Numbers<>("Rainbow", "Rainbow", 0.5, 0.0, 1.0, 0.1);
     public Mode<Enum<?>> color = new Mode("ColorMode", "ColorMode", colormode.values(), colormode.Client);
@@ -59,18 +39,19 @@ extends Module {
     public HUD() {
         super("HUD", new String[]{"gui"}, ModuleType.Visual);
         this.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).getRGB());
-        this.addValues(this.info,this.rainbowspeed,this.color);
+        //this.addValues(this.info,this.rainbowspeed,this.color);
 		this.removed=true;
+		this.setEnabled(true);
     }
 
-    @EventHandler
+    @Sub
     private void renderHud(EventRender2D event) {
     	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.comfortaa18;
         if (!this.mc.gameSettings.showDebugInfo) {
             int y = 1;
             int rainbowTick = 0;
-    		ArrayList<Module> mods = (ArrayList<Module>) ((ArrayList<Module>) Client.instance.getModuleManager().getModules()).clone();
-            Collections.sort(mods, new Comparator<Module>() { public int compare(Module m1, Module m2) { if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) > Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return -1; } if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) < Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return 1; } return 0; } }); 
+    		ArrayList<Mod> mods = (ArrayList<Mod>) ((ArrayList<Mod>) Client.instance.getModuleManager().getModules()).clone();
+            Collections.sort(mods, new Comparator<Mod>() { public int compare(Mod m1, Mod m2) { if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) > Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return -1; } if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) < Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return 1; } return 0; } });
             
 
 	        String[] a;
@@ -120,7 +101,7 @@ extends Module {
                 //坐标
             	font.drawStringWithShadow(CoordStringBuilder.toString(), 3, RenderUtil.height()-20, new Color(255,255,255).getRGB());
 			}
-            for (Module m : mods) {
+            for (Mod m : mods) {
             	if(m.wasRemoved()) {
             		continue;
             	}

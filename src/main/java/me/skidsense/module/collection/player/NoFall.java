@@ -1,22 +1,22 @@
 package me.skidsense.module.collection.player;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.management.notifications.Notifications;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
 
 public class NoFall
-extends Module {
+extends Mod {
 	private float fall;
     public static Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])fallmode.values(), (Enum)fallmode.Normal);
     public NoFall() {
         super("No Fall", new String[]{"Nofalldamage"}, ModuleType.Player);
-        this.addValues(mode);
+        //this.addValues(mode);
     }
 
     @Override
@@ -24,7 +24,7 @@ extends Module {
         super.onEnable();
     }
 
-    @EventHandler
+    @Sub
     private void onUpdate(EventPreUpdate e) {
         this.setSuffix(mode.getValue());  
         if (mode.getValue() == fallmode.Normal) {

@@ -7,7 +7,6 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import me.skidsense.Client;
-import me.skidsense.management.ModuleManager;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

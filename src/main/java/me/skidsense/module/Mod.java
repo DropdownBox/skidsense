@@ -2,13 +2,12 @@ package me.skidsense.module;
 
 import me.skidsense.Client;
 import me.skidsense.command.Command;
-import me.skidsense.hooks.EventBus;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
 import me.skidsense.management.FileManager;
-import me.skidsense.management.ModuleManager;
+import me.skidsense.management.ModManager;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -16,7 +15,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.util.*;
 
-public class Module {
+public class Mod {
 	public boolean keepReg;
 	public String name;
 	public static String clickguicategory;
@@ -37,7 +36,7 @@ public class Module {
 	public static Minecraft mc = Minecraft.getMinecraft();
 	public static Random random = new Random();
 
-	public Module(String name, String[] alias, ModuleType type) {
+	public Mod(String name, String[] alias, ModuleType type) {
 		this.name = name;
 		this.alias = alias;
 		this.type = type;
@@ -54,11 +53,11 @@ public class Module {
 	}
 
 	public static String getClientName() {
-		return Module.clientname;
+		return Mod.clientname;
 	}
 
 	public static String setClientName(String s) {
-		Module.clientname = s;
+		Mod.clientname = s;
 		return null;
 	}
 
@@ -107,11 +106,11 @@ public class Module {
 			if (anim == -1) {
 				anim = 0;
 			}
-			EventBus.getInstance().register(this);
+			//EventBus.getInstance().register(this);
 			Notifications.getManager().post(this.getName() + " §aEnabled");
 		} else {
-			EventBus.getInstance().unregister(this);
-			Notifications.getManager().post(this.getName() + " §cDisable");
+			//EventBus.getInstance().unregister(this);
+			Notifications.getManager().post(this.getName() + " §cDisabled");
 			this.onDisable();
 		}
 
@@ -125,11 +124,14 @@ public class Module {
 		return this.color;
 	}
 
-	protected void addValues(Value<?>... values) {
-		int var4 = values.length;
+	//public void addValues(Value<?>... values) {
+		//int var4 = values.length;
 
-		this.values.addAll(Arrays.asList(values).subList(0, var4));
+	//	this.values.addAll(Arrays.asList(values));
 
+	//}
+	public void addValue(Value<?> value){
+		this.values.add(value);
 	}
 
 	public List<Value<?>> getValues() {
@@ -144,9 +146,9 @@ public class Module {
 		this.key = key;
 		String content = "";
 
-		Module m;
-		for (Iterator var4 = ModuleManager.getModules().iterator(); var4.hasNext(); content = content + String.format("%s:%s%s", m.getName(), Keyboard.getKeyName(m.getKey()), System.lineSeparator())) {
-			m = (Module) var4.next();
+		Mod m;
+		for (Iterator var4 = ModManager.getModules().iterator(); var4.hasNext(); content = content + String.format("%s:%s%s", m.getName(), Keyboard.getKeyName(m.getKey()), System.lineSeparator())) {
+			m = (Mod) var4.next();
 		}
 
 		FileManager.save("Binds.txt", content, false);
@@ -206,10 +208,10 @@ public class Module {
 }
 
 class Module$1 extends Command {
-	private final Module m;
-	final Module this$0;
+	private final Mod m;
+	final Mod this$0;
 
-	Module$1(Module var1, String $anonymous0, String[] $anonymous1, String $anonymous2, String $anonymous3) {
+	Module$1(Mod var1, String $anonymous0, String[] $anonymous1, String $anonymous2, String $anonymous3) {
 		super($anonymous0, $anonymous1, $anonymous2, $anonymous3);
 		this.this$0 = var1;
 		this.m = var1;

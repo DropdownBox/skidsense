@@ -1,11 +1,9 @@
 
 package me.skidsense.module.collection.world;
 
-import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventChat;
-import me.skidsense.hooks.events.EventPacketRecieve;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
 import java.util.Random;
@@ -13,9 +11,8 @@ import java.util.Random;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.ChatUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.play.server.S45PacketTitle;
 
-public class AutoL extends Module {
+public class AutoL extends Mod {
 	private StringBuilder SBL = new StringBuilder();
 	private Random RD =new Random(System.currentTimeMillis());
 	private String[] knm = {"qwq","poi","QAQ","QWQ","qaq","awa","(๑>؂<๑）","(⑉• •⑉)‥♡","ヾ(●´∇｀●)ﾉ","POI~","(｡•́︿•̀｡)","poi~","-3-"};
@@ -25,7 +22,7 @@ public class AutoL extends Module {
 		setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).getRGB());
 	}
 
-	@EventHandler
+	@Sub
 	private void onLChat(EventChat e) {
 		if(KillAura.target != null){
 			if(e.getMessage().contains(Minecraft.getMinecraft().thePlayer.getName()) && e.getMessage().contains(KillAura.target.getName())){

@@ -1,30 +1,23 @@
 package me.skidsense.module.collection.move;
 
 import java.awt.Color;
-import java.util.Random;
 
-import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MathUtil;
 import me.skidsense.util.MoveUtil;
-import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovementInput;
 
 public class Flight
-extends Module {
+extends Mod {
 	public Mode mode = new Mode("Mode", "Mode", FlightMode.values(), FlightMode.Guardian);
     private Option<Boolean> Stop = new Option("Stop", "Stop", Boolean.valueOf(true));
     private Option<Boolean> UHC = new Option("UHC", "UHC", Boolean.valueOf(true));
@@ -34,7 +27,7 @@ extends Module {
     public Flight() {
         super("Flight", new String[]{"fly", "angel"}, ModuleType.Move);
         this.setColor(new Color(158, 114, 243).getRGB());
-        this.addValues(this.mode,UHC,Stop);
+        //this.addValues(this.mode,UHC,Stop);
     }
 
 	public void damagePlayerNew() {
@@ -82,7 +75,7 @@ extends Module {
     private boolean canZoom() {
 	    return MoveUtil.isMoving()&& mc.thePlayer.onGround;
     }
-    @EventHandler
+    @Sub
     private void onUpdate(EventPreUpdate e) {
         this.setSuffix(this.mode.getValue());
 
@@ -184,7 +177,7 @@ extends Module {
         double playerYaw = radions(getRealWalkYaw());
         mc.thePlayer.setPosition(mc.thePlayer.posX - (Math.sin(playerYaw) * offset), mc.thePlayer.posY+0.0000000000001, mc.thePlayer.posZ + (Math.cos(playerYaw) * offset));
     }
-    @EventHandler
+    @Sub
     public void onPost(EventPostUpdate e) {
     	if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
  			double xDist = Minecraft.getMinecraft().thePlayer.posX
@@ -197,7 +190,7 @@ extends Module {
     private int stage;
     private double distance;
 
-    @EventHandler
+    @Sub
     private void onMove(EventMove e) {
 		if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
 			if (b2) {

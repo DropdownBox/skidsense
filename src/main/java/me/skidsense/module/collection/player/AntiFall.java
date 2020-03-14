@@ -2,33 +2,30 @@ package me.skidsense.module.collection.player;
 
 import java.awt.Color;
 
-import org.lwjgl.opengl.GL11;
-
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Numbers;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
 public class AntiFall
-extends Module {
+extends Mod {
     private Numbers<Double> Distance = new Numbers<Double>("Distance", "Distance", 1.0, 1.0, 100.0, 1.0);
     private TimerUtil timer = new TimerUtil();
 
     public AntiFall() {
         super("Anti Void", new String[]{"novoid", "antifall"}, ModuleType.Move);
         this.setColor(new Color(223, 233, 233).getRGB());
-        this.addValues(this.Distance);
+        //this.addValues(this.Distance);
     }
 
-    @EventHandler
+    @Sub
     private void onUpdate(EventPreUpdate e2) {
         if (!this.isBlockUnder()) {
             if (!Minecraft.getMinecraft().thePlayer.onGround) {

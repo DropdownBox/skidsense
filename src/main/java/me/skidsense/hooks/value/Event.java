@@ -3,7 +3,7 @@
  */
 package me.skidsense.hooks.value;
 
-import org.greenrobot.eventbus.EventBus;
+//import org.greenrobot.eventbus.EventBus;
 
 public abstract class Event {
     private boolean cancelled;
@@ -25,10 +25,10 @@ public abstract class Event {
         this.type = type;
     }
     
-    public void dispatch() {
-        if (EventBus.getDefault().hasSubscriberForEvent(getClass())) {
-            EventBus.getDefault().post(this);
-        }
-    }
+    //public void dispatch() {
+      //  if (EventBus.getDefault().hasSubscriberForEvent(getClass())) {
+        //    EventBus.getDefault().post(this);
+        //}
+    //}
 }
 

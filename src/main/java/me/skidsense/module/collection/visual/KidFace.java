@@ -1,39 +1,28 @@
 package me.skidsense.module.collection.visual;
 
- import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.vertex.VertexBuffer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.GlStateManager;
+ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Timer;
-import org.lwjgl.opengl.GL11;
+ import org.lwjgl.opengl.GL11;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 
 public class KidFace
-extends Module {
+extends Mod {
     public Mode<Enum> mode = new Mode("Mode","Mode",(Enum[])EmojiMode.values(),(Enum)EmojiMode.SunZheng);
 
     public KidFace() {
         super("Kid Face", new String[] {"KidFace"}, ModuleType.Visual);
-        this.addValues(mode);
+        //this.addValues(mode);
         //this.setRemoved(true);
     }
 
@@ -44,12 +33,12 @@ extends Module {
         return false;
     }
 
-    @EventHandler
+    @Sub
     public void onpre(EventPreUpdate event) {
     		this.setSuffix(this.mode.getValue());
     }
     
-    @EventHandler
+    @Sub
     public void onRender(EventRender3D event) {
         for (EntityPlayer entity : this.mc.theWorld.playerEntities) {
             if (!this.isValid((EntityLivingBase)entity)) continue;

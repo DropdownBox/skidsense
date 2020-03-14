@@ -16,9 +16,8 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
-import me.skidsense.hooks.EventBus;
+import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventKey;
-import me.skidsense.hooks.events.EventTick;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -54,15 +53,11 @@ import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiMemoryErrorScreen;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSleepMP;
-import net.minecraft.client.gui.GuiYesNo;
-import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.achievement.GuiAchievement;
 import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.client.gui.stream.GuiStreamUnavailable;
 import net.minecraft.client.main.GameConfiguration;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
@@ -82,7 +77,6 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -152,7 +146,6 @@ import net.minecraft.stats.IStatStringFormat;
 import net.minecraft.stats.StatFileWriter;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.FrameTimer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.MathHelper;
@@ -1761,9 +1754,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     public void runTick() throws IOException
     {
-        if (this.thePlayer != null) {
-            EventBus.getInstance().call(new EventTick());
-        }
+        //if (this.thePlayer != null) {
+        //    EventManager.getInstance().post(new EventTick());
+        //}
         if (this.rightClickDelayTimer > 0)
         {
             --this.rightClickDelayTimer;
@@ -1967,7 +1960,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     }
                     else
                     {
-                        EventBus.getInstance().call(new EventKey(k));
+                        EventManager.postAll(new EventKey(k));
                         if (k == 1)
                         {
                             this.displayInGameMenu();

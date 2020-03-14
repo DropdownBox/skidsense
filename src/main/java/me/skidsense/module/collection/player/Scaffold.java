@@ -9,39 +9,27 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import me.skidsense.color.Colors;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MoveUtil;
-import me.skidsense.util.PlayerUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.BlockCarpet;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.BlockLadder;
-import net.minecraft.block.BlockSkull;
 import net.minecraft.block.BlockSnow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.boss.BossStatus;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -53,10 +41,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Timer;
 import net.minecraft.util.Vec3;
 public class Scaffold
-        extends Module {
+        extends Mod {
    ItemStack is;
    private BlockData blockData;
    private timeHelper time = new timeHelper();
@@ -82,9 +69,9 @@ public class Scaffold
 
    public Scaffold() {
       super("Scaffold", new String[]{"Scaffold"}, ModuleType.Move);
-      this.addValues(mode,tower, movetower,noSwing);
+      //this.addValues(mode,tower, movetower,noSwing);
    }
-   @EventHandler
+   @Sub
    public void onRender2D(EventRender2D event) {
       ScaledResolution res = new ScaledResolution(mc);
       FontRenderer font = mc.fontRendererObj;
@@ -117,7 +104,7 @@ public class Scaffold
       GL11.glDisable(GL11.GL_BLEND);
       GL11.glPopMatrix();
    }
-   @EventHandler
+   @Sub
    public void onPre(EventPreUpdate event) {
       double x = Minecraft.getMinecraft().thePlayer.posX;
       double y = Minecraft.getMinecraft().thePlayer.posY - 1.0;
@@ -248,7 +235,7 @@ public class Scaffold
       return new float[]{yaw, pitch};
    }
 
-   @EventHandler
+   @Sub
    public void onSafe(EventPostUpdate event) {
       int i;
       for (i = 36; i < 45; ++i) {

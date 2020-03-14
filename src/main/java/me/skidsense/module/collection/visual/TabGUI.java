@@ -1,12 +1,11 @@
 package me.skidsense.module.collection.visual;
 
 import java.awt.Color;
-import java.util.List;
 
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
-import me.skidsense.hooks.EventBus;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventKey;
 import me.skidsense.hooks.value.Mode;
@@ -14,23 +13,20 @@ import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
 import me.skidsense.management.Manager;
-import me.skidsense.management.ModuleManager;
+import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.visual.HUD;
 import me.skidsense.util.MathUtil;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.settings.GameSettings;
 
 public class TabGUI
 implements Manager {
     private Section section = Section.TYPES;
     private ModuleType selectedType = ModuleType.values()[0];
-    private Module selectedModule = null;
+    private Mod selectedModule = null;
     private Value selectedValue = null;
     private int currentType = 0;
     private int currentModule = 0;
@@ -55,13 +51,13 @@ implements Manager {
             ++n2;
         }
         //Client.getModuleManager();
-        for (Module m : ModuleManager.getModules()) {
+        for (Mod m : ModManager.getModules()) {
         	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.verdana16;
             if (this.maxModule > font.getStringWidth(m.getName().toUpperCase()) + 4) continue;
             this.maxModule = font.getStringWidth(m.getName().toUpperCase()) + 4;
         }
         //Client.getModuleManager();
-        for (Module m : ModuleManager.getModules()) {
+        for (Mod m : ModManager.getModules()) {
             if (m.getValues().isEmpty()) continue;
             for (Value val : m.getValues()) {
                 if (this.maxValue > Client.mc.fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + 4) continue;
@@ -71,10 +67,11 @@ implements Manager {
         this.maxModule += 12;
         this.maxValue += 24;
         boolean highestWidth = false;
-        this.maxType = this.maxType < this.maxModule ? this.maxModule : this.maxType;
+        this.maxType = Math.max(this.maxType, this.maxModule);
         this.maxModule += this.maxType;
         this.maxValue += this.maxModule;
-        EventBus.getInstance().register(this);
+        EventManager.getOtherEventManager().register(this);
+        //EventBus.getInstance().register(this);
     }
 
     private void resetValuesLength() {
@@ -88,9 +85,9 @@ implements Manager {
         this.maxValue += this.maxModule;
     }
 
-    @EventHandler
+    @Sub
     private void renderTabGUI(EventRender2D e) {
-                if (!Client.mc.gameSettings.showDebugInfo && Client.instance.getModuleManager().getModuleByClass(HUD.class).isEnabled()) {
+                if (!Client.mc.gameSettings.showDebugInfo && Client.getModuleManager().getModuleByClass(HUD.class).isEnabled()) {
                 int categoryY = this.height;
                 int moduleY = categoryY;
                 int valueY = categoryY;
@@ -117,7 +114,7 @@ implements Manager {
                 }
                 if (this.section == Section.MODULES || this.section == Section.VALUES) {
                     RenderUtil.drawRect(this.maxType+19, moduleY, this.maxModule+70, moduleY + 12 * Client.instance.getModuleManager().getModulesInType(this.selectedType).size()+4, new Color(20, 20, 20, 220).getRGB());
-                    for (Module m : Client.instance.getModuleManager().getModulesInType(this.selectedType)) {
+                    for (Mod m : Client.instance.getModuleManager().getModulesInType(this.selectedType)) {
                         if (this.selectedModule == m) {
                         	RenderUtil.rectangle((double)this.maxType+20, (double)moduleY +2, (double)this.maxModule +9, (double)(moduleY + Client.mc.fontRendererObj.FONT_HEIGHT) + 5, new Color(200,0,0).getRGB());
                             valueY = moduleY;
@@ -153,7 +150,7 @@ implements Manager {
             }
         }
 
-    @EventHandler
+    @Sub
     private void onKey(EventKey e) {
         if (!Client.mc.gameSettings.showDebugInfo) {
             block0 : switch (e.getKey()) {

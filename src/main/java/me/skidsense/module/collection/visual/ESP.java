@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -28,13 +27,13 @@ import org.lwjgl.util.glu.GLU;
 
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.AntiBot;
 import me.skidsense.module.collection.combat.KillAura;
@@ -43,7 +42,7 @@ import me.skidsense.util.RenderUtil;
 import me.skidsense.util.Vec3f;
 
 public class ESP
-extends Module {
+extends Mod {
     private ArrayList<Vec3f> points = new ArrayList();
     private Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[])ESPMode.values(), (Enum)ESPMode.Box);
     private Option<Boolean> HEALTH = new Option<Boolean>("Health", "Health", true);
@@ -53,7 +52,7 @@ extends Module {
 
     public ESP() {
         super("ESP", new String[]{}, ModuleType.Visual);
-        this.addValues(mode, this.HEALTH, this.invis);
+        //this.addValues(mode, this.HEALTH, this.invis);
         int i2 = 0;
         while (i2 < 8) {
             this.points.add(new Vec3f());
@@ -64,13 +63,13 @@ extends Module {
         this.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).getRGB());
     }
 
-    @EventHandler
+    @Sub
     public void onScreen(EventRender2D eventRender) {
         this.setSuffix(mode.getValue());
 
     }
 
-    @EventHandler
+    @Sub
     public void onRender(EventRender3D event) {
         if (mode.getValue() == ESPMode.Moon) {
             this.doCornerESP2();
@@ -80,7 +79,7 @@ extends Module {
         }
     }
 
-    @EventHandler
+    @Sub
     public void onRender1(EventRender3D event) {
         try {
             this.updatePositions();
@@ -90,7 +89,7 @@ extends Module {
         }
     }
 
-    @EventHandler
+    @Sub
     public void onRender2D(EventRender2D event) {
         GlStateManager.pushMatrix();
         for (Entity entity : this.entityConvertedPointsMap.keySet()) {
