@@ -108,11 +108,7 @@ public class KillAura extends Mod {
 	public void onDisable() {
 		super.onDisable();
 		if (this.isBlocking) {
-			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
-			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-0.6,-0.6,-0.6), EnumFacing.DOWN));
-			mc.thePlayer.clearItemInUse();
-			this.isBlocking = false;
+			sendNotBlockingPacket();
 		}
 		target = null;
 	}
@@ -288,10 +284,11 @@ public class KillAura extends Mod {
 		double n4 = n - Minecraft.getMinecraft().thePlayer.posX;
 		double n5 = n2 - Minecraft.getMinecraft().thePlayer.posZ;
 		double degrees;
+		final double v = Math.toDegrees(Math.atan(n5 / n4));
 		if (n5 < 0.0 && n4 < 0.0) {
-			degrees = 90.0 + Math.toDegrees(Math.atan(n5 / n4));
+			degrees = 90.0 + v;
 		} else if (n5 < 0.0 && n4 > 0.0) {
-			degrees = -90.0 + Math.toDegrees(Math.atan(n5 / n4));
+			degrees = -90.0 + v;
 		} else {
 			degrees = Math.toDegrees(-Math.atan(n4 / n5));
 		}
@@ -310,11 +307,7 @@ public class KillAura extends Mod {
 				&& this.mc.thePlayer.ridingEntity == null) {
 		}
 		if (this.isBlocking && this.canBlock()) {
-			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
-			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-0.6,-0.6,-0.6), EnumFacing.DOWN));
-			mc.thePlayer.clearItemInUse();
-			this.isBlocking = false;
+			sendNotBlockingPacket();
 		}
 			if (BlockUtil.isOnGround(0.01) && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
 					&& this.mc.thePlayer.isCollidedVertically && !this.mc.thePlayer.isInWater()
@@ -350,6 +343,14 @@ public class KillAura extends Mod {
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
+	}
+
+	private void sendNotBlockingPacket() {
+		NetworkManager networkManager = mc.thePlayer.sendQueue.getNetworkManager();
+		C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
+		networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-0.6,-0.6,-0.6), EnumFacing.DOWN));
+		mc.thePlayer.clearItemInUse();
+		this.isBlocking = false;
 	}
 
 	private List<EntityLivingBase> getTargets(double n) {
