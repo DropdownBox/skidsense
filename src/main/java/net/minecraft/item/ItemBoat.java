@@ -34,10 +34,10 @@ public class ItemBoat extends Item
         double d1 = playerIn.prevPosY + (playerIn.posY - playerIn.prevPosY) * (double)f + (double)playerIn.getEyeHeight();
         double d2 = playerIn.prevPosZ + (playerIn.posZ - playerIn.prevPosZ) * (double)f;
         Vec3 vec3 = new Vec3(d0, d1, d2);
-        float f3 = MathHelper.cos(-f2 * 0.017453292F - (float)Math.PI);
-        float f4 = MathHelper.sin(-f2 * 0.017453292F - (float)Math.PI);
-        float f5 = -MathHelper.cos(-f1 * 0.017453292F);
-        float f6 = MathHelper.sin(-f1 * 0.017453292F);
+        float f3 = MathHelper.cos(-f2 * ((float)Math.PI / 180F) - (float)Math.PI);
+        float f4 = MathHelper.sin(-f2 * ((float)Math.PI / 180F) - (float)Math.PI);
+        float f5 = -MathHelper.cos(-f1 * ((float)Math.PI / 180F));
+        float f6 = MathHelper.sin(-f1 * ((float)Math.PI / 180F));
         float f7 = f4 * f5;
         float f8 = f3 * f5;
         double d3 = 5.0D;
@@ -57,7 +57,7 @@ public class ItemBoat extends Item
 
             for (int i = 0; i < list.size(); ++i)
             {
-                Entity entity = (Entity)list.get(i);
+                Entity entity = list.get(i);
 
                 if (entity.canBeCollidedWith())
                 {

@@ -17,10 +17,10 @@ public class LaunchUtils
                 Field field = oclass.getField("blackboard");
                 Map<String, Object> map = (Map)field.get((Object)null);
                 Map<String, String> map1 = (Map)map.get("launchArgs");
-                String s = (String)map1.get("--accessToken");
-                String s1 = (String)map1.get("--version");
+                String s = map1.get("--accessToken");
+                String s1 = map1.get("--version");
                 boolean flag = s == null && Utils.equals(s1, "UnknownFMLProfile");
-                forgeServer = Boolean.valueOf(flag);
+                forgeServer = flag;
             }
             catch (Throwable throwable)
             {
@@ -29,6 +29,6 @@ public class LaunchUtils
             }
         }
 
-        return forgeServer.booleanValue();
+        return forgeServer;
     }
 }

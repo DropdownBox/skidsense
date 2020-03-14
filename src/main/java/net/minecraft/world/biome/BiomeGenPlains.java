@@ -49,7 +49,15 @@ public class BiomeGenPlains extends BiomeGenBase
         else if (rand.nextInt(3) > 0)
         {
             int i = rand.nextInt(3);
-            return i == 0 ? BlockFlower.EnumFlowerType.POPPY : (i == 1 ? BlockFlower.EnumFlowerType.HOUSTONIA : BlockFlower.EnumFlowerType.OXEYE_DAISY);
+
+            if (i == 0)
+            {
+                return BlockFlower.EnumFlowerType.POPPY;
+            }
+            else
+            {
+                return i == 1 ? BlockFlower.EnumFlowerType.HOUSTONIA : BlockFlower.EnumFlowerType.OXEYE_DAISY;
+            }
         }
         else
         {

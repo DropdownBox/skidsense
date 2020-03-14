@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
 import net.minecraft.client.resources.I18n;
 
 public class GuiErrorScreen extends GuiScreen
@@ -38,13 +39,15 @@ public class GuiErrorScreen extends GuiScreen
      * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
-    protected void keyTyped(char typedChar, int keyCode) {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException
+    {
     }
 
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        this.mc.displayGuiScreen(null);
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        this.mc.displayGuiScreen((GuiScreen)null);
     }
 }

@@ -3,6 +3,7 @@ package net.minecraft.client.renderer.entity;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -13,27 +14,29 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.src.Config;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import optifine.Config;
-
+import net.optifine.entity.model.IEntityRenderer;
+import net.optifine.shaders.Shaders;
 import org.lwjgl.opengl.GL11;
-import shadersmod.client.Shaders;
 
-public abstract class Render<T extends Entity>
+public abstract class Render<T extends Entity> implements IEntityRenderer
 {
     private static final ResourceLocation shadowTextures = new ResourceLocation("textures/misc/shadow.png");
     protected final RenderManager renderManager;
-    protected float shadowSize;
+    public float shadowSize;
 
     /**
      * Determines the darkness of the object's shadow. Higher value makes a darker shadow.
      */
     protected float shadowOpaque = 1.0F;
-    private static final String __OBFID = "CL_00000992";
+    private Class entityClass = null;
+    private ResourceLocation locationTextureCustom = null;
 
     protected Render(RenderManager renderManager)
     {
@@ -87,6 +90,11 @@ public abstract class Render<T extends Entity>
     {
         ResourceLocation resourcelocation = this.getEntityTexture(entity);
 
+        if (this.locationTextureCustom != null)
+        {
+            resourcelocation = this.locationTextureCustom;
+        }
+
         if (resourcelocation == null)
         {
             return false;
@@ -127,11 +135,19 @@ public abstract class Render<T extends Entity>
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         float f5 = 0.0F;
         int i = 0;
+        boolean flag = Config.isMultiTexture();
+
+        if (flag)
+        {
+            worldrenderer.setBlockLayer(EnumWorldBlockLayer.SOLID);
+        }
+
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
 
         while (f3 > 0.0F)
         {
             TextureAtlasSprite textureatlassprite2 = i % 2 == 0 ? textureatlassprite : textureatlassprite1;
+            worldrenderer.setSprite(textureatlassprite2);
             this.bindTexture(TextureMap.locationBlocksTexture);
             float f6 = textureatlassprite2.getMinU();
             float f7 = textureatlassprite2.getMinV();
@@ -157,6 +173,13 @@ public abstract class Render<T extends Entity>
         }
 
         tessellator.draw();
+
+        if (flag)
+        {
+            worldrenderer.setBlockLayer((EnumWorldBlockLayer)null);
+            GlStateManager.bindCurrentTexture();
+        }
+
         GlStateManager.popMatrix();
         GlStateManager.enableLighting();
     }
@@ -336,7 +359,7 @@ public abstract class Render<T extends Entity>
     /**
      * Renders an entity's name above its head
      */
-    protected void renderLivingLabel(Entity entityIn, String str, double x, double y, double z, int maxDistance)
+    protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance)
     {
         double d0 = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
 
@@ -358,26 +381,26 @@ public abstract class Render<T extends Entity>
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             Tessellator tessellator = Tessellator.getInstance();
             WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-            byte b0 = 0;
+            int i = 0;
 
             if (str.equals("deadmau5"))
             {
-                b0 = -10;
+                i = -10;
             }
 
-            int i = fontrenderer.getStringWidth(str) / 2;
+            int j = fontrenderer.getStringWidth(str) / 2;
             GlStateManager.disableTexture2D();
             worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            worldrenderer.pos((double)(-i - 1), (double)(-1 + b0), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            worldrenderer.pos((double)(-i - 1), (double)(8 + b0), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            worldrenderer.pos((double)(i + 1), (double)(8 + b0), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            worldrenderer.pos((double)(i + 1), (double)(-1 + b0), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            worldrenderer.pos((double)(-j - 1), (double)(-1 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            worldrenderer.pos((double)(-j - 1), (double)(8 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            worldrenderer.pos((double)(j + 1), (double)(8 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+            worldrenderer.pos((double)(j + 1), (double)(-1 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
             tessellator.draw();
             GlStateManager.enableTexture2D();
-            fontrenderer.drawString(str, -fontrenderer.getStringWidth(str) / 2, b0, 553648127);
+            fontrenderer.drawString(str, -fontrenderer.getStringWidth(str) / 2, i, 553648127);
             GlStateManager.enableDepth();
             GlStateManager.depthMask(true);
-            fontrenderer.drawString(str, -fontrenderer.getStringWidth(str) / 2, b0, -1);
+            fontrenderer.drawString(str, -fontrenderer.getStringWidth(str) / 2, i, -1);
             GlStateManager.enableLighting();
             GlStateManager.disableBlend();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -388,5 +411,39 @@ public abstract class Render<T extends Entity>
     public RenderManager getRenderManager()
     {
         return this.renderManager;
+    }
+
+    public boolean isMultipass()
+    {
+        return false;
+    }
+
+    public void renderMultipass(T p_renderMultipass_1_, double p_renderMultipass_2_, double p_renderMultipass_4_, double p_renderMultipass_6_, float p_renderMultipass_8_, float p_renderMultipass_9_)
+    {
+    }
+
+    public Class getEntityClass()
+    {
+        return this.entityClass;
+    }
+
+    public void setEntityClass(Class p_setEntityClass_1_)
+    {
+        this.entityClass = p_setEntityClass_1_;
+    }
+
+    public ResourceLocation getLocationTextureCustom()
+    {
+        return this.locationTextureCustom;
+    }
+
+    public void setLocationTextureCustom(ResourceLocation p_setLocationTextureCustom_1_)
+    {
+        this.locationTextureCustom = p_setLocationTextureCustom_1_;
+    }
+
+    public static void setModelBipedMain(RenderBiped p_setModelBipedMain_0_, ModelBiped p_setModelBipedMain_1_)
+    {
+        p_setModelBipedMain_0_.modelBipedMain = p_setModelBipedMain_1_;
     }
 }

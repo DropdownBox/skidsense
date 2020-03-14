@@ -31,9 +31,9 @@ public class ItemEsp extends Module {
  		   	double itemposX = item.posX;
  		   	double x = itemposX - Minecraft.getMinecraft().getRenderManager().renderPosX;
  		   itemposX = item.posY + 0.5D;
- 		   	double y = itemposX - RenderManager.renderPosY;
+ 		   	double y = itemposX - Minecraft.getMinecraft().getRenderManager().renderPosY;
  		   itemposX = item.posZ;
- 		   	double z = itemposX - RenderManager.renderPosZ;
+ 		   	double z = itemposX - Minecraft.getMinecraft().getRenderManager().renderPosZ;
  		   	GL11.glEnable(3042);
  		   	GL11.glLineWidth(2.0F);
  		   	GL11.glColor4f(1, 1, 1, .75F);

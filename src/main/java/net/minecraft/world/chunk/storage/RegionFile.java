@@ -1,13 +1,19 @@
 package net.minecraft.world.chunk.storage;
 
-import net.minecraft.MinecraftServer;
 import com.google.common.collect.Lists;
-
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
+import net.minecraft.server.MinecraftServer;
 
 public class RegionFile
 {
@@ -64,11 +70,11 @@ public class RegionFile
 
             for (int j = 0; j < k1; ++j)
             {
-                this.sectorFree.add(Boolean.valueOf(true));
+                this.sectorFree.add(true);
             }
 
-            this.sectorFree.set(0, Boolean.valueOf(false));
-            this.sectorFree.set(1, Boolean.valueOf(false));
+            this.sectorFree.set(0, false);
+            this.sectorFree.set(1, false);
             this.dataFile.seek(0L);
 
             for (int l1 = 0; l1 < 1024; ++l1)
@@ -80,7 +86,7 @@ public class RegionFile
                 {
                     for (int l = 0; l < (k & 255); ++l)
                     {
-                        this.sectorFree.set((k >> 8) + l, Boolean.valueOf(false));
+                        this.sectorFree.set((k >> 8) + l, false);
                     }
                 }
             }
@@ -127,7 +133,7 @@ public class RegionFile
                     }
                     else
                     {
-                        this.dataFile.seek(j * 4096);
+                        this.dataFile.seek((long)(j * 4096));
                         int l = this.dataFile.readInt();
 
                         if (l > 4096 * k)
@@ -202,23 +208,29 @@ public class RegionFile
             {
                 for (int i1 = 0; i1 < k; ++i1)
                 {
-                    this.sectorFree.set(j + i1, Boolean.valueOf(true));
+                    this.sectorFree.set(j + i1, true);
                 }
 
-                int l1 = this.sectorFree.indexOf(Boolean.valueOf(true));
+                int l1 = this.sectorFree.indexOf(true);
                 int j1 = 0;
 
                 if (l1 != -1)
                 {
                     for (int k1 = l1; k1 < this.sectorFree.size(); ++k1)
                     {
-                        if (j1 != 0) {
-                            if (this.sectorFree.get(k1).booleanValue()) {
+                        if (j1 != 0)
+                        {
+                            if (this.sectorFree.get(k1))
+                            {
                                 ++j1;
-                            } else {
+                            }
+                            else
+                            {
                                 j1 = 0;
                             }
-                        } else if (this.sectorFree.get(k1).booleanValue()) {
+                        }
+                        else if (this.sectorFree.get(k1))
+                        {
                             l1 = k1;
                             j1 = 1;
                         }
@@ -237,7 +249,7 @@ public class RegionFile
 
                     for (int j2 = 0; j2 < l; ++j2)
                     {
-                        this.sectorFree.set(j + j2, Boolean.valueOf(false));
+                        this.sectorFree.set(j + j2, false);
                     }
 
                     this.write(j, data, length);
@@ -250,7 +262,7 @@ public class RegionFile
                     for (int i2 = 0; i2 < l; ++i2)
                     {
                         this.dataFile.write(emptySector);
-                        this.sectorFree.add(Boolean.valueOf(false));
+                        this.sectorFree.add(false);
                     }
 
                     this.sizeDelta += 4096 * l;
@@ -272,7 +284,7 @@ public class RegionFile
      */
     private void write(int sectorNumber, byte[] data, int length) throws IOException
     {
-        this.dataFile.seek(sectorNumber * 4096);
+        this.dataFile.seek((long)(sectorNumber * 4096));
         this.dataFile.writeInt(length + 1);
         this.dataFile.writeByte(2);
         this.dataFile.write(data, 0, length);
@@ -308,7 +320,7 @@ public class RegionFile
     private void setOffset(int x, int z, int offset) throws IOException
     {
         this.offsets[x + z * 32] = offset;
-        this.dataFile.seek((x + z * 32) * 4);
+        this.dataFile.seek((long)((x + z * 32) * 4));
         this.dataFile.writeInt(offset);
     }
 
@@ -318,7 +330,7 @@ public class RegionFile
     private void setChunkTimestamp(int x, int z, int timestamp) throws IOException
     {
         this.chunkTimestamps[x + z * 32] = timestamp;
-        this.dataFile.seek(4096 + (x + z * 32) * 4);
+        this.dataFile.seek((long)(4096 + (x + z * 32) * 4));
         this.dataFile.writeInt(timestamp);
     }
 
@@ -345,7 +357,8 @@ public class RegionFile
             this.chunkZ = z;
         }
 
-        public void close() {
+        public void close() throws IOException
+        {
             RegionFile.this.write(this.chunkX, this.chunkZ, this.buf, this.count);
         }
     }

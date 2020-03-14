@@ -7,13 +7,8 @@ import java.util.Map;
 
 public class RegistryNamespaced<K, V> extends RegistrySimple<K, V> implements IObjectIntIterable<V>
 {
-    protected final ObjectIntIdentityMap<V> underlyingIntegerMap = new ObjectIntIdentityMap();
-    protected final Map<V, K> inverseObjectRegistry;
-
-    public RegistryNamespaced()
-    {
-        this.inverseObjectRegistry = ((BiMap)this.registryObjects).inverse();
-    }
+    protected final ObjectIntIdentityMap<V> underlyingIntegerMap = new ObjectIntIdentityMap<>();
+    protected final Map<V, K> inverseObjectRegistry = ((BiMap)this.registryObjects).inverse();
 
     public void register(int id, K key, V value)
     {
@@ -23,12 +18,12 @@ public class RegistryNamespaced<K, V> extends RegistrySimple<K, V> implements IO
 
     protected Map<K, V> createUnderlyingMap()
     {
-        return HashBiMap.<K, V>create();
+        return HashBiMap.create();
     }
 
     public V getObject(K name)
     {
-        return super.getObject(name);
+        return (V)super.getObject(name);
     }
 
     /**
@@ -36,7 +31,7 @@ public class RegistryNamespaced<K, V> extends RegistrySimple<K, V> implements IO
      */
     public K getNameForObject(V value)
     {
-        return (K)this.inverseObjectRegistry.get(value);
+        return this.inverseObjectRegistry.get(value);
     }
 
     /**
@@ -60,7 +55,7 @@ public class RegistryNamespaced<K, V> extends RegistrySimple<K, V> implements IO
      */
     public V getObjectById(int id)
     {
-        return (V)this.underlyingIntegerMap.getByValue(id);
+        return this.underlyingIntegerMap.getByValue(id);
     }
 
     public Iterator<V> iterator()

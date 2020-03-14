@@ -28,6 +28,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.S1BPacketEntityAttach;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.scoreboard.Team;
+import net.minecraft.src.Config;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
@@ -36,10 +38,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.biome.BiomeGenBase;
-import optifine.BlockPosM;
-import optifine.Config;
-import optifine.Reflector;
+import net.optifine.reflect.Reflector;
 
 public abstract class EntityLiving extends EntityLivingBase
 {
@@ -80,10 +79,8 @@ public abstract class EntityLiving extends EntityLivingBase
     private boolean isLeashed;
     private Entity leashedToEntity;
     private NBTTagCompound leashNBTTag;
-    private static final String __OBFID = "CL_00001550";
-    public int randomMobsId = 0;
-    public BiomeGenBase spawnBiome = null;
-    public BlockPos spawnPosition = null;
+    private UUID teamUuid = null;
+    private String teamUuidString = null;
 
     public EntityLiving(World worldIn)
     {
@@ -101,10 +98,6 @@ public abstract class EntityLiving extends EntityLivingBase
         {
             this.equipmentDropChances[i] = 0.085F;
         }
-
-        UUID uuid = this.getUniqueID();
-        long j = uuid.getLeastSignificantBits();
-        this.randomMobsId = (int)(j & 2147483647L);
     }
 
     protected void applyEntityAttributes()
@@ -163,13 +156,13 @@ public abstract class EntityLiving extends EntityLivingBase
     public void setAttackTarget(EntityLivingBase entitylivingbaseIn)
     {
         this.attackTarget = entitylivingbaseIn;
-        Reflector.callVoid(Reflector.ForgeHooks_onLivingSetAttackTarget, new Object[] {this, entitylivingbaseIn});
+        Reflector.callVoid(Reflector.ForgeHooks_onLivingSetAttackTarget, this, entitylivingbaseIn);
     }
 
     /**
      * Returns true if this entity can attack entities of the specified class.
      */
-    public boolean canAttackClass(Class <? extends EntityLivingBase > cls)
+    public boolean canAttackClass(Class<? extends EntityLivingBase> cls)
     {
         return cls != EntityGhast.class;
     }
@@ -185,7 +178,7 @@ public abstract class EntityLiving extends EntityLivingBase
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(15, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(15, (byte)0);
     }
 
     /**
@@ -265,7 +258,7 @@ public abstract class EntityLiving extends EntityLivingBase
                 double d1 = this.rand.nextGaussian() * 0.02D;
                 double d2 = this.rand.nextGaussian() * 0.02D;
                 double d3 = 10.0D;
-                this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d0 * d3, this.posY + (double)(this.rand.nextFloat() * this.height) - d1 * d3, this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d2 * d3, d0, d1, d2, new int[0]);
+                this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d0 * d3, this.posY + (double)(this.rand.nextFloat() * this.height) - d1 * d3, this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d2 * d3, d0, d1, d2);
             }
         }
         else
@@ -613,7 +606,7 @@ public abstract class EntityLiving extends EntityLivingBase
         {
             this.entityAge = 0;
         }
-        else if ((this.entityAge & 31) == 31 && (object = Reflector.call(Reflector.ForgeEventFactory_canEntityDespawn, new Object[] {this})) != object1)
+        else if ((this.entityAge & 31) == 31 && (object = Reflector.call(Reflector.ForgeEventFactory_canEntityDespawn, this)) != object1)
         {
             if (object == object2)
             {
@@ -626,13 +619,13 @@ public abstract class EntityLiving extends EntityLivingBase
         }
         else
         {
-            EntityPlayer entityplayer = this.worldObj.getClosestPlayerToEntity(this, -1.0D);
+            Entity entity = this.worldObj.getClosestPlayerToEntity(this, -1.0D);
 
-            if (entityplayer != null)
+            if (entity != null)
             {
-                double d0 = entityplayer.posX - this.posX;
-                double d1 = entityplayer.posY - this.posY;
-                double d2 = entityplayer.posZ - this.posZ;
+                double d0 = entity.posX - this.posX;
+                double d1 = entity.posY - this.posY;
+                double d2 = entity.posZ - this.posZ;
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
                 if (this.canDespawn() && d3 > 16384.0D)
@@ -1319,7 +1312,7 @@ public abstract class EntityLiving extends EntityLivingBase
      */
     public void setNoAI(boolean disable)
     {
-        this.dataWatcher.updateObject(15, Byte.valueOf((byte)(disable ? 1 : 0)));
+        this.dataWatcher.updateObject(15, (byte)(disable ? 1 : 0));
     }
 
     /**
@@ -1328,36 +1321,6 @@ public abstract class EntityLiving extends EntityLivingBase
     public boolean isAIDisabled()
     {
         return this.dataWatcher.getWatchableObjectByte(15) != 0;
-    }
-
-    /**
-     * Checks if this entity is inside of an opaque block
-     */
-    public boolean isEntityInsideOpaqueBlock()
-    {
-        if (this.noClip)
-        {
-            return false;
-        }
-        else
-        {
-            BlockPosM blockposm = new BlockPosM(0, 0, 0);
-
-            for (int i = 0; i < 8; ++i)
-            {
-                double d0 = this.posX + (double)(((float)((i >> 0) % 2) - 0.5F) * this.width * 0.8F);
-                double d1 = this.posY + (double)(((float)((i >> 1) % 2) - 0.5F) * 0.1F);
-                double d2 = this.posZ + (double)(((float)((i >> 2) % 2) - 0.5F) * this.width * 0.8F);
-                blockposm.setXyz(d0, d1 + (double)this.getEyeHeight(), d2);
-
-                if (this.worldObj.getBlockState(blockposm).getBlock().isVisuallyOpaque())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 
     private boolean canSkipUpdate()
@@ -1388,7 +1351,7 @@ public abstract class EntityLiving extends EntityLivingBase
             }
             else
             {
-                Entity entity = (Entity)world.playerEntities.get(0);
+                Entity entity = world.playerEntities.get(0);
                 double d0 = Math.max(Math.abs(this.posX - entity.posX) - 16.0D, 0.0D);
                 double d1 = Math.max(Math.abs(this.posZ - entity.posZ) - 16.0D, 0.0D);
                 double d2 = d0 * d0 + d1 * d1;
@@ -1414,17 +1377,23 @@ public abstract class EntityLiving extends EntityLivingBase
         this.despawnEntity();
     }
 
+    public Team getTeam()
+    {
+        UUID uuid = this.getUniqueID();
+
+        if (this.teamUuid != uuid)
+        {
+            this.teamUuid = uuid;
+            this.teamUuidString = uuid.toString();
+        }
+
+        return this.worldObj.getScoreboard().getPlayersTeam(this.teamUuidString);
+    }
+
     public static enum SpawnPlacementType
     {
-        ON_GROUND("ON_GROUND", 0),
-        IN_AIR("IN_AIR", 1),
-        IN_WATER("IN_WATER", 2);
-
-        private static final EntityLiving.SpawnPlacementType[] $VALUES = new EntityLiving.SpawnPlacementType[]{ON_GROUND, IN_AIR, IN_WATER};
-        private static final String __OBFID = "CL_00002255";
-
-        private SpawnPlacementType(String p_i85_3_, int p_i85_4_)
-        {
-        }
+        ON_GROUND,
+        IN_AIR,
+        IN_WATER;
     }
 }

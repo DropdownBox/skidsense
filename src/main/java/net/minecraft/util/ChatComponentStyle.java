@@ -8,7 +8,7 @@ import java.util.List;
 
 public abstract class ChatComponentStyle implements IChatComponent
 {
-    protected List<IChatComponent> siblings = Lists.<IChatComponent>newArrayList();
+    protected List<IChatComponent> siblings = Lists.newArrayList();
     private ChatStyle style;
 
     /**
@@ -63,7 +63,7 @@ public abstract class ChatComponentStyle implements IChatComponent
 
     public Iterator<IChatComponent> iterator()
     {
-        return Iterators.<IChatComponent>concat(Iterators.<IChatComponent>forArray(new ChatComponentStyle[] {this}), createDeepCopyIterator(this.siblings));
+        return Iterators.concat(Iterators.forArray(this), createDeepCopyIterator(this.siblings));
     }
 
     /**

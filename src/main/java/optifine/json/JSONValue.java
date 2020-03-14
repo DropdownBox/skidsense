@@ -25,7 +25,7 @@ public class JSONValue
     public static Object parse(String s)
     {
         StringReader stringreader = new StringReader(s);
-        return parse((Reader)stringreader);
+        return parse(stringreader);
     }
 
     public static Object parseWithException(Reader in) throws IOException, ParseException
@@ -109,7 +109,42 @@ public class JSONValue
 
     public static String toJSONString(Object value)
     {
-        return value == null ? "null" : (value instanceof String ? "\"" + escape((String)value) + "\"" : (value instanceof Double ? (!((Double)value).isInfinite() && !((Double)value).isNaN() ? value.toString() : "null") : (value instanceof Float ? (!((Float)value).isInfinite() && !((Float)value).isNaN() ? value.toString() : "null") : (value instanceof Number ? value.toString() : (value instanceof Boolean ? value.toString() : (value instanceof JSONAware ? ((JSONAware)value).toJSONString() : (value instanceof Map ? JSONObject.toJSONString((Map)value) : (value instanceof List ? JSONArray.toJSONString((List)value) : value.toString()))))))));
+        if (value == null)
+        {
+            return "null";
+        }
+        else if (value instanceof String)
+        {
+            return "\"" + escape((String)value) + "\"";
+        }
+        else if (value instanceof Double)
+        {
+            return !((Double)value).isInfinite() && !((Double)value).isNaN() ? value.toString() : "null";
+        }
+        else if (value instanceof Float)
+        {
+            return !((Float)value).isInfinite() && !((Float)value).isNaN() ? value.toString() : "null";
+        }
+        else if (value instanceof Number)
+        {
+            return value.toString();
+        }
+        else if (value instanceof Boolean)
+        {
+            return value.toString();
+        }
+        else if (value instanceof JSONAware)
+        {
+            return ((JSONAware)value).toJSONString();
+        }
+        else if (value instanceof Map)
+        {
+            return JSONObject.toJSONString((Map)value);
+        }
+        else
+        {
+            return value instanceof List ? JSONArray.toJSONString((List)value) : value.toString();
+        }
     }
 
     public static String escape(String s)
@@ -126,46 +161,59 @@ public class JSONValue
         }
     }
 
-    public static void escape(String s, StringBuffer sb) {
-        for(int i = 0; i < s.length(); ++i) {
-           char ch = s.charAt(i);
-           switch(ch) {
-           case 8:
-              sb.append("\\b");
-              break;
-           case 9:
-              sb.append("\\t");
-              break;
-           case 10:
-              sb.append("\\n");
-              break;
-           case 12:
-              sb.append("\\f");
-              break;
-           case 13:
-              sb.append("\\r");
-              break;
-           case 34:
-              sb.append("\\\"");
-              break;
-           case 92:
-              sb.append("\\\\");
-              break;
-           default:
-              if((ch < 0 || ch > 31) && (ch < 127 || ch > 159) && (ch < 8192 || ch > 8447)) {
-                 sb.append(ch);
-              } else {
-                 String ss = Integer.toHexString(ch);
-                 sb.append("\\u");
+    static void escape(String s, StringBuffer sb)
+    {
+        for (int i = 0; i < s.length(); ++i)
+        {
+            char c0 = s.charAt(i);
 
-                 for(int k = 0; k < 4 - ss.length(); ++k) {
+            switch (c0)
+            {
+                case '\b':
+                    sb.append("\\b");
+                    continue;
+
+                case '\t':
+                    sb.append("\\t");
+                    continue;
+
+                case '\n':
+                    sb.append("\\n");
+                    continue;
+
+                case '\f':
+                    sb.append("\\f");
+                    continue;
+
+                case '\r':
+                    sb.append("\\r");
+                    continue;
+
+                case '"':
+                    sb.append("\\\"");
+                    continue;
+
+                case '\\':
+                    sb.append("\\\\");
+                    continue;
+            }
+
+            if (c0 >= 0 && c0 <= 31 || c0 >= 127 && c0 <= 159 || c0 >= 8192 && c0 <= 8447)
+            {
+                String s1 = Integer.toHexString(c0);
+                sb.append("\\u");
+
+                for (int j = 0; j < 4 - s1.length(); ++j)
+                {
                     sb.append('0');
-                 }
+                }
 
-                 sb.append(ss.toUpperCase());
-              }
-           }
+                sb.append(s1.toUpperCase());
+            }
+            else
+            {
+                sb.append(c0);
+            }
         }
-
-     }
+    }
 }

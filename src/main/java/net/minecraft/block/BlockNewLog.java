@@ -3,7 +3,6 @@ package net.minecraft.block;
 import com.google.common.base.Predicate;
 import java.util.List;
 import net.minecraft.block.material.MapColor;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -13,7 +12,7 @@ import net.minecraft.item.ItemStack;
 
 public class BlockNewLog extends BlockLog
 {
-    public static final PropertyEnum<BlockPlanks.EnumType> VARIANT = PropertyEnum.<BlockPlanks.EnumType>create("variant", BlockPlanks.EnumType.class, new Predicate<BlockPlanks.EnumType>()
+    public static final PropertyEnum<BlockPlanks.EnumType> VARIANT = PropertyEnum.create("variant", BlockPlanks.EnumType.class, new Predicate<BlockPlanks.EnumType>()
     {
         public boolean apply(BlockPlanks.EnumType p_apply_1_)
         {
@@ -31,7 +30,7 @@ public class BlockNewLog extends BlockLog
      */
     public MapColor getMapColor(IBlockState state)
     {
-        BlockPlanks.EnumType blockplanks$enumtype = (BlockPlanks.EnumType)state.getValue(VARIANT);
+        BlockPlanks.EnumType blockplanks$enumtype = state.getValue(VARIANT);
 
         switch ((BlockLog.EnumAxis)state.getValue(LOG_AXIS))
         {
@@ -91,15 +90,13 @@ public class BlockNewLog extends BlockLog
         return iblockstate;
     }
 
-    @SuppressWarnings("incomplete-switch")
-
     /**
      * Convert the BlockState into the correct metadata value
      */
     public int getMetaFromState(IBlockState state)
     {
         int i = 0;
-        i = i | ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata() - 4;
+        i = i | state.getValue(VARIANT).getMetadata() - 4;
 
         switch ((BlockLog.EnumAxis)state.getValue(LOG_AXIS))
         {
@@ -120,12 +117,12 @@ public class BlockNewLog extends BlockLog
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {VARIANT, LOG_AXIS});
+        return new BlockState(this, VARIANT, LOG_AXIS);
     }
 
     protected ItemStack createStackedBlock(IBlockState state)
     {
-        return new ItemStack(Item.getItemFromBlock(this), 1, ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata() - 4);
+        return new ItemStack(Item.getItemFromBlock(this), 1, state.getValue(VARIANT).getMetadata() - 4);
     }
 
     /**
@@ -134,6 +131,6 @@ public class BlockNewLog extends BlockLog
      */
     public int damageDropped(IBlockState state)
     {
-        return ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata() - 4;
+        return state.getValue(VARIANT).getMetadata() - 4;
     }
 }

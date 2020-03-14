@@ -2,13 +2,12 @@ package net.minecraft.command.server;
 
 import java.util.List;
 import java.util.regex.Matcher;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.SyntaxErrorException;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandPardonIp extends CommandBase
@@ -61,12 +60,12 @@ public class CommandPardonIp extends CommandBase
             }
             else
             {
-                throw new SyntaxErrorException("commands.unbanip.invalid", new Object[0]);
+                throw new SyntaxErrorException("commands.unbanip.invalid");
             }
         }
         else
         {
-            throw new WrongUsageException("commands.unbanip.usage", new Object[0]);
+            throw new WrongUsageException("commands.unbanip.usage");
         }
     }
 

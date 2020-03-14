@@ -1,5 +1,6 @@
 package optifine;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import net.minecraft.launchwrapper.IClassTransformer;
 
-public class OptiFineClassTransformer implements IClassTransformer, IResourceProvider
+public class OptiFineClassTransformer implements IClassTransformer, IResourceProvider, IOptiFineResourceLocator
 {
     private ZipFile ofZipFile = null;
     private Map<String, String> patchMap = null;
@@ -33,6 +34,7 @@ public class OptiFineClassTransformer implements IClassTransformer, IResourcePro
             dbg("OptiFine ZIP file: " + file1);
             this.patchMap = Patcher.getConfigurationMap(this.ofZipFile);
             this.patterns = Patcher.getConfigurationPatterns(this.patchMap);
+            OptiFineResourceLocator.setResourceLocator(this);
         }
         catch (Exception exception)
         {
@@ -53,10 +55,26 @@ public class OptiFineClassTransformer implements IClassTransformer, IResourcePro
         return abyte != null ? abyte : bytes;
     }
 
+    public synchronized InputStream getOptiFineResourceStream(String name)
+    {
+        name = Utils.removePrefix(name, "/");
+        byte[] abyte = this.getOptiFineResource(name);
+
+        if (abyte == null)
+        {
+            return null;
+        }
+        else
+        {
+            ByteArrayInputStream bytearrayinputstream = new ByteArrayInputStream(abyte);
+            return bytearrayinputstream;
+        }
+    }
+
     public InputStream getResourceStream(String path)
     {
         path = Utils.ensurePrefix(path, "/");
-        return OptiFineClassTransformer.class.getResourceAsStream(path);
+        return this.getClass().getResourceAsStream(path);
     }
 
     public synchronized byte[] getOptiFineResource(String name)

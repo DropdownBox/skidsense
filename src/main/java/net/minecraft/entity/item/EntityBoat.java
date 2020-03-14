@@ -21,8 +21,8 @@ import net.minecraft.world.World;
 public class EntityBoat extends Entity
 {
     /** true if no player in boat */
-    private boolean isBoatEmpty;
-    private double speedMultiplier;
+    private boolean isBoatEmpty = true;
+    private double speedMultiplier = 0.07D;
     private int boatPosRotationIncrements;
     private double boatX;
     private double boatY;
@@ -36,8 +36,6 @@ public class EntityBoat extends Entity
     public EntityBoat(World worldIn)
     {
         super(worldIn);
-        this.isBoatEmpty = true;
-        this.speedMultiplier = 0.07D;
         this.preventEntitySpawning = true;
         this.setSize(1.5F, 0.6F);
     }
@@ -196,7 +194,7 @@ public class EntityBoat extends Entity
                 double d2 = z - this.posZ;
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
-                if (d3 <= 1.0D)
+                if (!(d3 > 1.0D))
                 {
                     return;
                 }
@@ -276,13 +274,13 @@ public class EntityBoat extends Entity
                 {
                     double d7 = this.posX - d2 * d5 * 0.8D + d4 * d6;
                     double d8 = this.posZ - d4 * d5 * 0.8D - d2 * d6;
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_SPLASH, d7, this.posY - 0.125D, d8, this.motionX, this.motionY, this.motionZ, new int[0]);
+                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_SPLASH, d7, this.posY - 0.125D, d8, this.motionX, this.motionY, this.motionZ);
                 }
                 else
                 {
                     double d24 = this.posX + d2 + d4 * d5 * 0.7D;
                     double d25 = this.posZ + d4 - d2 * d5 * 0.7D;
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_SPLASH, d24, this.posY - 0.125D, d25, this.motionX, this.motionY, this.motionZ, new int[0]);
+                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_SPLASH, d24, this.posY - 0.125D, d25, this.motionX, this.motionY, this.motionZ);
                 }
             }
         }
@@ -315,9 +313,9 @@ public class EntityBoat extends Entity
                     this.motionZ *= 0.5D;
                 }
 
-                this.motionX *= 0.9900000095367432D;
-                this.motionY *= 0.949999988079071D;
-                this.motionZ *= 0.9900000095367432D;
+                this.motionX *= (double)0.99F;
+                this.motionY *= (double)0.95F;
+                this.motionZ *= (double)0.99F;
             }
         }
         else
@@ -325,7 +323,7 @@ public class EntityBoat extends Entity
             if (d0 < 1.0D)
             {
                 double d10 = d0 * 2.0D - 1.0D;
-                this.motionY += 0.03999999910593033D * d10;
+                this.motionY += (double)0.04F * d10;
             }
             else
             {
@@ -334,15 +332,15 @@ public class EntityBoat extends Entity
                     this.motionY /= 2.0D;
                 }
 
-                this.motionY += 0.007000000216066837D;
+                this.motionY += (double)0.007F;
             }
 
             if (this.riddenByEntity instanceof EntityLivingBase)
             {
                 EntityLivingBase entitylivingbase = (EntityLivingBase)this.riddenByEntity;
                 float f = this.riddenByEntity.rotationYaw + -entitylivingbase.moveStrafing * 90.0F;
-                this.motionX += -Math.sin((double)(f * (float)Math.PI / 180.0F)) * this.speedMultiplier * (double)entitylivingbase.moveForward * 0.05000000074505806D;
-                this.motionZ += Math.cos((double)(f * (float)Math.PI / 180.0F)) * this.speedMultiplier * (double)entitylivingbase.moveForward * 0.05000000074505806D;
+                this.motionX += -Math.sin((double)(f * (float)Math.PI / 180.0F)) * this.speedMultiplier * (double)entitylivingbase.moveForward * (double)0.05F;
+                this.motionZ += Math.cos((double)(f * (float)Math.PI / 180.0F)) * this.speedMultiplier * (double)entitylivingbase.moveForward * (double)0.05F;
             }
 
             double d11 = Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
@@ -429,9 +427,9 @@ public class EntityBoat extends Entity
             }
             else
             {
-                this.motionX *= 0.9900000095367432D;
-                this.motionY *= 0.949999988079071D;
-                this.motionZ *= 0.9900000095367432D;
+                this.motionX *= (double)0.99F;
+                this.motionY *= (double)0.95F;
+                this.motionZ *= (double)0.99F;
             }
 
             this.rotationPitch = 0.0F;
@@ -461,13 +459,13 @@ public class EntityBoat extends Entity
 
             if (!this.worldObj.isRemote)
             {
-                List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(0.20000000298023224D, 0.0D, 0.20000000298023224D));
+                List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand((double)0.2F, 0.0D, (double)0.2F));
 
                 if (list != null && !list.isEmpty())
                 {
                     for (int k2 = 0; k2 < list.size(); ++k2)
                     {
-                        Entity entity = (Entity)list.get(k2);
+                        Entity entity = list.get(k2);
 
                         if (entity != this.riddenByEntity && entity.canBePushed() && entity instanceof EntityBoat)
                         {
@@ -568,7 +566,7 @@ public class EntityBoat extends Entity
      */
     public void setDamageTaken(float p_70266_1_)
     {
-        this.dataWatcher.updateObject(19, Float.valueOf(p_70266_1_));
+        this.dataWatcher.updateObject(19, p_70266_1_);
     }
 
     /**
@@ -584,7 +582,7 @@ public class EntityBoat extends Entity
      */
     public void setTimeSinceHit(int p_70265_1_)
     {
-        this.dataWatcher.updateObject(17, Integer.valueOf(p_70265_1_));
+        this.dataWatcher.updateObject(17, p_70265_1_);
     }
 
     /**
@@ -600,7 +598,7 @@ public class EntityBoat extends Entity
      */
     public void setForwardDirection(int p_70269_1_)
     {
-        this.dataWatcher.updateObject(18, Integer.valueOf(p_70269_1_));
+        this.dataWatcher.updateObject(18, p_70269_1_);
     }
 
     /**

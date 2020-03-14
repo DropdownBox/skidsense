@@ -54,7 +54,7 @@ public class Checksum
 
         try
         {
-            this.generateChecksums((InputStream)fileinputstream, length);
+            this.generateChecksums(fileinputstream, length);
         }
         catch (IOException ioexception)
         {

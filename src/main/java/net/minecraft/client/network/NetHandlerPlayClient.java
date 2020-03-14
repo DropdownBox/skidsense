@@ -4,12 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.authlib.GameProfile;
-
-import net.minecraft.client.main.ClientBrandRetriever;
 import io.netty.buffer.Unpooled;
-import me.skidsense.hooks.EventBus;
-import me.skidsense.hooks.events.EventPacketSend;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -19,6 +14,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.Map.Entry;
 import net.minecraft.block.Block;
+import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.GuardianSound;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
@@ -32,6 +28,7 @@ import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.gui.GuiScreenDemo;
+import net.minecraft.client.gui.GuiScreenRealmsProxy;
 import net.minecraft.client.gui.GuiWinGame;
 import net.minecraft.client.gui.GuiYesNo;
 import net.minecraft.client.gui.GuiYesNoCallback;
@@ -179,6 +176,7 @@ import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter;
 import net.minecraft.network.play.server.S48PacketResourcePackSend;
 import net.minecraft.network.play.server.S49PacketUpdateEntityNBT;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.realms.DisconnectedRealmsScreen;
 import net.minecraft.scoreboard.IScoreObjectiveCriteria;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -246,7 +244,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
      * reset upon respawning
      */
     private boolean doneLoadingTerrain;
-    private final Map<UUID, NetworkPlayerInfo> playerInfoMap = Maps.<UUID, NetworkPlayerInfo>newHashMap();
+    private final Map<UUID, NetworkPlayerInfo> playerInfoMap = Maps.newHashMap();
     public int currentServerMaxPlayers = 20;
     private boolean field_147308_k = false;
 
@@ -581,7 +579,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             float f = (float)(packetIn.getYaw() * 360) / 256.0F;
             float f1 = (float)(packetIn.getPitch() * 360) / 256.0F;
 
-            if (Math.abs(entity.posX - d0) < 0.03125D && Math.abs(entity.posY - d1) < 0.015625D && Math.abs(entity.posZ - d2) < 0.03125D)
+            if (!(Math.abs(entity.posX - d0) >= 0.03125D) && !(Math.abs(entity.posY - d1) >= 0.015625D) && !(Math.abs(entity.posZ - d2) >= 0.03125D))
             {
                 entity.setPositionAndRotation2(entity.posX, entity.posY, entity.posZ, f, f1, 3, true);
             }
@@ -798,7 +796,14 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
 
         if (this.guiScreenServer != null)
         {
+            if (this.guiScreenServer instanceof GuiScreenRealmsProxy)
+            {
+                this.gameController.displayGuiScreen((new DisconnectedRealmsScreen(((GuiScreenRealmsProxy)this.guiScreenServer).func_154321_a(), "disconnect.lost", reason)).getProxy());
+            }
+            else
+            {
                 this.gameController.displayGuiScreen(new GuiDisconnected(this.guiScreenServer, "disconnect.lost", reason));
+            }
         }
         else
         {
@@ -806,14 +811,9 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         }
     }
 
-    public void addToSendQueue(Packet sendpacket)
+    public void addToSendQueue(Packet p_147297_1_)
     {
-        EventPacketSend packetSent = new EventPacketSend(sendpacket);
-        EventBus.getInstance().call(packetSent);
-        if (packetSent.isCancelled()) {
-            return;
-        }
-        this.netManager.sendPacket(packetSent.getPacket());
+        this.netManager.sendPacket(p_147297_1_);
     }
 
     public void handleCollectItem(S0DPacketCollectItem packetIn)
@@ -999,7 +999,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             if (flag)
             {
                 GameSettings gamesettings = this.gameController.gameSettings;
-                this.gameController.ingameGUI.setRecordPlaying(I18n.format("mount.onboard", new Object[] {GameSettings.getKeyDisplayString(gamesettings.keyBindSneak.getKeyCode())}), false);
+                this.gameController.ingameGUI.setRecordPlaying(I18n.format("mount.onboard", GameSettings.getKeyDisplayString(gamesettings.keyBindSneak.getKeyCode())), false);
             }
         }
         else if (packetIn.getLeash() == 1 && entity instanceof EntityLiving)
@@ -1365,7 +1365,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
 
         if (i >= 0 && i < S2BPacketChangeGameState.MESSAGE_NAMES.length && S2BPacketChangeGameState.MESSAGE_NAMES[i] != null)
         {
-            entityplayer.addChatComponentMessage(new ChatComponentTranslation(S2BPacketChangeGameState.MESSAGE_NAMES[i], new Object[0]));
+            entityplayer.addChatComponentMessage(new ChatComponentTranslation(S2BPacketChangeGameState.MESSAGE_NAMES[i]));
         }
 
         if (i == 1)
@@ -1396,15 +1396,15 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             }
             else if (f == 101.0F)
             {
-                this.gameController.ingameGUI.getChatGUI().printChatMessage(new ChatComponentTranslation("demo.help.movement", new Object[] {GameSettings.getKeyDisplayString(gamesettings.keyBindForward.getKeyCode()), GameSettings.getKeyDisplayString(gamesettings.keyBindLeft.getKeyCode()), GameSettings.getKeyDisplayString(gamesettings.keyBindBack.getKeyCode()), GameSettings.getKeyDisplayString(gamesettings.keyBindRight.getKeyCode())}));
+                this.gameController.ingameGUI.getChatGUI().printChatMessage(new ChatComponentTranslation("demo.help.movement", GameSettings.getKeyDisplayString(gamesettings.keyBindForward.getKeyCode()), GameSettings.getKeyDisplayString(gamesettings.keyBindLeft.getKeyCode()), GameSettings.getKeyDisplayString(gamesettings.keyBindBack.getKeyCode()), GameSettings.getKeyDisplayString(gamesettings.keyBindRight.getKeyCode())));
             }
             else if (f == 102.0F)
             {
-                this.gameController.ingameGUI.getChatGUI().printChatMessage(new ChatComponentTranslation("demo.help.jump", new Object[] {GameSettings.getKeyDisplayString(gamesettings.keyBindJump.getKeyCode())}));
+                this.gameController.ingameGUI.getChatGUI().printChatMessage(new ChatComponentTranslation("demo.help.jump", GameSettings.getKeyDisplayString(gamesettings.keyBindJump.getKeyCode())));
             }
             else if (f == 103.0F)
             {
-                this.gameController.ingameGUI.getChatGUI().printChatMessage(new ChatComponentTranslation("demo.help.inventory", new Object[] {GameSettings.getKeyDisplayString(gamesettings.keyBindInventory.getKeyCode())}));
+                this.gameController.ingameGUI.getChatGUI().printChatMessage(new ChatComponentTranslation("demo.help.inventory", GameSettings.getKeyDisplayString(gamesettings.keyBindInventory.getKeyCode())));
             }
         }
         else if (i == 6)
@@ -1462,8 +1462,8 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
 
         for (Entry<StatBase, Integer> entry : packetIn.func_148974_c().entrySet())
         {
-            StatBase statbase = (StatBase)entry.getKey();
-            int i = ((Integer)entry.getValue()).intValue();
+            StatBase statbase = entry.getKey();
+            int i = entry.getValue();
 
             if (statbase.isAchievement() && i > 0)
             {
@@ -1561,7 +1561,6 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         packetIn.func_179788_a(this.clientWorldController.getWorldBorder());
     }
 
-    @SuppressWarnings("incomplete-switch")
     public void handleTitle(S45PacketTitle packetIn)
     {
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.gameController);
@@ -1614,7 +1613,6 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         }
     }
 
-    @SuppressWarnings("incomplete-switch")
     public void handlePlayerListItem(S38PacketPlayerListItem packetIn)
     {
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.gameController);
@@ -1627,7 +1625,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             }
             else
             {
-                NetworkPlayerInfo networkplayerinfo = (NetworkPlayerInfo)this.playerInfoMap.get(s38packetplayerlistitem$addplayerdata.getProfile().getId());
+                NetworkPlayerInfo networkplayerinfo = this.playerInfoMap.get(s38packetplayerlistitem$addplayerdata.getProfile().getId());
 
                 if (packetIn.getAction() == S38PacketPlayerListItem.Action.ADD_PLAYER)
                 {
@@ -1795,7 +1793,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
                                 ServerList.func_147414_b(NetHandlerPlayClient.this.gameController.getCurrentServerData());
                                 NetHandlerPlayClient.this.gameController.displayGuiScreen((GuiScreen)null);
                             }
-                        }, I18n.format("multiplayer.texturePrompt.line1", new Object[0]), I18n.format("multiplayer.texturePrompt.line2", new Object[0]), 0));
+                        }, I18n.format("multiplayer.texturePrompt.line1"), I18n.format("multiplayer.texturePrompt.line2"), 0));
                     }
                 });
             }
@@ -1841,7 +1839,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             }
             catch (IOException ioexception)
             {
-                logger.error((String)"Couldn\'t load trade info", (Throwable)ioexception);
+                logger.error("Couldn't load trade info", (Throwable)ioexception);
             }
             finally
             {
@@ -2069,7 +2067,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
 
                     if (iattributeinstance == null)
                     {
-                        iattributeinstance = baseattributemap.registerAttribute(new RangedAttribute((IAttribute)null, s20packetentityproperties$snapshot.func_151409_a(), 0.0D, 2.2250738585072014E-308D, Double.MAX_VALUE));
+                        iattributeinstance = baseattributemap.registerAttribute(new RangedAttribute((IAttribute)null, s20packetentityproperties$snapshot.func_151409_a(), 0.0D, Double.MIN_NORMAL, Double.MAX_VALUE));
                     }
 
                     iattributeinstance.setBaseValue(s20packetentityproperties$snapshot.func_151410_b());
@@ -2099,7 +2097,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
 
     public NetworkPlayerInfo getPlayerInfo(UUID p_175102_1_)
     {
-        return (NetworkPlayerInfo)this.playerInfoMap.get(p_175102_1_);
+        return this.playerInfoMap.get(p_175102_1_);
     }
 
     /**

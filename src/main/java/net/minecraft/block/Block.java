@@ -2,17 +2,8 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
-
-import me.skidsense.Client;
-import me.skidsense.hooks.EventBus;
-import me.skidsense.hooks.events.EventBlockRenderSide;
-import me.skidsense.hooks.events.EventCollideWithBlock;
-import me.skidsense.hooks.events.EventStep;
-import me.skidsense.hooks.events.EventTick;
-import me.skidsense.module.collection.visual.Xray;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -45,8 +36,8 @@ public class Block
 {
     /** ResourceLocation for the Air block */
     private static final ResourceLocation AIR_ID = new ResourceLocation("air");
-    public static final RegistryNamespacedDefaultedByKey<ResourceLocation, Block> blockRegistry = new RegistryNamespacedDefaultedByKey<ResourceLocation, Block>(AIR_ID);
-    public static final ObjectIntIdentityMap<IBlockState> BLOCK_STATE_IDS = new ObjectIntIdentityMap<IBlockState>();
+    public static final RegistryNamespacedDefaultedByKey<ResourceLocation, Block> blockRegistry = new RegistryNamespacedDefaultedByKey<>(AIR_ID);
+    public static final ObjectIntIdentityMap<IBlockState> BLOCK_STATE_IDS = new ObjectIntIdentityMap<>();
     private CreativeTabs displayOnCreativeTab;
     public static final Block.SoundType soundTypeStone = new Block.SoundType("stone", 1.0F, 1.0F);
 
@@ -124,7 +115,7 @@ public class Block
 
     /** Indicates how much this block can resist explosions */
     protected float blockResistance;
-    protected boolean enableStats;
+    protected boolean enableStats = true;
 
     /**
      * Flags whether or not this block is of a type that needs random ticking. Ref-counted by ExtendedBlockStorage in
@@ -142,8 +133,8 @@ public class Block
     protected double maxZ;
 
     /** Sound of stepping on the block */
-    public Block.SoundType stepSound;
-    public float blockParticleGravity;
+    public Block.SoundType stepSound = soundTypeStone;
+    public float blockParticleGravity = 1.0F;
     protected final Material blockMaterial;
 
     /** The Block's MapColor */
@@ -152,7 +143,7 @@ public class Block
     /**
      * Determines how much velocity is maintained while moving on top of this block
      */
-    public float slipperiness;
+    public float slipperiness = 0.6F;
     protected final BlockState blockState;
     private IBlockState defaultBlockState;
     private String unlocalizedName;
@@ -173,7 +164,7 @@ public class Block
 
     public static Block getBlockById(int id)
     {
-        return (Block)blockRegistry.getObjectById(id);
+        return blockRegistry.getObjectById(id);
     }
 
     /**
@@ -197,13 +188,13 @@ public class Block
 
         if (blockRegistry.containsKey(resourcelocation))
         {
-            return (Block)blockRegistry.getObject(resourcelocation);
+            return blockRegistry.getObject(resourcelocation);
         }
         else
         {
             try
             {
-                return (Block)blockRegistry.getObjectById(Integer.parseInt(name));
+                return blockRegistry.getObjectById(Integer.parseInt(name));
             }
             catch (NumberFormatException var3)
             {
@@ -274,7 +265,7 @@ public class Block
     {
         if (state != null && !state.getPropertyNames().isEmpty())
         {
-            throw new IllegalArgumentException("Don\'t know how to convert " + state + " back into data...");
+            throw new IllegalArgumentException("Don't know how to convert " + state + " back into data...");
         }
         else
         {
@@ -293,10 +284,6 @@ public class Block
 
     public Block(Material blockMaterialIn, MapColor blockMapColorIn)
     {
-        this.enableStats = true;
-        this.stepSound = soundTypeStone;
-        this.blockParticleGravity = 1.0F;
-        this.slipperiness = 0.6F;
         this.blockMaterial = blockMaterialIn;
         this.blockMapColor = blockMapColorIn;
         this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
@@ -475,7 +462,34 @@ public class Block
 
     public boolean shouldSideBeRendered(IBlockAccess worldIn, BlockPos pos, EnumFacing side)
     {
-        return side == EnumFacing.DOWN && this.minY > 0.0D ? true : (side == EnumFacing.UP && this.maxY < 1.0D ? true : (side == EnumFacing.NORTH && this.minZ > 0.0D ? true : (side == EnumFacing.SOUTH && this.maxZ < 1.0D ? true : (side == EnumFacing.WEST && this.minX > 0.0D ? true : (side == EnumFacing.EAST && this.maxX < 1.0D ? true : !worldIn.getBlockState(pos).getBlock().isOpaqueCube())))));
+        if (side == EnumFacing.DOWN && this.minY > 0.0D)
+        {
+            return true;
+        }
+        else if (side == EnumFacing.UP && this.maxY < 1.0D)
+        {
+            return true;
+        }
+        else if (side == EnumFacing.NORTH && this.minZ > 0.0D)
+        {
+            return true;
+        }
+        else if (side == EnumFacing.SOUTH && this.maxZ < 1.0D)
+        {
+            return true;
+        }
+        else if (side == EnumFacing.WEST && this.minX > 0.0D)
+        {
+            return true;
+        }
+        else if (side == EnumFacing.EAST && this.maxX < 1.0D)
+        {
+            return true;
+        }
+        else
+        {
+            return !worldIn.getBlockState(pos).getBlock().isOpaqueCube();
+        }
     }
 
     /**
@@ -497,10 +511,7 @@ public class Block
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
     {
         AxisAlignedBB axisalignedbb = this.getCollisionBoundingBox(worldIn, pos, state);
-        if (collidingEntity == Client.mc.thePlayer) {
-            EventCollideWithBlock e = EventBus.getInstance().call(new EventCollideWithBlock(this, pos, axisalignedbb));
-            axisalignedbb = e.getBoundingBox();
-        }
+
         if (axisalignedbb != null && mask.intersectsWith(axisalignedbb))
         {
             list.add(axisalignedbb);
@@ -601,7 +612,15 @@ public class Block
     public float getPlayerRelativeBlockHardness(EntityPlayer playerIn, World worldIn, BlockPos pos)
     {
         float f = this.getBlockHardness(worldIn, pos);
-        return f < 0.0F ? 0.0F : (!playerIn.canHarvestBlock(this) ? playerIn.getToolDigEfficiency(this) / f / 100.0F : playerIn.getToolDigEfficiency(this) / f / 30.0F);
+
+        if (f < 0.0F)
+        {
+            return 0.0F;
+        }
+        else
+        {
+            return !playerIn.canHarvestBlock(this) ? playerIn.getToolDigEfficiency(this) / f / 100.0F : playerIn.getToolDigEfficiency(this) / f / 30.0F;
+        }
     }
 
     /**
@@ -623,7 +642,7 @@ public class Block
 
             for (int j = 0; j < i; ++j)
             {
-                if (worldIn.rand.nextFloat() <= chance)
+                if (!(worldIn.rand.nextFloat() > chance))
                 {
                     Item item = this.getItemDropped(state, worldIn.rand, fortune);
 
@@ -810,7 +829,14 @@ public class Block
      */
     private boolean isVecInsideYZBounds(Vec3 point)
     {
-        return point == null ? false : point.yCoord >= this.minY && point.yCoord <= this.maxY && point.zCoord >= this.minZ && point.zCoord <= this.maxZ;
+        if (point == null)
+        {
+            return false;
+        }
+        else
+        {
+            return point.yCoord >= this.minY && point.yCoord <= this.maxY && point.zCoord >= this.minZ && point.zCoord <= this.maxZ;
+        }
     }
 
     /**
@@ -818,7 +844,14 @@ public class Block
      */
     private boolean isVecInsideXZBounds(Vec3 point)
     {
-        return point == null ? false : point.xCoord >= this.minX && point.xCoord <= this.maxX && point.zCoord >= this.minZ && point.zCoord <= this.maxZ;
+        if (point == null)
+        {
+            return false;
+        }
+        else
+        {
+            return point.xCoord >= this.minX && point.xCoord <= this.maxX && point.zCoord >= this.minZ && point.zCoord <= this.maxZ;
+        }
     }
 
     /**
@@ -826,7 +859,14 @@ public class Block
      */
     private boolean isVecInsideXYBounds(Vec3 point)
     {
-        return point == null ? false : point.xCoord >= this.minX && point.xCoord <= this.maxX && point.yCoord >= this.minY && point.yCoord <= this.maxY;
+        if (point == null)
+        {
+            return false;
+        }
+        else
+        {
+            return point.xCoord >= this.minX && point.xCoord <= this.maxX && point.yCoord >= this.minY && point.yCoord <= this.maxY;
+        }
     }
 
     /**
@@ -836,13 +876,8 @@ public class Block
     {
     }
 
-    public EnumWorldBlockLayer getBlockLayer() {
-        Xray x = (Xray)Client.instance.getModuleManager().getModuleByClass(Xray.class);
-        if(x.isEnabled()){
-
-                return x.KEY_IDS.contains(getIdFromBlock(this)) ? EnumWorldBlockLayer.SOLID : EnumWorldBlockLayer.TRANSLUCENT;
-
-        }
+    public EnumWorldBlockLayer getBlockLayer()
+    {
         return EnumWorldBlockLayer.SOLID;
     }
 
@@ -1114,9 +1149,7 @@ public class Block
      */
     public float getAmbientOcclusionLightValue()
     {
-        if(Client.instance.getModuleManager().getModuleByClass(Xray.class).isEnabled())return 1;
         return this.isBlockNormalCube() ? 0.2F : 1.0F;
-
     }
 
     /**
@@ -1210,7 +1243,14 @@ public class Block
 
     public static boolean isEqualTo(Block blockIn, Block other)
     {
-        return blockIn != null && other != null ? (blockIn == other ? true : blockIn.isAssociatedBlock(other)) : false;
+        if (blockIn != null && other != null)
+        {
+            return blockIn == other ? true : blockIn.isAssociatedBlock(other);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public boolean hasComparatorInputOverride()
@@ -1233,7 +1273,7 @@ public class Block
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[0]);
+        return new BlockState(this);
     }
 
     public BlockState getBlockState()

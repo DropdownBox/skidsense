@@ -1,14 +1,12 @@
 package net.minecraft.command.server;
 
 import com.mojang.authlib.GameProfile;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.List;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandPardonPlayer extends CommandBase
@@ -57,7 +55,7 @@ public class CommandPardonPlayer extends CommandBase
 
             if (gameprofile == null)
             {
-                throw new CommandException("commands.unban.failed", new Object[] {args[0]});
+                throw new CommandException("commands.unban.failed", args[0]);
             }
             else
             {
@@ -67,7 +65,7 @@ public class CommandPardonPlayer extends CommandBase
         }
         else
         {
-            throw new WrongUsageException("commands.unban.usage", new Object[0]);
+            throw new WrongUsageException("commands.unban.usage");
         }
     }
 

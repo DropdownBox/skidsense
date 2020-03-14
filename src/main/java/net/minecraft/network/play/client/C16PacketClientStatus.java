@@ -1,5 +1,6 @@
 package net.minecraft.network.play.client;
 
+import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
@@ -20,16 +21,18 @@ public class C16PacketClientStatus implements Packet<INetHandlerPlayServer>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) {
-	    this.status = buf.readEnumValue(EnumState.class);
+    public void readPacketData(PacketBuffer buf) throws IOException
+    {
+        this.status = buf.readEnumValue(C16PacketClientStatus.EnumState.class);
     }
 
-	/**
-	 * Writes the raw packet data to the data stream.
-	 */
-	public void writePacketData(PacketBuffer buf) {
-		buf.writeEnumValue(this.status);
-	}
+    /**
+     * Writes the raw packet data to the data stream.
+     */
+    public void writePacketData(PacketBuffer buf) throws IOException
+    {
+        buf.writeEnumValue(this.status);
+    }
 
     /**
      * Passes this Packet on to the NetHandler for processing.
@@ -44,9 +47,10 @@ public class C16PacketClientStatus implements Packet<INetHandlerPlayServer>
         return this.status;
     }
 
-	public enum EnumState {
-		PERFORM_RESPAWN,
-		REQUEST_STATS,
-		OPEN_INVENTORY_ACHIEVEMENT
-	}
+    public static enum EnumState
+    {
+        PERFORM_RESPAWN,
+        REQUEST_STATS,
+        OPEN_INVENTORY_ACHIEVEMENT;
+    }
 }

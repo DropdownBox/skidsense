@@ -3,14 +3,12 @@ package net.minecraft.tileentity;
 import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.UUID;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StringUtils;
 
 public class TileEntitySkull extends TileEntity
@@ -115,7 +113,7 @@ public class TileEntitySkull extends TileEntity
                 }
                 else
                 {
-                    Property property = (Property)Iterables.getFirst(gameprofile.getProperties().get("textures"), null);
+                    Property property = Iterables.getFirst(gameprofile.getProperties().get("textures"), (Property)null);
 
                     if (property == null)
                     {

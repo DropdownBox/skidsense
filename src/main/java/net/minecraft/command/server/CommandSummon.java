@@ -51,7 +51,7 @@ public class CommandSummon extends CommandBase
     {
         if (args.length < 1)
         {
-            throw new WrongUsageException("commands.summon.usage", new Object[0]);
+            throw new WrongUsageException("commands.summon.usage");
         }
         else
         {
@@ -74,7 +74,7 @@ public class CommandSummon extends CommandBase
 
             if (!world.isBlockLoaded(blockpos))
             {
-                throw new CommandException("commands.summon.outOfWorld", new Object[0]);
+                throw new CommandException("commands.summon.outOfWorld");
             }
             else if ("LightningBolt".equals(s))
             {
@@ -97,7 +97,7 @@ public class CommandSummon extends CommandBase
                     }
                     catch (NBTException nbtexception)
                     {
-                        throw new CommandException("commands.summon.tagError", new Object[] {nbtexception.getMessage()});
+                        throw new CommandException("commands.summon.tagError", nbtexception.getMessage());
                     }
                 }
 
@@ -110,12 +110,12 @@ public class CommandSummon extends CommandBase
                 }
                 catch (RuntimeException var19)
                 {
-                    throw new CommandException("commands.summon.failed", new Object[0]);
+                    throw new CommandException("commands.summon.failed");
                 }
 
                 if (entity2 == null)
                 {
-                    throw new CommandException("commands.summon.failed", new Object[0]);
+                    throw new CommandException("commands.summon.failed");
                 }
                 else
                 {
@@ -151,6 +151,13 @@ public class CommandSummon extends CommandBase
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, EntityList.getEntityNameList()) : (args.length > 1 && args.length <= 4 ? func_175771_a(args, 1, pos) : null);
+        if (args.length == 1)
+        {
+            return getListOfStringsMatchingLastWord(args, EntityList.getEntityNameList());
+        }
+        else
+        {
+            return args.length > 1 && args.length <= 4 ? func_175771_a(args, 1, pos) : null;
+        }
     }
 }

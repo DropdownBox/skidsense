@@ -47,12 +47,12 @@ public class EntitySlime extends EntityLiving implements IMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(16, Byte.valueOf((byte)1));
+        this.dataWatcher.addObject(16, (byte)1);
     }
 
     protected void setSlimeSize(int size)
     {
-        this.dataWatcher.updateObject(16, Byte.valueOf((byte)size));
+        this.dataWatcher.updateObject(16, (byte)size);
         this.setSize(0.51000005F * (float)size, 0.51000005F * (float)size);
         this.setPosition(this.posX, this.posY, this.posZ);
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue((double)(size * size));
@@ -137,7 +137,7 @@ public class EntitySlime extends EntityLiving implements IMob
                 EnumParticleTypes enumparticletypes = this.getParticleType();
                 double d0 = this.posX + (double)f2;
                 double d1 = this.posZ + (double)f3;
-                world.spawnParticle(enumparticletypes, d0, this.getEntityBoundingBox().minY, d1, 0.0D, 0.0D, 0.0D, new int[0]);
+                world.spawnParticle(enumparticletypes, d0, this.getEntityBoundingBox().minY, d1, 0.0D, 0.0D, 0.0D);
             }
 
             if (this.makesSoundOnLand())
@@ -376,7 +376,7 @@ public class EntitySlime extends EntityLiving implements IMob
      */
     protected void jump()
     {
-        this.motionY = 0.41999998688697815D;
+        this.motionY = (double)0.42F;
         this.isAirBorne = true;
     }
 
@@ -412,7 +412,19 @@ public class EntitySlime extends EntityLiving implements IMob
         public boolean shouldExecute()
         {
             EntityLivingBase entitylivingbase = this.slime.getAttackTarget();
-            return entitylivingbase == null ? false : (!entitylivingbase.isEntityAlive() ? false : !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).capabilities.disableDamage);
+
+            if (entitylivingbase == null)
+            {
+                return false;
+            }
+            else if (!entitylivingbase.isEntityAlive())
+            {
+                return false;
+            }
+            else
+            {
+                return !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).capabilities.disableDamage;
+            }
         }
 
         public void startExecuting()
@@ -424,7 +436,23 @@ public class EntitySlime extends EntityLiving implements IMob
         public boolean continueExecuting()
         {
             EntityLivingBase entitylivingbase = this.slime.getAttackTarget();
-            return entitylivingbase == null ? false : (!entitylivingbase.isEntityAlive() ? false : (entitylivingbase instanceof EntityPlayer && ((EntityPlayer)entitylivingbase).capabilities.disableDamage ? false : --this.field_179465_b > 0));
+
+            if (entitylivingbase == null)
+            {
+                return false;
+            }
+            else if (!entitylivingbase.isEntityAlive())
+            {
+                return false;
+            }
+            else if (entitylivingbase instanceof EntityPlayer && ((EntityPlayer)entitylivingbase).capabilities.disableDamage)
+            {
+                return false;
+            }
+            else
+            {
+                return --this.field_179465_b > 0;
+            }
         }
 
         public void updateTask()

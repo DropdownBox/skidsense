@@ -165,7 +165,7 @@ implements Manager {
     private void onGLHack(EventRender3D e) {
         GlStateManager.getFloat(2982, (FloatBuffer)GLUtils.MODELVIEW.clear());
         GlStateManager.getFloat(2983, (FloatBuffer)GLUtils.PROJECTION.clear());
-        GlStateManager.glGetInteger(2978, (IntBuffer)GLUtils.VIEWPORT.clear());
+        //GlStateManager.glGetInteger(2978, (IntBuffer)GLUtils.VIEWPORT.clear());
     }
 
     @EventHandler

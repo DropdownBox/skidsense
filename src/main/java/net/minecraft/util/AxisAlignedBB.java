@@ -126,7 +126,7 @@ public class AxisAlignedBB
      */
     public double calculateXOffset(AxisAlignedBB other, double offsetX)
     {
-        if (other.maxY > this.minY && other.minY < this.maxY && other.maxZ > this.minZ && other.minZ < this.maxZ)
+        if (!(other.maxY <= this.minY) && !(other.minY >= this.maxY) && !(other.maxZ <= this.minZ) && !(other.minZ >= this.maxZ))
         {
             if (offsetX > 0.0D && other.maxX <= this.minX)
             {
@@ -162,7 +162,7 @@ public class AxisAlignedBB
      */
     public double calculateYOffset(AxisAlignedBB other, double offsetY)
     {
-        if (other.maxX > this.minX && other.minX < this.maxX && other.maxZ > this.minZ && other.minZ < this.maxZ)
+        if (!(other.maxX <= this.minX) && !(other.minX >= this.maxX) && !(other.maxZ <= this.minZ) && !(other.minZ >= this.maxZ))
         {
             if (offsetY > 0.0D && other.maxY <= this.minY)
             {
@@ -198,7 +198,7 @@ public class AxisAlignedBB
      */
     public double calculateZOffset(AxisAlignedBB other, double offsetZ)
     {
-        if (other.maxX > this.minX && other.minX < this.maxX && other.maxY > this.minY && other.minY < this.maxY)
+        if (!(other.maxX <= this.minX) && !(other.minX >= this.maxX) && !(other.maxY <= this.minY) && !(other.minY >= this.maxY))
         {
             if (offsetZ > 0.0D && other.maxZ <= this.minZ)
             {
@@ -232,7 +232,21 @@ public class AxisAlignedBB
      */
     public boolean intersectsWith(AxisAlignedBB other)
     {
-        return other.maxX > this.minX && other.minX < this.maxX ? (other.maxY > this.minY && other.minY < this.maxY ? other.maxZ > this.minZ && other.minZ < this.maxZ : false) : false;
+        if (!(other.maxX <= this.minX) && !(other.minX >= this.maxX))
+        {
+            if (!(other.maxY <= this.minY) && !(other.minY >= this.maxY))
+            {
+                return !(other.maxZ <= this.minZ) && !(other.minZ >= this.maxZ);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
@@ -240,7 +254,21 @@ public class AxisAlignedBB
      */
     public boolean isVecInside(Vec3 vec)
     {
-        return vec.xCoord > this.minX && vec.xCoord < this.maxX ? (vec.yCoord > this.minY && vec.yCoord < this.maxY ? vec.zCoord > this.minZ && vec.zCoord < this.maxZ : false) : false;
+        if (!(vec.xCoord <= this.minX) && !(vec.xCoord >= this.maxX))
+        {
+            if (!(vec.yCoord <= this.minY) && !(vec.yCoord >= this.maxY))
+            {
+                return !(vec.zCoord <= this.minZ) && !(vec.zCoord >= this.maxZ);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
@@ -381,7 +409,14 @@ public class AxisAlignedBB
      */
     private boolean isVecInYZ(Vec3 vec)
     {
-        return vec == null ? false : vec.yCoord >= this.minY && vec.yCoord <= this.maxY && vec.zCoord >= this.minZ && vec.zCoord <= this.maxZ;
+        if (vec == null)
+        {
+            return false;
+        }
+        else
+        {
+            return vec.yCoord >= this.minY && vec.yCoord <= this.maxY && vec.zCoord >= this.minZ && vec.zCoord <= this.maxZ;
+        }
     }
 
     /**
@@ -389,7 +424,14 @@ public class AxisAlignedBB
      */
     private boolean isVecInXZ(Vec3 vec)
     {
-        return vec == null ? false : vec.xCoord >= this.minX && vec.xCoord <= this.maxX && vec.zCoord >= this.minZ && vec.zCoord <= this.maxZ;
+        if (vec == null)
+        {
+            return false;
+        }
+        else
+        {
+            return vec.xCoord >= this.minX && vec.xCoord <= this.maxX && vec.zCoord >= this.minZ && vec.zCoord <= this.maxZ;
+        }
     }
 
     /**
@@ -397,7 +439,14 @@ public class AxisAlignedBB
      */
     private boolean isVecInXY(Vec3 vec)
     {
-        return vec == null ? false : vec.xCoord >= this.minX && vec.xCoord <= this.maxX && vec.yCoord >= this.minY && vec.yCoord <= this.maxY;
+        if (vec == null)
+        {
+            return false;
+        }
+        else
+        {
+            return vec.xCoord >= this.minX && vec.xCoord <= this.maxX && vec.yCoord >= this.minY && vec.yCoord <= this.maxY;
+        }
     }
 
     public String toString()

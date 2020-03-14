@@ -50,7 +50,6 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.IChatComponent;
-import optifine.Config;
 import org.lwjgl.opengl.GL11;
 
 public class Nametags
@@ -72,9 +71,9 @@ extends Module {
                 Object o = var4.next();
                 Entity ent = (Entity)o;
                 if (ent != Minecraft.getMinecraft().thePlayer && !ent.isInvisible() && ent instanceof EntityPlayer) {
-                   double posX = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)this.mc.timer.renderPartialTicks - RenderManager.renderPosX;
-                   double posY = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)this.mc.timer.renderPartialTicks - RenderManager.renderPosY;
-                   double posZ = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)this.mc.timer.renderPartialTicks - RenderManager.renderPosZ;
+                   double posX = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)this.mc.timer.renderPartialTicks - Minecraft.getMinecraft().getRenderManager().renderPosX;
+                   double posY = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)this.mc.timer.renderPartialTicks - Minecraft.getMinecraft().getRenderManager().renderPosY;
+                   double posZ = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)this.mc.timer.renderPartialTicks - Minecraft.getMinecraft().getRenderManager().renderPosZ;
    				renderNameTag((EntityPlayer) ent, String.valueOf(ent.getDisplayName()) , posX, posY, posZ);
                 }
              }

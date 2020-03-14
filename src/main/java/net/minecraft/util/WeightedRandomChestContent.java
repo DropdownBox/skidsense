@@ -40,7 +40,7 @@ public class WeightedRandomChestContent extends WeightedRandom.Item
     {
         for (int i = 0; i < max; ++i)
         {
-            WeightedRandomChestContent weightedrandomchestcontent = (WeightedRandomChestContent)WeightedRandom.getRandomItem(random, listIn);
+            WeightedRandomChestContent weightedrandomchestcontent = WeightedRandom.getRandomItem(random, listIn);
             int j = weightedrandomchestcontent.minStackSize + random.nextInt(weightedrandomchestcontent.maxStackSize - weightedrandomchestcontent.minStackSize + 1);
 
             if (weightedrandomchestcontent.theItemId.getMaxStackSize() >= j)
@@ -65,7 +65,7 @@ public class WeightedRandomChestContent extends WeightedRandom.Item
     {
         for (int i = 0; i < max; ++i)
         {
-            WeightedRandomChestContent weightedrandomchestcontent = (WeightedRandomChestContent)WeightedRandom.getRandomItem(random, listIn);
+            WeightedRandomChestContent weightedrandomchestcontent = WeightedRandom.getRandomItem(random, listIn);
             int j = weightedrandomchestcontent.minStackSize + random.nextInt(weightedrandomchestcontent.maxStackSize - weightedrandomchestcontent.minStackSize + 1);
 
             if (weightedrandomchestcontent.theItemId.getMaxStackSize() >= j)

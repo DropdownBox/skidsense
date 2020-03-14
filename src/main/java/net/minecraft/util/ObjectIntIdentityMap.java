@@ -9,16 +9,16 @@ import java.util.List;
 
 public class ObjectIntIdentityMap<T> implements IObjectIntIterable<T>
 {
-    private final IdentityHashMap<T, Integer> identityMap = new IdentityHashMap<T, Integer>(512);
-    private final List<T> objectList = Lists.<T>newArrayList();
+    private final IdentityHashMap<T, Integer> identityMap = new IdentityHashMap<>(512);
+    private final List<T> objectList = Lists.newArrayList();
 
     public void put(T key, int value)
     {
-        this.identityMap.put(key, Integer.valueOf(value));
+        this.identityMap.put(key, value);
 
         while (this.objectList.size() <= value)
         {
-            this.objectList.add(null);
+            this.objectList.add((T)null);
         }
 
         this.objectList.set(value, key);
@@ -26,8 +26,8 @@ public class ObjectIntIdentityMap<T> implements IObjectIntIterable<T>
 
     public int get(T key)
     {
-        Integer integer = (Integer)this.identityMap.get(key);
-        return integer == null ? -1 : integer.intValue();
+        Integer integer = this.identityMap.get(key);
+        return integer == null ? -1 : integer;
     }
 
     public final T getByValue(int value)
@@ -39,8 +39,4 @@ public class ObjectIntIdentityMap<T> implements IObjectIntIterable<T>
     {
         return Iterators.filter(this.objectList.iterator(), Predicates.notNull());
     }
-    
-    public List<T> getObjectList() {
-        return this.objectList;
-     }
 }

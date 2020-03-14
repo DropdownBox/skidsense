@@ -12,15 +12,15 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.tessellate.Tessellation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
+import net.optifine.shaders.Shaders;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
 import org.newdawn.slick.opengl.Texture;
-import shadersmod.client.Shaders;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -32,7 +32,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class RenderUtil {
     private static final Frustum frustum = new Frustum();
-	public static final Tessellation tessellator;
 	private static final List<Integer> csBuffer;
 	private static final Consumer<Integer> ENABLE_CLIENT_STATE;
 	private static final Consumer<Integer> DISABLE_CLIENT_STATE;
@@ -40,7 +39,6 @@ public class RenderUtil {
 	public static Object Existance_60;
 
 	static {
-		tessellator = Tessellation.createExpanding(4, 1.0f, 2.0f);
 		csBuffer = new ArrayList<Integer>();
 		ENABLE_CLIENT_STATE = GL11::glEnableClientState;
 		DISABLE_CLIENT_STATE = GL11::glEnableClientState;
@@ -646,7 +644,7 @@ public class RenderUtil {
         drawRect(left + (borderIncludedInBounds ? borderWidth : 0), top + (borderIncludedInBounds ? borderWidth : 0), right - ((borderIncludedInBounds ? borderWidth : 0)), bottom - ((borderIncludedInBounds ? borderWidth : 0)), insideColor);
     }
 
-    // 你这是什么傻逼FernFlower解出来的RenderUtil在这里耀武扬威呢不用GL11的常数你让我维护你妈呢
+    // 浣犺繖鏄粈涔堝偦閫糉ernFlower瑙ｅ嚭鏉ョ殑RenderUtil鍦ㄨ繖閲岃��姝︽壃濞佸憿涓嶇敤GL11鐨勫父鏁颁綘璁╂垜缁存姢浣犲鍛�
     public static void drawImage(int x, int y, int width, int height, ResourceLocation image) {
         GL11.glDisable(GL_DEPTH_TEST);
         GL11.glEnable(3042);
@@ -1015,11 +1013,11 @@ public class RenderUtil {
 
 	public static void entityESPBox(Entity e, Color color, EventRender3D event) {
         double posX = e.lastTickPosX + (e.posX - e.lastTickPosX) * (double) event.getPartialTicks()
-                - RenderManager.renderPosX;
+                - Minecraft.getMinecraft().getRenderManager().renderPosX;
         double posY = e.lastTickPosY + (e.posY - e.lastTickPosY) * (double) event.getPartialTicks()
-                - RenderManager.renderPosY;
+                - Minecraft.getMinecraft().getRenderManager().renderPosY;
         double posZ = e.lastTickPosZ + (e.posZ - e.lastTickPosZ) * (double) event.getPartialTicks()
-                - RenderManager.renderPosZ;
+                - Minecraft.getMinecraft().getRenderManager().renderPosZ;
         AxisAlignedBB box = AxisAlignedBB.fromBounds(posX - (double) e.width, posY, posZ - (double) e.width,
                 posX + (double) e.width, posY + (double) e.height + 0.2, posZ + (double) e.width);
         if (e instanceof EntityLivingBase) {
@@ -1036,7 +1034,7 @@ public class RenderUtil {
         RenderUtil.drawOutlinedBoundingBox(box);
     }
 
-    // TODO 你这是什么傻逼FernFlower解出来的RenderUtil在这里耀武扬威呢不用GL11的常数你让我维护你妈呢
+    // TODO 浣犺繖鏄粈涔堝偦閫糉ernFlower瑙ｅ嚭鏉ョ殑RenderUtil鍦ㄨ繖閲岃��姝︽壃濞佸憿涓嶇敤GL11鐨勫父鏁颁綘璁╂垜缁存姢浣犲鍛�
     public static void drawSolidBlockESP(double x, double y, double z, float red, float green, float blue, float alpha) {
         glInit(red, green, blue, alpha);
         glEnable(GL_POLYGON_SMOOTH);
@@ -1054,29 +1052,6 @@ public class RenderUtil {
     public static double interpolation(final double newPos, final double oldPos) {
         return oldPos + (newPos - oldPos) * Minecraft.getMinecraft().timer.renderPartialTicks;
     }
-
-    public static void drawLine(final Vec2f start, final Vec2f end, final float width) {
-        drawLine(start.getX(), start.getY(), end.getX(), end.getY(), width);
-    }
-
-    public static void drawLine(final Vec3f start, final Vec3f end, final float width) {
-        drawLine((float) start.getX(), (float) start.getY(), (float) start.getZ(), (float) end.getX(),
-				(float) end.getY(), (float) end.getZ(), width);
-	}
-
-	public static void drawLine(final float x, final float y, final float x1, final float y1, final float width) {
-		drawLine(x, y, 0.0f, x1, y1, 0.0f, width);
-	}
-
-	public static void drawLine(final float x, final float y, final float z, final float x1, final float y1,
-			final float z1, final float width) {
-		GL11.glLineWidth(width);
-		setupRender(true);
-		setupClientState(GLClientState.VERTEX, true);
-		RenderUtil.tessellator.addVertex(x, y, z).addVertex(x1, y1, z1).draw(3);
-		setupClientState(GLClientState.VERTEX, false);
-		setupRender(false);
-	}
 
 	public static void setupClientState(final GLClientState state, final boolean enabled) {
 		RenderUtil.csBuffer.clear();
@@ -1104,7 +1079,7 @@ public class RenderUtil {
         GlStateManager.depthMask(!start);
     }
 
-    // TODO 你这是什么傻逼FernFlower解出来的RenderUtil在这里耀武扬威呢不用GL11的常数你让我维护你妈呢
+    // TODO 浣犺繖鏄粈涔堝偦閫糉ernFlower瑙ｅ嚭鏉ョ殑RenderUtil鍦ㄨ繖閲岃��姝︽壃濞佸憿涓嶇敤GL11鐨勫父鏁颁綘璁╂垜缁存姢浣犲鍛�
     private static void glInit(float red, float green, float blue, float alpha) {
         GL11.glPushMatrix();
         GL11.glEnable(GL_BLEND);

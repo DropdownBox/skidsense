@@ -17,7 +17,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 
 public class ChunkProviderDebug implements IChunkProvider
 {
-    private static final List<IBlockState> field_177464_a = Lists.<IBlockState>newArrayList();
+    private static final List<IBlockState> field_177464_a = Lists.newArrayList();
     private static final int field_177462_b;
     private static final int field_181039_c;
     private final World world;
@@ -80,7 +80,7 @@ public class ChunkProviderDebug implements IChunkProvider
 
                 if (i < field_177464_a.size())
                 {
-                    iblockstate = (IBlockState)field_177464_a.get(i);
+                    iblockstate = field_177464_a.get(i);
                 }
             }
         }

@@ -1,37 +1,32 @@
 package net.minecraft.network.play.server;
 
 import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.Collection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Team;
 
-import java.util.Collection;
-
-public class S3EPacketTeams implements Packet<INetHandlerPlayClient> {
+public class S3EPacketTeams implements Packet<INetHandlerPlayClient>
+{
     private String name = "";
     private String displayName = "";
     private String prefix = "";
     private String suffix = "";
-    private String nameTagVisibility;
-    private int color;
-    private Collection<String> players;
+    private String nameTagVisibility = Team.EnumVisible.ALWAYS.internalName;
+    private int color = -1;
+    private Collection<String> players = Lists.newArrayList();
     private int action;
     private int friendlyFlags;
 
     public S3EPacketTeams()
     {
-        this.nameTagVisibility = Team.EnumVisible.ALWAYS.internalName;
-        this.color = -1;
-        this.players = Lists.newArrayList();
     }
 
     public S3EPacketTeams(ScorePlayerTeam teamIn, int actionIn)
     {
-        this.nameTagVisibility = Team.EnumVisible.ALWAYS.internalName;
-        this.color = -1;
-        this.players = Lists.newArrayList();
         this.name = teamIn.getRegisteredName();
         this.action = actionIn;
 
@@ -53,10 +48,6 @@ public class S3EPacketTeams implements Packet<INetHandlerPlayClient> {
 
     public S3EPacketTeams(ScorePlayerTeam teamIn, Collection<String> playersIn, int actionIn)
     {
-        this.nameTagVisibility = Team.EnumVisible.ALWAYS.internalName;
-        this.color = -1;
-        this.players = Lists.newArrayList();
-
         if (actionIn != 3 && actionIn != 4)
         {
             throw new IllegalArgumentException("Method must be join or leave for player constructor");
@@ -76,11 +67,13 @@ public class S3EPacketTeams implements Packet<INetHandlerPlayClient> {
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) {
+    public void readPacketData(PacketBuffer buf) throws IOException
+    {
         this.name = buf.readStringFromBuffer(16);
         this.action = buf.readByte();
 
-        if (this.action == 0 || this.action == 2) {
+        if (this.action == 0 || this.action == 2)
+        {
             this.displayName = buf.readStringFromBuffer(32);
             this.prefix = buf.readStringFromBuffer(16);
             this.suffix = buf.readStringFromBuffer(16);
@@ -103,11 +96,13 @@ public class S3EPacketTeams implements Packet<INetHandlerPlayClient> {
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) {
+    public void writePacketData(PacketBuffer buf) throws IOException
+    {
         buf.writeString(this.name);
         buf.writeByte(this.action);
 
-        if (this.action == 0 || this.action == 2) {
+        if (this.action == 0 || this.action == 2)
+        {
             buf.writeString(this.displayName);
             buf.writeString(this.prefix);
             buf.writeString(this.suffix);

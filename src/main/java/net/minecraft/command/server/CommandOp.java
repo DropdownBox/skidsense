@@ -2,14 +2,12 @@ package net.minecraft.command.server;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.List;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandOp extends CommandBase
@@ -50,7 +48,7 @@ public class CommandOp extends CommandBase
 
             if (gameprofile == null)
             {
-                throw new CommandException("commands.op.failed", new Object[] {args[0]});
+                throw new CommandException("commands.op.failed", args[0]);
             }
             else
             {
@@ -60,7 +58,7 @@ public class CommandOp extends CommandBase
         }
         else
         {
-            throw new WrongUsageException("commands.op.usage", new Object[0]);
+            throw new WrongUsageException("commands.op.usage");
         }
     }
 
@@ -69,7 +67,7 @@ public class CommandOp extends CommandBase
         if (args.length == 1)
         {
             String s = args[args.length - 1];
-            List<String> list = Lists.<String>newArrayList();
+            List<String> list = Lists.newArrayList();
 
             for (GameProfile gameprofile : MinecraftServer.getServer().getGameProfiles())
             {

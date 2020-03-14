@@ -106,11 +106,11 @@ public class EntityFallingBlock extends Entity
                 }
             }
 
-            this.motionY -= 0.03999999910593033D;
+            this.motionY -= (double)0.04F;
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX *= 0.9800000190734863D;
-            this.motionY *= 0.9800000190734863D;
-            this.motionZ *= 0.9800000190734863D;
+            this.motionX *= (double)0.98F;
+            this.motionY *= (double)0.98F;
+            this.motionZ *= (double)0.98F;
 
             if (!this.worldObj.isRemote)
             {
@@ -118,8 +118,8 @@ public class EntityFallingBlock extends Entity
 
                 if (this.onGround)
                 {
-                    this.motionX *= 0.699999988079071D;
-                    this.motionZ *= 0.699999988079071D;
+                    this.motionX *= (double)0.7F;
+                    this.motionZ *= (double)0.7F;
                     this.motionY *= -0.5D;
 
                     if (this.worldObj.getBlockState(blockpos1).getBlock() != Blocks.piston_extension)
@@ -198,9 +198,9 @@ public class EntityFallingBlock extends Entity
                     entity.attackEntityFrom(damagesource, (float)Math.min(MathHelper.floor_float((float)i * this.fallHurtAmount), this.fallHurtMax));
                 }
 
-                if (flag && (double)this.rand.nextFloat() < 0.05000000074505806D + (double)i * 0.05D)
+                if (flag && (double)this.rand.nextFloat() < (double)0.05F + (double)i * 0.05D)
                 {
-                    int j = ((Integer)this.fallTile.getValue(BlockAnvil.DAMAGE)).intValue();
+                    int j = this.fallTile.getValue(BlockAnvil.DAMAGE);
                     ++j;
 
                     if (j > 2)
@@ -209,7 +209,7 @@ public class EntityFallingBlock extends Entity
                     }
                     else
                     {
-                        this.fallTile = this.fallTile.withProperty(BlockAnvil.DAMAGE, Integer.valueOf(j));
+                        this.fallTile = this.fallTile.withProperty(BlockAnvil.DAMAGE, j);
                     }
                 }
             }
@@ -222,7 +222,7 @@ public class EntityFallingBlock extends Entity
     protected void writeEntityToNBT(NBTTagCompound tagCompound)
     {
         Block block = this.fallTile != null ? this.fallTile.getBlock() : Blocks.air;
-        ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(block);
+        ResourceLocation resourcelocation = Block.blockRegistry.getNameForObject(block);
         tagCompound.setString("Block", resourcelocation == null ? "" : resourcelocation.toString());
         tagCompound.setByte("Data", (byte)block.getMetaFromState(this.fallTile));
         tagCompound.setByte("Time", (byte)this.fallTime);
@@ -312,8 +312,8 @@ public class EntityFallingBlock extends Entity
         if (this.fallTile != null)
         {
             Block block = this.fallTile.getBlock();
-            category.addCrashSection("Immitating block ID", Integer.valueOf(Block.getIdFromBlock(block)));
-            category.addCrashSection("Immitating block data", Integer.valueOf(block.getMetaFromState(this.fallTile)));
+            category.addCrashSection("Immitating block ID", Block.getIdFromBlock(block));
+            category.addCrashSection("Immitating block data", block.getMetaFromState(this.fallTile));
         }
     }
 

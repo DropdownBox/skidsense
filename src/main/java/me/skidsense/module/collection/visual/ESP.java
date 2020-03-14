@@ -445,11 +445,11 @@ extends Module {
             GL11.glDisable(3553);
             float partialTicks = ESP.mc.timer.renderPartialTicks;
             mc.getRenderManager();
-            double x2 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks - RenderManager.renderPosX;
+            double x2 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks - Minecraft.getMinecraft().getRenderManager().renderPosX;
             mc.getRenderManager();
-            double y2 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks - RenderManager.renderPosY;
+            double y2 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks - Minecraft.getMinecraft().getRenderManager().renderPosY;
             mc.getRenderManager();
-            double z2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks - RenderManager.renderPosZ;
+            double z2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks - Minecraft.getMinecraft().getRenderManager().renderPosZ;
             float DISTANCE = Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity);
             float DISTANCE_SCALE = Math.min(DISTANCE * 0.15f, 0.15f);
             float SCALE = 0.035f;
@@ -459,7 +459,7 @@ extends Module {
             GlStateManager.translate((float)x2, (float)y2 + entity.height + 0.5f - (entity.isChild() ? entity.height / 2.0f : 0.0f), (float)z2);
             GL11.glNormal3f(0.0f, 1.0f, 0.0f);
             mc.getRenderManager();
-            GlStateManager.rotate(- RenderManager.playerViewY, 0.0f, 1.0f, 0.0f);
+            GlStateManager.rotate(- Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
             GL11.glScalef(- SCALE, - SCALE, - (SCALE /= 2.0f));
             Tessellator tesselator = Tessellator.getInstance();
             WorldRenderer worldRenderer = tesselator.getWorldRenderer();
@@ -559,20 +559,16 @@ extends Module {
             GL11.glBlendFunc(770, 771);
             GL11.glDisable(3553);
             float partialTicks = ESP.mc.timer.renderPartialTicks;
-            mc.getRenderManager();
-            double x2 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks - RenderManager.renderPosX;
-            mc.getRenderManager();
-            double y2 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks - RenderManager.renderPosY;
-            mc.getRenderManager();
-            double z2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks - RenderManager.renderPosZ;
-            var10000 = mc;
+            double x2 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks - Minecraft.getMinecraft().getRenderManager().renderPosX;
+            double y2 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks - Minecraft.getMinecraft().getRenderManager().renderPosY;
+            double z2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks - Minecraft.getMinecraft().getRenderManager().renderPosZ;
             float DISTANCE = Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity);
             float DISTANCE_SCALE = Math.min(DISTANCE * 0.15f, 2.5f);
             float SCALE = 0.035f;
             GlStateManager.translate((float)x2, (float)y2 + entity.height + 0.5f - (entity.isChild() ? entity.height / 2.0f : 0.0f), (float)z2);
             GL11.glNormal3f(0.0f, 1.0f, 0.0f);
             mc.getRenderManager();
-            GlStateManager.rotate(- RenderManager.playerViewY, 0.0f, 1.0f, 0.0f);
+            GlStateManager.rotate(- Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
             GL11.glScalef(- SCALE, - SCALE, - (SCALE /= 2.0f));
             Tessellator tesselator = Tessellator.getInstance();
             WorldRenderer worldRenderer = tesselator.getWorldRenderer();
@@ -620,21 +616,18 @@ extends Module {
             GL11.glDisable(3553);
             float partialTicks = ESP.mc.timer.renderPartialTicks;
             double var29 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
-            mc.getRenderManager();
-            double x2 = var29 - RenderManager.renderPosX;
+            double x2 = var29 - Minecraft.getMinecraft().getRenderManager().renderPosX;
             var29 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
-            mc.getRenderManager();
-            double y2 = var29 - RenderManager.renderPosY;
+            double y2 = var29 - Minecraft.getMinecraft().getRenderManager().renderPosY;
             var29 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks;
-            mc.getRenderManager();
-            double z2 = var29 - RenderManager.renderPosZ;
+            double z2 = var29 - Minecraft.getMinecraft().getRenderManager().renderPosZ;
             float DISTANCE = Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity);
             float DISTANCE_SCALE = Math.min(DISTANCE * 0.15f, 2.5f);
             float SCALE = 0.035f;
             GlStateManager.translate((float)x2, (float)y2 + entity.height + 0.5f - (entity.isChild() ? entity.height / 2.0f : 0.0f), (float)z2);
             GL11.glNormal3f(0.0f, 1.0f, 0.0f);
             mc.getRenderManager();
-            GlStateManager.rotate(- RenderManager.playerViewY, 0.0f, 1.0f, 0.0f);
+            GlStateManager.rotate(- Minecraft.getMinecraft().getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
             GL11.glScalef(- SCALE, - SCALE, - (SCALE /= 2.0f));
             Tessellator tesselator = Tessellator.getInstance();
             WorldRenderer worldRenderer = tesselator.getWorldRenderer();
@@ -800,7 +793,7 @@ extends Module {
         mc.getRenderManager();
         mc.getRenderManager();
         mc.getRenderManager();
-        RenderGlobal.drawSelectionBoundingBox(new AxisAlignedBB(entity.boundingBox.minX - 0.05 - entity.posX + (entity.posX - RenderManager.renderPosX), entity.boundingBox.minY - entity.posY + (entity.posY - RenderManager.renderPosY), entity.boundingBox.minZ - 0.05 - entity.posZ + (entity.posZ - RenderManager.renderPosZ), entity.boundingBox.maxX + 0.05 - entity.posX + (entity.posX - RenderManager.renderPosX), entity.boundingBox.maxY + 0.1 - entity.posY + (entity.posY - RenderManager.renderPosY), entity.boundingBox.maxZ + 0.05 - entity.posZ + (entity.posZ - RenderManager.renderPosZ)));
+        RenderGlobal.drawSelectionBoundingBox(new AxisAlignedBB(entity.boundingBox.minX - 0.05 - entity.posX + (entity.posX - Minecraft.getMinecraft().getRenderManager().renderPosX), entity.boundingBox.minY - entity.posY + (entity.posY - Minecraft.getMinecraft().getRenderManager().renderPosY), entity.boundingBox.minZ - 0.05 - entity.posZ + (entity.posZ - Minecraft.getMinecraft().getRenderManager().renderPosZ), entity.boundingBox.maxX + 0.05 - entity.posX + (entity.posX - Minecraft.getMinecraft().getRenderManager().renderPosX), entity.boundingBox.maxY + 0.1 - entity.posY + (entity.posY - Minecraft.getMinecraft().getRenderManager().renderPosY), entity.boundingBox.maxZ + 0.05 - entity.posZ + (entity.posZ - Minecraft.getMinecraft().getRenderManager().renderPosZ)));
         GL11.glDisable(2848);
         RenderUtil.post();
         GL11.glPopMatrix();
@@ -826,22 +819,6 @@ extends Module {
         worldRenderer.pos(xPos + thickness / 2.0, yPos + ySize, 0.0).color((float)color.getRed() / 255.0f, (float)color.getGreen() / 255.0f, (float)color.getBlue() / 255.0f, (float)color.getAlpha() / 255.0f).endVertex();
         worldRenderer.pos(xPos + thickness / 2.0, yPos - ySize, 0.0).color((float)color.getRed() / 255.0f, (float)color.getGreen() / 255.0f, (float)color.getBlue() / 255.0f, (float)color.getAlpha() / 255.0f).endVertex();
         tesselator.draw();
-    }
-
-    private void box(float left, float top, float right, float bottom) {
-        GL11.glColor4d(1.0, 1.0, 1.0, 0.5);
-        RenderUtil.drawLine(left, top, right, top, 2.0f);
-        RenderUtil.drawLine(left, bottom, right, bottom, 2.0f);
-        RenderUtil.drawLine(left, top, left, bottom, 2.0f);
-        RenderUtil.drawLine(right, top, right, bottom, 2.0f);
-        RenderUtil.drawLine(left + 1.0f, top + 1.0f, right - 1.0f, top + 1.0f, 1.0f);
-        RenderUtil.drawLine(left + 1.0f, bottom - 1.0f, right - 1.0f, bottom - 1.0f, 1.0f);
-        RenderUtil.drawLine(left + 1.0f, top + 1.0f, left + 1.0f, bottom - 1.0f, 1.0f);
-        RenderUtil.drawLine(right - 1.0f, top + 1.0f, right - 1.0f, bottom - 1.0f, 1.0f);
-        RenderUtil.drawLine(left - 1.0f, top - 1.0f, right + 1.0f, top - 1.0f, 1.0f);
-        RenderUtil.drawLine(left - 1.0f, bottom + 1.0f, right + 1.0f, bottom + 1.0f, 1.0f);
-        RenderUtil.drawLine(left - 1.0f, top + 1.0f, left - 1.0f, bottom + 1.0f, 1.0f);
-        RenderUtil.drawLine(right + 1.0f, top - 1.0f, right + 1.0f, bottom + 1.0f, 1.0f);
     }
 
     private void name(Entity entity, float left, float top, float right, float bottom) {

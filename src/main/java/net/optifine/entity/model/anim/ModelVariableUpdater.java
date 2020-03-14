@@ -1,6 +1,9 @@
 package net.optifine.entity.model.anim;
 
-import optifine.Config;
+import net.minecraft.src.Config;
+import net.optifine.expr.ExpressionParser;
+import net.optifine.expr.IExpressionFloat;
+import net.optifine.expr.ParseException;
 
 public class ModelVariableUpdater
 {

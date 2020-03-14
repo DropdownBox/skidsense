@@ -1,8 +1,9 @@
 package net.minecraft.command.server;
 
-import net.minecraft.MinecraftServer;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldSettings;
 
 public class CommandPublishLocalServer extends CommandBase
@@ -26,13 +27,17 @@ public class CommandPublishLocalServer extends CommandBase
     /**
      * Callback when the command is invoked
      */
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void processCommand(ICommandSender sender, String[] args) throws CommandException
+    {
         String s = MinecraftServer.getServer().shareToLAN(WorldSettings.GameType.SURVIVAL, false);
 
-        if (s != null) {
-            notifyOperators(sender, this, "commands.publish.started", s);
-        } else {
-            notifyOperators(sender, this, "commands.publish.failed");
+        if (s != null)
+        {
+            notifyOperators(sender, this, "commands.publish.started", new Object[] {s});
+        }
+        else
+        {
+            notifyOperators(sender, this, "commands.publish.failed", new Object[0]);
         }
     }
 }

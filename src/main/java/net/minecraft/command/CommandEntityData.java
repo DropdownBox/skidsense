@@ -39,7 +39,7 @@ public class CommandEntityData extends CommandBase
     {
         if (args.length < 2)
         {
-            throw new WrongUsageException("commands.entitydata.usage", new Object[0]);
+            throw new WrongUsageException("commands.entitydata.usage");
         }
         else
         {
@@ -47,7 +47,7 @@ public class CommandEntityData extends CommandBase
 
             if (entity instanceof EntityPlayer)
             {
-                throw new CommandException("commands.entitydata.noPlayers", new Object[] {entity.getDisplayName()});
+                throw new CommandException("commands.entitydata.noPlayers", entity.getDisplayName());
             }
             else
             {
@@ -62,7 +62,7 @@ public class CommandEntityData extends CommandBase
                 }
                 catch (NBTException nbtexception)
                 {
-                    throw new CommandException("commands.entitydata.tagError", new Object[] {nbtexception.getMessage()});
+                    throw new CommandException("commands.entitydata.tagError", nbtexception.getMessage());
                 }
 
                 nbttagcompound2.removeTag("UUIDMost");
@@ -71,7 +71,7 @@ public class CommandEntityData extends CommandBase
 
                 if (nbttagcompound.equals(nbttagcompound1))
                 {
-                    throw new CommandException("commands.entitydata.failed", new Object[] {nbttagcompound.toString()});
+                    throw new CommandException("commands.entitydata.failed", nbttagcompound.toString());
                 }
                 else
                 {

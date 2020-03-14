@@ -264,11 +264,11 @@ public class KillAura extends Module {
 			double var31 = this.target.posX - this.target.prevPosX;
 			double var32 = this.target.posZ - this.target.prevPosZ;
 			attackDelay = this.target.posX + var31;
-			double var33 = attackDelay - RenderManager.renderPosX;
+			double var33 = attackDelay - Minecraft.getMinecraft().getRenderManager().renderPosX;
 			double var34 = this.target.posY + 1.0D;
-			double y = var34 - RenderManager.renderPosY;
+			double y = var34 - Minecraft.getMinecraft().getRenderManager().renderPosY;
 			double var39 = this.target.posZ + var32;
-			double var42 = var39 - RenderManager.renderPosZ;
+			double var42 = var39 - Minecraft.getMinecraft().getRenderManager().renderPosZ;
 			double sin = Math.sin((double)System.currentTimeMillis() / 500.0D) * 50.0D;
 			double xA = sin / 100.0D;
 			double zA = sin / 100.0D;

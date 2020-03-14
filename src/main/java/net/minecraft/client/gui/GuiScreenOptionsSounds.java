@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundCategory;
@@ -37,8 +38,10 @@ public class GuiScreenOptionsSounds extends GuiScreen
         this.buttonList.add(new GuiScreenOptionsSounds.Button(SoundCategory.MASTER.getCategoryId(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), SoundCategory.MASTER, true));
         i = i + 2;
 
-        for (SoundCategory soundcategory : SoundCategory.values()) {
-            if (soundcategory != SoundCategory.MASTER) {
+        for (SoundCategory soundcategory : SoundCategory.values())
+        {
+            if (soundcategory != SoundCategory.MASTER)
+            {
                 this.buttonList.add(new GuiScreenOptionsSounds.Button(soundcategory.getCategoryId(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), soundcategory, false));
                 ++i;
             }
@@ -50,9 +53,12 @@ public class GuiScreenOptionsSounds extends GuiScreen
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.enabled) {
-            if (button.id == 200) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.enabled)
+        {
+            if (button.id == 200)
+            {
                 this.mc.gameSettings.saveOptions();
                 this.mc.displayGuiScreen(this.field_146505_f);
             }

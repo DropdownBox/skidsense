@@ -1,7 +1,7 @@
 package net.minecraft.command;
 
-import net.minecraft.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.WorldSettings;
 
@@ -30,13 +30,13 @@ public class CommandDefaultGameMode extends CommandGameMode
     {
         if (args.length <= 0)
         {
-            throw new WrongUsageException("commands.defaultgamemode.usage", new Object[0]);
+            throw new WrongUsageException("commands.defaultgamemode.usage");
         }
         else
         {
             WorldSettings.GameType worldsettings$gametype = this.getGameModeFromCommand(sender, args[0]);
             this.setGameType(worldsettings$gametype);
-            notifyOperators(sender, this, "commands.defaultgamemode.success", new Object[] {new ChatComponentTranslation("gameMode." + worldsettings$gametype.getName(), new Object[0])});
+            notifyOperators(sender, this, "commands.defaultgamemode.success", new Object[] {new ChatComponentTranslation("gameMode." + worldsettings$gametype.getName())});
         }
     }
 

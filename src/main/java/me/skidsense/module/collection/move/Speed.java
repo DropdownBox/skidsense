@@ -268,7 +268,7 @@ public class Speed
                 ++Speed.stage;
             }
         }else if(mode.getValue() == SpeedMode.HypixelPort){
-            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() ||!mc.thePlayer.moving())
+            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() ||!MoveUtil.isMoving())
                 return;
             double gay2 = 0.399921;
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
@@ -285,7 +285,7 @@ public class Speed
                 this.movementSpeed = this.lastDist - diff;
             } else {
                 if (getCollidingList(em.getY()).size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
-                    this.stage = this.mc.thePlayer.moving() ? 1 : 0;
+                    this.stage = MoveUtil.isMoving() ? 1 : 0;
                 }
                 this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted%2 == 0 ? -0.5 : -1)+159.21);
             }
@@ -293,11 +293,11 @@ public class Speed
                 em.setY(mc.thePlayer.motionY -= 1D);
             this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
             if(isInLiquid())movementSpeed=0.12;
-            mc.thePlayer.setMoveSpeed(em,movementSpeed);
+            MoveUtil.setMoveSpeed(em,movementSpeed);
             stage++;
             mc.thePlayer.stepHeight = 0.6F;
         }else if(mode.getValue() == SpeedMode.FastPort){
-            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() || !mc.thePlayer.moving())
+            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() || !MoveUtil.isMoving())
                 return;
             double gay2 = 0.399921;
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
@@ -314,7 +314,7 @@ public class Speed
                 this.movementSpeed = this.lastDist - diff;
             } else {
                 if (getCollidingList(em.getY()).size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
-                    this.stage = this.mc.thePlayer.moving() ? 1 : 0;
+                    this.stage = MoveUtil.isMoving() ? 1 : 0;
                 }
 
                 this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted%2 == 0 ? -0.5 : -1)+159.21);
@@ -324,7 +324,7 @@ public class Speed
                 em.setY(mc.thePlayer.motionY -= 2D);
             this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
             if(isInLiquid())movementSpeed=0.12;
-            mc.thePlayer.setMoveSpeed(em,movementSpeed);
+            MoveUtil.setMoveSpeed(em,movementSpeed);
             stage++;
             mc.thePlayer.stepHeight = 0.6F;
         }
@@ -340,7 +340,7 @@ public class Speed
     }
 
     private boolean canZoom() {
-        if (this.mc.thePlayer.moving() && this.mc.thePlayer.onGround) {
+        if (MoveUtil.isMoving() && this.mc.thePlayer.onGround) {
             return true;
         }
         return false;

@@ -70,7 +70,7 @@ public class BiomeGenMutated extends BiomeGenBase
         return this.baseBiome.getGrassColorAtPos(pos);
     }
 
-    public Class <? extends BiomeGenBase > getBiomeClass()
+    public Class<? extends BiomeGenBase> getBiomeClass()
     {
         return this.baseBiome.getBiomeClass();
     }

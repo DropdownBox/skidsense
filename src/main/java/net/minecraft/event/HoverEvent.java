@@ -71,7 +71,7 @@ public class HoverEvent
 
     public String toString()
     {
-        return "HoverEvent{action=" + this.action + ", value=\'" + this.value + '\'' + '}';
+        return "HoverEvent{action=" + this.action + ", value='" + this.value + '\'' + '}';
     }
 
     public int hashCode()
@@ -88,7 +88,7 @@ public class HoverEvent
         SHOW_ITEM("show_item", true),
         SHOW_ENTITY("show_entity", true);
 
-        private static final Map<String, HoverEvent.Action> nameMapping = Maps.<String, HoverEvent.Action>newHashMap();
+        private static final Map<String, HoverEvent.Action> nameMapping = Maps.newHashMap();
         private final boolean allowedInChat;
         private final String canonicalName;
 
@@ -110,7 +110,7 @@ public class HoverEvent
 
         public static HoverEvent.Action getValueByCanonicalName(String canonicalNameIn)
         {
-            return (HoverEvent.Action)nameMapping.get(canonicalNameIn);
+            return nameMapping.get(canonicalNameIn);
         }
 
         static {

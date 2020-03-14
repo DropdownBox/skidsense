@@ -43,12 +43,48 @@ public enum EnumEnchantmentType
             else
             {
                 ItemArmor itemarmor = (ItemArmor)p_77557_1_;
-                return itemarmor.armorType == 0 ? this == ARMOR_HEAD : (itemarmor.armorType == 2 ? this == ARMOR_LEGS : (itemarmor.armorType == 1 ? this == ARMOR_TORSO : (itemarmor.armorType == 3 ? this == ARMOR_FEET : false)));
+
+                if (itemarmor.armorType == 0)
+                {
+                    return this == ARMOR_HEAD;
+                }
+                else if (itemarmor.armorType == 2)
+                {
+                    return this == ARMOR_LEGS;
+                }
+                else if (itemarmor.armorType == 1)
+                {
+                    return this == ARMOR_TORSO;
+                }
+                else if (itemarmor.armorType == 3)
+                {
+                    return this == ARMOR_FEET;
+                }
+                else
+                {
+                    return false;
+                }
             }
+        }
+        else if (p_77557_1_ instanceof ItemSword)
+        {
+            return this == WEAPON;
+        }
+        else if (p_77557_1_ instanceof ItemTool)
+        {
+            return this == DIGGER;
+        }
+        else if (p_77557_1_ instanceof ItemBow)
+        {
+            return this == BOW;
+        }
+        else if (p_77557_1_ instanceof ItemFishingRod)
+        {
+            return this == FISHING_ROD;
         }
         else
         {
-            return p_77557_1_ instanceof ItemSword ? this == WEAPON : (p_77557_1_ instanceof ItemTool ? this == DIGGER : (p_77557_1_ instanceof ItemBow ? this == BOW : (p_77557_1_ instanceof ItemFishingRod ? this == FISHING_ROD : false)));
+            return false;
         }
     }
 }

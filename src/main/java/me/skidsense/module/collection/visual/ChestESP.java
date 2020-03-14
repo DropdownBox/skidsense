@@ -73,7 +73,7 @@ extends Module {
         } else {
             GL11.glColor4d((double)0.7, (double)0.4, (double)0.0, (double)0.5);
         }
-        RenderUtil.drawBoundingBox(new AxisAlignedBB(vec.xCoord - RenderManager.renderPosX, vec.yCoord - RenderManager.renderPosY, vec.zCoord - RenderManager.renderPosZ, vec2.xCoord - RenderManager.renderPosX, vec2.yCoord - RenderManager.renderPosY, vec2.zCoord - RenderManager.renderPosZ));
+        RenderUtil.drawBoundingBox(new AxisAlignedBB(vec.xCoord - Minecraft.getMinecraft().getRenderManager().renderPosX, vec.yCoord - Minecraft.getMinecraft().getRenderManager().renderPosY, vec.zCoord - Minecraft.getMinecraft().getRenderManager().renderPosZ, vec2.xCoord - Minecraft.getMinecraft().getRenderManager().renderPosX, vec2.yCoord - Minecraft.getMinecraft().getRenderManager().renderPosY, vec2.zCoord - Minecraft.getMinecraft().getRenderManager().renderPosZ));
         GL11.glColor4f((float)0.0f, (float)0.0f, (float)0.0f, (float)1.0f);
         RenderUtil.post3D();
         GL11.glPopMatrix();

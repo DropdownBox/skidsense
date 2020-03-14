@@ -17,13 +17,13 @@ public class EntityCrit2FX extends EntityFX
     protected EntityCrit2FX(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double p_i46285_8_, double p_i46285_10_, double p_i46285_12_, float p_i46285_14_)
     {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.0D, 0.0D, 0.0D);
-        this.motionX *= 0.10000000149011612D;
-        this.motionY *= 0.10000000149011612D;
-        this.motionZ *= 0.10000000149011612D;
+        this.motionX *= (double)0.1F;
+        this.motionY *= (double)0.1F;
+        this.motionZ *= (double)0.1F;
         this.motionX += p_i46285_8_ * 0.4D;
         this.motionY += p_i46285_10_ * 0.4D;
         this.motionZ += p_i46285_12_ * 0.4D;
-        this.particleRed = this.particleGreen = this.particleBlue = (float)(Math.random() * 0.30000001192092896D + 0.6000000238418579D);
+        this.particleRed = this.particleGreen = this.particleBlue = (float)(Math.random() * (double)0.3F + (double)0.6F);
         this.particleScale *= 0.75F;
         this.particleScale *= p_i46285_14_;
         this.field_174839_a = this.particleScale;
@@ -62,15 +62,15 @@ public class EntityCrit2FX extends EntityFX
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
         this.particleGreen = (float)((double)this.particleGreen * 0.96D);
         this.particleBlue = (float)((double)this.particleBlue * 0.9D);
-        this.motionX *= 0.699999988079071D;
-        this.motionY *= 0.699999988079071D;
-        this.motionZ *= 0.699999988079071D;
-        this.motionY -= 0.019999999552965164D;
+        this.motionX *= (double)0.7F;
+        this.motionY *= (double)0.7F;
+        this.motionZ *= (double)0.7F;
+        this.motionY -= (double)0.02F;
 
         if (this.onGround)
         {
-            this.motionX *= 0.699999988079071D;
-            this.motionZ *= 0.699999988079071D;
+            this.motionX *= (double)0.7F;
+            this.motionZ *= (double)0.7F;
         }
     }
 

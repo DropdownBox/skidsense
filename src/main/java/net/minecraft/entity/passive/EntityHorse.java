@@ -106,16 +106,16 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(16, Integer.valueOf(0));
-        this.dataWatcher.addObject(19, Byte.valueOf((byte)0));
-        this.dataWatcher.addObject(20, Integer.valueOf(0));
+        this.dataWatcher.addObject(16, 0);
+        this.dataWatcher.addObject(19, (byte)0);
+        this.dataWatcher.addObject(20, 0);
         this.dataWatcher.addObject(21, String.valueOf((Object)""));
-        this.dataWatcher.addObject(22, Integer.valueOf(0));
+        this.dataWatcher.addObject(22, 0);
     }
 
     public void setHorseType(int type)
     {
-        this.dataWatcher.updateObject(19, Byte.valueOf((byte)type));
+        this.dataWatcher.updateObject(19, (byte)type);
         this.resetTexturePrefix();
     }
 
@@ -129,7 +129,7 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
 
     public void setHorseVariant(int variant)
     {
-        this.dataWatcher.updateObject(20, Integer.valueOf(variant));
+        this.dataWatcher.updateObject(20, variant);
         this.resetTexturePrefix();
     }
 
@@ -183,11 +183,11 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
 
         if (p_110208_2_)
         {
-            this.dataWatcher.updateObject(16, Integer.valueOf(i | p_110208_1_));
+            this.dataWatcher.updateObject(16, i | p_110208_1_);
         }
         else
         {
-            this.dataWatcher.updateObject(16, Integer.valueOf(i & ~p_110208_1_));
+            this.dataWatcher.updateObject(16, i & ~p_110208_1_);
         }
     }
 
@@ -292,7 +292,19 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
         else
         {
             Item item = itemStackIn.getItem();
-            return item == Items.iron_horse_armor ? 1 : (item == Items.golden_horse_armor ? 2 : (item == Items.diamond_horse_armor ? 3 : 0));
+
+            if (item == Items.iron_horse_armor)
+            {
+                return 1;
+            }
+            else if (item == Items.golden_horse_armor)
+            {
+                return 2;
+            }
+            else
+            {
+                return item == Items.diamond_horse_armor ? 3 : 0;
+            }
         }
     }
 
@@ -321,7 +333,7 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
      */
     public void setHorseArmorStack(ItemStack itemStackIn)
     {
-        this.dataWatcher.updateObject(22, Integer.valueOf(this.getHorseArmorIndex(itemStackIn)));
+        this.dataWatcher.updateObject(22, this.getHorseArmorIndex(itemStackIn));
         this.resetTexturePrefix();
     }
 
@@ -560,14 +572,38 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
     {
         this.openHorseMouth();
         int i = this.getHorseType();
-        return i == 3 ? "mob.horse.zombie.death" : (i == 4 ? "mob.horse.skeleton.death" : (i != 1 && i != 2 ? "mob.horse.death" : "mob.horse.donkey.death"));
+
+        if (i == 3)
+        {
+            return "mob.horse.zombie.death";
+        }
+        else if (i == 4)
+        {
+            return "mob.horse.skeleton.death";
+        }
+        else
+        {
+            return i != 1 && i != 2 ? "mob.horse.death" : "mob.horse.donkey.death";
+        }
     }
 
     protected Item getDropItem()
     {
         boolean flag = this.rand.nextInt(4) == 0;
         int i = this.getHorseType();
-        return i == 4 ? Items.bone : (i == 3 ? (flag ? null : Items.rotten_flesh) : Items.leather);
+
+        if (i == 4)
+        {
+            return Items.bone;
+        }
+        else if (i == 3)
+        {
+            return flag ? null : Items.rotten_flesh;
+        }
+        else
+        {
+            return Items.leather;
+        }
     }
 
     /**
@@ -583,7 +619,19 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
         }
 
         int i = this.getHorseType();
-        return i == 3 ? "mob.horse.zombie.hit" : (i == 4 ? "mob.horse.skeleton.hit" : (i != 1 && i != 2 ? "mob.horse.hit" : "mob.horse.donkey.hit"));
+
+        if (i == 3)
+        {
+            return "mob.horse.zombie.hit";
+        }
+        else if (i == 4)
+        {
+            return "mob.horse.skeleton.hit";
+        }
+        else
+        {
+            return i != 1 && i != 2 ? "mob.horse.hit" : "mob.horse.donkey.hit";
+        }
     }
 
     public boolean isHorseSaddled()
@@ -604,7 +652,19 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
         }
 
         int i = this.getHorseType();
-        return i == 3 ? "mob.horse.zombie.idle" : (i == 4 ? "mob.horse.skeleton.idle" : (i != 1 && i != 2 ? "mob.horse.idle" : "mob.horse.donkey.idle"));
+
+        if (i == 3)
+        {
+            return "mob.horse.zombie.idle";
+        }
+        else if (i == 4)
+        {
+            return "mob.horse.skeleton.idle";
+        }
+        else
+        {
+            return i != 1 && i != 2 ? "mob.horse.idle" : "mob.horse.donkey.idle";
+        }
     }
 
     protected String getAngrySoundName()
@@ -612,7 +672,15 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
         this.openHorseMouth();
         this.makeHorseRear();
         int i = this.getHorseType();
-        return i != 3 && i != 4 ? (i != 1 && i != 2 ? "mob.horse.angry" : "mob.horse.donkey.angry") : null;
+
+        if (i != 3 && i != 4)
+        {
+            return i != 1 && i != 2 ? "mob.horse.angry" : "mob.horse.donkey.angry";
+        }
+        else
+        {
+            return null;
+        }
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
@@ -662,7 +730,7 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(horseJumpStrength);
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(53.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.22499999403953552D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.225F);
     }
 
     /**
@@ -1018,7 +1086,14 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
      */
     protected boolean isMovementBlocked()
     {
-        return this.riddenByEntity != null && this.isHorseSaddled() ? true : this.isEatingHaystack() || this.isRearing();
+        if (this.riddenByEntity != null && this.isHorseSaddled())
+        {
+            return true;
+        }
+        else
+        {
+            return this.isEatingHaystack() || this.isRearing();
+        }
     }
 
     /**
@@ -1658,13 +1733,13 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
             }
             else
             {
-                this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.17499999701976776D);
+                this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.175F);
             }
         }
         else
         {
             this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(15.0D);
-            this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.20000000298023224D);
+            this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.2F);
         }
 
         if (i != 2 && i != 1)
@@ -1732,7 +1807,7 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
             double d0 = this.rand.nextGaussian() * 0.02D;
             double d1 = this.rand.nextGaussian() * 0.02D;
             double d2 = this.rand.nextGaussian() * 0.02D;
-            this.worldObj.spawnParticle(enumparticletypes, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d0, d1, d2, new int[0]);
+            this.worldObj.spawnParticle(enumparticletypes, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d0, d1, d2);
         }
     }
 
@@ -1784,7 +1859,7 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
      */
     private double getModifiedJumpStrength()
     {
-        return 0.4000000059604645D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D;
+        return (double)0.4F + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D + this.rand.nextDouble() * 0.2D;
     }
 
     /**
@@ -1792,7 +1867,7 @@ public class EntityHorse extends EntityAnimal implements IInvBasic
      */
     private double getModifiedMovementSpeed()
     {
-        return (0.44999998807907104D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D) * 0.25D;
+        return ((double)0.45F + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D + this.rand.nextDouble() * 0.3D) * 0.25D;
     }
 
     /**

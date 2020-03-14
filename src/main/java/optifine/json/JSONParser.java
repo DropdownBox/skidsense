@@ -33,7 +33,7 @@ public class JSONParser
         else
         {
             Integer integer = (Integer)statusStack.getFirst();
-            return integer.intValue();
+            return integer;
         }
     }
 
@@ -57,7 +57,7 @@ public class JSONParser
 
     public Object parse(String s) throws ParseException
     {
-        return this.parse((String)s, (ContainerFactory)null);
+        return this.parse(s, (ContainerFactory)null);
     }
 
     public Object parse(String s, ContainerFactory containerFactory) throws ParseException
@@ -66,7 +66,7 @@ public class JSONParser
 
         try
         {
-            return this.parse((Reader)stringreader, (ContainerFactory)containerFactory);
+            return this.parse(stringreader, containerFactory);
         }
         catch (IOException ioexception)
         {
@@ -76,7 +76,7 @@ public class JSONParser
 
     public Object parse(Reader in) throws IOException, ParseException
     {
-        return this.parse((Reader)in, (ContainerFactory)null);
+        return this.parse(in, (ContainerFactory)null);
     }
 
     public Object parse(Reader in, ContainerFactory containerFactory) throws IOException, ParseException
@@ -90,7 +90,7 @@ public class JSONParser
             while (true)
             {
                 this.nextToken();
-                label0:
+                label65:
 
                 switch (this.status)
                 {
@@ -104,24 +104,24 @@ public class JSONParser
                                 this.status = 1;
                                 linkedlist.addFirst(new Integer(this.status));
                                 linkedlist1.addFirst(this.token.value);
-                                break label0;
+                                break label65;
 
                             case 1:
                                 this.status = 2;
                                 linkedlist.addFirst(new Integer(this.status));
                                 linkedlist1.addFirst(this.createObjectContainer(containerFactory));
-                                break label0;
+                                break label65;
 
                             case 2:
                             default:
                                 this.status = -1;
-                                break label0;
+                                break label65;
 
                             case 3:
                                 this.status = 3;
                                 linkedlist.addFirst(new Integer(this.status));
                                 linkedlist1.addFirst(this.createArrayContainer(containerFactory));
-                                break label0;
+                                break label65;
                         }
 
                     case 1:
@@ -148,14 +148,14 @@ public class JSONParser
                                     this.status = -1;
                                 }
 
-                                break label0;
+                                break label65;
 
                             case 1:
                             case 3:
                             case 4:
                             default:
                                 this.status = -1;
-                                break label0;
+                                break label65;
 
                             case 2:
                                 if (linkedlist1.size() > 1)
@@ -170,7 +170,7 @@ public class JSONParser
                                 }
 
                             case 5:
-                                break label0;
+                                break label65;
                         }
 
                     case 3:
@@ -179,7 +179,7 @@ public class JSONParser
                             case 0:
                                 List list3 = (List)linkedlist1.getFirst();
                                 list3.add(this.token.value);
-                                break label0;
+                                break label65;
 
                             case 1:
                                 List list2 = (List)linkedlist1.getFirst();
@@ -188,12 +188,12 @@ public class JSONParser
                                 this.status = 2;
                                 linkedlist.addFirst(new Integer(this.status));
                                 linkedlist1.addFirst(map4);
-                                break label0;
+                                break label65;
 
                             case 2:
                             default:
                                 this.status = -1;
-                                break label0;
+                                break label65;
 
                             case 3:
                                 List list1 = (List)linkedlist1.getFirst();
@@ -202,7 +202,7 @@ public class JSONParser
                                 this.status = 3;
                                 linkedlist.addFirst(new Integer(this.status));
                                 linkedlist1.addFirst(list4);
-                                break label0;
+                                break label65;
 
                             case 4:
                                 if (linkedlist1.size() > 1)
@@ -217,7 +217,7 @@ public class JSONParser
                                 }
 
                             case 5:
-                                break label0;
+                                break label65;
                         }
 
                     case 4:
@@ -329,7 +329,7 @@ public class JSONParser
 
         try
         {
-            this.parse((Reader)stringreader, contentHandler, isResume);
+            this.parse(stringreader, contentHandler, isResume);
         }
         catch (IOException ioexception)
         {
@@ -362,7 +362,7 @@ public class JSONParser
         {
             while (true)
             {
-                label0:
+                label174:
 
                 switch (this.status)
                 {
@@ -384,7 +384,7 @@ public class JSONParser
                                     return;
                                 }
 
-                                break label0;
+                                break label174;
 
                             case 1:
                                 this.status = 2;
@@ -395,12 +395,12 @@ public class JSONParser
                                     return;
                                 }
 
-                                break label0;
+                                break label174;
 
                             case 2:
                             default:
                                 this.status = -1;
-                                break label0;
+                                break label174;
 
                             case 3:
                                 this.status = 3;
@@ -411,7 +411,7 @@ public class JSONParser
                                     return;
                                 }
 
-                                break label0;
+                                break label174;
                         }
 
                     case 1:
@@ -449,14 +449,14 @@ public class JSONParser
                                     this.status = -1;
                                 }
 
-                                break label0;
+                                break label174;
 
                             case 1:
                             case 3:
                             case 4:
                             default:
                                 this.status = -1;
-                                break label0;
+                                break label174;
 
                             case 2:
                                 if (linkedlist.size() > 1)
@@ -475,7 +475,7 @@ public class JSONParser
                                 }
 
                             case 5:
-                                break label0;
+                                break label174;
                         }
 
                     case 3:
@@ -489,7 +489,7 @@ public class JSONParser
                                     return;
                                 }
 
-                                break label0;
+                                break label174;
 
                             case 1:
                                 this.status = 2;
@@ -500,12 +500,12 @@ public class JSONParser
                                     return;
                                 }
 
-                                break label0;
+                                break label174;
 
                             case 2:
                             default:
                                 this.status = -1;
-                                break label0;
+                                break label174;
 
                             case 3:
                                 this.status = 3;
@@ -516,7 +516,7 @@ public class JSONParser
                                     return;
                                 }
 
-                                break label0;
+                                break label174;
 
                             case 4:
                                 if (linkedlist.size() > 1)
@@ -535,7 +535,7 @@ public class JSONParser
                                 }
 
                             case 5:
-                                break label0;
+                                break label174;
                         }
 
                     case 4:
@@ -557,7 +557,7 @@ public class JSONParser
                                     return;
                                 }
 
-                                break label0;
+                                break label174;
 
                             case 1:
                                 linkedlist.removeFirst();
@@ -570,14 +570,14 @@ public class JSONParser
                                     return;
                                 }
 
-                                break label0;
+                                break label174;
 
                             case 2:
                             case 4:
                             case 5:
                             default:
                                 this.status = -1;
-                                break label0;
+                                break label174;
 
                             case 3:
                                 linkedlist.removeFirst();
@@ -591,7 +591,7 @@ public class JSONParser
                                 }
 
                             case 6:
-                                break label0;
+                                break label174;
                         }
 
                     case 5:
@@ -653,7 +653,7 @@ public class JSONParser
         }
         else
         {
-            SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ssz");
+            SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
 
             if (input.endsWith("Z"))
             {

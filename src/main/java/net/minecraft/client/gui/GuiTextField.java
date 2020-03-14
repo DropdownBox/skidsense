@@ -55,7 +55,7 @@ public class GuiTextField extends Gui
     /** True if this textbox is visible */
     private boolean visible = true;
     private GuiPageButtonList.GuiResponder field_175210_x;
-    private Predicate<String> validator = Predicates.<String>alwaysTrue();
+    private Predicate<String> validator = Predicates.alwaysTrue();
 
     public GuiTextField(int componentId, FontRenderer fontrendererObj, int x, int y, int par5Width, int par6Height)
     {
@@ -273,7 +273,7 @@ public class GuiTextField extends Gui
                 }
                 else
                 {
-                    while (p_146197_3_ && i < l && this.text.charAt(i) == 32)
+                    while (p_146197_3_ && i < l && this.text.charAt(i) == ' ')
                     {
                         ++i;
                     }
@@ -281,12 +281,12 @@ public class GuiTextField extends Gui
             }
             else
             {
-                while (p_146197_3_ && i > 0 && this.text.charAt(i - 1) == 32)
+                while (p_146197_3_ && i > 0 && this.text.charAt(i - 1) == ' ')
                 {
                     --i;
                 }
 
-                while (i > 0 && this.text.charAt(i - 1) != 32)
+                while (i > 0 && this.text.charAt(i - 1) != ' ')
                 {
                     --i;
                 }

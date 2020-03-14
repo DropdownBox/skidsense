@@ -68,7 +68,6 @@ public class ItemList
 
             while (true)
             {
-                j = i;
                 i = s.indexOf(sp, i);
 
                 if (i == -1)
@@ -76,7 +75,7 @@ public class ItemList
                     break;
                 }
 
-                append.add(s.substring(j, i).trim());
+                append.add(s.substring(i, i).trim());
                 i = i + sp.length();
 
                 if (i == -1)
@@ -85,7 +84,7 @@ public class ItemList
                 }
             }
 
-            append.add(s.substring(j).trim());
+            append.add(s.substring(i).trim());
         }
     }
 

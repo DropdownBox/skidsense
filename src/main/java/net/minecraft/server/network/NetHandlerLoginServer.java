@@ -1,11 +1,17 @@
 package net.minecraft.server.network;
 
-import net.minecraft.MinecraftServer;
 import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import java.math.BigInteger;
+import java.security.PrivateKey;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.crypto.SecretKey;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.login.INetHandlerLoginServer;
@@ -15,6 +21,7 @@ import net.minecraft.network.login.server.S00PacketDisconnect;
 import net.minecraft.network.login.server.S01PacketEncryptionRequest;
 import net.minecraft.network.login.server.S02PacketLoginSuccess;
 import net.minecraft.network.login.server.S03PacketEnableCompression;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.CryptManager;
 import net.minecraft.util.IChatComponent;
@@ -23,15 +30,8 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.crypto.SecretKey;
-import java.math.BigInteger;
-import java.security.PrivateKey;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable {
+public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
+{
     private static final AtomicInteger AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
     private static final Logger logger = LogManager.getLogger();
     private static final Random RANDOM = new Random();
@@ -92,7 +92,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable 
         }
         catch (Exception exception)
         {
-            logger.error("Error whilst disconnecting player", exception);
+            logger.error("Error whilst disconnecting player", (Throwable)exception);
         }
     }
 
@@ -115,8 +115,10 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable 
 
             if (this.server.getNetworkCompressionTreshold() >= 0 && !this.networkManager.isLocalChannel())
             {
-                this.networkManager.sendPacket(new S03PacketEnableCompression(this.server.getNetworkCompressionTreshold()), new ChannelFutureListener() {
-                    public void operationComplete(ChannelFuture p_operationComplete_1_) {
+                this.networkManager.sendPacket(new S03PacketEnableCompression(this.server.getNetworkCompressionTreshold()), new ChannelFutureListener()
+                {
+                    public void operationComplete(ChannelFuture p_operationComplete_1_) throws Exception
+                    {
                         NetHandlerLoginServer.this.networkManager.setCompressionTreshold(NetHandlerLoginServer.this.server.getNetworkCompressionTreshold());
                     }
                 });
@@ -147,7 +149,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable 
 
     public String getConnectionInfo()
     {
-        return this.loginGameProfile != null ? this.loginGameProfile.toString() + " (" + this.networkManager.getRemoteAddress().toString() + ")" : String.valueOf(this.networkManager.getRemoteAddress());
+        return this.loginGameProfile != null ? this.loginGameProfile.toString() + " (" + this.networkManager.getRemoteAddress().toString() + ")" : String.valueOf((Object)this.networkManager.getRemoteAddress());
     }
 
     public void processLoginStart(C00PacketLoginStart packetIn)
@@ -189,7 +191,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable 
                     try
                     {
                         String s = (new BigInteger(CryptManager.getServerIdHash(NetHandlerLoginServer.this.serverId, NetHandlerLoginServer.this.server.getKeyPair().getPublic(), NetHandlerLoginServer.this.secretKey))).toString(16);
-                        NetHandlerLoginServer.this.loginGameProfile = NetHandlerLoginServer.this.server.getMinecraftSessionService().hasJoinedServer(new GameProfile(null, gameprofile.getName()), s);
+                        NetHandlerLoginServer.this.loginGameProfile = NetHandlerLoginServer.this.server.getMinecraftSessionService().hasJoinedServer(new GameProfile((UUID)null, gameprofile.getName()), s, null);
 
                         if (NetHandlerLoginServer.this.loginGameProfile != null)
                         {
@@ -233,12 +235,13 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable 
         return new GameProfile(uuid, original.getName());
     }
 
-    enum LoginState {
+    static enum LoginState
+    {
         HELLO,
         KEY,
         AUTHENTICATING,
         READY_TO_ACCEPT,
         DELAY_ACCEPT,
-        ACCEPTED
+        ACCEPTED;
     }
 }

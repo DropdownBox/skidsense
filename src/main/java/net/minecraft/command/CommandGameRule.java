@@ -1,10 +1,9 @@
 package net.minecraft.command;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S19PacketEntityStatus;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.GameRules;
@@ -53,7 +52,7 @@ public class CommandGameRule extends CommandBase
             case 1:
                 if (!gamerules.hasRule(s))
                 {
-                    throw new CommandException("commands.gamerule.norule", new Object[] {s});
+                    throw new CommandException("commands.gamerule.norule", s);
                 }
 
                 String s2 = gamerules.getString(s);
@@ -64,7 +63,7 @@ public class CommandGameRule extends CommandBase
             default:
                 if (gamerules.areSameType(s, GameRules.ValueType.BOOLEAN_VALUE) && !"true".equals(s1) && !"false".equals(s1))
                 {
-                    throw new CommandException("commands.generic.boolean.invalid", new Object[] {s1});
+                    throw new CommandException("commands.generic.boolean.invalid", s1);
                 }
 
                 gamerules.setOrCreateGameRule(s, s1);

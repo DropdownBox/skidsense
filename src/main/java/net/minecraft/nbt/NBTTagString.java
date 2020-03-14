@@ -44,7 +44,7 @@ public class NBTTagString extends NBTBase
      */
     public byte getId()
     {
-        return (byte)8;
+        return 8;
     }
 
     public String toString()

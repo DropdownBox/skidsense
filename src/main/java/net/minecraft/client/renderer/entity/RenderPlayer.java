@@ -1,8 +1,5 @@
 package net.minecraft.client.renderer.entity;
 
-import me.skidsense.hooks.EventBus;
-import me.skidsense.hooks.events.EventPostRenderPlayer;
-import me.skidsense.hooks.events.EventPreRenderPlayer;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.model.ModelPlayer;
@@ -13,7 +10,6 @@ import net.minecraft.client.renderer.entity.layers.LayerCape;
 import net.minecraft.client.renderer.entity.layers.LayerCustomHead;
 import net.minecraft.client.renderer.entity.layers.LayerDeadmau5Head;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
@@ -54,8 +50,6 @@ public class RenderPlayer extends RendererLivingEntity<AbstractClientPlayer>
      */
     public void doRender(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        EventPreRenderPlayer event = new EventPreRenderPlayer();
-        EventBus.getInstance().call(event);
         if (!entity.isUser() || this.renderManager.livingPlayer == entity)
         {
             double d0 = y;
@@ -68,8 +62,6 @@ public class RenderPlayer extends RendererLivingEntity<AbstractClientPlayer>
             this.setModelVisibilities(entity);
             super.doRender(entity, x, d0, z, entityYaw, partialTicks);
         }
-        EventPostRenderPlayer event2 = new EventPostRenderPlayer();
-        EventBus.getInstance().call(event2);
     }
 
     private void setModelVisibilities(AbstractClientPlayer clientPlayer)

@@ -1,38 +1,46 @@
 package net.minecraft.client.renderer;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-
+import net.minecraft.src.Config;
+import net.optifine.SmartAnimations;
+import net.optifine.render.GlAlphaState;
+import net.optifine.render.GlBlendState;
+import net.optifine.shaders.Shaders;
+import net.optifine.util.LockCounter;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-
-import optifine.Config;
-import optifine.GlBlendState;
+import org.lwjgl.opengl.GL14;
 
 public class GlStateManager
 {
-    private static GlStateManager.AlphaState alphaState = new GlStateManager.AlphaState((GlStateManager.GlStateManager$1)null);
+    private static GlStateManager.AlphaState alphaState = new GlStateManager.AlphaState();
     private static GlStateManager.BooleanState lightingState = new GlStateManager.BooleanState(2896);
     private static GlStateManager.BooleanState[] lightState = new GlStateManager.BooleanState[8];
-    private static GlStateManager.ColorMaterialState colorMaterialState = new GlStateManager.ColorMaterialState((GlStateManager.GlStateManager$1)null);
-    private static GlStateManager.BlendState blendState = new GlStateManager.BlendState((GlStateManager.GlStateManager$1)null);
-    private static GlStateManager.DepthState depthState = new GlStateManager.DepthState((GlStateManager.GlStateManager$1)null);
-    private static GlStateManager.FogState fogState = new GlStateManager.FogState((GlStateManager.GlStateManager$1)null);
-    private static GlStateManager.CullState cullState = new GlStateManager.CullState((GlStateManager.GlStateManager$1)null);
-    private static GlStateManager.PolygonOffsetState polygonOffsetState = new GlStateManager.PolygonOffsetState((GlStateManager.GlStateManager$1)null);
-    private static GlStateManager.ColorLogicState colorLogicState = new GlStateManager.ColorLogicState((GlStateManager.GlStateManager$1)null);
-    private static GlStateManager.TexGenState texGenState = new GlStateManager.TexGenState((GlStateManager.GlStateManager$1)null);
-    private static GlStateManager.ClearState clearState = new GlStateManager.ClearState((GlStateManager.GlStateManager$1)null);
-    private static GlStateManager.StencilState stencilState = new GlStateManager.StencilState((GlStateManager.GlStateManager$1)null);
+    private static GlStateManager.ColorMaterialState colorMaterialState = new GlStateManager.ColorMaterialState();
+    private static GlStateManager.BlendState blendState = new GlStateManager.BlendState();
+    private static GlStateManager.DepthState depthState = new GlStateManager.DepthState();
+    private static GlStateManager.FogState fogState = new GlStateManager.FogState();
+    private static GlStateManager.CullState cullState = new GlStateManager.CullState();
+    private static GlStateManager.PolygonOffsetState polygonOffsetState = new GlStateManager.PolygonOffsetState();
+    private static GlStateManager.ColorLogicState colorLogicState = new GlStateManager.ColorLogicState();
+    private static GlStateManager.TexGenState texGenState = new GlStateManager.TexGenState();
+    private static GlStateManager.ClearState clearState = new GlStateManager.ClearState();
+    private static GlStateManager.StencilState stencilState = new GlStateManager.StencilState();
     private static GlStateManager.BooleanState normalizeState = new GlStateManager.BooleanState(2977);
     private static int activeTextureUnit = 0;
     private static GlStateManager.TextureState[] textureState = new GlStateManager.TextureState[32];
     private static int activeShadeModel = 7425;
     private static GlStateManager.BooleanState rescaleNormalState = new GlStateManager.BooleanState(32826);
-    private static GlStateManager.ColorMask colorMaskState = new GlStateManager.ColorMask((GlStateManager.GlStateManager$1)null);
+    private static GlStateManager.ColorMask colorMaskState = new GlStateManager.ColorMask();
     private static GlStateManager.Color colorState = new GlStateManager.Color();
-    private static final String __OBFID = "CL_00002558";
     public static boolean clearEnabled = true;
+    private static LockCounter alphaLock = new LockCounter();
+    private static GlAlphaState alphaLockState = new GlAlphaState();
+    private static LockCounter blendLock = new LockCounter();
+    private static GlBlendState blendLockState = new GlBlendState();
+    private static boolean creatingDisplayList = false;
 
     public static void pushAttrib()
     {
@@ -46,21 +54,42 @@ public class GlStateManager
 
     public static void disableAlpha()
     {
-        alphaState.alphaTest.setDisabled();
+        if (alphaLock.isLocked())
+        {
+            alphaLockState.setDisabled();
+        }
+        else
+        {
+            alphaState.alphaTest.setDisabled();
+        }
     }
 
     public static void enableAlpha()
     {
-        alphaState.alphaTest.setEnabled();
+        if (alphaLock.isLocked())
+        {
+            alphaLockState.setEnabled();
+        }
+        else
+        {
+            alphaState.alphaTest.setEnabled();
+        }
     }
 
     public static void alphaFunc(int func, float ref)
     {
-        if (func != alphaState.func || ref != alphaState.ref)
+        if (alphaLock.isLocked())
         {
-            alphaState.func = func;
-            alphaState.ref = ref;
-            GL11.glAlphaFunc(func, ref);
+            alphaLockState.setFuncRef(func, ref);
+        }
+        else
+        {
+            if (func != alphaState.func || ref != alphaState.ref)
+            {
+                alphaState.func = func;
+                alphaState.ref = ref;
+                GL11.glAlphaFunc(func, ref);
+            }
         }
     }
 
@@ -134,33 +163,75 @@ public class GlStateManager
 
     public static void disableBlend()
     {
-        blendState.blend.setDisabled();
+        if (blendLock.isLocked())
+        {
+            blendLockState.setDisabled();
+        }
+        else
+        {
+            blendState.blend.setDisabled();
+        }
     }
 
     public static void enableBlend()
     {
-        blendState.blend.setEnabled();
+        if (blendLock.isLocked())
+        {
+            blendLockState.setEnabled();
+        }
+        else
+        {
+            blendState.blend.setEnabled();
+        }
     }
 
     public static void blendFunc(int srcFactor, int dstFactor)
     {
-        if (srcFactor != blendState.srcFactor || dstFactor != blendState.dstFactor)
+        if (blendLock.isLocked())
         {
-            blendState.srcFactor = srcFactor;
-            blendState.dstFactor = dstFactor;
-            GL11.glBlendFunc(srcFactor, dstFactor);
+            blendLockState.setFactors(srcFactor, dstFactor);
+        }
+        else
+        {
+            if (srcFactor != blendState.srcFactor || dstFactor != blendState.dstFactor || srcFactor != blendState.srcFactorAlpha || dstFactor != blendState.dstFactorAlpha)
+            {
+                blendState.srcFactor = srcFactor;
+                blendState.dstFactor = dstFactor;
+                blendState.srcFactorAlpha = srcFactor;
+                blendState.dstFactorAlpha = dstFactor;
+
+                if (Config.isShaders())
+                {
+                    Shaders.uniform_blendFunc.setValue(srcFactor, dstFactor, srcFactor, dstFactor);
+                }
+
+                GL11.glBlendFunc(srcFactor, dstFactor);
+            }
         }
     }
 
     public static void tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha)
     {
-        if (srcFactor != blendState.srcFactor || dstFactor != blendState.dstFactor || srcFactorAlpha != blendState.srcFactorAlpha || dstFactorAlpha != blendState.dstFactorAlpha)
+        if (blendLock.isLocked())
         {
-            blendState.srcFactor = srcFactor;
-            blendState.dstFactor = dstFactor;
-            blendState.srcFactorAlpha = srcFactorAlpha;
-            blendState.dstFactorAlpha = dstFactorAlpha;
-            OpenGlHelper.glBlendFunc(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
+            blendLockState.setFactors(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
+        }
+        else
+        {
+            if (srcFactor != blendState.srcFactor || dstFactor != blendState.dstFactor || srcFactorAlpha != blendState.srcFactorAlpha || dstFactorAlpha != blendState.dstFactorAlpha)
+            {
+                blendState.srcFactor = srcFactor;
+                blendState.dstFactor = dstFactor;
+                blendState.srcFactorAlpha = srcFactorAlpha;
+                blendState.dstFactorAlpha = dstFactorAlpha;
+
+                if (Config.isShaders())
+                {
+                    Shaders.uniform_blendFunc.setValue(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
+                }
+
+                OpenGlHelper.glBlendFunc(srcFactor, dstFactor, srcFactorAlpha, dstFactorAlpha);
+            }
         }
     }
 
@@ -180,15 +251,30 @@ public class GlStateManager
         {
             fogState.mode = param;
             GL11.glFogi(GL11.GL_FOG_MODE, param);
+
+            if (Config.isShaders())
+            {
+                Shaders.setFogMode(param);
+            }
         }
     }
 
     public static void setFogDensity(float param)
     {
+        if (param < 0.0F)
+        {
+            param = 0.0F;
+        }
+
         if (param != fogState.density)
         {
             fogState.density = param;
             GL11.glFogf(GL11.GL_FOG_DENSITY, param);
+
+            if (Config.isShaders())
+            {
+                Shaders.setFogDensity(param);
+            }
         }
     }
 
@@ -208,6 +294,16 @@ public class GlStateManager
             fogState.end = param;
             GL11.glFogf(GL11.GL_FOG_END, param);
         }
+    }
+
+    public static void glFog(int p_glFog_0_, FloatBuffer p_glFog_1_)
+    {
+        GL11.glFog(p_glFog_0_, p_glFog_1_);
+    }
+
+    public static void glFogi(int p_glFogi_0_, int p_glFogi_1_)
+    {
+        GL11.glFogi(p_glFogi_0_, p_glFogi_1_);
     }
 
     public static void enableCull()
@@ -296,18 +392,18 @@ public class GlStateManager
 
     private static GlStateManager.TexGenCoord texGenCoord(GlStateManager.TexGen p_179125_0_)
     {
-        switch (GlStateManager.GlStateManager$1.field_179175_a[p_179125_0_.ordinal()])
+        switch (p_179125_0_)
         {
-            case 1:
+            case S:
                 return texGenState.s;
 
-            case 2:
+            case T:
                 return texGenState.t;
 
-            case 3:
+            case R:
                 return texGenState.r;
 
-            case 4:
+            case Q:
                 return texGenState.q;
 
             default:
@@ -361,12 +457,12 @@ public class GlStateManager
         {
             textureState[activeTextureUnit].textureName = texture;
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
-        }
-    }
 
-    public static void bindCurrentTexture()
-    {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureState[activeTextureUnit].textureName);
+            if (SmartAnimations.isActive())
+            {
+                SmartAnimations.textureRendered(texture);
+            }
+        }
     }
 
     public static void enableNormalize()
@@ -526,14 +622,189 @@ public class GlStateManager
         colorState.red = colorState.green = colorState.blue = colorState.alpha = -1.0F;
     }
 
+    public static void glNormalPointer(int p_glNormalPointer_0_, int p_glNormalPointer_1_, ByteBuffer p_glNormalPointer_2_)
+    {
+        GL11.glNormalPointer(p_glNormalPointer_0_, p_glNormalPointer_1_, p_glNormalPointer_2_);
+    }
+
+    public static void glTexCoordPointer(int p_glTexCoordPointer_0_, int p_glTexCoordPointer_1_, int p_glTexCoordPointer_2_, int p_glTexCoordPointer_3_)
+    {
+        GL11.glTexCoordPointer(p_glTexCoordPointer_0_, p_glTexCoordPointer_1_, p_glTexCoordPointer_2_, (long)p_glTexCoordPointer_3_);
+    }
+
+    public static void glTexCoordPointer(int p_glTexCoordPointer_0_, int p_glTexCoordPointer_1_, int p_glTexCoordPointer_2_, ByteBuffer p_glTexCoordPointer_3_)
+    {
+        GL11.glTexCoordPointer(p_glTexCoordPointer_0_, p_glTexCoordPointer_1_, p_glTexCoordPointer_2_, p_glTexCoordPointer_3_);
+    }
+
+    public static void glVertexPointer(int p_glVertexPointer_0_, int p_glVertexPointer_1_, int p_glVertexPointer_2_, int p_glVertexPointer_3_)
+    {
+        GL11.glVertexPointer(p_glVertexPointer_0_, p_glVertexPointer_1_, p_glVertexPointer_2_, (long)p_glVertexPointer_3_);
+    }
+
+    public static void glVertexPointer(int p_glVertexPointer_0_, int p_glVertexPointer_1_, int p_glVertexPointer_2_, ByteBuffer p_glVertexPointer_3_)
+    {
+        GL11.glVertexPointer(p_glVertexPointer_0_, p_glVertexPointer_1_, p_glVertexPointer_2_, p_glVertexPointer_3_);
+    }
+
+    public static void glColorPointer(int p_glColorPointer_0_, int p_glColorPointer_1_, int p_glColorPointer_2_, int p_glColorPointer_3_)
+    {
+        GL11.glColorPointer(p_glColorPointer_0_, p_glColorPointer_1_, p_glColorPointer_2_, (long)p_glColorPointer_3_);
+    }
+
+    public static void glColorPointer(int p_glColorPointer_0_, int p_glColorPointer_1_, int p_glColorPointer_2_, ByteBuffer p_glColorPointer_3_)
+    {
+        GL11.glColorPointer(p_glColorPointer_0_, p_glColorPointer_1_, p_glColorPointer_2_, p_glColorPointer_3_);
+    }
+
+    public static void glDisableClientState(int p_glDisableClientState_0_)
+    {
+        GL11.glDisableClientState(p_glDisableClientState_0_);
+    }
+
+    public static void glEnableClientState(int p_glEnableClientState_0_)
+    {
+        GL11.glEnableClientState(p_glEnableClientState_0_);
+    }
+
+    public static void glBegin(int p_glBegin_0_)
+    {
+        GL11.glBegin(p_glBegin_0_);
+    }
+
+    public static void glEnd()
+    {
+        GL11.glEnd();
+    }
+
+    public static void glDrawArrays(int p_glDrawArrays_0_, int p_glDrawArrays_1_, int p_glDrawArrays_2_)
+    {
+        GL11.glDrawArrays(p_glDrawArrays_0_, p_glDrawArrays_1_, p_glDrawArrays_2_);
+
+        if (Config.isShaders() && !creatingDisplayList)
+        {
+            int i = Shaders.activeProgram.getCountInstances();
+
+            if (i > 1)
+            {
+                for (int j = 1; j < i; ++j)
+                {
+                    Shaders.uniform_instanceId.setValue(j);
+                    GL11.glDrawArrays(p_glDrawArrays_0_, p_glDrawArrays_1_, p_glDrawArrays_2_);
+                }
+
+                Shaders.uniform_instanceId.setValue(0);
+            }
+        }
+    }
+
     public static void callList(int list)
     {
         GL11.glCallList(list);
+
+        if (Config.isShaders() && !creatingDisplayList)
+        {
+            int i = Shaders.activeProgram.getCountInstances();
+
+            if (i > 1)
+            {
+                for (int j = 1; j < i; ++j)
+                {
+                    Shaders.uniform_instanceId.setValue(j);
+                    GL11.glCallList(list);
+                }
+
+                Shaders.uniform_instanceId.setValue(0);
+            }
+        }
+    }
+
+    public static void callLists(IntBuffer p_callLists_0_)
+    {
+        GL11.glCallLists(p_callLists_0_);
+
+        if (Config.isShaders() && !creatingDisplayList)
+        {
+            int i = Shaders.activeProgram.getCountInstances();
+
+            if (i > 1)
+            {
+                for (int j = 1; j < i; ++j)
+                {
+                    Shaders.uniform_instanceId.setValue(j);
+                    GL11.glCallLists(p_callLists_0_);
+                }
+
+                Shaders.uniform_instanceId.setValue(0);
+            }
+        }
+    }
+
+    public static void glDeleteLists(int p_glDeleteLists_0_, int p_glDeleteLists_1_)
+    {
+        GL11.glDeleteLists(p_glDeleteLists_0_, p_glDeleteLists_1_);
+    }
+
+    public static void glNewList(int p_glNewList_0_, int p_glNewList_1_)
+    {
+        GL11.glNewList(p_glNewList_0_, p_glNewList_1_);
+        creatingDisplayList = true;
+    }
+
+    public static void glEndList()
+    {
+        GL11.glEndList();
+        creatingDisplayList = false;
+    }
+
+    public static int glGetError()
+    {
+        return GL11.glGetError();
+    }
+
+    public static void glTexImage2D(int p_glTexImage2D_0_, int p_glTexImage2D_1_, int p_glTexImage2D_2_, int p_glTexImage2D_3_, int p_glTexImage2D_4_, int p_glTexImage2D_5_, int p_glTexImage2D_6_, int p_glTexImage2D_7_, IntBuffer p_glTexImage2D_8_)
+    {
+        GL11.glTexImage2D(p_glTexImage2D_0_, p_glTexImage2D_1_, p_glTexImage2D_2_, p_glTexImage2D_3_, p_glTexImage2D_4_, p_glTexImage2D_5_, p_glTexImage2D_6_, p_glTexImage2D_7_, p_glTexImage2D_8_);
+    }
+
+    public static void glTexSubImage2D(int p_glTexSubImage2D_0_, int p_glTexSubImage2D_1_, int p_glTexSubImage2D_2_, int p_glTexSubImage2D_3_, int p_glTexSubImage2D_4_, int p_glTexSubImage2D_5_, int p_glTexSubImage2D_6_, int p_glTexSubImage2D_7_, IntBuffer p_glTexSubImage2D_8_)
+    {
+        GL11.glTexSubImage2D(p_glTexSubImage2D_0_, p_glTexSubImage2D_1_, p_glTexSubImage2D_2_, p_glTexSubImage2D_3_, p_glTexSubImage2D_4_, p_glTexSubImage2D_5_, p_glTexSubImage2D_6_, p_glTexSubImage2D_7_, p_glTexSubImage2D_8_);
+    }
+
+    public static void glCopyTexSubImage2D(int p_glCopyTexSubImage2D_0_, int p_glCopyTexSubImage2D_1_, int p_glCopyTexSubImage2D_2_, int p_glCopyTexSubImage2D_3_, int p_glCopyTexSubImage2D_4_, int p_glCopyTexSubImage2D_5_, int p_glCopyTexSubImage2D_6_, int p_glCopyTexSubImage2D_7_)
+    {
+        GL11.glCopyTexSubImage2D(p_glCopyTexSubImage2D_0_, p_glCopyTexSubImage2D_1_, p_glCopyTexSubImage2D_2_, p_glCopyTexSubImage2D_3_, p_glCopyTexSubImage2D_4_, p_glCopyTexSubImage2D_5_, p_glCopyTexSubImage2D_6_, p_glCopyTexSubImage2D_7_);
+    }
+
+    public static void glGetTexImage(int p_glGetTexImage_0_, int p_glGetTexImage_1_, int p_glGetTexImage_2_, int p_glGetTexImage_3_, IntBuffer p_glGetTexImage_4_)
+    {
+        GL11.glGetTexImage(p_glGetTexImage_0_, p_glGetTexImage_1_, p_glGetTexImage_2_, p_glGetTexImage_3_, p_glGetTexImage_4_);
+    }
+
+    public static void glTexParameterf(int p_glTexParameterf_0_, int p_glTexParameterf_1_, float p_glTexParameterf_2_)
+    {
+        GL11.glTexParameterf(p_glTexParameterf_0_, p_glTexParameterf_1_, p_glTexParameterf_2_);
+    }
+
+    public static void glTexParameteri(int p_glTexParameteri_0_, int p_glTexParameteri_1_, int p_glTexParameteri_2_)
+    {
+        GL11.glTexParameteri(p_glTexParameteri_0_, p_glTexParameteri_1_, p_glTexParameteri_2_);
+    }
+
+    public static int glGetTexLevelParameteri(int p_glGetTexLevelParameteri_0_, int p_glGetTexLevelParameteri_1_, int p_glGetTexLevelParameteri_2_)
+    {
+        return GL11.glGetTexLevelParameteri(p_glGetTexLevelParameteri_0_, p_glGetTexLevelParameteri_1_, p_glGetTexLevelParameteri_2_);
     }
 
     public static int getActiveTextureUnit()
     {
         return OpenGlHelper.defaultTexUnit + activeTextureUnit;
+    }
+
+    public static void bindCurrentTexture()
+    {
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureState[activeTextureUnit].textureName);
     }
 
     public static int getBoundTexture()
@@ -583,17 +854,119 @@ public class GlStateManager
         fogState.fog.setState(p_setFogEnabled_0_);
     }
 
+    public static void lockAlpha(GlAlphaState p_lockAlpha_0_)
+    {
+        if (!alphaLock.isLocked())
+        {
+            getAlphaState(alphaLockState);
+            setAlphaState(p_lockAlpha_0_);
+            alphaLock.lock();
+        }
+    }
+
+    public static void unlockAlpha()
+    {
+        if (alphaLock.unlock())
+        {
+            setAlphaState(alphaLockState);
+        }
+    }
+
+    public static void getAlphaState(GlAlphaState p_getAlphaState_0_)
+    {
+        if (alphaLock.isLocked())
+        {
+            p_getAlphaState_0_.setState(alphaLockState);
+        }
+        else
+        {
+            p_getAlphaState_0_.setState(alphaState.alphaTest.currentState, alphaState.func, alphaState.ref);
+        }
+    }
+
+    public static void setAlphaState(GlAlphaState p_setAlphaState_0_)
+    {
+        if (alphaLock.isLocked())
+        {
+            alphaLockState.setState(p_setAlphaState_0_);
+        }
+        else
+        {
+            alphaState.alphaTest.setState(p_setAlphaState_0_.isEnabled());
+            alphaFunc(p_setAlphaState_0_.getFunc(), p_setAlphaState_0_.getRef());
+        }
+    }
+
+    public static void lockBlend(GlBlendState p_lockBlend_0_)
+    {
+        if (!blendLock.isLocked())
+        {
+            getBlendState(blendLockState);
+            setBlendState(p_lockBlend_0_);
+            blendLock.lock();
+        }
+    }
+
+    public static void unlockBlend()
+    {
+        if (blendLock.unlock())
+        {
+            setBlendState(blendLockState);
+        }
+    }
+
     public static void getBlendState(GlBlendState p_getBlendState_0_)
     {
-        p_getBlendState_0_.enabled = blendState.blend.currentState;
-        p_getBlendState_0_.srcFactor = blendState.srcFactor;
-        p_getBlendState_0_.dstFactor = blendState.dstFactor;
+        if (blendLock.isLocked())
+        {
+            p_getBlendState_0_.setState(blendLockState);
+        }
+        else
+        {
+            p_getBlendState_0_.setState(blendState.blend.currentState, blendState.srcFactor, blendState.dstFactor, blendState.srcFactorAlpha, blendState.dstFactorAlpha);
+        }
     }
 
     public static void setBlendState(GlBlendState p_setBlendState_0_)
     {
-        blendState.blend.setState(p_setBlendState_0_.enabled);
-        blendFunc(p_setBlendState_0_.srcFactor, p_setBlendState_0_.dstFactor);
+        if (blendLock.isLocked())
+        {
+            blendLockState.setState(p_setBlendState_0_);
+        }
+        else
+        {
+            blendState.blend.setState(p_setBlendState_0_.isEnabled());
+
+            if (!p_setBlendState_0_.isSeparate())
+            {
+                blendFunc(p_setBlendState_0_.getSrcFactor(), p_setBlendState_0_.getDstFactor());
+            }
+            else
+            {
+                tryBlendFuncSeparate(p_setBlendState_0_.getSrcFactor(), p_setBlendState_0_.getDstFactor(), p_setBlendState_0_.getSrcFactorAlpha(), p_setBlendState_0_.getDstFactorAlpha());
+            }
+        }
+    }
+
+    public static void glMultiDrawArrays(int p_glMultiDrawArrays_0_, IntBuffer p_glMultiDrawArrays_1_, IntBuffer p_glMultiDrawArrays_2_)
+    {
+        GL14.glMultiDrawArrays(p_glMultiDrawArrays_0_, p_glMultiDrawArrays_1_, p_glMultiDrawArrays_2_);
+
+        if (Config.isShaders() && !creatingDisplayList)
+        {
+            int i = Shaders.activeProgram.getCountInstances();
+
+            if (i > 1)
+            {
+                for (int j = 1; j < i; ++j)
+                {
+                    Shaders.uniform_instanceId.setValue(j);
+                    GL14.glMultiDrawArrays(p_glMultiDrawArrays_0_, p_glMultiDrawArrays_1_, p_glMultiDrawArrays_2_);
+                }
+
+                Shaders.uniform_instanceId.setValue(0);
+            }
+        }
     }
 
     static
@@ -605,96 +978,31 @@ public class GlStateManager
 
         for (int j = 0; j < textureState.length; ++j)
         {
-            textureState[j] = new GlStateManager.TextureState((GlStateManager.GlStateManager$1)null);
-        }
-    }
-
-    static final class GlStateManager$1
-    {
-        static final int[] field_179175_a = new int[GlStateManager.TexGen.values().length];
-        private static final String __OBFID = "CL_00002557";
-
-        static
-        {
-            try
-            {
-                field_179175_a[GlStateManager.TexGen.S.ordinal()] = 1;
-            }
-            catch (NoSuchFieldError var4)
-            {
-                ;
-            }
-
-            try
-            {
-                field_179175_a[GlStateManager.TexGen.T.ordinal()] = 2;
-            }
-            catch (NoSuchFieldError var3)
-            {
-                ;
-            }
-
-            try
-            {
-                field_179175_a[GlStateManager.TexGen.R.ordinal()] = 3;
-            }
-            catch (NoSuchFieldError var2)
-            {
-                ;
-            }
-
-            try
-            {
-                field_179175_a[GlStateManager.TexGen.Q.ordinal()] = 4;
-            }
-            catch (NoSuchFieldError var1)
-            {
-                ;
-            }
+            textureState[j] = new GlStateManager.TextureState();
         }
     }
 
     static class AlphaState
     {
-        public GlStateManager.BooleanState alphaTest;
-        public int func;
-        public float ref;
-        private static final String __OBFID = "CL_00002556";
+        public GlStateManager.BooleanState alphaTest = new GlStateManager.BooleanState(3008);
+        public int func = 519;
+        public float ref = -1.0F;
 
         private AlphaState()
         {
-            this.alphaTest = new GlStateManager.BooleanState(3008);
-            this.func = 519;
-            this.ref = -1.0F;
-        }
-
-        AlphaState(GlStateManager.GlStateManager$1 p_i46489_1_)
-        {
-            this();
         }
     }
 
     static class BlendState
     {
-        public GlStateManager.BooleanState blend;
-        public int srcFactor;
-        public int dstFactor;
-        public int srcFactorAlpha;
-        public int dstFactorAlpha;
-        private static final String __OBFID = "CL_00002555";
+        public GlStateManager.BooleanState blend = new GlStateManager.BooleanState(3042);
+        public int srcFactor = 1;
+        public int dstFactor = 0;
+        public int srcFactorAlpha = 1;
+        public int dstFactorAlpha = 0;
 
         private BlendState()
         {
-            this.blend = new GlStateManager.BooleanState(3042);
-            this.srcFactor = 1;
-            this.dstFactor = 0;
-            this.srcFactorAlpha = 1;
-            this.dstFactorAlpha = 0;
-        }
-
-        BlendState(GlStateManager.GlStateManager$1 p_i46488_1_)
-        {
-            this();
         }
     }
 
@@ -702,7 +1010,6 @@ public class GlStateManager
     {
         private final int capability;
         private boolean currentState = false;
-        private static final String __OBFID = "CL_00002554";
 
         public BooleanState(int capabilityIn)
         {
@@ -739,21 +1046,12 @@ public class GlStateManager
 
     static class ClearState
     {
-        public double depth;
-        public GlStateManager.Color color;
-        public int field_179204_c;
-        private static final String __OBFID = "CL_00002553";
+        public double depth = 1.0D;
+        public GlStateManager.Color color = new GlStateManager.Color(0.0F, 0.0F, 0.0F, 0.0F);
+        public int field_179204_c = 0;
 
         private ClearState()
         {
-            this.depth = 1.0D;
-            this.color = new GlStateManager.Color(0.0F, 0.0F, 0.0F, 0.0F);
-            this.field_179204_c = 0;
-        }
-
-        ClearState(GlStateManager.GlStateManager$1 p_i46487_1_)
-        {
-            this();
         }
     }
 
@@ -763,7 +1061,6 @@ public class GlStateManager
         public float green = 1.0F;
         public float blue = 1.0F;
         public float alpha = 1.0F;
-        private static final String __OBFID = "CL_00002552";
 
         public Color()
         {
@@ -780,205 +1077,113 @@ public class GlStateManager
 
     static class ColorLogicState
     {
-        public GlStateManager.BooleanState colorLogicOp;
-        public int opcode;
-        private static final String __OBFID = "CL_00002551";
+        public GlStateManager.BooleanState colorLogicOp = new GlStateManager.BooleanState(3058);
+        public int opcode = 5379;
 
         private ColorLogicState()
         {
-            this.colorLogicOp = new GlStateManager.BooleanState(3058);
-            this.opcode = 5379;
-        }
-
-        ColorLogicState(GlStateManager.GlStateManager$1 p_i46486_1_)
-        {
-            this();
         }
     }
 
     static class ColorMask
     {
-        public boolean red;
-        public boolean green;
-        public boolean blue;
-        public boolean alpha;
-        private static final String __OBFID = "CL_00002550";
+        public boolean red = true;
+        public boolean green = true;
+        public boolean blue = true;
+        public boolean alpha = true;
 
         private ColorMask()
         {
-            this.red = true;
-            this.green = true;
-            this.blue = true;
-            this.alpha = true;
-        }
-
-        ColorMask(GlStateManager.GlStateManager$1 p_i46485_1_)
-        {
-            this();
         }
     }
 
     static class ColorMaterialState
     {
-        public GlStateManager.BooleanState colorMaterial;
-        public int face;
-        public int mode;
-        private static final String __OBFID = "CL_00002549";
+        public GlStateManager.BooleanState colorMaterial = new GlStateManager.BooleanState(2903);
+        public int face = 1032;
+        public int mode = 5634;
 
         private ColorMaterialState()
         {
-            this.colorMaterial = new GlStateManager.BooleanState(2903);
-            this.face = 1032;
-            this.mode = 5634;
-        }
-
-        ColorMaterialState(GlStateManager.GlStateManager$1 p_i46484_1_)
-        {
-            this();
         }
     }
 
     static class CullState
     {
-        public GlStateManager.BooleanState cullFace;
-        public int mode;
-        private static final String __OBFID = "CL_00002548";
+        public GlStateManager.BooleanState cullFace = new GlStateManager.BooleanState(2884);
+        public int mode = 1029;
 
         private CullState()
         {
-            this.cullFace = new GlStateManager.BooleanState(2884);
-            this.mode = 1029;
-        }
-
-        CullState(GlStateManager.GlStateManager$1 p_i46483_1_)
-        {
-            this();
         }
     }
 
     static class DepthState
     {
-        public GlStateManager.BooleanState depthTest;
-        public boolean maskEnabled;
-        public int depthFunc;
-        private static final String __OBFID = "CL_00002547";
+        public GlStateManager.BooleanState depthTest = new GlStateManager.BooleanState(2929);
+        public boolean maskEnabled = true;
+        public int depthFunc = 513;
 
         private DepthState()
         {
-            this.depthTest = new GlStateManager.BooleanState(2929);
-            this.maskEnabled = true;
-            this.depthFunc = 513;
-        }
-
-        DepthState(GlStateManager.GlStateManager$1 p_i46482_1_)
-        {
-            this();
         }
     }
 
     static class FogState
     {
-        public GlStateManager.BooleanState fog;
-        public int mode;
-        public float density;
-        public float start;
-        public float end;
-        private static final String __OBFID = "CL_00002546";
+        public GlStateManager.BooleanState fog = new GlStateManager.BooleanState(2912);
+        public int mode = 2048;
+        public float density = 1.0F;
+        public float start = 0.0F;
+        public float end = 1.0F;
 
         private FogState()
         {
-            this.fog = new GlStateManager.BooleanState(2912);
-            this.mode = 2048;
-            this.density = 1.0F;
-            this.start = 0.0F;
-            this.end = 1.0F;
-        }
-
-        FogState(GlStateManager.GlStateManager$1 p_i46481_1_)
-        {
-            this();
         }
     }
 
     static class PolygonOffsetState
     {
-        public GlStateManager.BooleanState polygonOffsetFill;
-        public GlStateManager.BooleanState polygonOffsetLine;
-        public float factor;
-        public float units;
-        private static final String __OBFID = "CL_00002545";
+        public GlStateManager.BooleanState polygonOffsetFill = new GlStateManager.BooleanState(32823);
+        public GlStateManager.BooleanState polygonOffsetLine = new GlStateManager.BooleanState(10754);
+        public float factor = 0.0F;
+        public float units = 0.0F;
 
         private PolygonOffsetState()
         {
-            this.polygonOffsetFill = new GlStateManager.BooleanState(32823);
-            this.polygonOffsetLine = new GlStateManager.BooleanState(10754);
-            this.factor = 0.0F;
-            this.units = 0.0F;
-        }
-
-        PolygonOffsetState(GlStateManager.GlStateManager$1 p_i46480_1_)
-        {
-            this();
         }
     }
 
     static class StencilFunc
     {
-        public int field_179081_a;
-        public int field_179079_b;
-        public int field_179080_c;
-        private static final String __OBFID = "CL_00002544";
+        public int field_179081_a = 519;
+        public int field_179079_b = 0;
+        public int field_179080_c = -1;
 
         private StencilFunc()
         {
-            this.field_179081_a = 519;
-            this.field_179079_b = 0;
-            this.field_179080_c = -1;
-        }
-
-        StencilFunc(GlStateManager.GlStateManager$1 p_i46479_1_)
-        {
-            this();
         }
     }
 
     static class StencilState
     {
-        public GlStateManager.StencilFunc field_179078_a;
-        public int field_179076_b;
-        public int field_179077_c;
-        public int field_179074_d;
-        public int field_179075_e;
-        private static final String __OBFID = "CL_00002543";
+        public GlStateManager.StencilFunc field_179078_a = new GlStateManager.StencilFunc();
+        public int field_179076_b = -1;
+        public int field_179077_c = 7680;
+        public int field_179074_d = 7680;
+        public int field_179075_e = 7680;
 
         private StencilState()
         {
-            this.field_179078_a = new GlStateManager.StencilFunc((GlStateManager.GlStateManager$1)null);
-            this.field_179076_b = -1;
-            this.field_179077_c = 7680;
-            this.field_179074_d = 7680;
-            this.field_179075_e = 7680;
-        }
-
-        StencilState(GlStateManager.GlStateManager$1 p_i46478_1_)
-        {
-            this();
         }
     }
 
     public static enum TexGen
     {
-        S("S", 0),
-        T("T", 1),
-        R("R", 2),
-        Q("Q", 3);
-
-        private static final GlStateManager.TexGen[] $VALUES = new GlStateManager.TexGen[]{S, T, R, Q};
-        private static final String __OBFID = "CL_00002542";
-
-        private TexGen(String p_i5_3_, int p_i5_4_)
-        {
-        }
+        S,
+        T,
+        R,
+        Q;
     }
 
     static class TexGenCoord
@@ -986,7 +1191,6 @@ public class GlStateManager
         public GlStateManager.BooleanState textureGen;
         public int coord;
         public int param = -1;
-        private static final String __OBFID = "CL_00002541";
 
         public TexGenCoord(int p_i46254_1_, int p_i46254_2_)
         {
@@ -997,45 +1201,23 @@ public class GlStateManager
 
     static class TexGenState
     {
-        public GlStateManager.TexGenCoord s;
-        public GlStateManager.TexGenCoord t;
-        public GlStateManager.TexGenCoord r;
-        public GlStateManager.TexGenCoord q;
-        private static final String __OBFID = "CL_00002540";
+        public GlStateManager.TexGenCoord s = new GlStateManager.TexGenCoord(8192, 3168);
+        public GlStateManager.TexGenCoord t = new GlStateManager.TexGenCoord(8193, 3169);
+        public GlStateManager.TexGenCoord r = new GlStateManager.TexGenCoord(8194, 3170);
+        public GlStateManager.TexGenCoord q = new GlStateManager.TexGenCoord(8195, 3171);
 
         private TexGenState()
         {
-            this.s = new GlStateManager.TexGenCoord(8192, 3168);
-            this.t = new GlStateManager.TexGenCoord(8193, 3169);
-            this.r = new GlStateManager.TexGenCoord(8194, 3170);
-            this.q = new GlStateManager.TexGenCoord(8195, 3171);
-        }
-
-        TexGenState(GlStateManager.GlStateManager$1 p_i46477_1_)
-        {
-            this();
         }
     }
 
     static class TextureState
     {
-        public GlStateManager.BooleanState texture2DState;
-        public int textureName;
-        private static final String __OBFID = "CL_00002539";
+        public GlStateManager.BooleanState texture2DState = new GlStateManager.BooleanState(3553);
+        public int textureName = 0;
 
         private TextureState()
         {
-            this.texture2DState = new GlStateManager.BooleanState(3553);
-            this.textureName = 0;
         }
-
-        TextureState(GlStateManager.GlStateManager$1 p_i46476_1_)
-        {
-            this();
-        }
-    }
-
-    public static void glGetInteger(final int parameterName, final IntBuffer parameters) {
-        GL11.glGetInteger(parameterName, parameters);
     }
 }

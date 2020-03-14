@@ -20,8 +20,8 @@ public class Teleporter
 
     /** A private Random() function in Teleporter */
     private final Random random;
-    private final LongHashMap<Teleporter.PortalPosition> destinationCoordinateCache = new LongHashMap();
-    private final List<Long> destinationCoordinateKeys = Lists.<Long>newArrayList();
+    private final LongHashMap<Teleporter.PortalPosition> destinationCoordinateCache = new LongHashMap<>();
+    private final List<Long> destinationCoordinateKeys = Lists.newArrayList();
 
     public Teleporter(WorldServer worldIn)
     {
@@ -79,7 +79,7 @@ public class Teleporter
 
         if (this.destinationCoordinateCache.containsItem(l))
         {
-            Teleporter.PortalPosition teleporter$portalposition = (Teleporter.PortalPosition)this.destinationCoordinateCache.getValueByKey(l);
+            Teleporter.PortalPosition teleporter$portalposition = this.destinationCoordinateCache.getValueByKey(l);
             d0 = 0.0D;
             blockpos = teleporter$portalposition;
             teleporter$portalposition.lastUpdateTime = this.worldServerInstance.getTotalWorldTime();
@@ -124,7 +124,7 @@ public class Teleporter
             if (flag)
             {
                 this.destinationCoordinateCache.add(l, new Teleporter.PortalPosition(blockpos, this.worldServerInstance.getTotalWorldTime()));
-                this.destinationCoordinateKeys.add(Long.valueOf(l));
+                this.destinationCoordinateKeys.add(l);
             }
 
             double d5 = (double)blockpos.getX() + 0.5D;
@@ -210,7 +210,7 @@ public class Teleporter
             for (int l2 = l - i; l2 <= l + i; ++l2)
             {
                 double d2 = (double)l2 + 0.5D - entityIn.posZ;
-                label142:
+                label293:
 
                 for (int j3 = this.worldServerInstance.getActualHeight() - 1; j3 >= 0; --j3)
                 {
@@ -245,7 +245,7 @@ public class Teleporter
 
                                         if (l4 < 0 && !this.worldServerInstance.getBlockState(blockpos$mutableblockpos).getBlock().getMaterial().isSolid() || l4 >= 0 && !this.worldServerInstance.isAirBlock(blockpos$mutableblockpos))
                                         {
-                                            continue label142;
+                                            continue label293;
                                         }
                                     }
                                 }
@@ -277,7 +277,7 @@ public class Teleporter
                 for (int j6 = l - i; j6 <= l + i; ++j6)
                 {
                     double d4 = (double)j6 + 0.5D - entityIn.posZ;
-                    label562:
+                    label231:
 
                     for (int i7 = this.worldServerInstance.getActualHeight() - 1; i7 >= 0; --i7)
                     {
@@ -304,7 +304,7 @@ public class Teleporter
 
                                         if (j11 < 0 && !this.worldServerInstance.getBlockState(blockpos$mutableblockpos).getBlock().getMaterial().isSolid() || j11 >= 0 && !this.worldServerInstance.isAirBlock(blockpos$mutableblockpos))
                                         {
-                                            continue label562;
+                                            continue label231;
                                         }
                                     }
                                 }
@@ -405,13 +405,13 @@ public class Teleporter
 
             while (iterator.hasNext())
             {
-                Long olong = (Long)iterator.next();
-                Teleporter.PortalPosition teleporter$portalposition = (Teleporter.PortalPosition)this.destinationCoordinateCache.getValueByKey(olong.longValue());
+                Long olong = iterator.next();
+                Teleporter.PortalPosition teleporter$portalposition = this.destinationCoordinateCache.getValueByKey(olong);
 
                 if (teleporter$portalposition == null || teleporter$portalposition.lastUpdateTime < i)
                 {
                     iterator.remove();
-                    this.destinationCoordinateCache.remove(olong.longValue());
+                    this.destinationCoordinateCache.remove(olong);
                 }
             }
         }

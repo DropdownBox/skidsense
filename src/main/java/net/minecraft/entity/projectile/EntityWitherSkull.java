@@ -136,7 +136,7 @@ public class EntityWitherSkull extends EntityFireball
 
     protected void entityInit()
     {
-        this.dataWatcher.addObject(10, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(10, (byte)0);
     }
 
     /**

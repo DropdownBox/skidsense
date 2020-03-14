@@ -1,8 +1,10 @@
 package net.minecraft.client.gui.inventory;
 
 import io.netty.buffer.Unpooled;
+import java.io.IOException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
@@ -126,16 +128,20 @@ public class GuiBeacon extends GuiContainer
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.id == -2) {
-            this.mc.displayGuiScreen(null);
-        } else if (button.id == -1) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.id == -2)
+        {
+            this.mc.displayGuiScreen((GuiScreen)null);
+        }
+        else if (button.id == -1)
+        {
             String s = "MC|Beacon";
             PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
             packetbuffer.writeInt(this.tileBeacon.getField(1));
             packetbuffer.writeInt(this.tileBeacon.getField(2));
             this.mc.getNetHandler().addToSendQueue(new C17PacketCustomPayload(s, packetbuffer));
-            this.mc.displayGuiScreen(null);
+            this.mc.displayGuiScreen((GuiScreen)null);
         }
         else if (button instanceof GuiBeacon.PowerButton)
         {
@@ -166,13 +172,16 @@ public class GuiBeacon extends GuiContainer
     /**
      * Draw the foreground layer for the GuiContainer (everything in front of the items). Args : mouseX, mouseY
      */
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+    {
         RenderHelper.disableStandardItemLighting();
         this.drawCenteredString(this.fontRendererObj, I18n.format("tile.beacon.primary"), 62, 10, 14737632);
         this.drawCenteredString(this.fontRendererObj, I18n.format("tile.beacon.secondary"), 169, 10, 14737632);
 
-        for (GuiButton guibutton : this.buttonList) {
-            if (guibutton.isMouseOver()) {
+        for (GuiButton guibutton : this.buttonList)
+        {
+            if (guibutton.isMouseOver())
+            {
                 guibutton.drawButtonForegroundLayer(mouseX - this.guiLeft, mouseY - this.guiTop);
                 break;
             }

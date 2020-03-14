@@ -3,15 +3,13 @@ package net.minecraft.command.server;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.List;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.Achievement;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatBase;
@@ -51,7 +49,7 @@ public class CommandAchievement extends CommandBase
     {
         if (args.length < 2)
         {
-            throw new WrongUsageException("commands.achievement.usage", new Object[0]);
+            throw new WrongUsageException("commands.achievement.usage");
         }
         else
         {
@@ -59,7 +57,7 @@ public class CommandAchievement extends CommandBase
 
             if (statbase == null && !args[1].equals("*"))
             {
-                throw new CommandException("commands.achievement.unknownAchievement", new Object[] {args[1]});
+                throw new CommandException("commands.achievement.unknownAchievement", args[1]);
             }
             else
             {
@@ -100,12 +98,12 @@ public class CommandAchievement extends CommandBase
                             {
                                 if (entityplayermp.getStatFile().hasAchievementUnlocked(achievement))
                                 {
-                                    throw new CommandException("commands.achievement.alreadyHave", new Object[] {entityplayermp.getName(), statbase.createChatComponent()});
+                                    throw new CommandException("commands.achievement.alreadyHave", entityplayermp.getName(), statbase.createChatComponent());
                                 }
 
                                 List<Achievement> list;
 
-                                for (list = Lists.<Achievement>newArrayList(); achievement.parentAchievement != null && !entityplayermp.getStatFile().hasAchievementUnlocked(achievement.parentAchievement); achievement = achievement.parentAchievement)
+                                for (list = Lists.newArrayList(); achievement.parentAchievement != null && !entityplayermp.getStatFile().hasAchievementUnlocked(achievement.parentAchievement); achievement = achievement.parentAchievement)
                                 {
                                     list.add(achievement.parentAchievement);
                                 }
@@ -119,7 +117,7 @@ public class CommandAchievement extends CommandBase
                             {
                                 if (!entityplayermp.getStatFile().hasAchievementUnlocked(achievement))
                                 {
-                                    throw new CommandException("commands.achievement.dontHave", new Object[] {entityplayermp.getName(), statbase.createChatComponent()});
+                                    throw new CommandException("commands.achievement.dontHave", entityplayermp.getName(), statbase.createChatComponent());
                                 }
 
                                 List<Achievement> list1 = Lists.newArrayList(Iterators.filter(AchievementList.achievementList.iterator(), new Predicate<Achievement>()
@@ -146,7 +144,7 @@ public class CommandAchievement extends CommandBase
 
                                     if (!flag2)
                                     {
-                                        for (achievement3 = achievement2; achievement3 != null; achievement3 = achievement3.parentAchievement)
+                                        for (Achievement achievement7 = achievement2; achievement7 != null; achievement7 = achievement7.parentAchievement)
                                         {
                                             list2.remove(achievement2);
                                         }
@@ -188,7 +186,7 @@ public class CommandAchievement extends CommandBase
         }
         else
         {
-            List<String> list = Lists.<String>newArrayList();
+            List<String> list = Lists.newArrayList();
 
             for (StatBase statbase : StatList.allStats)
             {

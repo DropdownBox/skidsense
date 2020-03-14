@@ -112,11 +112,11 @@ extends Module {
         double var31 = this.currentEntity.posX - this.currentEntity.prevPosX;
         double var32 = this.currentEntity.posZ - this.currentEntity.prevPosZ;
         attackDelay = this.currentEntity.posX + var31;
-        double var33 = attackDelay - RenderManager.renderPosX;
+        double var33 = attackDelay - Minecraft.getMinecraft().getRenderManager().renderPosX;
         double var34 = this.currentEntity.posY + 1.0D;
-        double y = var34 - RenderManager.renderPosY;
+        double y = var34 - Minecraft.getMinecraft().getRenderManager().renderPosY;
         double var39 = this.currentEntity.posZ + var32;
-        double var42 = var39 - RenderManager.renderPosZ;
+        double var42 = var39 - Minecraft.getMinecraft().getRenderManager().renderPosZ;
         double sin = Math.sin((double)System.currentTimeMillis() / 500.0D) * 50.0D;
         double xA = sin / 100.0D;
         double zA = sin / 100.0D;
@@ -253,7 +253,7 @@ extends Module {
 
 	
 	private void block() {
-		mc.playerController.csendUseItem(mc.thePlayer, this.mc.theWorld, mc.thePlayer.inventory.getCurrentItem());
+		mc.playerController.sendUseItem(mc.thePlayer, this.mc.theWorld, mc.thePlayer.inventory.getCurrentItem());
 	}
 
 	private void settarget() {

@@ -25,11 +25,10 @@ public final class WorldSettings
 
     /** True if the Bonus Chest is enabled. */
     private boolean bonusChestEnabled;
-    private String worldName;
+    private String worldName = "";
 
     public WorldSettings(long seedIn, WorldSettings.GameType gameType, boolean enableMapFeatures, boolean hardcoreMode, WorldType worldTypeIn)
     {
-        this.worldName = "";
         this.seed = seedIn;
         this.theGameType = gameType;
         this.mapFeaturesEnabled = enableMapFeatures;

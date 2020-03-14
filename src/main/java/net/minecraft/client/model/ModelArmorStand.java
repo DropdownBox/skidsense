@@ -71,20 +71,20 @@ public class ModelArmorStand extends ModelArmorStandArmor
             this.standBase.showModel = !entityarmorstand.hasNoBasePlate();
             this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
             this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-            this.standRightSide.rotateAngleX = 0.017453292F * entityarmorstand.getBodyRotation().getX();
-            this.standRightSide.rotateAngleY = 0.017453292F * entityarmorstand.getBodyRotation().getY();
-            this.standRightSide.rotateAngleZ = 0.017453292F * entityarmorstand.getBodyRotation().getZ();
-            this.standLeftSide.rotateAngleX = 0.017453292F * entityarmorstand.getBodyRotation().getX();
-            this.standLeftSide.rotateAngleY = 0.017453292F * entityarmorstand.getBodyRotation().getY();
-            this.standLeftSide.rotateAngleZ = 0.017453292F * entityarmorstand.getBodyRotation().getZ();
-            this.standWaist.rotateAngleX = 0.017453292F * entityarmorstand.getBodyRotation().getX();
-            this.standWaist.rotateAngleY = 0.017453292F * entityarmorstand.getBodyRotation().getY();
-            this.standWaist.rotateAngleZ = 0.017453292F * entityarmorstand.getBodyRotation().getZ();
+            this.standRightSide.rotateAngleX = ((float)Math.PI / 180F) * entityarmorstand.getBodyRotation().getX();
+            this.standRightSide.rotateAngleY = ((float)Math.PI / 180F) * entityarmorstand.getBodyRotation().getY();
+            this.standRightSide.rotateAngleZ = ((float)Math.PI / 180F) * entityarmorstand.getBodyRotation().getZ();
+            this.standLeftSide.rotateAngleX = ((float)Math.PI / 180F) * entityarmorstand.getBodyRotation().getX();
+            this.standLeftSide.rotateAngleY = ((float)Math.PI / 180F) * entityarmorstand.getBodyRotation().getY();
+            this.standLeftSide.rotateAngleZ = ((float)Math.PI / 180F) * entityarmorstand.getBodyRotation().getZ();
+            this.standWaist.rotateAngleX = ((float)Math.PI / 180F) * entityarmorstand.getBodyRotation().getX();
+            this.standWaist.rotateAngleY = ((float)Math.PI / 180F) * entityarmorstand.getBodyRotation().getY();
+            this.standWaist.rotateAngleZ = ((float)Math.PI / 180F) * entityarmorstand.getBodyRotation().getZ();
             float f = (entityarmorstand.getLeftLegRotation().getX() + entityarmorstand.getRightLegRotation().getX()) / 2.0F;
             float f1 = (entityarmorstand.getLeftLegRotation().getY() + entityarmorstand.getRightLegRotation().getY()) / 2.0F;
             float f2 = (entityarmorstand.getLeftLegRotation().getZ() + entityarmorstand.getRightLegRotation().getZ()) / 2.0F;
             this.standBase.rotateAngleX = 0.0F;
-            this.standBase.rotateAngleY = 0.017453292F * -entityIn.rotationYaw;
+            this.standBase.rotateAngleY = ((float)Math.PI / 180F) * -entityIn.rotationYaw;
             this.standBase.rotateAngleZ = 0.0F;
         }
     }

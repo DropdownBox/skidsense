@@ -1,10 +1,9 @@
 package net.minecraft.command;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S29PacketSoundEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 
@@ -41,7 +40,7 @@ public class CommandPlaySound extends CommandBase
     {
         if (args.length < 2)
         {
-            throw new WrongUsageException(this.getCommandUsage(sender), new Object[0]);
+            throw new WrongUsageException(this.getCommandUsage(sender));
         }
         else
         {
@@ -74,7 +73,7 @@ public class CommandPlaySound extends CommandBase
 
             if (args.length > i)
             {
-                d3 = parseDouble(args[i++], 0.0D, 3.4028234663852886E38D);
+                d3 = parseDouble(args[i++], 0.0D, (double)Float.MAX_VALUE);
             }
 
             double d4 = 1.0D;
@@ -98,7 +97,7 @@ public class CommandPlaySound extends CommandBase
             {
                 if (d5 <= 0.0D)
                 {
-                    throw new CommandException("commands.playsound.playerTooFar", new Object[] {entityplayermp.getName()});
+                    throw new CommandException("commands.playsound.playerTooFar", entityplayermp.getName());
                 }
 
                 double d8 = d0 - entityplayermp.posX;
@@ -123,7 +122,14 @@ public class CommandPlaySound extends CommandBase
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 2 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : (args.length > 2 && args.length <= 5 ? func_175771_a(args, 2, pos) : null);
+        if (args.length == 2)
+        {
+            return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+        }
+        else
+        {
+            return args.length > 2 && args.length <= 5 ? func_175771_a(args, 2, pos) : null;
+        }
     }
 
     /**

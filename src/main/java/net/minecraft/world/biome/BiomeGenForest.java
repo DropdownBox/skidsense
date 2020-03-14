@@ -76,7 +76,14 @@ public class BiomeGenForest extends BiomeGenBase
 
     public WorldGenAbstractTree genBigTreeChance(Random rand)
     {
-        return (WorldGenAbstractTree)(this.field_150632_aF == 3 && rand.nextInt(3) > 0 ? field_150631_aE : (this.field_150632_aF != 2 && rand.nextInt(5) != 0 ? this.worldGeneratorTrees : field_150630_aD));
+        if (this.field_150632_aF == 3 && rand.nextInt(3) > 0)
+        {
+            return field_150631_aE;
+        }
+        else
+        {
+            return (WorldGenAbstractTree)(this.field_150632_aF != 2 && rand.nextInt(5) != 0 ? this.worldGeneratorTrees : field_150630_aD);
+        }
     }
 
     public BlockFlower.EnumFlowerType pickRandomFlower(Random rand, BlockPos pos)
@@ -170,7 +177,7 @@ public class BiomeGenForest extends BiomeGenBase
         return this.field_150632_aF == 3 ? (i & 16711422) + 2634762 >> 1 : i;
     }
 
-    protected BiomeGenBase createMutatedBiome(final int p_180277_1_)
+    protected BiomeGenBase createMutatedBiome(int p_180277_1_)
     {
         if (this.biomeID == BiomeGenBase.forest.biomeID)
         {
@@ -189,7 +196,7 @@ public class BiomeGenForest extends BiomeGenBase
                 {
                     this.baseBiome.decorate(worldIn, rand, pos);
                 }
-            }: new BiomeGenMutated(p_180277_1_, this)
+            } : new BiomeGenMutated(p_180277_1_, this)
             {
                 public WorldGenAbstractTree genBigTreeChance(Random rand)
                 {

@@ -26,7 +26,7 @@ public class EntityBodyHelper
         double d0 = this.theLiving.posX - this.theLiving.prevPosX;
         double d1 = this.theLiving.posZ - this.theLiving.prevPosZ;
 
-        if (d0 * d0 + d1 * d1 > 2.500000277905201E-7D)
+        if (d0 * d0 + d1 * d1 > (double)2.5000003E-7F)
         {
             this.theLiving.renderYawOffset = this.theLiving.rotationYaw;
             this.theLiving.rotationYawHead = this.computeAngleWithBound(this.theLiving.renderYawOffset, this.theLiving.rotationYawHead, 75.0F);

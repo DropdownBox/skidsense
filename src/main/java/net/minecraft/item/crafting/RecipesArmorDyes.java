@@ -18,7 +18,7 @@ public class RecipesArmorDyes implements IRecipe
     public boolean matches(InventoryCrafting inv, World worldIn)
     {
         ItemStack itemstack = null;
-        List<ItemStack> list = Lists.<ItemStack>newArrayList();
+        List<ItemStack> list = Lists.newArrayList();
 
         for (int i = 0; i < inv.getSizeInventory(); ++i)
         {
@@ -128,9 +128,9 @@ public class RecipesArmorDyes implements IRecipe
             i1 = (int)((float)i1 * f3 / f4);
             j1 = (int)((float)j1 * f3 / f4);
             k1 = (int)((float)k1 * f3 / f4);
-            int lvt_12_3_ = (i1 << 8) + j1;
-            lvt_12_3_ = (lvt_12_3_ << 8) + k1;
-            itemarmor.setColor(itemstack, lvt_12_3_);
+            int k2 = (i1 << 8) + j1;
+            k2 = (k2 << 8) + k1;
+            itemarmor.setColor(itemstack, k2);
             return itemstack;
         }
     }

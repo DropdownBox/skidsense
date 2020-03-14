@@ -25,7 +25,7 @@ public class WorldProviderHell extends WorldProvider
      */
     public Vec3 getFogColor(float p_76562_1_, float p_76562_2_)
     {
-        return new Vec3(0.20000000298023224D, 0.029999999329447746D, 0.029999999329447746D);
+        return new Vec3((double)0.2F, (double)0.03F, (double)0.03F);
     }
 
     /**

@@ -25,7 +25,6 @@ import net.minecraft.util.MovementInput;
 
 public class Flight
 extends Module {
-    private static final EntityPlayerSP MoveUtil = null;
 	public Mode mode = new Mode("Mode", "Mode", FlightMode.values(), FlightMode.Guardian);
     private Option<Boolean> Stop = new Option("Stop", "Stop", Boolean.valueOf(true));
     private Option<Boolean> UHC = new Option("UHC", "UHC", Boolean.valueOf(true));
@@ -40,19 +39,19 @@ extends Module {
 
 	public void damagePlayerNew() {
 		if (mc.thePlayer.onGround) {
-			mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+			mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(
 					mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
 			for (int index = 0; index <= (UHC.getValue() ? 9 : 7); ++index) {
-                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+                mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(
 						mc.thePlayer.posX, mc.thePlayer.posY + 0.410781087633169896, mc.thePlayer.posZ, false));
-                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+                mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(
                         mc.thePlayer.posX, mc.thePlayer.posY + 0.034211255072711402, mc.thePlayer.posZ, false));
-				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+				mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(
 						mc.thePlayer.posX, mc.thePlayer.posY + 0.014555072702198913, mc.thePlayer.posZ, false));
-				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+				mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(
 						mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
 			}
-			mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+			mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(
 					    mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
 		}
 	}
@@ -81,7 +80,7 @@ extends Module {
 		lastDist = 0.0D;
     }
     private boolean canZoom() {
-	    return mc.thePlayer.moving() && mc.thePlayer.onGround;
+	    return MoveUtil.isMoving()&& mc.thePlayer.onGround;
     }
     @EventHandler
     private void onUpdate(EventPreUpdate e) {
@@ -100,7 +99,7 @@ extends Module {
             }
         } else if (this.mode.getValue() == FlightMode.Motion) {
             mc.thePlayer.motionY = mc.thePlayer.movementInput.jump ? 1.0 : (mc.thePlayer.movementInput.sneak ? -1.0 : 0.0);
-            if (mc.thePlayer.moving()) {
+            if (MoveUtil.isMoving()) {
             	// FIXME
                 //mc.thePlayer.setSpeed(3.0);
             } else {
@@ -238,7 +237,7 @@ extends Module {
                 }
 
 				moveSpeed = this.mode.getValue() == FlightMode.Damage ? Math.max(moveSpeed, MathUtil.getBaseMovementSpeed()) : MathUtil.getBaseMovementSpeed();
-				mc.thePlayer.setMoveSpeed(e,moveSpeed);
+				MoveUtil.setMoveSpeed(e,moveSpeed);
 
 			}
 		}
