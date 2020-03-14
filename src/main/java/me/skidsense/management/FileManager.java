@@ -161,11 +161,10 @@ public class FileManager
             connection.setConnectTimeout(20000);
             connection.setReadTimeout(20000);
             connection.connect();
-            BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));//new涓�涓狟ufferedReader瀵硅薄锛屽皢鏂囦欢鍐呭璇诲彇鍒扮紦瀛�
-            String s;
-            while ((s = bReader.readLine()) != null) {
+            BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            //while ((s = bReader.readLine()) != null) {
                 //GuiMainMenu.AnnouncementList.add(s);
-            }
+            //}
             bReader.close();
         } catch (Exception e) {
             e.printStackTrace();
