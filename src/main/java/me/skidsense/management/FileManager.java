@@ -40,13 +40,17 @@ public class FileManager
 	public static void loadLastAlt() {
 		try {
 			if (!FileManager.LASTALT.exists()) {
+<<<<<<< Updated upstream
 				LASTALT.createNewFile();
+=======
+>>>>>>> Stashed changes
 				final PrintWriter printWriter = new PrintWriter(new FileWriter(FileManager.LASTALT));
 				printWriter.println();
 				printWriter.close();
 			}
 			else if (FileManager.LASTALT.exists()) {
 				final BufferedReader bufferedReader = new BufferedReader(new FileReader(FileManager.LASTALT));
+<<<<<<< Updated upstream
 				String decrypted = EncryptionUtil.decrypt(bufferedReader.lines().collect(Collectors.joining("\n")));
 				String[] de;
 				if (decrypted != null) {
@@ -59,10 +63,58 @@ public class FileManager
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+=======
+				String s;
+				while ((s = bufferedReader.readLine()) != null) {
+					if (s.contains("\t")) {
+						s = s.replace("\t", "    ");
+					}
+					if (s.contains("    ")) {
+						final String[] parts = s.split("    ");
+						final String[] account = parts[1].split(":");
+						if (account.length == 2) {
+							Client.instance.getAltManager().setLastAlt(new Alt(account[0], account[1], parts[0]));
+						}
+						else {
+							String pw = account[1];
+							for (int i = 2; i < account.length; ++i) {
+								pw = String.valueOf(pw) + ":" + account[i];
+							}
+							Client.instance.getAltManager().setLastAlt(new Alt(account[0], pw, parts[0]));
+						}
+					}
+					else {
+						final String[] account2 = s.split(":");
+						if (account2.length == 1) {
+							Client.instance.getAltManager().setLastAlt(new Alt(account2[0], ""));
+						}
+						else if (account2.length == 2) {
+							Client.instance.getAltManager().setLastAlt(new Alt(account2[0], account2[1]));
+						}
+						else {
+							String pw2 = account2[1];
+							for (int j = 2; j < account2.length; ++j) {
+								pw2 = String.valueOf(pw2) + ":" + account2[j];
+							}
+							Client.instance.getAltManager().setLastAlt(new Alt(account2[0], pw2));
+						}
+					}
+				}
+				bufferedReader.close();
+			}
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e2) {
+			e2.printStackTrace();
+		}
+>>>>>>> Stashed changes
 	}
 
 	public static void saveLastAlt() {
 		try {
+<<<<<<< Updated upstream
 
 			final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
 			//Client.instance.getAltManager();
@@ -73,6 +125,21 @@ public class FileManager
 			printWriter.write(Objects.requireNonNull(EncryptionUtil.encrypt(s)));
 			printWriter.close();
 		} catch (IOException e) {
+=======
+			final PrintWriter printWriter = new PrintWriter(FileManager.LASTALT);
+			final Alt alt = Client.instance.getAltManager().getLastAlt();
+			if (alt != null) {
+				if (alt.getMask().equals("")) {
+					printWriter.println(String.valueOf(alt.getUsername()) + ":" + alt.getPassword());
+				}
+				else {
+					printWriter.println(String.valueOf(alt.getMask()) + "    " + alt.getUsername() + ":" + alt.getPassword());
+				}
+			}
+			printWriter.close();
+		}
+		catch (FileNotFoundException e) {
+>>>>>>> Stashed changes
 			e.printStackTrace();
 		}
 	}
@@ -81,6 +148,7 @@ public class FileManager
 		try {
 			final BufferedReader bufferedReader = new BufferedReader(new FileReader(FileManager.ALT));
 			if (!FileManager.ALT.exists()) {
+<<<<<<< Updated upstream
 				FileManager.ALT.createNewFile();
 				final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
 				printWriter.newLine();
@@ -98,6 +166,59 @@ public class FileManager
 					AltManager.alts.add(new Alt(strings1[0],strings1[1]));
 				}
 
+=======
+				final PrintWriter printWriter = new PrintWriter(new FileWriter(FileManager.ALT));
+				printWriter.println();
+				printWriter.close();
+			}
+			else if (FileManager.ALT.exists()) {
+				String s;
+				while ((s = bufferedReader.readLine()) != null) {
+					if (s.contains("\t")) {
+						s = s.replace("\t", "    ");
+					}
+					if (s.contains("    ")) {
+						final String[] parts = s.split("    ");
+						final String[] account = parts[1].split(":");
+						if (account.length == 2) {
+							Client.instance.getAltManager();
+							AltManager.getAlts().add(new Alt(account[0], account[1], parts[0]));
+						}
+						else {
+							String pw = account[1];
+							for (int i = 2; i < account.length; ++i) {
+								pw = String.valueOf(pw) + ":" + account[i];
+							}
+							Client.instance.getAltManager();
+							AltManager.getAlts().add(new Alt(account[0], pw, parts[0]));
+						}
+					}
+					else {
+						final String[] account2 = s.split(":");
+						if (account2.length == 1) {
+							Client.instance.getAltManager();
+							AltManager.getAlts().add(new Alt(account2[0], ""));
+						}
+						else if (account2.length == 2) {
+							try {
+								Client.instance.getAltManager();
+								AltManager.getAlts().add(new Alt(account2[0], account2[1]));
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						else {
+							String pw2 = account2[1];
+							for (int j = 2; j < account2.length; ++j) {
+								pw2 = String.valueOf(pw2) + ":" + account2[j];
+							}
+							Client.instance.getAltManager();
+							AltManager.getAlts().add(new Alt(account2[0], pw2));
+						}
+					}
+				}
+>>>>>>> Stashed changes
 			}
 			bufferedReader.close();
 		}
@@ -106,6 +227,7 @@ public class FileManager
 
 	public static void saveAlts() {
 		try {
+<<<<<<< Updated upstream
 			StringBuilder stringBuffer = new StringBuilder();
 			final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
 			//Client.instance.getAltManager();
@@ -115,6 +237,21 @@ public class FileManager
 			printWriter.write(Objects.requireNonNull(EncryptionUtil.encrypt(stringBuffer.toString())));
 			printWriter.close();
 		} catch (IOException e) {
+=======
+			final PrintWriter printWriter = new PrintWriter(FileManager.ALT);
+			Client.instance.getAltManager();
+			for (final Alt alt : AltManager.getAlts()) {
+				if (alt.getMask().equals("")) {
+					printWriter.println(String.valueOf(alt.getUsername()) + ":" + alt.getPassword());
+				}
+				else {
+					printWriter.println(String.valueOf(alt.getMask()) + "    " + alt.getUsername() + ":" + alt.getPassword());
+				}
+			}
+			printWriter.close();
+		}
+		catch (FileNotFoundException e) {
+>>>>>>> Stashed changes
 			e.printStackTrace();
 		}
 	}
@@ -161,10 +298,18 @@ public class FileManager
 			connection.setConnectTimeout(20000);
 			connection.setReadTimeout(20000);
 			connection.connect();
+<<<<<<< Updated upstream
 			BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			//while ((s = bReader.readLine()) != null) {
 			//GuiMainMenu.AnnouncementList.add(s);
 			//}
+=======
+			BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));//new涓�涓狟ufferedReader瀵硅薄锛屽皢鏂囦欢鍐呭璇诲彇鍒扮紦瀛�
+			String s;
+			while ((s = bReader.readLine()) != null) {
+				//GuiMainMenu.AnnouncementList.add(s);
+			}
+>>>>>>> Stashed changes
 			bReader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -240,8 +385,20 @@ public class FileManager
 				}
 			}
 			finally {
+<<<<<<< Updated upstream
 				{
 					final Throwable t4 = null;
+=======
+				if (t == null) {
+					final Throwable t4 = null;
+					t = t4;
+				}
+				else {
+					final Throwable t4 = null;
+					if (t != t4) {
+						t.addSuppressed(t4);
+					}
+>>>>>>> Stashed changes
 				}
 			}
 		}
@@ -258,8 +415,33 @@ public class FileManager
 				f.createNewFile();
 			}
 			Throwable t = null;
+<<<<<<< Updated upstream
 			try (FileWriter writer = new FileWriter(f, append)) {
 				writer.write(content);
+=======
+			try {
+				final FileWriter writer = new FileWriter(f, append);
+				try {
+					writer.write(content);
+				}
+				finally {
+					if (writer != null) {
+						writer.close();
+					}
+				}
+			}
+			finally {
+				if (t == null) {
+					final Throwable t2 = null;
+					t = t2;
+				}
+				else {
+					final Throwable t2 = null;
+					if (t != t2) {
+						t.addSuppressed(t2);
+					}
+				}
+>>>>>>> Stashed changes
 			}
 		}
 		catch (IOException e) {
