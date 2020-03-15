@@ -226,6 +226,10 @@ public class GuiScreenResourcePacks extends GuiScreen
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         this.drawBackground(0);
+        //System.out.println(mouseX);
+        //System.out.println(mouseY);
+        //System.out.println(partialTicks);
+        //System.out.println(availableResourcePacksList);
         this.availableResourcePacksList.drawScreen(mouseX, mouseY, partialTicks);
         this.selectedResourcePacksList.drawScreen(mouseX, mouseY, partialTicks);
         this.drawCenteredString(this.fontRendererObj, I18n.format("resourcePack.title"), this.width / 2, 16, 16777215);

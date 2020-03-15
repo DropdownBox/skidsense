@@ -42,7 +42,7 @@ implements Manager {
     private boolean enabledNeededMod = true;
 
     public void addMod(Mod module){
-        for (Field field : module.getClass().getFields()) {
+        for (Field field : module.getClass().getDeclaredFields()) {
             if(field.getType().isAssignableFrom(Value.class)){
                 try {
                     module.addValue((Value<?>) field.get(module));
