@@ -43,12 +43,17 @@ implements Manager {
 
     public void addMod(Mod module){
         for (Field field : module.getClass().getDeclaredFields()) {
-            if(field.getType().isAssignableFrom(Value.class)){
-                try {
-                    module.addValue((Value<?>) field.get(module));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+            if(!field.isAccessible()){
+                field.setAccessible(true);
+            }
+            Object obj;
+            try {
+                if((obj = field.get(module)) instanceof Value){
+
+                        module.addValue((Value<?>) obj);
                 }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
         EventManager.getInstance().register(module);
