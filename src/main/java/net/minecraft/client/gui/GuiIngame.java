@@ -10,6 +10,8 @@ import me.skidsense.hooks.events.EventRender2D;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+
+import me.skidsense.management.notifications.Notifications;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -248,7 +250,7 @@ public class GuiIngame extends Gui
         {
             this.overlayDebug.renderDebugInfo(scaledresolution);
         }
-
+        Notifications.getManager().updateAndRender();
         if (this.recordPlayingUpFor > 0)
         {
             this.mc.mcProfiler.startSection("overlayMessage");
