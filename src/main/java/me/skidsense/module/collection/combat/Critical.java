@@ -17,7 +17,6 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
 
 public class Critical extends Module {
-    public Mode<Enum> mode = new Mode<Enum>("Mode", "Mode", CritMode.values(), CritMode.Packet1);
     static Numbers<Double> delay = new Numbers<Double>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
     private static TimerUtil timer = new TimerUtil();
 
@@ -25,7 +24,7 @@ public class Critical extends Module {
     public Critical() {
         super("Critical", new String[]{"Critical"}, ModuleType.Fight);
         this.setColor(new Color(208, 30, 142).getRGB());
-        addValues(mode, delay);
+        addValues(delay);
     }
 
     @EventHandler
@@ -36,7 +35,7 @@ public class Critical extends Module {
 
     @Override
     public void onEnable() {
-        setSuffix(this.mode.getValue());
+        setSuffix("Packet");
     }
 
     public static boolean canCrit() {
@@ -60,9 +59,6 @@ public class Critical extends Module {
         Notifications.getManager().post("Do criticals.");
     }
 
-    enum CritMode {
-        Packet1,
-        Packet2;
-    }
+
 }
 
