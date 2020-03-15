@@ -26,7 +26,7 @@ import java.util.Iterator;
 public class ChestESP
 extends Module {
     public ChestESP() {
-        super("Chest ESP", new String[]{"chesthack"}, ModuleType.Visual);
+        super("Chest ESP", new String[]{"chesthack","chestesp"}, ModuleType.Visual);
         this.setColor(new Color(90, 209, 165).getRGB());
     }
 
