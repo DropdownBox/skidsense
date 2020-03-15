@@ -56,6 +56,7 @@ public class Critical extends Module {
             double offset = offsets[i];
             mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
         }
+        this.timer.reset();
         Notifications.getManager().post("Do criticals.");
     }
 
