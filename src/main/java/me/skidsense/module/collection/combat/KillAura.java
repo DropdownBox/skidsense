@@ -4,7 +4,9 @@ import java.util.function.ToDoubleFunction;
 
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
+import me.skidsense.hooks.EventBus;
 import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventRender3D;
@@ -319,7 +321,7 @@ public class KillAura extends Module {
 			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
-			if (BlockUtil.isOnGround(0.01) && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
+			/**if (BlockUtil.isOnGround(0.01) && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
 					&& this.mc.thePlayer.isCollidedVertically && !this.mc.thePlayer.isInWater()
 					&& Client.getModuleManager().getModuleByClass(Critical.class).isEnabled()) {
 				double[] offsets = new double[] { 0.05250000001303851D, 0.001500000013038516D, 0.014000000013038517D,
@@ -333,8 +335,12 @@ public class KillAura extends Module {
 					++n2;
 				}
 				this.attackSpeed = 0;
-			}
+			}**/
 			++this.attackSpeed;
+		EventAttack ea = new EventAttack(target,false);
+		EventBus.getInstance().call(ea);
+		if(ea.cancelled)
+			return;
 			this.mc.thePlayer.swingItem();
 			this.mc.thePlayer.sendQueue
 					.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
