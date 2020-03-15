@@ -30,7 +30,7 @@ public class Critical extends Module {
     }
 
     @EventHandler
-    public void onAttack(EventAttack ea){
+    public void onAttack(EventAttack e){
         if(canCrit())
             doEditCrit();
     }
