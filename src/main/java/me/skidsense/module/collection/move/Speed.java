@@ -170,8 +170,8 @@ public class Speed
                         }
                     }
                 }
-                this.speed = this.getHypixelSpeed(Speed.stage) + 0.0448;
-                this.speed *= 0.89+(randomValue.nextFloat()*0.001);
+                this.speed = this.getHypixelSpeed(Speed.stage) + 0.0449;
+                this.speed *= 0.898+(randomValue.nextFloat()*0.001);
                 if (this.stair > 0.0) {
                     this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
                 }
@@ -185,7 +185,7 @@ public class Speed
                     this.speed = 0.1;
                 }
                 if (Speed.mc.thePlayer.moveForward != 0.0f || Speed.mc.thePlayer.moveStrafing != 0.0f) {
-                    if (Client.instance.getModuleManager().getModuleByClass((Class)AutoStrafe.class).isEnabled() && KillAura.target != null) {
+                    if (Client.instance.getModuleManager().getModuleByClass((Class)AutoStrafe.class).isEnabled() && KillAura.target != null && (mc.thePlayer.getDistanceToEntity(KillAura.target)+1)<=AutoStrafe.MaxDistance.getValue()) {
                         AutoStrafe.onStrafe(em, this.speed);
                         ++Speed.stage;
                     }
