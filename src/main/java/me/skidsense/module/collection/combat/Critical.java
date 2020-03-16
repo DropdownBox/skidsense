@@ -74,6 +74,7 @@ public class Critical extends Module {
                 double offset = offsets[i];
                 mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
             }
+            Notifications.getManager().post("Do criticals.");
         }
         if(mode.getValue().equals(CritMode.HVH)){
             double[] offsets = new double[]{0.41999998688697815,0.33320000767707825,0.00120000005699695};
@@ -82,6 +83,7 @@ public class Critical extends Module {
                 double offset = offsets[i];
                 mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
             }
+            Notifications.getManager().post("Do criticals.");
         }
         this.timer.reset();
     }
