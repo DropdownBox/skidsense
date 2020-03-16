@@ -83,9 +83,9 @@ extends Module {
           }
     }
     public void renderNameTag(EntityPlayer entity, String tag, double pX, double pY, double pZ) {
-		FontRenderer var12 = this.mc.fontRendererObj;
+		FontRenderer var12 = mc.fontRendererObj;
 		pY += (entity.isSneaking() ? 0.5D : 0.7D);
-		float var13 = this.mc.thePlayer.getDistanceToEntity(entity) / 6.0F;
+		float var13 = mc.thePlayer.getDistanceToEntity(entity) / 6.0F;
 		if (var13 < 1.2F) {
 			var13 = 1.2F;
 		}
@@ -95,7 +95,7 @@ extends Module {
 		} else if(entity.isSneaking()) {
 			colour = 11468800;
 		}
-		if (!this.formatting == true) {
+		if (!this.formatting) {
 			tag = ChatColor.stripColor(tag);
 		}
 			tag = entity.getDisplayName().getFormattedText();
@@ -118,12 +118,12 @@ extends Module {
 			distance = " \247c" + (int)mc.thePlayer.getDistanceToEntity(entity) + "m \247r";
 		}
 		String ping = null;
-		if(this.getPing(entity) < 150) {
-			ping = "\247a\247l" + (int)this.getPing(entity) + "ms\247r";
-		} else if(this.getPing(entity) > 150 && this.getPing(entity) < 250) {
-			ping = "\2476\247l" + (int)this.getPing(entity) + "ms\247r";
-		} else if(this.getPing(entity) > 250) {
-			ping = "\247c\247l" + (int)this.getPing(entity) + "ms\247r";
+		if(getPing(entity) < 150) {
+			ping = "\247a\247l" + (int) getPing(entity) + "ms\247r";
+		} else if(getPing(entity) > 150 && getPing(entity) < 250) {
+			ping = "\2476\247l" + (int) getPing(entity) + "ms\247r";
+		} else if(getPing(entity) > 250) {
+			ping = "\247c\247l" + (int) getPing(entity) + "ms\247r";
 		}
 		
 		String linehealth = null;

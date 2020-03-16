@@ -267,7 +267,7 @@ public abstract class EntityLivingBase extends Entity
      */
     public void onEntityUpdate()
     {
-        EventBus.getInstance().call(new EventLivingUpdate((EntityLivingBase) (Object) this));
+        EventBus.getInstance().call(new EventLivingUpdate((EntityLivingBase) this));
         this.prevSwingProgress = this.swingProgress;
         super.onEntityUpdate();
         this.worldObj.theProfiler.startSection("livingEntityBaseTick");
