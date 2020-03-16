@@ -32,7 +32,7 @@ public class GuiLabel extends Gui
         this.field_146174_h = p_i45540_4_;
         this.field_146167_a = p_i45540_5_;
         this.field_146161_f = p_i45540_6_;
-        this.field_146173_k = Lists.<String>newArrayList();
+        this.field_146173_k = Lists.newArrayList();
         this.centered = false;
         this.labelBgEnabled = false;
         this.field_146168_n = p_i45540_7_;
@@ -44,7 +44,7 @@ public class GuiLabel extends Gui
 
     public void func_175202_a(String p_175202_1_)
     {
-        this.field_146173_k.add(I18n.format(p_175202_1_, new Object[0]));
+        this.field_146173_k.add(I18n.format(p_175202_1_));
     }
 
     /**
@@ -70,11 +70,11 @@ public class GuiLabel extends Gui
             {
                 if (this.centered)
                 {
-                    this.drawCenteredString(this.fontRenderer, (String)this.field_146173_k.get(k), this.field_146162_g + this.field_146167_a / 2, j + k * 10, this.field_146168_n);
+                    this.drawCenteredString(this.fontRenderer, this.field_146173_k.get(k), this.field_146162_g + this.field_146167_a / 2, j + k * 10, this.field_146168_n);
                 }
                 else
                 {
-                    this.drawString(this.fontRenderer, (String)this.field_146173_k.get(k), this.field_146162_g, j + k * 10, this.field_146168_n);
+                    this.drawString(this.fontRenderer, this.field_146173_k.get(k), this.field_146162_g, j + k * 10, this.field_146168_n);
                 }
             }
         }

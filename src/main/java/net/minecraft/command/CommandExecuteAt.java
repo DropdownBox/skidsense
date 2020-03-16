@@ -1,11 +1,10 @@
 package net.minecraft.command;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.Vec3;
@@ -40,11 +39,11 @@ public class CommandExecuteAt extends CommandBase
     /**
      * Callback when the command is invoked
      */
-    public void processCommand(final ICommandSender sender, String[] args) throws CommandException
+    public void processCommand(ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length < 5)
         {
-            throw new WrongUsageException("commands.execute.usage", new Object[0]);
+            throw new WrongUsageException("commands.execute.usage");
         }
         else
         {
@@ -68,13 +67,14 @@ public class CommandExecuteAt extends CommandBase
 
                 if (iblockstate.getBlock() != block || k >= 0 && iblockstate.getBlock().getMetaFromState(iblockstate) != k)
                 {
-                    throw new CommandException("commands.execute.failed", new Object[] {"detect", entity.getName()});
+                    throw new CommandException("commands.execute.failed", "detect", entity.getName());
                 }
 
                 i = 10;
             }
 
             String s = buildString(args, i);
+            final ICommandSender icommandsender1 = sender;
             ICommandSender icommandsender = new ICommandSender()
             {
                 public String getName()
@@ -87,11 +87,11 @@ public class CommandExecuteAt extends CommandBase
                 }
                 public void addChatMessage(IChatComponent component)
                 {
-                    sender.addChatMessage(component);
+                    icommandsender1.addChatMessage(component);
                 }
                 public boolean canCommandSenderUseCommand(int permLevel, String commandName)
                 {
-                    return sender.canCommandSenderUseCommand(permLevel, commandName);
+                    return icommandsender1.canCommandSenderUseCommand(permLevel, commandName);
                 }
                 public BlockPos getPosition()
                 {
@@ -127,19 +127,34 @@ public class CommandExecuteAt extends CommandBase
 
                 if (j < 1)
                 {
-                    throw new CommandException("commands.execute.allInvocationsFailed", new Object[] {s});
+                    throw new CommandException("commands.execute.allInvocationsFailed", s);
                 }
             }
             catch (Throwable var23)
             {
-                throw new CommandException("commands.execute.failed", new Object[] {s, entity.getName()});
+                throw new CommandException("commands.execute.failed", s, entity.getName());
             }
         }
     }
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : (args.length > 1 && args.length <= 4 ? func_175771_a(args, 1, pos) : (args.length > 5 && args.length <= 8 && "detect".equals(args[4]) ? func_175771_a(args, 5, pos) : (args.length == 9 && "detect".equals(args[4]) ? getListOfStringsMatchingLastWord(args, Block.blockRegistry.getKeys()) : null)));
+        if (args.length == 1)
+        {
+            return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+        }
+        else if (args.length > 1 && args.length <= 4)
+        {
+            return func_175771_a(args, 1, pos);
+        }
+        else if (args.length > 5 && args.length <= 8 && "detect".equals(args[4]))
+        {
+            return func_175771_a(args, 5, pos);
+        }
+        else
+        {
+            return args.length == 9 && "detect".equals(args[4]) ? getListOfStringsMatchingLastWord(args, Block.blockRegistry.getKeys()) : null;
+        }
     }
 
     /**

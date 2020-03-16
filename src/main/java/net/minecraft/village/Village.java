@@ -2,9 +2,6 @@ package net.minecraft.village;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
@@ -18,6 +15,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -28,7 +26,7 @@ import net.minecraft.world.World;
 public class Village
 {
     private World worldObj;
-    private final List<VillageDoorInfo> villageDoorInfoList = Lists.<VillageDoorInfo>newArrayList();
+    private final List<VillageDoorInfo> villageDoorInfoList = Lists.newArrayList();
 
     /**
      * This is the sum of all door coordinates and used to calculate the actual village center by dividing by the number
@@ -45,8 +43,8 @@ public class Village
 
     /** Timestamp of tick count when villager last bred */
     private int noBreedTicks;
-    private TreeMap<String, Integer> playerReputation = new TreeMap();
-    private List<Village.VillageAggressor> villageAgressors = Lists.<Village.VillageAggressor>newArrayList();
+    private TreeMap<String, Integer> playerReputation = new TreeMap<>();
+    private List<Village.VillageAggressor> villageAgressors = Lists.newArrayList();
     private int numIronGolems;
 
     public Village()
@@ -144,13 +142,13 @@ public class Village
 
     private void updateNumIronGolems()
     {
-        List<EntityIronGolem> list = this.worldObj.<EntityIronGolem>getEntitiesWithinAABB(EntityIronGolem.class, new AxisAlignedBB((double)(this.center.getX() - this.villageRadius), (double)(this.center.getY() - 4), (double)(this.center.getZ() - this.villageRadius), (double)(this.center.getX() + this.villageRadius), (double)(this.center.getY() + 4), (double)(this.center.getZ() + this.villageRadius)));
+        List<EntityIronGolem> list = this.worldObj.getEntitiesWithinAABB(EntityIronGolem.class, new AxisAlignedBB((double)(this.center.getX() - this.villageRadius), (double)(this.center.getY() - 4), (double)(this.center.getZ() - this.villageRadius), (double)(this.center.getX() + this.villageRadius), (double)(this.center.getY() + 4), (double)(this.center.getZ() + this.villageRadius)));
         this.numIronGolems = list.size();
     }
 
     private void updateNumVillagers()
     {
-        List<EntityVillager> list = this.worldObj.<EntityVillager>getEntitiesWithinAABB(EntityVillager.class, new AxisAlignedBB((double)(this.center.getX() - this.villageRadius), (double)(this.center.getY() - 4), (double)(this.center.getZ() - this.villageRadius), (double)(this.center.getX() + this.villageRadius), (double)(this.center.getY() + 4), (double)(this.center.getZ() + this.villageRadius)));
+        List<EntityVillager> list = this.worldObj.getEntitiesWithinAABB(EntityVillager.class, new AxisAlignedBB((double)(this.center.getX() - this.villageRadius), (double)(this.center.getY() - 4), (double)(this.center.getZ() - this.villageRadius), (double)(this.center.getX() + this.villageRadius), (double)(this.center.getY() + 4), (double)(this.center.getZ() + this.villageRadius)));
         this.numVillagers = list.size();
 
         if (this.numVillagers == 0)
@@ -308,10 +306,10 @@ public class Village
 
         for (int i = 0; i < this.villageAgressors.size(); ++i)
         {
-            Village.VillageAggressor village$villageaggressor1 = (Village.VillageAggressor)this.villageAgressors.get(i);
+            Village.VillageAggressor village$villageaggressor1 = this.villageAgressors.get(i);
             double d1 = village$villageaggressor1.agressor.getDistanceSqToEntity(entitylivingbaseIn);
 
-            if (d1 <= d0)
+            if (!(d1 > d0))
             {
                 village$villageaggressor = village$villageaggressor1;
                 d0 = d1;
@@ -336,7 +334,7 @@ public class Village
                 {
                     double d1 = entityplayer1.getDistanceSqToEntity(villageDefender);
 
-                    if (d1 <= d0)
+                    if (!(d1 > d0))
                     {
                         entityplayer = entityplayer1;
                         d0 = d1;
@@ -354,7 +352,7 @@ public class Village
 
         while (iterator.hasNext())
         {
-            Village.VillageAggressor village$villageaggressor = (Village.VillageAggressor)iterator.next();
+            Village.VillageAggressor village$villageaggressor = iterator.next();
 
             if (!village$villageaggressor.agressor.isEntityAlive() || Math.abs(this.tickCounter - village$villageaggressor.agressionTime) > 300)
             {
@@ -371,7 +369,7 @@ public class Village
 
         while (iterator.hasNext())
         {
-            VillageDoorInfo villagedoorinfo = (VillageDoorInfo)iterator.next();
+            VillageDoorInfo villagedoorinfo = iterator.next();
 
             if (flag1)
             {
@@ -396,7 +394,15 @@ public class Village
     private boolean isWoodDoor(BlockPos pos)
     {
         Block block = this.worldObj.getBlockState(pos).getBlock();
-        return block instanceof BlockDoor ? block.getMaterial() == Material.wood : false;
+
+        if (block instanceof BlockDoor)
+        {
+            return block.getMaterial() == Material.wood;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private void updateVillageRadiusAndCenter()
@@ -427,8 +433,8 @@ public class Village
      */
     public int getReputationForPlayer(String p_82684_1_)
     {
-        Integer integer = (Integer)this.playerReputation.get(p_82684_1_);
-        return integer != null ? integer.intValue() : 0;
+        Integer integer = this.playerReputation.get(p_82684_1_);
+        return integer != null ? integer : 0;
     }
 
     /**
@@ -438,7 +444,7 @@ public class Village
     {
         int i = this.getReputationForPlayer(p_82688_1_);
         int j = MathHelper.clamp_int(i + p_82688_2_, -30, 10);
-        this.playerReputation.put(p_82688_1_, Integer.valueOf(j));
+        this.playerReputation.put(p_82688_1_, j);
         return j;
     }
 
@@ -485,12 +491,12 @@ public class Village
 
                 if (gameprofile != null)
                 {
-                    this.playerReputation.put(gameprofile.getName(), Integer.valueOf(nbttagcompound1.getInteger("S")));
+                    this.playerReputation.put(gameprofile.getName(), nbttagcompound1.getInteger("S"));
                 }
             }
             else
             {
-                this.playerReputation.put(nbttagcompound1.getString("Name"), Integer.valueOf(nbttagcompound1.getInteger("S")));
+                this.playerReputation.put(nbttagcompound1.getString("Name"), nbttagcompound1.getInteger("S"));
             }
         }
     }
@@ -538,7 +544,7 @@ public class Village
             if (gameprofile != null)
             {
                 nbttagcompound1.setString("UUID", gameprofile.getId().toString());
-                nbttagcompound1.setInteger("S", ((Integer)this.playerReputation.get(s)).intValue());
+                nbttagcompound1.setInteger("S", this.playerReputation.get(s));
                 nbttaglist1.appendTag(nbttagcompound1);
             }
         }

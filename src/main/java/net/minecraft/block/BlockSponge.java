@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -28,7 +27,7 @@ public class BlockSponge extends Block
     protected BlockSponge()
     {
         super(Material.sponge);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(WET, Boolean.valueOf(false)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(WET, false));
         this.setCreativeTab(CreativeTabs.tabBlock);
     }
 
@@ -46,7 +45,7 @@ public class BlockSponge extends Block
      */
     public int damageDropped(IBlockState state)
     {
-        return ((Boolean)state.getValue(WET)).booleanValue() ? 1 : 0;
+        return state.getValue(WET) ? 1 : 0;
     }
 
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
@@ -65,25 +64,25 @@ public class BlockSponge extends Block
 
     protected void tryAbsorb(World worldIn, BlockPos pos, IBlockState state)
     {
-        if (!((Boolean)state.getValue(WET)).booleanValue() && this.absorb(worldIn, pos))
+        if (!state.getValue(WET) && this.absorb(worldIn, pos))
         {
-            worldIn.setBlockState(pos, state.withProperty(WET, Boolean.valueOf(true)), 2);
+            worldIn.setBlockState(pos, state.withProperty(WET, true), 2);
             worldIn.playAuxSFX(2001, pos, Block.getIdFromBlock(Blocks.water));
         }
     }
 
     private boolean absorb(World worldIn, BlockPos pos)
     {
-        Queue<Tuple<BlockPos, Integer>> queue = Lists.<Tuple<BlockPos, Integer>>newLinkedList();
-        ArrayList<BlockPos> arraylist = Lists.<BlockPos>newArrayList();
-        queue.add(new Tuple(pos, Integer.valueOf(0)));
+        Queue<Tuple<BlockPos, Integer>> queue = Lists.newLinkedList();
+        ArrayList<BlockPos> arraylist = Lists.newArrayList();
+        queue.add(new Tuple<>(pos, 0));
         int i = 0;
 
-        while (!((Queue)queue).isEmpty())
+        while (!queue.isEmpty())
         {
-            Tuple<BlockPos, Integer> tuple = (Tuple)queue.poll();
-            BlockPos blockpos = (BlockPos)tuple.getFirst();
-            int j = ((Integer)tuple.getSecond()).intValue();
+            Tuple<BlockPos, Integer> tuple = queue.poll();
+            BlockPos blockpos = tuple.getFirst();
+            int j = tuple.getSecond();
 
             for (EnumFacing enumfacing : EnumFacing.values())
             {
@@ -97,7 +96,7 @@ public class BlockSponge extends Block
 
                     if (j < 6)
                     {
-                        queue.add(new Tuple(blockpos1, Integer.valueOf(j + 1)));
+                        queue.add(new Tuple<>(blockpos1, j + 1));
                     }
                 }
             }
@@ -130,7 +129,7 @@ public class BlockSponge extends Block
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(WET, Boolean.valueOf((meta & 1) == 1));
+        return this.getDefaultState().withProperty(WET, (meta & 1) == 1);
     }
 
     /**
@@ -138,17 +137,17 @@ public class BlockSponge extends Block
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((Boolean)state.getValue(WET)).booleanValue() ? 1 : 0;
+        return state.getValue(WET) ? 1 : 0;
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {WET});
+        return new BlockState(this, WET);
     }
 
     public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (((Boolean)state.getValue(WET)).booleanValue())
+        if (state.getValue(WET))
         {
             EnumFacing enumfacing = EnumFacing.random(rand);
 
@@ -196,7 +195,7 @@ public class BlockSponge extends Block
                     }
                 }
 
-                worldIn.spawnParticle(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
+                worldIn.spawnParticle(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0D, 0.0D, 0.0D);
             }
         }
     }

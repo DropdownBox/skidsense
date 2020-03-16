@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.audio.SoundEventAccessorComposite;
@@ -82,11 +83,14 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback
         }
 
         this.buttonList.add(new GuiButton(110, this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20, I18n.format("options.skinCustomisation")));
-        this.buttonList.add(new GuiButton(8675309, this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, "Super Secret Settings...") {
-            public void playPressSound(SoundHandler soundHandlerIn) {
+        this.buttonList.add(new GuiButton(8675309, this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, "Super Secret Settings...")
+        {
+            public void playPressSound(SoundHandler soundHandlerIn)
+            {
                 SoundEventAccessorComposite soundeventaccessorcomposite = soundHandlerIn.getRandomSoundFromCategories(SoundCategory.ANIMALS, SoundCategory.BLOCKS, SoundCategory.MOBS, SoundCategory.PLAYERS, SoundCategory.WEATHER);
 
-                if (soundeventaccessorcomposite != null) {
+                if (soundeventaccessorcomposite != null)
+                {
                     soundHandlerIn.playSound(PositionedSoundRecord.create(soundeventaccessorcomposite.getSoundEventLocation(), 0.5F));
                 }
             }
@@ -127,10 +131,13 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.enabled) {
-            if (button.id < 100 && button instanceof GuiOptionButton) {
-                GameSettings.Options gamesettings$options = ((GuiOptionButton) button).returnEnumOptions();
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.enabled)
+        {
+            if (button.id < 100 && button instanceof GuiOptionButton)
+            {
+                GameSettings.Options gamesettings$options = ((GuiOptionButton)button).returnEnumOptions();
                 this.game_settings_1.setOptionValue(gamesettings$options, 1);
                 button.displayString = this.game_settings_1.getKeyBinding(GameSettings.Options.getEnumOptions(button.id));
             }
@@ -207,17 +214,17 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback
 
             if (button.id == 107)
             {
-                this.mc.gameSettings.saveOptions();
-                IStream istream = this.mc.getTwitchStream();
-
-                if (istream.func_152936_l() && istream.func_152928_D())
-                {
-                    this.mc.displayGuiScreen(new GuiStreamOptions(this, this.game_settings_1));
-                }
-                else
-                {
-                    GuiStreamUnavailable.func_152321_a(this);
-                }
+//                this.mc.gameSettings.saveOptions();
+//                IStream istream = this.mc.getTwitchStream();
+//
+//                if (istream.func_152936_l() && istream.func_152928_D())
+//                {
+//                    this.mc.displayGuiScreen(new GuiStreamOptions(this, this.game_settings_1));
+//                }
+//                else
+//                {
+//                    GuiStreamUnavailable.func_152321_a(this);
+//                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package net.minecraft.entity.player;
 
+import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -15,17 +16,14 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ReportedException;
 
-import java.util.concurrent.Callable;
-
-public class InventoryPlayer implements IInventory {
+public class InventoryPlayer implements IInventory
+{
     /**
      * An array of 36 item stacks indicating the main player inventory (including the visible bar).
      */
     public ItemStack[] mainInventory = new ItemStack[36];
 
-    /**
-     * An array of 4 item stacks containing the currently worn armor pieces.
-     */
+    /** An array of 4 item stacks containing the currently worn armor pieces. */
     public ItemStack[] armorInventory = new ItemStack[4];
 
     /** The index of the currently held item (0-8). */
@@ -178,6 +176,7 @@ public class InventoryPlayer implements IInventory {
 
         for (this.currentItem -= direction; this.currentItem < 0; this.currentItem += 9)
         {
+            ;
         }
 
         while (this.currentItem >= 9)
@@ -452,11 +451,12 @@ public class InventoryPlayer implements IInventory {
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Adding item to inventory");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being added");
-                crashreportcategory.addCrashSection("Item ID", Integer.valueOf(Item.getIdFromItem(itemStackIn.getItem())));
-                crashreportcategory.addCrashSection("Item data", Integer.valueOf(itemStackIn.getMetadata()));
+                crashreportcategory.addCrashSection("Item ID", Item.getIdFromItem(itemStackIn.getItem()));
+                crashreportcategory.addCrashSection("Item data", itemStackIn.getMetadata());
                 crashreportcategory.addCrashSectionCallable("Item name", new Callable<String>()
                 {
-                    public String call() {
+                    public String call() throws Exception
+                    {
                         return itemStackIn.getDisplayName();
                     }
                 });
@@ -668,8 +668,9 @@ public class InventoryPlayer implements IInventory {
     /**
      * Get the formatted ChatComponent that will be used for the sender's username in chat
      */
-    public IChatComponent getDisplayName() {
-        return this.hasCustomName() ? new ChatComponentText(this.getName()) : new ChatComponentTranslation(this.getName(), new Object[0]);
+    public IChatComponent getDisplayName()
+    {
+        return (IChatComponent)(this.hasCustomName() ? new ChatComponentText(this.getName()) : new ChatComponentTranslation(this.getName()));
     }
 
     /**
@@ -689,7 +690,7 @@ public class InventoryPlayer implements IInventory {
         else
         {
             ItemStack itemstack = this.getStackInSlot(this.currentItem);
-            return itemstack != null && itemstack.canHarvestBlock(blockIn);
+            return itemstack != null ? itemstack.canHarvestBlock(blockIn) : false;
         }
     }
 
@@ -800,8 +801,16 @@ public class InventoryPlayer implements IInventory {
     /**
      * Do not make give this method the name canInteractWith because it clashes with Container
      */
-    public boolean isUseableByPlayer(EntityPlayer player) {
-        return !this.player.isDead && player.getDistanceSqToEntity(this.player) <= 64.0D;
+    public boolean isUseableByPlayer(EntityPlayer player)
+    {
+        if (this.player.isDead)
+        {
+            return false;
+        }
+        else
+        {
+            return !(player.getDistanceSqToEntity(this.player) > 64.0D);
+        }
     }
 
     /**

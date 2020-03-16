@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -16,7 +15,7 @@ import net.minecraft.world.World;
 
 public class BlockHugeMushroom extends Block
 {
-    public static final PropertyEnum<BlockHugeMushroom.EnumType> VARIANT = PropertyEnum.<BlockHugeMushroom.EnumType>create("variant", BlockHugeMushroom.EnumType.class);
+    public static final PropertyEnum<BlockHugeMushroom.EnumType> VARIANT = PropertyEnum.create("variant", BlockHugeMushroom.EnumType.class);
     private final Block smallBlock;
 
     public BlockHugeMushroom(Material p_i46392_1_, MapColor p_i46392_2_, Block p_i46392_3_)
@@ -90,12 +89,12 @@ public class BlockHugeMushroom extends Block
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((BlockHugeMushroom.EnumType)state.getValue(VARIANT)).getMetadata();
+        return state.getValue(VARIANT).getMetadata();
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {VARIANT});
+        return new BlockState(this, VARIANT);
     }
 
     public static enum EnumType implements IStringSerializable

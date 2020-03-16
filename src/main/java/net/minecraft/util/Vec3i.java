@@ -41,7 +41,19 @@ public class Vec3i implements Comparable<Vec3i>
         else
         {
             Vec3i vec3i = (Vec3i)p_equals_1_;
-            return this.getX() != vec3i.getX() ? false : (this.getY() != vec3i.getY() ? false : this.getZ() == vec3i.getZ());
+
+            if (this.getX() != vec3i.getX())
+            {
+                return false;
+            }
+            else if (this.getY() != vec3i.getY())
+            {
+                return false;
+            }
+            else
+            {
+                return this.getZ() == vec3i.getZ();
+            }
         }
     }
 
@@ -52,7 +64,14 @@ public class Vec3i implements Comparable<Vec3i>
 
     public int compareTo(Vec3i p_compareTo_1_)
     {
-        return this.getY() == p_compareTo_1_.getY() ? (this.getZ() == p_compareTo_1_.getZ() ? this.getX() - p_compareTo_1_.getX() : this.getZ() - p_compareTo_1_.getZ()) : this.getY() - p_compareTo_1_.getY();
+        if (this.getY() == p_compareTo_1_.getY())
+        {
+            return this.getZ() == p_compareTo_1_.getZ() ? this.getX() - p_compareTo_1_.getX() : this.getZ() - p_compareTo_1_.getZ();
+        }
+        else
+        {
+            return this.getY() - p_compareTo_1_.getY();
+        }
     }
 
     /**

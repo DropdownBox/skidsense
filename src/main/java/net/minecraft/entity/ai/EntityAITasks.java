@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 public class EntityAITasks
 {
     private static final Logger logger = LogManager.getLogger();
-    private List<EntityAITasks.EntityAITaskEntry> taskEntries = Lists.<EntityAITasks.EntityAITaskEntry>newArrayList();
-    private List<EntityAITasks.EntityAITaskEntry> executingTaskEntries = Lists.<EntityAITasks.EntityAITaskEntry>newArrayList();
+    private List<EntityAITasks.EntityAITaskEntry> taskEntries = Lists.newArrayList();
+    private List<EntityAITasks.EntityAITaskEntry> executingTaskEntries = Lists.newArrayList();
 
     /** Instance of Profiler. */
     private final Profiler theProfiler;
@@ -40,7 +40,7 @@ public class EntityAITasks
 
         while (iterator.hasNext())
         {
-            EntityAITasks.EntityAITaskEntry entityaitasks$entityaitaskentry = (EntityAITasks.EntityAITaskEntry)iterator.next();
+            EntityAITasks.EntityAITaskEntry entityaitasks$entityaitaskentry = iterator.next();
             EntityAIBase entityaibase = entityaitasks$entityaitaskentry.action;
 
             if (entityaibase == task)
@@ -63,7 +63,7 @@ public class EntityAITasks
         if (this.tickCount++ % this.tickRate == 0)
         {
             Iterator iterator = this.taskEntries.iterator();
-            label38:
+            label50:
 
             while (true)
             {
@@ -73,7 +73,7 @@ public class EntityAITasks
                 {
                     if (!iterator.hasNext())
                     {
-                        break label38;
+                        break label50;
                     }
 
                     entityaitasks$entityaitaskentry = (EntityAITasks.EntityAITaskEntry)iterator.next();
@@ -105,7 +105,7 @@ public class EntityAITasks
 
             while (iterator1.hasNext())
             {
-                EntityAITasks.EntityAITaskEntry entityaitasks$entityaitaskentry1 = (EntityAITasks.EntityAITaskEntry)iterator1.next();
+                EntityAITasks.EntityAITaskEntry entityaitasks$entityaitaskentry1 = iterator1.next();
 
                 if (!this.canContinue(entityaitasks$entityaitaskentry1))
                 {

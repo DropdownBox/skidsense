@@ -46,8 +46,8 @@ import net.minecraft.world.World;
 
 public class Item
 {
-    public static final RegistryNamespaced<ResourceLocation, Item> itemRegistry = new RegistryNamespaced();
-    private static final Map<Block, Item> BLOCK_TO_ITEM = Maps.<Block, Item>newHashMap();
+    public static final RegistryNamespaced<ResourceLocation, Item> itemRegistry = new RegistryNamespaced<>();
+    private static final Map<Block, Item> BLOCK_TO_ITEM = Maps.newHashMap();
     protected static final UUID itemModifierUUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
     private CreativeTabs tabToDisplayOn;
 
@@ -84,12 +84,12 @@ public class Item
 
     public static Item getItemById(int id)
     {
-        return (Item)itemRegistry.getObjectById(id);
+        return itemRegistry.getObjectById(id);
     }
 
     public static Item getItemFromBlock(Block blockIn)
     {
-        return (Item)BLOCK_TO_ITEM.get(blockIn);
+        return BLOCK_TO_ITEM.get(blockIn);
     }
 
     /**
@@ -98,7 +98,7 @@ public class Item
      */
     public static Item getByNameOrId(String id)
     {
-        Item item = (Item)itemRegistry.getObject(new ResourceLocation(id));
+        Item item = itemRegistry.getObject(new ResourceLocation(id));
 
         if (item == null)
         {
@@ -442,10 +442,10 @@ public class Item
         double d1 = playerIn.posY + (double)playerIn.getEyeHeight();
         double d2 = playerIn.posZ;
         Vec3 vec3 = new Vec3(d0, d1, d2);
-        float f2 = MathHelper.cos(-f1 * 0.017453292F - (float)Math.PI);
-        float f3 = MathHelper.sin(-f1 * 0.017453292F - (float)Math.PI);
-        float f4 = -MathHelper.cos(-f * 0.017453292F);
-        float f5 = MathHelper.sin(-f * 0.017453292F);
+        float f2 = MathHelper.cos(-f1 * ((float)Math.PI / 180F) - (float)Math.PI);
+        float f3 = MathHelper.sin(-f1 * ((float)Math.PI / 180F) - (float)Math.PI);
+        float f4 = -MathHelper.cos(-f * ((float)Math.PI / 180F));
+        float f5 = MathHelper.sin(-f * ((float)Math.PI / 180F));
         float f6 = f3 * f4;
         float f7 = f2 * f4;
         double d3 = 5.0D;
@@ -505,7 +505,7 @@ public class Item
 
     public Multimap<String, AttributeModifier> getItemAttributeModifiers()
     {
-        return HashMultimap.<String, AttributeModifier>create();
+        return HashMultimap.create();
     }
 
     public static void registerItems()
@@ -965,7 +965,7 @@ public class Item
      */
     protected static void registerItemBlock(Block blockIn, Item itemIn)
     {
-        registerItem(Block.getIdFromBlock(blockIn), (ResourceLocation)Block.blockRegistry.getNameForObject(blockIn), itemIn);
+        registerItem(Block.getIdFromBlock(blockIn), Block.blockRegistry.getNameForObject(blockIn), itemIn);
         BLOCK_TO_ITEM.put(blockIn, itemIn);
     }
 
@@ -1029,7 +1029,26 @@ public class Item
 
         public Item getRepairItem()
         {
-            return this == WOOD ? Item.getItemFromBlock(Blocks.planks) : (this == STONE ? Item.getItemFromBlock(Blocks.cobblestone) : (this == GOLD ? Items.gold_ingot : (this == IRON ? Items.iron_ingot : (this == EMERALD ? Items.diamond : null))));
+            if (this == WOOD)
+            {
+                return Item.getItemFromBlock(Blocks.planks);
+            }
+            else if (this == STONE)
+            {
+                return Item.getItemFromBlock(Blocks.cobblestone);
+            }
+            else if (this == GOLD)
+            {
+                return Items.gold_ingot;
+            }
+            else if (this == IRON)
+            {
+                return Items.iron_ingot;
+            }
+            else
+            {
+                return this == EMERALD ? Items.diamond : null;
+            }
         }
     }
 }

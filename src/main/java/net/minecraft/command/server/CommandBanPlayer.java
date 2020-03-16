@@ -1,9 +1,6 @@
 package net.minecraft.command.server;
 
 import com.mojang.authlib.GameProfile;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.Date;
 import java.util.List;
 import net.minecraft.command.CommandBase;
@@ -11,6 +8,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.UserListBansEntry;
 import net.minecraft.util.BlockPos;
 
@@ -60,7 +58,7 @@ public class CommandBanPlayer extends CommandBase
 
             if (gameprofile == null)
             {
-                throw new CommandException("commands.ban.failed", new Object[] {args[0]});
+                throw new CommandException("commands.ban.failed", args[0]);
             }
             else
             {
@@ -85,7 +83,7 @@ public class CommandBanPlayer extends CommandBase
         }
         else
         {
-            throw new WrongUsageException("commands.ban.usage", new Object[0]);
+            throw new WrongUsageException("commands.ban.usage");
         }
     }
 

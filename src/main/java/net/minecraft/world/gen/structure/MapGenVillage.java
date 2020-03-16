@@ -12,17 +12,15 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 public class MapGenVillage extends MapGenStructure
 {
-    public static final List<BiomeGenBase> villageSpawnBiomes = Arrays.<BiomeGenBase>asList(new BiomeGenBase[] {BiomeGenBase.plains, BiomeGenBase.desert, BiomeGenBase.savanna});
+    public static final List<BiomeGenBase> villageSpawnBiomes = Arrays.asList(BiomeGenBase.plains, BiomeGenBase.desert, BiomeGenBase.savanna);
 
     /** World terrain type, 0 for normal, 1 for flat map */
     private int terrainType;
-    private int field_82665_g;
-    private int field_82666_h;
+    private int field_82665_g = 32;
+    private int field_82666_h = 8;
 
     public MapGenVillage()
     {
-        this.field_82665_g = 32;
-        this.field_82666_h = 8;
     }
 
     public MapGenVillage(Map<String, String> p_i2093_1_)
@@ -31,13 +29,13 @@ public class MapGenVillage extends MapGenStructure
 
         for (Entry<String, String> entry : p_i2093_1_.entrySet())
         {
-            if (((String)entry.getKey()).equals("size"))
+            if (entry.getKey().equals("size"))
             {
-                this.terrainType = MathHelper.parseIntWithDefaultAndMax((String)entry.getValue(), this.terrainType, 0);
+                this.terrainType = MathHelper.parseIntWithDefaultAndMax(entry.getValue(), this.terrainType, 0);
             }
-            else if (((String)entry.getKey()).equals("distance"))
+            else if (entry.getKey().equals("distance"))
             {
-                this.field_82665_g = MathHelper.parseIntWithDefaultAndMax((String)entry.getValue(), this.field_82665_g, this.field_82666_h + 1);
+                this.field_82665_g = MathHelper.parseIntWithDefaultAndMax(entry.getValue(), this.field_82665_g, this.field_82666_h + 1);
             }
         }
     }
@@ -111,13 +109,13 @@ public class MapGenVillage extends MapGenStructure
                 if (list1.isEmpty())
                 {
                     int i = rand.nextInt(list2.size());
-                    StructureComponent structurecomponent = (StructureComponent)list2.remove(i);
+                    StructureComponent structurecomponent = list2.remove(i);
                     structurecomponent.buildComponent(structurevillagepieces$start, this.components, rand);
                 }
                 else
                 {
                     int j = rand.nextInt(list1.size());
-                    StructureComponent structurecomponent2 = (StructureComponent)list1.remove(j);
+                    StructureComponent structurecomponent2 = list1.remove(j);
                     structurecomponent2.buildComponent(structurevillagepieces$start, this.components, rand);
                 }
             }

@@ -81,11 +81,11 @@ public class EntityPortalFX extends EntityFX
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
         float f = (float)this.particleAge / (float)this.particleMaxAge;
-        f = -f + f * f * 2.0F;
-        f = 1.0F - f;
-        this.posX = this.portalPosX + this.motionX * (double)f;
-        this.posY = this.portalPosY + this.motionY * (double)f + (double)(1.0F - f);
-        this.posZ = this.portalPosZ + this.motionZ * (double)f;
+        float f1 = -f + f * f * 2.0F;
+        float f2 = 1.0F - f1;
+        this.posX = this.portalPosX + this.motionX * (double)f2;
+        this.posY = this.portalPosY + this.motionY * (double)f2 + (double)(1.0F - f);
+        this.posZ = this.portalPosZ + this.motionZ * (double)f2;
 
         if (this.particleAge++ >= this.particleMaxAge)
         {

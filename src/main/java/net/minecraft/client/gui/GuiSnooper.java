@@ -1,19 +1,17 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 
-import java.io.IOException;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
-public class GuiSnooper extends GuiScreen {
+public class GuiSnooper extends GuiScreen
+{
     private final GuiScreen field_146608_a;
 
-    /**
-     * Reference to the GameSettings object.
-     */
+    /** Reference to the GameSettings object. */
     private final GameSettings game_settings_2;
     private final java.util.List<String> field_146604_g = Lists.newArrayList();
     private final java.util.List<String> field_146609_h = Lists.newArrayList();
@@ -22,7 +20,8 @@ public class GuiSnooper extends GuiScreen {
     private GuiSnooper.List field_146606_s;
     private GuiButton field_146605_t;
 
-    public GuiSnooper(GuiScreen p_i1061_1_, GameSettings p_i1061_2_) {
+    public GuiSnooper(GuiScreen p_i1061_1_, GameSettings p_i1061_2_)
+    {
         this.field_146608_a = p_i1061_1_;
         this.game_settings_2 = p_i1061_2_;
     }
@@ -31,12 +30,14 @@ public class GuiSnooper extends GuiScreen {
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    public void initGui() {
+    public void initGui()
+    {
         this.field_146610_i = I18n.format("options.snooper.title");
         String s = I18n.format("options.snooper.desc");
         java.util.List<String> list = Lists.newArrayList();
 
-        for (String s1 : this.fontRendererObj.listFormattedStringToWidth(s, this.width - 30)) {
+        for (String s1 : this.fontRendererObj.listFormattedStringToWidth(s, this.width - 30))
+        {
             list.add(s1);
         }
 
@@ -47,15 +48,17 @@ public class GuiSnooper extends GuiScreen {
         this.buttonList.add(new GuiButton(2, this.width / 2 + 2, this.height - 30, 150, 20, I18n.format("gui.done")));
         boolean flag = this.mc.getIntegratedServer() != null && this.mc.getIntegratedServer().getPlayerUsageSnooper() != null;
 
-        for (Entry<String, String> entry : (new TreeMap<String, String>(this.mc.getPlayerUsageSnooper().getCurrentStats())).entrySet()) {
-            this.field_146604_g.add((flag ? "C " : "") + entry.getKey());
+        for (Entry<String, String> entry : (new TreeMap<>(this.mc.getPlayerUsageSnooper().getCurrentStats())).entrySet())
+        {
+            this.field_146604_g.add((flag ? "C " : "") + (String)entry.getKey());
             this.field_146609_h.add(this.fontRendererObj.trimStringToWidth(entry.getValue(), this.width - 220));
         }
 
         if (flag)
         {
-            for (Entry<String, String> entry1 : (new TreeMap<String, String>(this.mc.getIntegratedServer().getPlayerUsageSnooper().getCurrentStats())).entrySet()) {
-                this.field_146604_g.add("S " + entry1.getKey());
+            for (Entry<String, String> entry1 : (new TreeMap<>(this.mc.getIntegratedServer().getPlayerUsageSnooper().getCurrentStats())).entrySet())
+            {
+                this.field_146604_g.add("S " + (String)entry1.getKey());
                 this.field_146609_h.add(this.fontRendererObj.trimStringToWidth(entry1.getValue(), this.width - 220));
             }
         }
@@ -75,9 +78,12 @@ public class GuiSnooper extends GuiScreen {
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.enabled) {
-            if (button.id == 2) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.enabled)
+        {
+            if (button.id == 2)
+            {
                 this.game_settings_2.saveOptions();
                 this.game_settings_2.saveOptions();
                 this.mc.displayGuiScreen(this.field_146608_a);
@@ -135,7 +141,8 @@ public class GuiSnooper extends GuiScreen {
         {
         }
 
-        protected void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn) {
+        protected void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn)
+        {
             GuiSnooper.this.fontRendererObj.drawString(GuiSnooper.this.field_146604_g.get(entryID), 10, p_180791_3_, 16777215);
             GuiSnooper.this.fontRendererObj.drawString(GuiSnooper.this.field_146609_h.get(entryID), 230, p_180791_3_, 16777215);
         }

@@ -4,7 +4,6 @@ import com.google.common.base.Predicate;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockState;
@@ -29,12 +28,12 @@ import net.minecraft.world.World;
 public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITileEntityProvider
 {
     public static final PropertyBool POWERED = PropertyBool.create("powered");
-    public static final PropertyEnum<BlockRedstoneComparator.Mode> MODE = PropertyEnum.<BlockRedstoneComparator.Mode>create("mode", BlockRedstoneComparator.Mode.class);
+    public static final PropertyEnum<BlockRedstoneComparator.Mode> MODE = PropertyEnum.create("mode", BlockRedstoneComparator.Mode.class);
 
     public BlockRedstoneComparator(boolean powered)
     {
         super(powered);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, Boolean.valueOf(false)).withProperty(MODE, BlockRedstoneComparator.Mode.COMPARE));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false).withProperty(MODE, BlockRedstoneComparator.Mode.COMPARE));
         this.isBlockContainer = true;
     }
 
@@ -66,23 +65,23 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
 
     protected IBlockState getPoweredState(IBlockState unpoweredState)
     {
-        Boolean obool = (Boolean)unpoweredState.getValue(POWERED);
-        BlockRedstoneComparator.Mode blockredstonecomparator$mode = (BlockRedstoneComparator.Mode)unpoweredState.getValue(MODE);
-        EnumFacing enumfacing = (EnumFacing)unpoweredState.getValue(FACING);
+        Boolean obool = unpoweredState.getValue(POWERED);
+        BlockRedstoneComparator.Mode blockredstonecomparator$mode = unpoweredState.getValue(MODE);
+        EnumFacing enumfacing = unpoweredState.getValue(FACING);
         return Blocks.powered_comparator.getDefaultState().withProperty(FACING, enumfacing).withProperty(POWERED, obool).withProperty(MODE, blockredstonecomparator$mode);
     }
 
     protected IBlockState getUnpoweredState(IBlockState poweredState)
     {
-        Boolean obool = (Boolean)poweredState.getValue(POWERED);
-        BlockRedstoneComparator.Mode blockredstonecomparator$mode = (BlockRedstoneComparator.Mode)poweredState.getValue(MODE);
-        EnumFacing enumfacing = (EnumFacing)poweredState.getValue(FACING);
+        Boolean obool = poweredState.getValue(POWERED);
+        BlockRedstoneComparator.Mode blockredstonecomparator$mode = poweredState.getValue(MODE);
+        EnumFacing enumfacing = poweredState.getValue(FACING);
         return Blocks.unpowered_comparator.getDefaultState().withProperty(FACING, enumfacing).withProperty(POWERED, obool).withProperty(MODE, blockredstonecomparator$mode);
     }
 
     protected boolean isPowered(IBlockState state)
     {
-        return this.isRepeaterPowered || ((Boolean)state.getValue(POWERED)).booleanValue();
+        return this.isRepeaterPowered || state.getValue(POWERED);
     }
 
     protected int getActiveSignal(IBlockAccess worldIn, BlockPos pos, IBlockState state)
@@ -111,14 +110,22 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
         else
         {
             int j = this.getPowerOnSides(worldIn, pos, state);
-            return j == 0 ? true : i >= j;
+
+            if (j == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return i >= j;
+            }
         }
     }
 
     protected int calculateInputStrength(World worldIn, BlockPos pos, IBlockState state)
     {
         int i = super.calculateInputStrength(worldIn, pos, state);
-        EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
+        EnumFacing enumfacing = state.getValue(FACING);
         BlockPos blockpos = pos.offset(enumfacing);
         Block block = worldIn.getBlockState(blockpos).getBlock();
 
@@ -151,14 +158,14 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
 
     private EntityItemFrame findItemFrame(World worldIn, final EnumFacing facing, BlockPos pos)
     {
-        List<EntityItemFrame> list = worldIn.<EntityItemFrame>getEntitiesWithinAABB(EntityItemFrame.class, new AxisAlignedBB((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), (double)(pos.getX() + 1), (double)(pos.getY() + 1), (double)(pos.getZ() + 1)), new Predicate<Entity>()
+        List<EntityItemFrame> list = worldIn.getEntitiesWithinAABB(EntityItemFrame.class, new AxisAlignedBB((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), (double)(pos.getX() + 1), (double)(pos.getY() + 1), (double)(pos.getZ() + 1)), new Predicate<Entity>()
         {
             public boolean apply(Entity p_apply_1_)
             {
                 return p_apply_1_ != null && p_apply_1_.getHorizontalFacing() == facing;
             }
         });
-        return list.size() == 1 ? (EntityItemFrame)list.get(0) : null;
+        return list.size() == 1 ? list.get(0) : null;
     }
 
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
@@ -219,11 +226,11 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
 
             if (flag && !flag1)
             {
-                worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(false)), 2);
+                worldIn.setBlockState(pos, state.withProperty(POWERED, false), 2);
             }
             else if (!flag && flag1)
             {
-                worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(true)), 2);
+                worldIn.setBlockState(pos, state.withProperty(POWERED, true), 2);
             }
 
             this.notifyNeighbors(worldIn, pos, state);
@@ -234,7 +241,7 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
     {
         if (this.isRepeaterPowered)
         {
-            worldIn.setBlockState(pos, this.getUnpoweredState(state).withProperty(POWERED, Boolean.valueOf(true)), 4);
+            worldIn.setBlockState(pos, this.getUnpoweredState(state).withProperty(POWERED, true), 4);
         }
 
         this.onStateChange(worldIn, pos, state);
@@ -276,7 +283,7 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta)).withProperty(POWERED, Boolean.valueOf((meta & 8) > 0)).withProperty(MODE, (meta & 4) > 0 ? BlockRedstoneComparator.Mode.SUBTRACT : BlockRedstoneComparator.Mode.COMPARE);
+        return this.getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta)).withProperty(POWERED, (meta & 8) > 0).withProperty(MODE, (meta & 4) > 0 ? BlockRedstoneComparator.Mode.SUBTRACT : BlockRedstoneComparator.Mode.COMPARE);
     }
 
     /**
@@ -285,9 +292,9 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
     public int getMetaFromState(IBlockState state)
     {
         int i = 0;
-        i = i | ((EnumFacing)state.getValue(FACING)).getHorizontalIndex();
+        i = i | state.getValue(FACING).getHorizontalIndex();
 
-        if (((Boolean)state.getValue(POWERED)).booleanValue())
+        if (state.getValue(POWERED))
         {
             i |= 8;
         }
@@ -302,7 +309,7 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {FACING, MODE, POWERED});
+        return new BlockState(this, FACING, MODE, POWERED);
     }
 
     /**
@@ -311,7 +318,7 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
      */
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(POWERED, Boolean.valueOf(false)).withProperty(MODE, BlockRedstoneComparator.Mode.COMPARE);
+        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(POWERED, false).withProperty(MODE, BlockRedstoneComparator.Mode.COMPARE);
     }
 
     public static enum Mode implements IStringSerializable

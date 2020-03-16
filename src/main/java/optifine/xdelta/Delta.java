@@ -1,6 +1,15 @@
 package optifine.xdelta;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
+import java.io.RandomAccessFile;
 
 public class Delta
 {
@@ -8,8 +17,9 @@ public class Delta
     public static final boolean debug = false;
     public static final int buff_size = 1024;
 
-    public static void computeDelta(SeekableSource source, InputStream targetIS, int targetLength, DiffWriter output) throws IOException {
-        int i = (int) source.length();
+    public static void computeDelta(SeekableSource source, InputStream targetIS, int targetLength, DiffWriter output) throws IOException, DeltaException
+    {
+        int i = (int)source.length();
         Checksum checksum = new Checksum();
         checksum.generateChecksums(new SeekableSourceInputStream(source), i);
         source.seek(0L);
@@ -37,7 +47,7 @@ public class Delta
                     boolean flag2 = true;
                     int k1 = j1 * 16;
                     int l1 = 15;
-                    source.seek(k1);
+                    source.seek((long)k1);
 
                     if (!flag1 && source.read(abyte2, 0, 16) != -1)
                     {
@@ -183,7 +193,7 @@ public class Delta
 
     public static void computeDelta(byte[] source, InputStream targetIS, int targetLength, DiffWriter output) throws IOException, DeltaException
     {
-        computeDelta(new ByteArraySeekableSource(source), targetIS, targetLength, output);
+        computeDelta((SeekableSource)(new ByteArraySeekableSource(source)), targetIS, targetLength, output);
     }
 
     public static void computeDelta(File sourceFile, File targetFile, DiffWriter output) throws IOException, DeltaException
@@ -199,7 +209,12 @@ public class Delta
         catch (IOException ioexception)
         {
             throw ioexception;
-        } finally
+        }
+        catch (DeltaException deltaexception)
+        {
+            throw deltaexception;
+        }
+        finally
         {
             output.flush();
             seekablesource.close();

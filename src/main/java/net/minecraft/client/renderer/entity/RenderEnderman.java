@@ -5,7 +5,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.model.ModelEnderman;
 import net.minecraft.client.renderer.entity.layers.LayerEndermanEyes;
 import net.minecraft.client.renderer.entity.layers.LayerHeldBlock;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.util.ResourceLocation;
 

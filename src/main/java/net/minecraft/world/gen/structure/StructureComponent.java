@@ -682,7 +682,7 @@ public abstract class StructureComponent
             {
                 for (int k = minZ; k <= maxZ; ++k)
                 {
-                    if (rand.nextFloat() <= chance && (!p_175805_13_ || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getBlock().getMaterial() != Material.air))
+                    if (!(rand.nextFloat() > chance) && (!p_175805_13_ || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getBlock().getMaterial() != Material.air))
                     {
                         if (i != minY && i != maxY && j != minX && j != maxX && k != minZ && k != maxZ)
                         {

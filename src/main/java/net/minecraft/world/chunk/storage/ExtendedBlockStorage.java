@@ -1,11 +1,10 @@
 package net.minecraft.world.chunk.storage;
 
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.chunk.NibbleArray;
-import optifine.Reflector;
+import net.optifine.reflect.Reflector;
 
 public class ExtendedBlockStorage
 {
@@ -31,7 +30,6 @@ public class ExtendedBlockStorage
 
     /** The NibbleArray containing a block of Sky-light data. */
     private NibbleArray skylightArray;
-    private static final String __OBFID = "CL_00000375";
 
     public ExtendedBlockStorage(int y, boolean storeSkylight)
     {
@@ -47,7 +45,7 @@ public class ExtendedBlockStorage
 
     public IBlockState get(int x, int y, int z)
     {
-        IBlockState iblockstate = (IBlockState)Block.BLOCK_STATE_IDS.getByValue(this.data[y << 8 | z << 4 | x]);
+        IBlockState iblockstate = Block.BLOCK_STATE_IDS.getByValue(this.data[y << 8 | z << 4 | x]);
         return iblockstate != null ? iblockstate : Blocks.air.getDefaultState();
     }
 
@@ -55,7 +53,7 @@ public class ExtendedBlockStorage
     {
         if (Reflector.IExtendedBlockState.isInstance(state))
         {
-            state = (IBlockState)Reflector.call(state, Reflector.IExtendedBlockState_getClean, new Object[0]);
+            state = (IBlockState)Reflector.call(state, Reflector.IExtendedBlockState_getClean);
         }
 
         IBlockState iblockstate = this.get(x, y, z);
@@ -162,48 +160,33 @@ public class ExtendedBlockStorage
 
     public void removeInvalidBlocks()
     {
-        List<IBlockState> list = Block.BLOCK_STATE_IDS.getObjectList();
-        int i = list.size();
+        IBlockState iblockstate = Blocks.air.getDefaultState();
+        int i = 0;
         int j = 0;
-        int k = 0;
 
-        for (int l = 0; l < 16; ++l)
+        for (int k = 0; k < 16; ++k)
         {
-            int i1 = l << 8;
-
-            for (int j1 = 0; j1 < 16; ++j1)
+            for (int l = 0; l < 16; ++l)
             {
-                int k1 = i1 | j1 << 4;
-
-                for (int l1 = 0; l1 < 16; ++l1)
+                for (int i1 = 0; i1 < 16; ++i1)
                 {
-                    int i2 = this.data[k1 | l1];
+                    Block block = this.getBlockByExtId(i1, k, l);
 
-                    if (i2 > 0)
+                    if (block != Blocks.air)
                     {
-                        ++j;
+                        ++i;
 
-                        if (i2 < i)
+                        if (block.getTickRandomly())
                         {
-                            IBlockState iblockstate = (IBlockState)list.get(i2);
-
-                            if (iblockstate != null)
-                            {
-                                Block block = iblockstate.getBlock();
-
-                                if (block.getTickRandomly())
-                                {
-                                    ++k;
-                                }
-                            }
+                            ++j;
                         }
                     }
                 }
             }
         }
 
-        this.blockRefCount = j;
-        this.tickRefCount = k;
+        this.blockRefCount = i;
+        this.tickRefCount = j;
     }
 
     public char[] getData()
@@ -246,5 +229,10 @@ public class ExtendedBlockStorage
     public void setSkylightArray(NibbleArray newSkylightArray)
     {
         this.skylightArray = newSkylightArray;
+    }
+
+    public int getBlockRefCount()
+    {
+        return this.blockRefCount;
     }
 }

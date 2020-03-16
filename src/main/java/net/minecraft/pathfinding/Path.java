@@ -90,7 +90,7 @@ public class Path
             i = p_75847_1_ - 1 >> 1;
             PathPoint pathpoint1 = this.pathPoints[i];
 
-            if (f >= pathpoint1.distanceToTarget)
+            if (!(f < pathpoint1.distanceToTarget))
             {
                 break;
             }
@@ -139,7 +139,7 @@ public class Path
 
             if (f1 < f2)
             {
-                if (f1 >= f)
+                if (!(f1 < f))
                 {
                     break;
                 }
@@ -150,7 +150,7 @@ public class Path
             }
             else
             {
-                if (f2 >= f)
+                if (!(f2 < f))
                 {
                     break;
                 }

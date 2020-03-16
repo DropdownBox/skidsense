@@ -1,10 +1,9 @@
 package net.minecraft.command;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandKill extends CommandBase

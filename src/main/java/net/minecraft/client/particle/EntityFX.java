@@ -33,7 +33,7 @@ public class EntityFX extends Entity
     protected float particleBlue;
 
     /** Particle alpha */
-    protected float particleAlpha;
+    protected float particleAlpha = 1.0F;
 
     /** The icon field from which the given particle pulls its texture. */
     protected TextureAtlasSprite particleIcon;
@@ -44,7 +44,6 @@ public class EntityFX extends Entity
     protected EntityFX(World worldIn, double posXIn, double posYIn, double posZIn)
     {
         super(worldIn);
-        this.particleAlpha = 1.0F;
         this.setSize(0.2F, 0.2F);
         this.setPosition(posXIn, posYIn, posZIn);
         this.lastTickPosX = this.prevPosX = posXIn;
@@ -61,20 +60,20 @@ public class EntityFX extends Entity
     public EntityFX(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn)
     {
         this(worldIn, xCoordIn, yCoordIn, zCoordIn);
-        this.motionX = xSpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
-        this.motionY = ySpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
-        this.motionZ = zSpeedIn + (Math.random() * 2.0D - 1.0D) * 0.4000000059604645D;
+        this.motionX = xSpeedIn + (Math.random() * 2.0D - 1.0D) * (double)0.4F;
+        this.motionY = ySpeedIn + (Math.random() * 2.0D - 1.0D) * (double)0.4F;
+        this.motionZ = zSpeedIn + (Math.random() * 2.0D - 1.0D) * (double)0.4F;
         float f = (float)(Math.random() + Math.random() + 1.0D) * 0.15F;
         float f1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-        this.motionX = this.motionX / (double)f1 * (double)f * 0.4000000059604645D;
-        this.motionY = this.motionY / (double)f1 * (double)f * 0.4000000059604645D + 0.10000000149011612D;
-        this.motionZ = this.motionZ / (double)f1 * (double)f * 0.4000000059604645D;
+        this.motionX = this.motionX / (double)f1 * (double)f * (double)0.4F;
+        this.motionY = this.motionY / (double)f1 * (double)f * (double)0.4F + (double)0.1F;
+        this.motionZ = this.motionZ / (double)f1 * (double)f * (double)0.4F;
     }
 
     public EntityFX multiplyVelocity(float multiplier)
     {
         this.motionX *= (double)multiplier;
-        this.motionY = (this.motionY - 0.10000000149011612D) * (double)multiplier + 0.10000000149011612D;
+        this.motionY = (this.motionY - (double)0.1F) * (double)multiplier + (double)0.1F;
         this.motionZ *= (double)multiplier;
         return this;
     }
@@ -159,14 +158,14 @@ public class EntityFX extends Entity
 
         this.motionY -= 0.04D * (double)this.particleGravity;
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
-        this.motionX *= 0.9800000190734863D;
-        this.motionY *= 0.9800000190734863D;
-        this.motionZ *= 0.9800000190734863D;
+        this.motionX *= (double)0.98F;
+        this.motionY *= (double)0.98F;
+        this.motionZ *= (double)0.98F;
 
         if (this.onGround)
         {
-            this.motionX *= 0.699999988079071D;
-            this.motionZ *= 0.699999988079071D;
+            this.motionX *= (double)0.7F;
+            this.motionZ *= (double)0.7F;
         }
     }
 

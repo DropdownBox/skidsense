@@ -11,10 +11,10 @@ public class GuiButton extends Gui
     protected static final ResourceLocation buttonTextures = new ResourceLocation("textures/gui/widgets.png");
 
     /** Button width in pixels */
-    protected int width;
+    protected int width = 200;
 
     /** Button height in pixels */
-    protected int height;
+    protected int height = 20;
 
     /** The x position of this control. */
     public int xPosition;
@@ -27,10 +27,10 @@ public class GuiButton extends Gui
     public int id;
 
     /** True if this control is enabled, false to disable. */
-    public boolean enabled;
+    public boolean enabled = true;
 
     /** Hides the button completely if false. */
-    public boolean visible;
+    public boolean visible = true;
     protected boolean hovered;
 
     public GuiButton(int buttonId, int x, int y, String buttonText)
@@ -40,10 +40,6 @@ public class GuiButton extends Gui
 
     public GuiButton(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText)
     {
-        this.width = 200;
-        this.height = 20;
-        this.enabled = true;
-        this.visible = true;
         this.id = buttonId;
         this.xPosition = x;
         this.yPosition = y;

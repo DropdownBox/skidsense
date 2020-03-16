@@ -3,28 +3,27 @@ package me.skidsense.module.collection.visual;
 import java.awt.Color;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Iterator;
 import java.util.List;
 
+import me.skidsense.management.fontRenderer.FontManager;
 import org.lwjgl.opengl.GL11;
 
 import com.ibm.icu.text.NumberFormat;
 
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.fontRenderer.CFontRenderer;
 import me.skidsense.management.fontRenderer.FontLoaders;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.PlayerUtil;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
@@ -32,18 +31,14 @@ import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
 
 public class TargetHUD
-extends Module {
+extends Mod {
     public static boolean shouldMove;
     public static boolean useFont;
 	public static float AnimotaiX;
@@ -54,12 +49,12 @@ extends Module {
     public TargetHUD() {
         super("TargetHUD", new String[]{"gui"}, ModuleType.Fight);
         this.setColor(new Color(244, 255, 149).getRGB());
-        this.addValues(this.mode,black);
+        //this.addValues(this.mode,black);
     }
     Colors hurtcolor;
     String hurtrender;
     String linehealth = null;
-    @EventHandler
+    @Sub
     public void onRender(EventRender2D event) {
         FontRenderer font2 = this.mc.fontRendererObj;
         FontRenderer font = Client.fontManager.sansation16;
@@ -84,7 +79,7 @@ extends Module {
         int green = 0;
         int blue = 0;
         double rainbowTick = 0;
-		Color rainbow = new Color(Color.HSBtoRGB((float)((double)Minecraft.getMinecraft().thePlayer.ticksExisted / 100.0 + Math.sin((double)rainbowTick / 100.0 * 1.6)) % 1.0f, 1.0f, 1.0f));
+		Color rainbow = new Color(Color.HSBtoRGB((float)(Minecraft.getMinecraft().thePlayer.ticksExisted / 100.0 + Math.sin(rainbowTick / 100.0 * 1.6)) % 1.0f, 1.0f, 1.0f));
         if (KillAura.target != null) {
         	
         	
@@ -141,10 +136,10 @@ extends Module {
                         Gui.drawRect(x+35.0, y+1.0, x+123.0, y+35.0,this.black.getValue().booleanValue() ? Integer.MIN_VALUE : new Color(240,238,225,150).getRGB() );
 
                         Minecraft.getMinecraft().fontRendererObj.drawString(player.getName(), x+38.0f, y+4.0f,this.black.getValue().booleanValue() ? -1 : 1,false);
-                        BigDecimal bigDecimal = new BigDecimal((double)player.getHealth());
+                        BigDecimal bigDecimal = new BigDecimal(player.getHealth());
                 		bigDecimal = bigDecimal.setScale(1, RoundingMode.HALF_UP);
                 		double HEALTH = bigDecimal.doubleValue();
-                        BigDecimal DT = new BigDecimal((double)mc.thePlayer.getDistanceToEntity(player));
+                        BigDecimal DT = new BigDecimal(mc.thePlayer.getDistanceToEntity(player));
                 		DT = DT.setScale(1, RoundingMode.HALF_UP);
                 		double Dis = DT.doubleValue();
                         final float health = player.getHealth();
@@ -152,7 +147,7 @@ extends Module {
                         final Color[] colors = { Color.RED, Color.YELLOW, Color.GREEN };
                         final float progress = health / player.getMaxHealth();
                         final Color customColor = (health >= 0.0f) ? blendColors(fractions, colors, progress).brighter() : Color.RED;
-                        double width = (double)mc.fontRendererObj.getStringWidth(player.getName());
+                        double width = mc.fontRendererObj.getStringWidth(player.getName());
                         width = getIncremental(width, 10.0);
                         if (width < 50.0) {
                             width = 50.0;
@@ -204,7 +199,7 @@ extends Module {
                         GlStateManager.popMatrix();
                     }
             	}if(this.mode.getValue() == rendermode.New) {
-            	      CFontRenderer font4 = FontLoaders.kiona18;
+            	      FontRenderer font4 = Client.fontMgr.kiona18;
             	      ScaledResolution sr3 = new ScaledResolution(mc);
             	      int thecolor = (new Color(0, 230, 0, 220)).getRGB();
             	      FontRenderer font5 = mc.fontRendererObj;
@@ -217,27 +212,27 @@ extends Module {
             	         float render = 150.0F * player.getHealth() / player.getMaxHealth();
             	         GlStateManager.pushMatrix();
             	         thecolor = (new Color(190, 250, 0, 150)).getRGB();
-            	         if((double)player.getHealth() >= (double)player.getMaxHealth() * 0.8D) {
+            	         if(player.getHealth() >= player.getMaxHealth() * 0.8D) {
             	        	 thecolor = (new Color(0, 255, 0, 150)).getRGB();
-            	         } else if((double)player.getHealth() < (double)player.getMaxHealth() * 0.8D && (double)player.getHealth() >= (double)player.getMaxHealth() * 0.6D) {
+            	         } else if(player.getHealth() < player.getMaxHealth() * 0.8D && player.getHealth() >= player.getMaxHealth() * 0.6D) {
             	        	 thecolor = (new Color(190, 230, 0, 150)).getRGB();
-            	         } else if((double)player.getHealth() < (double)player.getMaxHealth() * 0.8D && (double)player.getHealth() < (double)player.getMaxHealth() * 0.6D && (double)player.getHealth() >= (double)player.getMaxHealth() * 0.3D) {
+            	         } else if(player.getHealth() < player.getMaxHealth() * 0.8D && player.getHealth() < player.getMaxHealth() * 0.6D && player.getHealth() >= player.getMaxHealth() * 0.3D) {
             	        	 thecolor = (new Color(255, 255, 0, 150)).getRGB();
-            	         } else if((double)player.getHealth() < (double)player.getMaxHealth() * 0.8D && (double)player.getHealth() < (double)player.getMaxHealth() * 0.6D && (double)player.getHealth() < (double)player.getMaxHealth() * 0.3D) {
+            	         } else if(player.getHealth() < player.getMaxHealth() * 0.8D && player.getHealth() < player.getMaxHealth() * 0.6D && player.getHealth() < player.getMaxHealth() * 0.3D) {
             	        	 thecolor = (new Color(255, 0, 0, 150)).getRGB();
             	         }
 
             	         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             	         RenderUtil.drawBorderedRect((float)(sr3.getScaledWidth() / 2), (float)(sr3.getScaledHeight() / 2), (float)(sr3.getScaledWidth() / 2 + 150), (float)(sr3.getScaledHeight() / 2 + 60), 1.0F, (new Color(5, 5, 5, 0)).getRGB(), (new Color(5, 6, 4, 100)).getRGB());
-            	         font4.drawStringWithShadow(EnumChatFormatting.GRAY + "TargetName: ", (double)((float)(sr3.getScaledWidth() / 2) + 3.0F), (double)((float)(sr3.getScaledHeight() / 2) + 3.0F), 16777215);
+            	         font4.drawStringWithShadow(EnumChatFormatting.GRAY + "TargetName: ", ((float)(sr3.getScaledWidth() / 2) + 3.0F), ((float)(sr3.getScaledHeight() / 2) + 3.0F), 16777215);
             	         FontRenderer var10 = mc.fontRendererObj;
             	         StringBuilder var10001 = (new StringBuilder()).append(EnumChatFormatting.WHITE).append(player.getName()).append("[");
             	         Minecraft var10002 = mc;
             	         var10.drawStringWithShadow(var10001.append((byte)((int)Minecraft.getMinecraft().thePlayer.getDistanceToEntity(player))).append("m]").toString(), (float)(sr3.getScaledWidth() / 2) + 3.0F + (float)font2.getStringWidth("TargetName: "), (float)(sr3.getScaledHeight() / 2) + 3.0F, 16777215);
-            	         font4.drawStringWithShadow(player.isEntityInsideOpaqueBlock()?EnumChatFormatting.GRAY + "isBlocking: " + EnumChatFormatting.WHITE + "true":EnumChatFormatting.GRAY + "isBlocking: " + EnumChatFormatting.WHITE + "false", (double)((float)(sr3.getScaledWidth() / 2) + 3.0F), (double)((float)(sr3.getScaledHeight() / 2) + 16.0F), -1);
-            	         font4.drawStringWithShadow(EnumChatFormatting.GRAY + "HurtTime: " + EnumChatFormatting.WHITE + player.hurtTime, (double)((float)(sr3.getScaledWidth() / 2) + 3.0F), (double)((float)(sr3.getScaledHeight() / 2) + 29.0F), -1);
-            	         font4.drawStringWithShadow(player.hurtTime > 0?EnumChatFormatting.GRAY + "isAttacking: " + EnumChatFormatting.WHITE + "true":EnumChatFormatting.GRAY + "isAttacking: " + EnumChatFormatting.WHITE + "false", (double)((float)(sr3.getScaledWidth() / 2) + 6.0F + (float)font2.getStringWidth("HurtTime: " + player.hurtTime)), (double)((float)(sr3.getScaledHeight() / 2) + 29.0F), -1);
-            	         font4.drawStringWithShadow(EnumChatFormatting.GRAY + "HP: " + EnumChatFormatting.WHITE + targethp + "/" + (int)player.getMaxHealth(), (double)((float)(sr3.getScaledWidth() / 2) + 3.0F), (double)((float)(sr3.getScaledHeight() / 2) + 42.0F), -1);
+            	         font4.drawStringWithShadow(player.isEntityInsideOpaqueBlock()?EnumChatFormatting.GRAY + "isBlocking: " + EnumChatFormatting.WHITE + "true":EnumChatFormatting.GRAY + "isBlocking: " + EnumChatFormatting.WHITE + "false", ((float)(sr3.getScaledWidth() / 2) + 3.0F), ((float)(sr3.getScaledHeight() / 2) + 16.0F), -1);
+            	         font4.drawStringWithShadow(EnumChatFormatting.GRAY + "HurtTime: " + EnumChatFormatting.WHITE + player.hurtTime, ((float)(sr3.getScaledWidth() / 2) + 3.0F), ((float)(sr3.getScaledHeight() / 2) + 29.0F), -1);
+            	         font4.drawStringWithShadow(player.hurtTime > 0?EnumChatFormatting.GRAY + "isAttacking: " + EnumChatFormatting.WHITE + "true":EnumChatFormatting.GRAY + "isAttacking: " + EnumChatFormatting.WHITE + "false", ((float)(sr3.getScaledWidth() / 2) + 6.0F + (float)font2.getStringWidth("HurtTime: " + player.hurtTime)), ((float)(sr3.getScaledHeight() / 2) + 29.0F), -1);
+            	         font4.drawStringWithShadow(EnumChatFormatting.GRAY + "HP: " + EnumChatFormatting.WHITE + targethp + "/" + (int)player.getMaxHealth(), ((float)(sr3.getScaledWidth() / 2) + 3.0F), ((float)(sr3.getScaledHeight() / 2) + 42.0F), -1);
             	         font5.drawStringWithShadow(playerhp > targethp?"\u5965\u91cc\u7ed9,\u5e72\u4ed6!":"\u4e09\u5341\u516d\u8ba1,\u8d70\u4e3a\u4e0a\u8ba1!", (float)(sr3.getScaledWidth() / 2) + 17.0F + (float)font2.getStringWidth("HP: " + targethp + "/" + (int)player.getMaxHealth()), (float)(sr3.getScaledHeight() / 2) + 42.0F, -1);
             	         RenderUtil.drawBorderedRect((float)(sr3.getScaledWidth() / 2), sr3.getScaledHeight() / 2 + 58.0, (sr3.getScaledWidth() / 2) + render + 2.0F, sr3.getScaledHeight() / 2 + 60.0, 1.0f, (new Color(1, 1, 1, 0)).getRGB(), thecolor);
             	         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -281,7 +276,7 @@ extends Module {
         int right2 = new ScaledResolution(this.mc).getScaledWidth() - new ScaledResolution(this.mc).getScaledWidth() / 2 + 30;
         int height = new ScaledResolution(this.mc).getScaledHeight() - 70;
         if (KillAura.target != null) {
-            Gui.drawRect((double)right, (double)(height - 50), (double)(right + 130), (double)(height - 90), (int)new Color(0, 0, 0, 130).getRGB());
+            Gui.drawRect(right, (height - 50), (right + 130), (height - 90), (int)new Color(0, 0, 0, 130).getRGB());
             font2.drawString(KillAura.target.getName(), right + 30, height - 87, 16777215);
             font2.drawString("HP:" + (int)((EntityLivingBase)KillAura.target).getHealth() + "/" + (int)((EntityLivingBase)KillAura.target).getMaxHealth() + " " + "Hurt:" + (KillAura.target.hurtResistantTime > 0), right + 30, height - 70, new Color(255, 255, 255).getRGB());
             font2.drawString("Coords: " + (int)KillAura.target.posX + " " + (int)KillAura.target.posY + " " + (int)KillAura.target.posZ, right + 30, height - 60, new Color(255, 255, 255).getRGB());
@@ -323,7 +318,7 @@ extends Module {
 
     
     
- @EventHandler
+ @Sub
 	public void onScreenDrawx(EventRender2D er) {
 	 if(this.mode.getValue() == rendermode.Mikov){
 		ScaledResolution res = new ScaledResolution(this.mc);	 
@@ -337,11 +332,11 @@ extends Module {
             
             mc.fontRendererObj.drawStringWithShadow(player.getName(), x+38.0f, y+2.0f, -1);
        
-            BigDecimal bigDecimal = new BigDecimal((double)player.getHealth());
+            BigDecimal bigDecimal = new BigDecimal(player.getHealth());
     		bigDecimal = bigDecimal.setScale(1, RoundingMode.HALF_UP);
     		double HEALTH = bigDecimal.doubleValue();
     		
-            BigDecimal DT = new BigDecimal((double)mc.thePlayer.getDistanceToEntity(player));
+            BigDecimal DT = new BigDecimal(mc.thePlayer.getDistanceToEntity(player));
     		DT = DT.setScale(1, RoundingMode.HALF_UP);
     		double Dis = DT.doubleValue();
     		
@@ -350,7 +345,7 @@ extends Module {
             final Color[] colors = { Color.RED, Color.YELLOW, Color.GREEN };
             final float progress = health / player.getMaxHealth();
             final Color customColor = (health >= 0.0f) ? blendColors(fractions, colors, progress).brighter() : Color.RED;
-            double width = (double)mc.fontRendererObj.getStringWidth(player.getName());
+            double width = mc.fontRendererObj.getStringWidth(player.getName());
             width = PlayerUtil.getIncremental(width, 10.0);
             if (width < 50.0) {
                 width = 50.0;
@@ -438,7 +433,7 @@ extends Module {
 //		 entityPlayer = null;
 //	 }
 //		 health = ((EntityLivingBase) KillAura.target).getHealth();
-//		 width = (double)mc.fontRendererObj.getStringWidth(KillAura.target.getName());
+//		 width = mc.fontRendererObj.getStringWidth(KillAura.target.getName());
 //	 final float progress = health / ((EntityLivingBase) KillAura.target).getMaxHealth();
 //	 int x = res.getScaledWidth();
 //	 int y = res.getScaledHeight();
@@ -495,7 +490,7 @@ extends Module {
         float max = range[1] - range[0];
         float value = progress - range[0];
         float weight = value / max;
-        color = blend(colorRange[0], colorRange[1], (double)(1.0F - weight));
+        color = blend(colorRange[0], colorRange[1], (1.0F - weight));
         return color;
      } else {
         throw new IllegalArgumentException("Fractions and colours must have equal number of elements");
@@ -536,7 +531,7 @@ extends Module {
         color3 = new Color(red, green, blue);
      } catch (IllegalArgumentException var14) {
         NumberFormat nf = NumberFormat.getNumberInstance();
-        System.out.println(nf.format((double)red) + "; " + nf.format((double)green) + "; " + nf.format((double)blue));
+        System.out.println(nf.format(red) + "; " + nf.format(green) + "; " + nf.format(blue));
         var14.printStackTrace();
      }
 
@@ -545,11 +540,11 @@ extends Module {
 
   private double getIncremental(double val, double inc) {
      double one = 1.0D / inc;
-     return (double)Math.round(val * one) / one;
+     return Math.round(val * one) / one;
   }
 
   
-  @EventHandler
+  @Sub
   public void onScreenDraw(EventRender2D er2) {
       double Dis;
       ScaledResolution res;
@@ -569,7 +564,7 @@ extends Module {
       int y2;
       String COLOR1;
       float progress;
-      CFontRenderer font = FontLoaders.kiona16;
+      FontRenderer font = Client.fontManager.kiona16;
       int heal = 0;
       int input = 0;
       if (mode.getValue() == rendermode.Zeroday && KillAura.target != null) {
@@ -586,13 +581,13 @@ extends Module {
           font.drawStringWithShadow("Damage Input: " + input, RenderUtil.width() / 2 + 155, RenderUtil.height() / 2 + 186, -1);
           font.drawStringWithShadow(KillAura.target.getHealth() > Minecraft.getMinecraft().thePlayer.getHealth() ? "You may lose" : (KillAura.target.getHealth() <= Minecraft.getMinecraft().thePlayer.getHealth() ? "You may win" : ""), RenderUtil.width() / 2 + 155, RenderUtil.height() / 2 + 195, -1);
           RenderUtil.drawEntityOnScreen(RenderUtil.width() / 2 + 136, RenderUtil.height() / 2 + 205, 23, 1.0f, 25.0f, KillAura.target);
-          if (this.anima <= (double)(KillAura.target.getHealth() * 8.0f)) {
+          if (this.anima <= (KillAura.target.getHealth() * 8.0f)) {
               this.anima += 2.0;
           }
-          if (this.anima > (double)(KillAura.target.getHealth() * 8.0f)) {
+          if (this.anima > (KillAura.target.getHealth() * 8.0f)) {
               this.anima -= 2.0;
           }
-          RenderUtil.drawGradientSideways(RenderUtil.width() / 2 + 117, (double)(RenderUtil.height() / 2) + 208.5, (double)(RenderUtil.width() / 2 + 120) + this.anima, RenderUtil.height() / 2 + 210, new Color(255, 0, 0).getRGB(), new Color(255, 255, 0).getRGB());
+          RenderUtil.drawGradientSideways(RenderUtil.width() / 2 + 117, (RenderUtil.height() / 2) + 208.5, (RenderUtil.width() / 2 + 120) + this.anima, RenderUtil.height() / 2 + 210, new Color(255, 0, 0).getRGB(), new Color(255, 255, 0).getRGB());
       }
       if (mode.getValue() == rendermode.Exhibition) {
           res = new ScaledResolution(mc);
@@ -601,7 +596,7 @@ extends Module {
           player = KillAura.target;
           if (player != null) {
               GlStateManager.pushMatrix();
-              Gui.drawRect((double)x22 + 0.0, (double)y22 + 0.0, (double)x22 + 113.0, (double)y22 + 36.0, Colors.getColor(0, 150));
+              Gui.drawRect(x22 + 0.0, y22 + 0.0, x22 + 113.0, y22 + 36.0, Colors.getColor(0, 150));
               Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(player.getName(), (float)x22 + 38.0f, (float)y22 + 2.0f, -1);
               bigDecimal = new BigDecimal(player.getHealth());
               bigDecimal = bigDecimal.setScale(1, RoundingMode.HALF_UP);
@@ -619,21 +614,21 @@ extends Module {
               if (width < 50.0) {
                   width = 50.0;
               }
-              if (this.anima < (healthLocation = width * (double)progress) + 1.0) {
+              if (this.anima < (healthLocation = width * progress) + 1.0) {
                   this.anima += 1.0;
               }
               if (this.anima > healthLocation + 1.0) {
                   this.anima -= 1.0;
               }
-              Gui.drawRect((double)x22 + 37.5, (double)y22 + 11.5, (double)x22 + 37.5 + this.anima, (double)y22 + 14.5, customColor.getRGB());
-              RenderUtil.rectangleBordered((double)x22 + 37.0, (double)y22 + 11.0, (double)x22 + 39.0 + width, (double)y22 + 15.0, 0.5, Colors.getColor(0, 0), Colors.getColor(0));
+              Gui.drawRect(x22 + 37.5, y22 + 11.5, x22 + 37.5 + this.anima, y22 + 14.5, customColor.getRGB());
+              RenderUtil.rectangleBordered(x22 + 37.0, y22 + 11.0, x22 + 39.0 + width, y22 + 15.0, 0.5, Colors.getColor(0, 0), Colors.getColor(0));
               int i2 = 1;
               while (i2 < 10) {
-                  double dThing = width / 10.0 * (double)i2;
-                  Gui.drawRect((double)x22 + 38.0 + dThing, (double)y22 + 11.0, (double)x22 + 38.0 + dThing + 0.5, (double)y22 + 15.0, Colors.getColor(0));
+                  double dThing = width / 10.0 * i2;
+                  Gui.drawRect(x22 + 38.0 + dThing, y22 + 11.0, x22 + 38.0 + dThing + 0.5, y22 + 15.0, Colors.getColor(0));
                   ++i2;
               }
-              COLOR1 = (double)health > 20.0 ? " \u00a79" : ((double)health >= 10.0 ? " \u00a7a" : ((double)health >= 3.0 ? " \u00a7e" : " \u00a74"));
+              COLOR1 = health > 20.0 ? " \u00a79" : (health >= 10.0 ? " \u00a7a" : (health >= 3.0 ? " \u00a7e" : " \u00a74"));
               GlStateManager.scale(0.5, 0.5, 0.5);
               String str4 = "HP: " + HEALTH + " Dist: " + Dis;
               Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(str4, (float)(x22 * 2) + 76.0f, (float)(y22 * 2) + 35.0f, -1);
@@ -671,7 +666,7 @@ extends Module {
           player = KillAura.target;
           if (player != null) {
               GlStateManager.pushMatrix();
-              Gui.drawRect((double)x2 + 0.0, (double)y2 - 5.0, (double)x2 + 113.0, (double)y2 + 36.0, Colors.getColor(0, 150));
+              Gui.drawRect(x2 + 0.0, y2 - 5.0, x2 + 113.0, y2 + 36.0, Colors.getColor(0, 150));
               Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(player.getName(), (float)x2 + 38.0f, (float)y2 + 2.0f, -1);
               bigDecimal = new BigDecimal(player.getHealth());
               bigDecimal = bigDecimal.setScale(1, RoundingMode.HALF_UP);
@@ -689,22 +684,22 @@ extends Module {
               if (width < 50.0) {
                   width = 50.0;
               }
-              if (this.anima < (healthLocation = width * (double)progress) + 1.0) {
+              if (this.anima < (healthLocation = width * progress) + 1.0) {
                   this.anima += 1.0;
               }
               if (this.anima > healthLocation + 1.0) {
                   this.anima -= 1.0;
               }
-              Gui.drawRect((double)x2 + 37.5, (double)y2 + 11.5, (double)x2 + 37.5 + this.anima, (double)y2 + 14.5, customColor.getRGB());
-              RenderUtil.drawGradientSideways(x2, y2 + 35, (double)x2 + this.anima * 2.22, y2 + 36, customColor.getRGB(), customColor.getRGB());
-              RenderUtil.rectangleBordered((double)x2 + 37.0, (double)y2 + 11.0, (double)x2 + 39.0 + width, (double)y2 + 15.0, 0.5, Colors.getColor(0, 0), Colors.getColor(0));
+              Gui.drawRect(x2 + 37.5, y2 + 11.5, x2 + 37.5 + this.anima, y2 + 14.5, customColor.getRGB());
+              RenderUtil.drawGradientSideways(x2, y2 + 35, x2 + this.anima * 2.22, y2 + 36, customColor.getRGB(), customColor.getRGB());
+              RenderUtil.rectangleBordered(x2 + 37.0, y2 + 11.0, x2 + 39.0 + width, y2 + 15.0, 0.5, Colors.getColor(0, 0), Colors.getColor(0));
               int i3 = 1;
               while (i3 < 10) {
-                  double dThing = width / 10.0 * (double)i3;
-                  Gui.drawRect((double)x2 + 38.0 + dThing, (double)y2 + 11.0, (double)x2 + 38.0 + dThing + 0.5, (double)y2 + 15.0, Colors.getColor(0));
+                  double dThing = width / 10.0 * i3;
+                  Gui.drawRect(x2 + 38.0 + dThing, y2 + 11.0, x2 + 38.0 + dThing + 0.5, y2 + 15.0, Colors.getColor(0));
                   ++i3;
               }
-              COLOR1 = (double)health > 20.0 ? " \u00a79" : ((double)health >= 10.0 ? " \u00a7a" : ((double)health >= 3.0 ? " \u00a7e" : " \u00a74"));
+              COLOR1 = health > 20.0 ? " \u00a79" : (health >= 10.0 ? " \u00a7a" : (health >= 3.0 ? " \u00a7e" : " \u00a74"));
               GlStateManager.scale(0.5, 0.5, 0.5);
               str = "HP: " + HEALTH + " Dist: " + Dis;
               Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(str, (float)(x2 * 2) + 76.0f, (float)(y2 * 2) + 35.0f, -1);
@@ -743,20 +738,20 @@ extends Module {
               if ((width = this.getIncremental(width, 10.0)) < 50.0) {
                   width = 50.0;
               }
-              Gui.drawRect((double)x2 + 10.0, (double)y2 - 2.0, (double)x2 + 91.0, (double)y2 + 40.0, Colors.getColor(0, 150));
+              Gui.drawRect(x2 + 10.0, y2 - 2.0, x2 + 91.0, y2 + 40.0, Colors.getColor(0, 150));
               Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(player.getName(), (float)x2 + 38.0f, (float)y2 + 2.0f, -1);
-              healthLocation = width * (double)progress;
+              healthLocation = width * progress;
               if (this.anima < healthLocation + 1.0) {
                   this.anima += 1.0;
               }
               if (this.anima > healthLocation + 1.0) {
                   this.anima -= 1.0;
               }
-              Gui.drawRect((double)x2 + 37.5, (double)y2 + 11.5, (double)x2 + 38.0 + 50.0 + 0.5, y2 + 17, new Color(180, 180, 180, 120).getRGB());
-              Gui.drawRect((double)x2 + 37.5, (double)y2 + 11.5, (double)x2 + 38.0 + this.anima + 0.5, y2 + 17, customColor.getRGB());
-              COLOR1 = (double)health > 20.0 ? " \u00a79" : ((double)health >= 10.0 ? " \u00a7a" : ((double)health >= 3.0 ? " \u00a7e" : " \u00a74"));
-              RenderUtil.rectangleBordered(x2 + 10, y2 - 2, x2 + 91, (double)y2 + 40.0, 0.5, Colors.getColor(0, 0), Colors.getColor(255));
-              RenderUtil.rectangleBordered(x2 + 10, y2 - 2, x2 + 35, (double)y2 + 40.0, 0.5, Colors.getColor(0, 0), Colors.getColor(255));
+              Gui.drawRect(x2 + 37.5, y2 + 11.5, x2 + 38.0 + 50.0 + 0.5, y2 + 17, new Color(180, 180, 180, 120).getRGB());
+              Gui.drawRect(x2 + 37.5, y2 + 11.5, x2 + 38.0 + this.anima + 0.5, y2 + 17, customColor.getRGB());
+              COLOR1 = health > 20.0 ? " \u00a79" : (health >= 10.0 ? " \u00a7a" : (health >= 3.0 ? " \u00a7e" : " \u00a74"));
+              RenderUtil.rectangleBordered(x2 + 10, y2 - 2, x2 + 91, y2 + 40.0, 0.5, Colors.getColor(0, 0), Colors.getColor(255));
+              RenderUtil.rectangleBordered(x2 + 10, y2 - 2, x2 + 35, y2 + 40.0, 0.5, Colors.getColor(0, 0), Colors.getColor(255));
               RenderUtil.drawEntityOnScreen(x2 + 22, y2 + 36, 18, 1.0f, 15.0f, KillAura.target);
               str = "HP: " + HEALTH;
               Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(str, (float)x2 + 38.0f, (float)y2 + 20.0f, -1);
@@ -784,20 +779,20 @@ extends Module {
               if ((width = this.getIncremental(width, 10.0)) < 50.0) {
                   width = 50.0;
               }
-              if (this.anima < (healthLocation = width * (double)progress * 1.2) + 1.0) {
+              if (this.anima < (healthLocation = width * progress * 1.2) + 1.0) {
                   this.anima += 1.0;
               }
               if (this.anima > healthLocation + 1.0) {
                   this.anima -= 1.0;
               }
-              RenderUtil.rectangleBordered(x2 - 2, (double)y2 - 2.0, (double)x2 + 63.0 + (double)Minecraft.getMinecraft().fontRendererObj.getStringWidth(player.getName()), (double)y2 + 38.5, 0.5, new Color(53, 56, 61).getRGB(), new Color(210, 210, 210).getRGB());
+              RenderUtil.rectangleBordered(x2 - 2, y2 - 2.0, x2 + 63.0 + Minecraft.getMinecraft().fontRendererObj.getStringWidth(player.getName()), y2 + 38.5, 0.5, new Color(53, 56, 61).getRGB(), new Color(210, 210, 210).getRGB());
               Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(player.getName(), (float)x2 + 38.0f, (float)y2 + 4.0f, -1);
-              Gui.drawRect((double)x2 + 37.5, y2 + 17, (double)x2 + 38.0 + this.anima + 0.5, y2 + 29, new Color(180, 180, 180, 120).getRGB());
-              Gui.drawRect((double)x2 + 37.5, y2 + 17, (double)x2 + 38.0 + this.anima + 0.5, y2 + 29, customColor.getRGB());
-              Gui.drawRect((double)x2 + 37.5, y2 + 17, (double)x2 + 38.0 + this.anima + 0.5, y2 + 29, customColor.getRGB());
-              RenderUtil.rectangleBordered(x2 + 37, y2 + 17, (double)x2 + 38.0 + this.anima + 0.5, y2 + 29, 0.5, new Color(0, 0, 0, 0).getRGB(), new Color(0, 0, 0).getRGB());
+              Gui.drawRect(x2 + 37.5, y2 + 17, x2 + 38.0 + this.anima + 0.5, y2 + 29, new Color(180, 180, 180, 120).getRGB());
+              Gui.drawRect(x2 + 37.5, y2 + 17, x2 + 38.0 + this.anima + 0.5, y2 + 29, customColor.getRGB());
+              Gui.drawRect(x2 + 37.5, y2 + 17, x2 + 38.0 + this.anima + 0.5, y2 + 29, customColor.getRGB());
+              RenderUtil.rectangleBordered(x2 + 37, y2 + 17, x2 + 38.0 + this.anima + 0.5, y2 + 29, 0.5, new Color(0, 0, 0, 0).getRGB(), new Color(0, 0, 0).getRGB());
               font.drawStringWithShadow(String.valueOf((int)player.getHealth()) + "/20", (float)x2 + 60.0f, (float)y2 + 18.0f, -1);
-              COLOR1 = (double)health > 20.0 ? " \u00a79" : ((double)health >= 10.0 ? " \u00a7a" : ((double)health >= 3.0 ? " \u00a7e" : " \u00a74"));
+              COLOR1 = health > 20.0 ? " \u00a79" : (health >= 10.0 ? " \u00a7a" : (health >= 3.0 ? " \u00a7e" : " \u00a74"));
               if (player instanceof EntityPlayer) {
                   List<NetworkPlayerInfo> var5 = GuiPlayerTabOverlay.field_175252_a.sortedCopy(Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfoMap());
                   for (Object aVar5 : var5) {

@@ -5,25 +5,22 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.src.Config;
 import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import optifine.Config;
-
+import net.optifine.shaders.Shaders;
 import org.lwjgl.opengl.GL11;
-import shadersmod.client.Shaders;
 
-public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer
+public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer<TileEntityBeacon>
 {
     private static final ResourceLocation beaconBeam = new ResourceLocation("textures/entity/beacon_beam.png");
-    private static final String __OBFID = "CL_00000962";
 
     public void renderTileEntityAt(TileEntityBeacon te, double x, double y, double z, float partialTicks, int destroyStage)
     {
         float f = te.shouldBeamRender();
 
-        if (f > 0.0F)
+        if (!((double)f <= 0.0D))
         {
             if (Config.isShaders())
             {
@@ -37,12 +34,12 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer
                 Tessellator tessellator = Tessellator.getInstance();
                 WorldRenderer worldrenderer = tessellator.getWorldRenderer();
                 GlStateManager.disableFog();
-                List list = te.getBeamSegments();
+                List<TileEntityBeacon.BeamSegment> list = te.getBeamSegments();
                 int i = 0;
 
                 for (int j = 0; j < list.size(); ++j)
                 {
-                    TileEntityBeacon.BeamSegment tileentitybeacon$beamsegment = (TileEntityBeacon.BeamSegment)list.get(j);
+                    TileEntityBeacon.BeamSegment tileentitybeacon$beamsegment = list.get(j);
                     int k = i + tileentitybeacon$beamsegment.getHeight();
                     this.bindTexture(beaconBeam);
                     GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, 10497.0F);
@@ -146,10 +143,5 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer
     public boolean forceTileEntityRender()
     {
         return true;
-    }
-
-    public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage)
-    {
-        this.renderTileEntityAt((TileEntityBeacon)te, x, y, z, partialTicks, destroyStage);
     }
 }

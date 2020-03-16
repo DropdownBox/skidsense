@@ -67,8 +67,8 @@ public abstract class BiomeGenBase
 
     /** An array of all the biomes, indexed by biome id. */
     private static final BiomeGenBase[] biomeList = new BiomeGenBase[256];
-    public static final Set<BiomeGenBase> explorationBiomesList = Sets.<BiomeGenBase>newHashSet();
-    public static final Map<String, BiomeGenBase> BIOME_ID_MAP = Maps.<String, BiomeGenBase>newHashMap();
+    public static final Set<BiomeGenBase> explorationBiomesList = Sets.newHashSet();
+    public static final Map<String, BiomeGenBase> BIOME_ID_MAP = Maps.newHashMap();
     public static final BiomeGenBase ocean = (new BiomeGenOcean(0)).setColor(112).setBiomeName("Ocean").setHeight(height_Oceans);
     public static final BiomeGenBase plains = (new BiomeGenPlains(1)).setColor(9286496).setBiomeName("Plains");
     public static final BiomeGenBase desert = (new BiomeGenDesert(2)).setColor(16421912).setBiomeName("Desert").setDisableRain().setTemperatureRainfall(2.0F, 0.0F).setHeight(height_LowPlains);
@@ -139,26 +139,26 @@ public abstract class BiomeGenBase
     public int fillerBlockMetadata = 5169201;
 
     /** The minimum height of this biome. Default 0.1. */
-    public float minHeight;
+    public float minHeight = height_Default.rootHeight;
 
     /** The maximum height of this biome. Default 0.3. */
-    public float maxHeight;
+    public float maxHeight = height_Default.variation;
 
     /** The temperature of this biome. */
-    public float temperature;
+    public float temperature = 0.5F;
 
     /** The rainfall in this biome. */
-    public float rainfall;
+    public float rainfall = 0.5F;
 
     /** Color tint applied to water depending on biome */
-    public int waterColorMultiplier;
+    public int waterColorMultiplier = 16777215;
 
     /** The biome decorator. */
     public BiomeDecorator theBiomeDecorator;
-    protected List<BiomeGenBase.SpawnListEntry> spawnableMonsterList;
-    protected List<BiomeGenBase.SpawnListEntry> spawnableCreatureList;
-    protected List<BiomeGenBase.SpawnListEntry> spawnableWaterCreatureList;
-    protected List<BiomeGenBase.SpawnListEntry> spawnableCaveCreatureList;
+    protected List<BiomeGenBase.SpawnListEntry> spawnableMonsterList = Lists.newArrayList();
+    protected List<BiomeGenBase.SpawnListEntry> spawnableCreatureList = Lists.newArrayList();
+    protected List<BiomeGenBase.SpawnListEntry> spawnableWaterCreatureList = Lists.newArrayList();
+    protected List<BiomeGenBase.SpawnListEntry> spawnableCaveCreatureList = Lists.newArrayList();
 
     /** Set to true if snow is enabled for this biome. */
     protected boolean enableSnow;
@@ -166,35 +166,22 @@ public abstract class BiomeGenBase
     /**
      * Is true (default) if the biome support rain (desert and nether can't have rain)
      */
-    protected boolean enableRain;
+    protected boolean enableRain = true;
 
     /** The id number to this biome, and its index in the biomeList array. */
     public final int biomeID;
 
     /** The tree generator. */
-    protected WorldGenTrees worldGeneratorTrees;
+    protected WorldGenTrees worldGeneratorTrees = new WorldGenTrees(false);
 
     /** The big tree generator. */
-    protected WorldGenBigTree worldGeneratorBigTree;
+    protected WorldGenBigTree worldGeneratorBigTree = new WorldGenBigTree(false);
 
     /** The swamp tree generator. */
-    protected WorldGenSwamp worldGeneratorSwamp;
+    protected WorldGenSwamp worldGeneratorSwamp = new WorldGenSwamp();
 
     protected BiomeGenBase(int id)
     {
-        this.minHeight = height_Default.rootHeight;
-        this.maxHeight = height_Default.variation;
-        this.temperature = 0.5F;
-        this.rainfall = 0.5F;
-        this.waterColorMultiplier = 16777215;
-        this.spawnableMonsterList = Lists.<BiomeGenBase.SpawnListEntry>newArrayList();
-        this.spawnableCreatureList = Lists.<BiomeGenBase.SpawnListEntry>newArrayList();
-        this.spawnableWaterCreatureList = Lists.<BiomeGenBase.SpawnListEntry>newArrayList();
-        this.spawnableCaveCreatureList = Lists.<BiomeGenBase.SpawnListEntry>newArrayList();
-        this.enableRain = true;
-        this.worldGeneratorTrees = new WorldGenTrees(false);
-        this.worldGeneratorBigTree = new WorldGenBigTree(false);
-        this.worldGeneratorSwamp = new WorldGenSwamp();
         this.biomeID = id;
         biomeList[id] = this;
         this.theBiomeDecorator = this.createBiomeDecorator();
@@ -349,7 +336,7 @@ public abstract class BiomeGenBase
                 return this.spawnableCaveCreatureList;
 
             default:
-                return Collections.<BiomeGenBase.SpawnListEntry>emptyList();
+                return Collections.emptyList();
         }
     }
 
@@ -555,7 +542,7 @@ public abstract class BiomeGenBase
         return new BiomeGenMutated(p_180277_1_, this);
     }
 
-    public Class <? extends BiomeGenBase > getBiomeClass()
+    public Class<? extends BiomeGenBase> getBiomeClass()
     {
         return this.getClass();
     }
@@ -565,12 +552,30 @@ public abstract class BiomeGenBase
      */
     public boolean isEqualTo(BiomeGenBase biome)
     {
-        return biome == this ? true : (biome == null ? false : this.getBiomeClass() == biome.getBiomeClass());
+        if (biome == this)
+        {
+            return true;
+        }
+        else if (biome == null)
+        {
+            return false;
+        }
+        else
+        {
+            return this.getBiomeClass() == biome.getBiomeClass();
+        }
     }
 
     public BiomeGenBase.TempCategory getTempCategory()
     {
-        return (double)this.temperature < 0.2D ? BiomeGenBase.TempCategory.COLD : ((double)this.temperature < 1.0D ? BiomeGenBase.TempCategory.MEDIUM : BiomeGenBase.TempCategory.WARM);
+        if ((double)this.temperature < 0.2D)
+        {
+            return BiomeGenBase.TempCategory.COLD;
+        }
+        else
+        {
+            return (double)this.temperature < 1.0D ? BiomeGenBase.TempCategory.MEDIUM : BiomeGenBase.TempCategory.WARM;
+        }
     }
 
     public static BiomeGenBase[] getBiomeGenArray()
@@ -630,7 +635,7 @@ public abstract class BiomeGenBase
             {
                 if (BIOME_ID_MAP.containsKey(biomegenbase.biomeName))
                 {
-                    throw new Error("Biome \"" + biomegenbase.biomeName + "\" is defined as both ID " + ((BiomeGenBase)BIOME_ID_MAP.get(biomegenbase.biomeName)).biomeID + " and " + biomegenbase.biomeID);
+                    throw new Error("Biome \"" + biomegenbase.biomeName + "\" is defined as both ID " + (BIOME_ID_MAP.get(biomegenbase.biomeName)).biomeID + " and " + biomegenbase.biomeID);
                 }
 
                 BIOME_ID_MAP.put(biomegenbase.biomeName, biomegenbase);
@@ -670,11 +675,11 @@ public abstract class BiomeGenBase
 
     public static class SpawnListEntry extends WeightedRandom.Item
     {
-        public Class <? extends EntityLiving > entityClass;
+        public Class<? extends EntityLiving> entityClass;
         public int minGroupCount;
         public int maxGroupCount;
 
-        public SpawnListEntry(Class <? extends EntityLiving > entityclassIn, int weight, int groupCountMin, int groupCountMax)
+        public SpawnListEntry(Class<? extends EntityLiving> entityclassIn, int weight, int groupCountMin, int groupCountMax)
         {
             super(weight);
             this.entityClass = entityclassIn;

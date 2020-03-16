@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
 import net.minecraft.client.resources.I18n;
 
 public class GuiConfirmOpenLink extends GuiYesNo
@@ -38,8 +39,10 @@ public class GuiConfirmOpenLink extends GuiYesNo
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.id == 2) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.id == 2)
+        {
             this.copyLinkToClipboard();
         }
 

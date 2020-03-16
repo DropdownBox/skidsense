@@ -39,12 +39,12 @@ public class EntityParticleEmitter extends EntityFX
             double d1 = (double)(this.rand.nextFloat() * 2.0F - 1.0F);
             double d2 = (double)(this.rand.nextFloat() * 2.0F - 1.0F);
 
-            if (d0 * d0 + d1 * d1 + d2 * d2 <= 1.0D)
+            if (!(d0 * d0 + d1 * d1 + d2 * d2 > 1.0D))
             {
                 double d3 = this.attachedEntity.posX + d0 * (double)this.attachedEntity.width / 4.0D;
                 double d4 = this.attachedEntity.getEntityBoundingBox().minY + (double)(this.attachedEntity.height / 2.0F) + d1 * (double)this.attachedEntity.height / 4.0D;
                 double d5 = this.attachedEntity.posZ + d2 * (double)this.attachedEntity.width / 4.0D;
-                this.worldObj.spawnParticle(this.particleTypes, false, d3, d4, d5, d0, d1 + 0.2D, d2, new int[0]);
+                this.worldObj.spawnParticle(this.particleTypes, false, d3, d4, d5, d0, d1 + 0.2D, d2);
             }
         }
 

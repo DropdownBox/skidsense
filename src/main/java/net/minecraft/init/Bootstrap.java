@@ -127,7 +127,7 @@ public class Bootstrap
                     {
                         return super.func_82500_b() * 1.25F;
                     }
-                }).dispense(source, stack): this.field_150843_b.dispense(source, stack);
+                }).dispense(source, stack) : this.field_150843_b.dispense(source, stack);
             }
         });
         BlockDispenser.dispenseBehaviorRegistry.putObject(Items.spawn_egg, new BehaviorDefaultDispenseItem()
@@ -262,13 +262,13 @@ public class Bootstrap
                 Material material = block.getMaterial();
                 Item item;
 
-                if (Material.water.equals(material) && block instanceof BlockLiquid && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
+                if (Material.water.equals(material) && block instanceof BlockLiquid && iblockstate.getValue(BlockLiquid.LEVEL) == 0)
                 {
                     item = Items.water_bucket;
                 }
                 else
                 {
-                    if (!Material.lava.equals(material) || !(block instanceof BlockLiquid) || ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() != 0)
+                    if (!Material.lava.equals(material) || !(block instanceof BlockLiquid) || iblockstate.getValue(BlockLiquid.LEVEL) != 0)
                     {
                         return super.dispenseStack(source, stack);
                     }
@@ -283,7 +283,7 @@ public class Bootstrap
                     stack.setItem(item);
                     stack.stackSize = 1;
                 }
-                else if (((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(new ItemStack(item)) < 0)
+                else if (source.<TileEntityDispenser>getBlockTileEntity().addItemStack(new ItemStack(item)) < 0)
                 {
                     this.field_150840_b.dispense(source, new ItemStack(item));
                 }
@@ -310,7 +310,7 @@ public class Bootstrap
                 }
                 else if (world.getBlockState(blockpos).getBlock() == Blocks.tnt)
                 {
-                    Blocks.tnt.onBlockDestroyedByPlayer(world, blockpos, Blocks.tnt.getDefaultState().withProperty(BlockTNT.EXPLODE, Boolean.valueOf(true)));
+                    Blocks.tnt.onBlockDestroyedByPlayer(world, blockpos, Blocks.tnt.getDefaultState().withProperty(BlockTNT.EXPLODE, true));
                     world.setBlockToAir(blockpos);
                 }
                 else

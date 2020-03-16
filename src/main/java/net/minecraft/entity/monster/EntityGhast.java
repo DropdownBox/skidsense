@@ -91,7 +91,7 @@ public class EntityGhast extends EntityFlying implements IMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(16, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(16, (byte)0);
     }
 
     protected void applyEntityAttributes()

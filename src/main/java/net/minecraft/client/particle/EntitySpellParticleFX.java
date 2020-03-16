@@ -16,12 +16,12 @@ public class EntitySpellParticleFX extends EntityFX
     protected EntitySpellParticleFX(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double p_i1229_8_, double p_i1229_10_, double p_i1229_12_)
     {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.5D - RANDOM.nextDouble(), p_i1229_10_, 0.5D - RANDOM.nextDouble());
-        this.motionY *= 0.20000000298023224D;
+        this.motionY *= (double)0.2F;
 
         if (p_i1229_8_ == 0.0D && p_i1229_12_ == 0.0D)
         {
-            this.motionX *= 0.10000000149011612D;
-            this.motionZ *= 0.10000000149011612D;
+            this.motionX *= (double)0.1F;
+            this.motionZ *= (double)0.1F;
         }
 
         this.particleScale *= 0.75F;
@@ -63,14 +63,14 @@ public class EntitySpellParticleFX extends EntityFX
             this.motionZ *= 1.1D;
         }
 
-        this.motionX *= 0.9599999785423279D;
-        this.motionY *= 0.9599999785423279D;
-        this.motionZ *= 0.9599999785423279D;
+        this.motionX *= (double)0.96F;
+        this.motionY *= (double)0.96F;
+        this.motionZ *= (double)0.96F;
 
         if (this.onGround)
         {
-            this.motionX *= 0.699999988079071D;
-            this.motionZ *= 0.699999988079071D;
+            this.motionX *= (double)0.7F;
+            this.motionZ *= (double)0.7F;
         }
     }
 

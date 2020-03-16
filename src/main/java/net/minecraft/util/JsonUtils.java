@@ -34,7 +34,14 @@ public class JsonUtils
      */
     public static boolean isJsonArray(JsonObject p_151202_0_, String p_151202_1_)
     {
-        return !hasField(p_151202_0_, p_151202_1_) ? false : p_151202_0_.get(p_151202_1_).isJsonArray();
+        if (!hasField(p_151202_0_, p_151202_1_))
+        {
+            return false;
+        }
+        else
+        {
+            return p_151202_0_.get(p_151202_1_).isJsonArray();
+        }
     }
 
     /**
@@ -43,7 +50,14 @@ public class JsonUtils
      */
     public static boolean isJsonPrimitive(JsonObject p_151201_0_, String p_151201_1_)
     {
-        return !hasField(p_151201_0_, p_151201_1_) ? false : p_151201_0_.get(p_151201_1_).isJsonPrimitive();
+        if (!hasField(p_151201_0_, p_151201_1_))
+        {
+            return false;
+        }
+        else
+        {
+            return p_151201_0_.get(p_151201_1_).isJsonPrimitive();
+        }
     }
 
     /**
@@ -51,7 +65,14 @@ public class JsonUtils
      */
     public static boolean hasField(JsonObject p_151204_0_, String p_151204_1_)
     {
-        return p_151204_0_ == null ? false : p_151204_0_.get(p_151204_1_) != null;
+        if (p_151204_0_ == null)
+        {
+            return false;
+        }
+        else
+        {
+            return p_151204_0_.get(p_151204_1_) != null;
+        }
     }
 
     /**

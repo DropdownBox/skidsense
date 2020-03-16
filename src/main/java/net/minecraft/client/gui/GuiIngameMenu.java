@@ -1,9 +1,11 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
 import net.minecraft.client.gui.achievement.GuiAchievements;
 import net.minecraft.client.gui.achievement.GuiStats;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.resources.I18n;
-//import net.minecraft.realms.RealmsBridge;
+import net.minecraft.realms.RealmsBridge;
 
 public class GuiIngameMenu extends GuiScreen
 {
@@ -22,8 +24,9 @@ public class GuiIngameMenu extends GuiScreen
         int j = 98;
         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + i, I18n.format("menu.returnToMenu")));
 
-        if (!this.mc.isIntegratedServerRunning()) {
-            this.buttonList.get(0).displayString = I18n.format("menu.disconnect");
+        if (!this.mc.isIntegratedServerRunning())
+        {
+            (this.buttonList.get(0)).displayString = I18n.format("menu.disconnect");
         }
 
         this.buttonList.add(new GuiButton(4, this.width / 2 - 100, this.height / 4 + 24 + i, I18n.format("menu.returnToGame")));
@@ -38,8 +41,10 @@ public class GuiIngameMenu extends GuiScreen
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        switch (button.id) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        switch (button.id)
+        {
             case 0:
                 this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
                 break;
@@ -49,11 +54,16 @@ public class GuiIngameMenu extends GuiScreen
                 boolean flag1 = this.mc.isConnectedToRealms();
                 button.enabled = false;
                 this.mc.theWorld.sendQuittingDisconnectingPacket();
-                this.mc.loadWorld(null);
+                this.mc.loadWorld((WorldClient)null);
 
                 if (flag)
                 {
                     this.mc.displayGuiScreen(new GuiMainMenu());
+                }
+                else if (flag1)
+                {
+                    RealmsBridge realmsbridge = new RealmsBridge();
+                    realmsbridge.switchToRealms(new GuiMainMenu());
                 }
                 else
                 {
@@ -66,7 +76,7 @@ public class GuiIngameMenu extends GuiScreen
                 break;
 
             case 4:
-                this.mc.displayGuiScreen(null);
+                this.mc.displayGuiScreen((GuiScreen)null);
                 this.mc.setIngameFocus();
                 break;
 

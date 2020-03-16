@@ -10,7 +10,7 @@ public class FlatLayerInfo
     private IBlockState layerMaterial;
 
     /** Amount of layers for this set of layers. */
-    private int layerCount;
+    private int layerCount = 1;
     private int layerMinimumY;
 
     public FlatLayerInfo(int p_i45467_1_, Block p_i45467_2_)
@@ -20,7 +20,6 @@ public class FlatLayerInfo
 
     public FlatLayerInfo(int p_i45627_1_, int height, Block layerMaterialIn)
     {
-        this.layerCount = 1;
         this.field_175902_a = p_i45627_1_;
         this.layerCount = height;
         this.layerMaterial = layerMaterialIn.getDefaultState();
@@ -80,7 +79,7 @@ public class FlatLayerInfo
 
         if (this.field_175902_a >= 3)
         {
-            ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.getLayerMaterialBlock());
+            ResourceLocation resourcelocation = Block.blockRegistry.getNameForObject(this.getLayerMaterialBlock());
             s = resourcelocation == null ? "null" : resourcelocation.toString();
 
             if (this.layerCount > 1)

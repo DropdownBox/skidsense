@@ -243,12 +243,12 @@ public class GuiEnchantment extends GuiContainer
 
             if (this.isPointInRegion(60, 14 + 19 * j, 108, 17, mouseX, mouseY) && k > 0 && l >= 0)
             {
-                List<String> list = Lists.<String>newArrayList();
+                List<String> list = Lists.newArrayList();
 
                 if (l >= 0 && Enchantment.getEnchantmentById(l & 255) != null)
                 {
                     String s = Enchantment.getEnchantmentById(l & 255).getTranslatedName((l & 65280) >> 8);
-                    list.add(EnumChatFormatting.WHITE.toString() + EnumChatFormatting.ITALIC.toString() + I18n.format("container.enchant.clue", new Object[] {s}));
+                    list.add(EnumChatFormatting.WHITE.toString() + EnumChatFormatting.ITALIC.toString() + I18n.format("container.enchant.clue", s));
                 }
 
                 if (!flag)
@@ -268,11 +268,11 @@ public class GuiEnchantment extends GuiContainer
 
                         if (i1 == 1)
                         {
-                            s1 = I18n.format("container.enchant.lapis.one", new Object[0]);
+                            s1 = I18n.format("container.enchant.lapis.one");
                         }
                         else
                         {
-                            s1 = I18n.format("container.enchant.lapis.many", new Object[] {Integer.valueOf(i1)});
+                            s1 = I18n.format("container.enchant.lapis.many", i1);
                         }
 
                         if (i >= i1)
@@ -286,11 +286,11 @@ public class GuiEnchantment extends GuiContainer
 
                         if (i1 == 1)
                         {
-                            s1 = I18n.format("container.enchant.level.one", new Object[0]);
+                            s1 = I18n.format("container.enchant.level.one");
                         }
                         else
                         {
-                            s1 = I18n.format("container.enchant.level.many", new Object[] {Integer.valueOf(i1)});
+                            s1 = I18n.format("container.enchant.level.many", i1);
                         }
 
                         list.add(EnumChatFormatting.GRAY.toString() + "" + s1);
@@ -315,7 +315,7 @@ public class GuiEnchantment extends GuiContainer
             {
                 this.field_147082_x += (float)(this.random.nextInt(4) - this.random.nextInt(4));
 
-                if (this.field_147071_v > this.field_147082_x + 1.0F || this.field_147071_v < this.field_147082_x - 1.0F)
+                if (!(this.field_147071_v <= this.field_147082_x + 1.0F) || !(this.field_147071_v >= this.field_147082_x - 1.0F))
                 {
                     break;
                 }

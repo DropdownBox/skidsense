@@ -18,9 +18,9 @@ public class EntityBreakingFX extends EntityFX
     protected EntityBreakingFX(World worldIn, double posXIn, double posYIn, double posZIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, Item p_i1197_14_, int p_i1197_15_)
     {
         this(worldIn, posXIn, posYIn, posZIn, p_i1197_14_, p_i1197_15_);
-        this.motionX *= 0.10000000149011612D;
-        this.motionY *= 0.10000000149011612D;
-        this.motionZ *= 0.10000000149011612D;
+        this.motionX *= (double)0.1F;
+        this.motionY *= (double)0.1F;
+        this.motionZ *= (double)0.1F;
         this.motionX += xSpeedIn;
         this.motionY += ySpeedIn;
         this.motionZ += zSpeedIn;

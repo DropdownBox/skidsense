@@ -17,13 +17,13 @@ public class EntitySmokeFX extends EntityFX
     protected EntitySmokeFX(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double p_i46348_8_, double p_i46348_10_, double p_i46348_12_, float p_i46348_14_)
     {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.0D, 0.0D, 0.0D);
-        this.motionX *= 0.10000000149011612D;
-        this.motionY *= 0.10000000149011612D;
-        this.motionZ *= 0.10000000149011612D;
+        this.motionX *= (double)0.1F;
+        this.motionY *= (double)0.1F;
+        this.motionZ *= (double)0.1F;
         this.motionX += p_i46348_8_;
         this.motionY += p_i46348_10_;
         this.motionZ += p_i46348_12_;
-        this.particleRed = this.particleGreen = this.particleBlue = (float)(Math.random() * 0.30000001192092896D);
+        this.particleRed = this.particleGreen = this.particleBlue = (float)(Math.random() * (double)0.3F);
         this.particleScale *= 0.75F;
         this.particleScale *= p_i46348_14_;
         this.smokeParticleScale = this.particleScale;
@@ -67,14 +67,14 @@ public class EntitySmokeFX extends EntityFX
             this.motionZ *= 1.1D;
         }
 
-        this.motionX *= 0.9599999785423279D;
-        this.motionY *= 0.9599999785423279D;
-        this.motionZ *= 0.9599999785423279D;
+        this.motionX *= (double)0.96F;
+        this.motionY *= (double)0.96F;
+        this.motionZ *= (double)0.96F;
 
         if (this.onGround)
         {
-            this.motionX *= 0.699999988079071D;
-            this.motionZ *= 0.699999988079071D;
+            this.motionX *= (double)0.7F;
+            this.motionZ *= (double)0.7F;
         }
     }
 

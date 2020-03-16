@@ -16,7 +16,7 @@ import net.minecraft.world.WorldSettings;
 public class S38PacketPlayerListItem implements Packet<INetHandlerPlayClient>
 {
     private S38PacketPlayerListItem.Action action;
-    private final List<S38PacketPlayerListItem.AddPlayerData> players = Lists.<S38PacketPlayerListItem.AddPlayerData>newArrayList();
+    private final List<S38PacketPlayerListItem.AddPlayerData> players = Lists.newArrayList();
 
     public S38PacketPlayerListItem()
     {
@@ -47,7 +47,7 @@ public class S38PacketPlayerListItem implements Packet<INetHandlerPlayClient>
      */
     public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.action = (S38PacketPlayerListItem.Action)buf.readEnumValue(S38PacketPlayerListItem.Action.class);
+        this.action = buf.readEnumValue(S38PacketPlayerListItem.Action.class);
         int i = buf.readVarIntFromBuffer();
 
         for (int j = 0; j < i; ++j)

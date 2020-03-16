@@ -1,19 +1,21 @@
 package net.minecraft.network.play.server;
 
+import java.io.IOException;
+import java.util.List;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.world.chunk.Chunk;
 
-import java.util.List;
-
-public class S26PacketMapChunkBulk implements Packet<INetHandlerPlayClient> {
+public class S26PacketMapChunkBulk implements Packet<INetHandlerPlayClient>
+{
     private int[] xPositions;
     private int[] zPositions;
     private S21PacketChunkData.Extracted[] chunksData;
     private boolean isOverworld;
 
-    public S26PacketMapChunkBulk() {
+    public S26PacketMapChunkBulk()
+    {
     }
 
     public S26PacketMapChunkBulk(List<Chunk> chunks)
@@ -37,14 +39,16 @@ public class S26PacketMapChunkBulk implements Packet<INetHandlerPlayClient> {
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) {
+    public void readPacketData(PacketBuffer buf) throws IOException
+    {
         this.isOverworld = buf.readBoolean();
         int i = buf.readVarIntFromBuffer();
         this.xPositions = new int[i];
         this.zPositions = new int[i];
         this.chunksData = new S21PacketChunkData.Extracted[i];
 
-        for (int j = 0; j < i; ++j) {
+        for (int j = 0; j < i; ++j)
+        {
             this.xPositions[j] = buf.readInt();
             this.zPositions[j] = buf.readInt();
             this.chunksData[j] = new S21PacketChunkData.Extracted();
@@ -61,14 +65,16 @@ public class S26PacketMapChunkBulk implements Packet<INetHandlerPlayClient> {
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) {
+    public void writePacketData(PacketBuffer buf) throws IOException
+    {
         buf.writeBoolean(this.isOverworld);
         buf.writeVarIntToBuffer(this.chunksData.length);
 
-        for (int i = 0; i < this.xPositions.length; ++i) {
+        for (int i = 0; i < this.xPositions.length; ++i)
+        {
             buf.writeInt(this.xPositions[i]);
             buf.writeInt(this.zPositions[i]);
-            buf.writeShort((short) (this.chunksData[i].dataSize & 65535));
+            buf.writeShort((short)(this.chunksData[i].dataSize & 65535));
         }
 
         for (int j = 0; j < this.xPositions.length; ++j)

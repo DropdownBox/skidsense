@@ -28,7 +28,7 @@ public class GuiChat extends GuiScreen
     private boolean playerNamesFound;
     private boolean waitingOnAutocomplete;
     private int autocompleteIndex;
-    private List<String> foundPlayerNames = Lists.<String>newArrayList();
+    private List<String> foundPlayerNames = Lists.newArrayList();
 
     /** Chat entry field */
     protected GuiTextField inputField;
@@ -246,7 +246,7 @@ public class GuiChat extends GuiScreen
             this.mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(stringbuilder.toString()), 1);
         }
 
-        this.inputField.writeText((String)this.foundPlayerNames.get(this.autocompleteIndex++));
+        this.inputField.writeText(this.foundPlayerNames.get(this.autocompleteIndex++));
     }
 
     private void sendAutocompleteRequest(String p_146405_1_, String p_146405_2_)
@@ -289,7 +289,7 @@ public class GuiChat extends GuiScreen
                     this.historyBuffer = this.inputField.getText();
                 }
 
-                this.inputField.setText((String)this.mc.ingameGUI.getChatGUI().getSentMessages().get(i));
+                this.inputField.setText(this.mc.ingameGUI.getChatGUI().getSentMessages().get(i));
                 this.sentHistoryCursor = i;
             }
         }

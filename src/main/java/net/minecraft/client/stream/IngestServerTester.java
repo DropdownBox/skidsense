@@ -202,7 +202,7 @@ public class IngestServerTester
             this.audioParameters.enableMicCapture = false;
             this.audioParameters.enablePlaybackCapture = false;
             this.audioParameters.enablePassthroughAudio = false;
-            this.field_153055_m = Lists.<FrameBuffer>newArrayList();
+            this.field_153055_m = Lists.newArrayList();
             int i = 3;
 
             for (int j = 0; j < i; ++j)
@@ -225,7 +225,6 @@ public class IngestServerTester
         }
     }
 
-    @SuppressWarnings("incomplete-switch")
     public void func_153041_j()
     {
         if (!this.func_153032_e() && this.field_153047_e != IngestServerTester.IngestTestState.Uninitalized)
@@ -402,7 +401,7 @@ public class IngestServerTester
         {
             if (!this.field_176008_y && !this.field_176007_z)
             {
-                ErrorCode errorcode = this.field_153045_c.submitVideoFrame((FrameBuffer)this.field_153055_m.get(this.field_153063_u));
+                ErrorCode errorcode = this.field_153045_c.submitVideoFrame(this.field_153055_m.get(this.field_153063_u));
 
                 if (ErrorCode.failed(errorcode))
                 {
@@ -450,7 +449,7 @@ public class IngestServerTester
         {
             for (int i = 0; i < this.field_153055_m.size(); ++i)
             {
-                ((FrameBuffer)this.field_153055_m.get(i)).free();
+                this.field_153055_m.get(i).free();
             }
 
             this.field_153055_m = null;

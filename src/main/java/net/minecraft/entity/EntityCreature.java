@@ -53,7 +53,14 @@ public abstract class EntityCreature extends EntityLiving
 
     public boolean isWithinHomeDistanceFromPosition(BlockPos pos)
     {
-        return this.maximumHomeDistance == -1.0F ? true : this.homePosition.distanceSq(pos) < (double)(this.maximumHomeDistance * this.maximumHomeDistance);
+        if (this.maximumHomeDistance == -1.0F)
+        {
+            return true;
+        }
+        else
+        {
+            return this.homePosition.distanceSq(pos) < (double)(this.maximumHomeDistance * this.maximumHomeDistance);
+        }
     }
 
     /**

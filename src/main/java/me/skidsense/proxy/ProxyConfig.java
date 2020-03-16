@@ -4,21 +4,16 @@
 package me.skidsense.proxy;
 
 import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventTick;
-import me.skidsense.proxy.ConnectionInfo;
-import me.skidsense.proxy.TransparentProxy;
 
 import java.net.ServerSocket;
 import java.util.Random;
-import net.minecraft.client.Minecraft;
+
 import net.minecraft.client.gui.GuiDisconnected;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiMultiplayer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 
 public class ProxyConfig {
     public static int listenerPort = ProxyConfig.findFreePort(29999);
@@ -60,7 +55,7 @@ public class ProxyConfig {
         return returnment;
     }
 
-    @EventHandler
+    @Sub
     public void onGlobalGameLoop(EventTick e) {
         if (proxy != null && proxy.isRunning() && proxy.hasFailed()) {
             boolean flag = Client.mc.isIntegratedServerRunning();

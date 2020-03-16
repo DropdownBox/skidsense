@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 
 public class ItemRecord extends Item
 {
-    private static final Map<String, ItemRecord> RECORDS = Maps.<String, ItemRecord>newHashMap();
+    private static final Map<String, ItemRecord> RECORDS = Maps.newHashMap();
 
     /** The name of the record. */
     public final String recordName;
@@ -36,7 +36,7 @@ public class ItemRecord extends Item
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (iblockstate.getBlock() == Blocks.jukebox && !((Boolean)iblockstate.getValue(BlockJukebox.HAS_RECORD)).booleanValue())
+        if (iblockstate.getBlock() == Blocks.jukebox && !iblockstate.getValue(BlockJukebox.HAS_RECORD))
         {
             if (worldIn.isRemote)
             {
@@ -83,6 +83,6 @@ public class ItemRecord extends Item
      */
     public static ItemRecord getRecord(String name)
     {
-        return (ItemRecord)RECORDS.get(name);
+        return RECORDS.get(name);
     }
 }

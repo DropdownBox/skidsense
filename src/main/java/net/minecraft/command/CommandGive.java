@@ -1,14 +1,13 @@
 package net.minecraft.command;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandGive extends CommandBase
@@ -44,7 +43,7 @@ public class CommandGive extends CommandBase
     {
         if (args.length < 2)
         {
-            throw new WrongUsageException("commands.give.usage", new Object[0]);
+            throw new WrongUsageException("commands.give.usage");
         }
         else
         {
@@ -64,7 +63,7 @@ public class CommandGive extends CommandBase
                 }
                 catch (NBTException nbtexception)
                 {
-                    throw new CommandException("commands.give.tagError", new Object[] {nbtexception.getMessage()});
+                    throw new CommandException("commands.give.tagError", nbtexception.getMessage());
                 }
             }
 
@@ -99,13 +98,20 @@ public class CommandGive extends CommandBase
                 }
             }
 
-            notifyOperators(sender, this, "commands.give.success", new Object[] {itemstack.getChatComponent(), Integer.valueOf(i), entityplayer.getName()});
+            notifyOperators(sender, this, "commands.give.success", new Object[] {itemstack.getChatComponent(), i, entityplayer.getName()});
         }
     }
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, this.getPlayers()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, Item.itemRegistry.getKeys()) : null);
+        if (args.length == 1)
+        {
+            return getListOfStringsMatchingLastWord(args, this.getPlayers());
+        }
+        else
+        {
+            return args.length == 2 ? getListOfStringsMatchingLastWord(args, Item.itemRegistry.getKeys()) : null;
+        }
     }
 
     protected String[] getPlayers()

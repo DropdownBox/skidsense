@@ -50,14 +50,14 @@ public class EntityWitch extends EntityMob implements IRangedAttackMob
         this.tasks.addTask(2, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(3, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(3, new EntityAILookIdle(this));
-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
     }
 
     protected void entityInit()
     {
         super.entityInit();
-        this.getDataWatcher().addObject(21, Byte.valueOf((byte)0));
+        this.getDataWatcher().addObject(21, (byte)0);
     }
 
     /**
@@ -190,7 +190,7 @@ public class EntityWitch extends EntityMob implements IRangedAttackMob
         {
             for (int i = 0; i < this.rand.nextInt(35) + 10; ++i)
             {
-                this.worldObj.spawnParticle(EnumParticleTypes.SPELL_WITCH, this.posX + this.rand.nextGaussian() * 0.12999999523162842D, this.getEntityBoundingBox().maxY + 0.5D + this.rand.nextGaussian() * 0.12999999523162842D, this.posZ + this.rand.nextGaussian() * 0.12999999523162842D, 0.0D, 0.0D, 0.0D, new int[0]);
+                this.worldObj.spawnParticle(EnumParticleTypes.SPELL_WITCH, this.posX + this.rand.nextGaussian() * (double)0.13F, this.getEntityBoundingBox().maxY + 0.5D + this.rand.nextGaussian() * (double)0.13F, this.posZ + this.rand.nextGaussian() * (double)0.13F, 0.0D, 0.0D, 0.0D);
             }
         }
         else
@@ -255,7 +255,7 @@ public class EntityWitch extends EntityMob implements IRangedAttackMob
         if (!this.getAggressive())
         {
             EntityPotion entitypotion = new EntityPotion(this.worldObj, this, 32732);
-            double d0 = target.posY + (double)target.getEyeHeight() - 1.100000023841858D;
+            double d0 = target.posY + (double)target.getEyeHeight() - (double)1.1F;
             entitypotion.rotationPitch -= -20.0F;
             double d1 = target.posX + target.motionX - this.posX;
             double d2 = d0 - this.posY;

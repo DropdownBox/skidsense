@@ -1,13 +1,14 @@
 package net.minecraft.network.play.server;
 
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.Set;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 
-import java.util.EnumSet;
-import java.util.Set;
-
-public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient> {
+public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient>
+{
     private double x;
     private double y;
     private double z;
@@ -32,7 +33,8 @@ public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient> {
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) {
+    public void readPacketData(PacketBuffer buf) throws IOException
+    {
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
@@ -44,7 +46,8 @@ public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient> {
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) {
+    public void writePacketData(PacketBuffer buf) throws IOException
+    {
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
@@ -91,7 +94,8 @@ public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient> {
         return this.field_179835_f;
     }
 
-    public enum EnumFlags {
+    public static enum EnumFlags
+    {
         X(0),
         Y(1),
         Z(2),
@@ -100,7 +104,8 @@ public class S08PacketPlayerPosLook implements Packet<INetHandlerPlayClient> {
 
         private int field_180058_f;
 
-        EnumFlags(int p_i45992_3_) {
+        private EnumFlags(int p_i45992_3_)
+        {
             this.field_180058_f = p_i45992_3_;
         }
 

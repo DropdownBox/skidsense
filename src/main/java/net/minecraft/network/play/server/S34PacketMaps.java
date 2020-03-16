@@ -1,14 +1,15 @@
 package net.minecraft.network.play.server;
 
+import java.io.IOException;
+import java.util.Collection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.Vec4b;
 import net.minecraft.world.storage.MapData;
 
-import java.util.Collection;
-
-public class S34PacketMaps implements Packet<INetHandlerPlayClient> {
+public class S34PacketMaps implements Packet<INetHandlerPlayClient>
+{
     private int mapId;
     private byte mapScale;
     private Vec4b[] mapVisiblePlayersVec4b;
@@ -45,14 +46,16 @@ public class S34PacketMaps implements Packet<INetHandlerPlayClient> {
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) {
+    public void readPacketData(PacketBuffer buf) throws IOException
+    {
         this.mapId = buf.readVarIntFromBuffer();
         this.mapScale = buf.readByte();
         this.mapVisiblePlayersVec4b = new Vec4b[buf.readVarIntFromBuffer()];
 
-        for (int i = 0; i < this.mapVisiblePlayersVec4b.length; ++i) {
-            short short1 = buf.readByte();
-            this.mapVisiblePlayersVec4b[i] = new Vec4b((byte) (short1 >> 4 & 15), buf.readByte(), buf.readByte(), (byte) (short1 & 15));
+        for (int i = 0; i < this.mapVisiblePlayersVec4b.length; ++i)
+        {
+            short short1 = (short)buf.readByte();
+            this.mapVisiblePlayersVec4b[i] = new Vec4b((byte)(short1 >> 4 & 15), buf.readByte(), buf.readByte(), (byte)(short1 & 15));
         }
 
         this.mapMaxX = buf.readUnsignedByte();
@@ -69,12 +72,14 @@ public class S34PacketMaps implements Packet<INetHandlerPlayClient> {
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) {
+    public void writePacketData(PacketBuffer buf) throws IOException
+    {
         buf.writeVarIntToBuffer(this.mapId);
         buf.writeByte(this.mapScale);
         buf.writeVarIntToBuffer(this.mapVisiblePlayersVec4b.length);
 
-        for (Vec4b vec4b : this.mapVisiblePlayersVec4b) {
+        for (Vec4b vec4b : this.mapVisiblePlayersVec4b)
+        {
             buf.writeByte((vec4b.func_176110_a() & 15) << 4 | vec4b.func_176111_d() & 15);
             buf.writeByte(vec4b.func_176112_b());
             buf.writeByte(vec4b.func_176113_c());

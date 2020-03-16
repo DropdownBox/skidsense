@@ -77,7 +77,7 @@ public class MapGenRavine extends MapGenBase
                     return;
                 }
 
-                if (p_180707_6_ >= d0 - 16.0D - d9 * 2.0D && p_180707_10_ >= d1 - 16.0D - d9 * 2.0D && p_180707_6_ <= d0 + 16.0D + d9 * 2.0D && p_180707_10_ <= d1 + 16.0D + d9 * 2.0D)
+                if (!(p_180707_6_ < d0 - 16.0D - d9 * 2.0D) && !(p_180707_10_ < d1 - 16.0D - d9 * 2.0D) && !(p_180707_6_ > d0 + 16.0D + d9 * 2.0D) && !(p_180707_10_ > d1 + 16.0D + d9 * 2.0D))
                 {
                     int k2 = MathHelper.floor_double(p_180707_6_ - d9) - p_180707_3_ * 16 - 1;
                     int k = MathHelper.floor_double(p_180707_6_ + d9) - p_180707_3_ * 16 + 1;

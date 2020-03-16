@@ -9,7 +9,6 @@ import org.lwjgl.util.glu.GLU;
 
 public class GLAllocation
 {
-
     /**
      * Generates the specified number of display lists and returns the first index.
      */

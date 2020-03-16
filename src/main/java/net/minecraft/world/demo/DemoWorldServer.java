@@ -1,7 +1,7 @@
 package net.minecraft.world.demo;
 
-import net.minecraft.MinecraftServer;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;

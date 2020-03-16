@@ -1,68 +1,41 @@
 package me.skidsense.module.collection.visual;
 
 import java.awt.Color;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Random;
 import java.util.regex.Pattern;
 
-import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
-import me.skidsense.hooks.value.Numbers;
-import me.skidsense.management.FriendManager;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.player.Teams;
-import me.skidsense.util.MathUtil;
-import me.skidsense.util.RenderUtil;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemAxe;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.IChatComponent;
-import optifine.Config;
 import org.lwjgl.opengl.GL11;
 
 public class Nametags
-extends Module {
+extends Mod {
 	private boolean armor = true;
 	public boolean formatting = true;
     public Nametags() {
         super("Name Tag", new String[]{"NameTag"}, ModuleType.Visual);
         this.setColor(new Color(29, 187, 102).getRGB());
     }
-
-    @EventHandler
+    @Sub
     private void onRender(EventRender3D render) {
     	 if (Minecraft.getMinecraft().theWorld != null) {
              boolean wasBobbing = Minecraft.getMinecraft().gameSettings.viewBobbing;
@@ -72,9 +45,9 @@ extends Module {
                 Object o = var4.next();
                 Entity ent = (Entity)o;
                 if (ent != Minecraft.getMinecraft().thePlayer && !ent.isInvisible() && ent instanceof EntityPlayer) {
-                   double posX = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)this.mc.timer.renderPartialTicks - RenderManager.renderPosX;
-                   double posY = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)this.mc.timer.renderPartialTicks - RenderManager.renderPosY;
-                   double posZ = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)this.mc.timer.renderPartialTicks - RenderManager.renderPosZ;
+                   double posX = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)this.mc.timer.renderPartialTicks - Minecraft.getMinecraft().getRenderManager().renderPosX;
+                   double posY = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)this.mc.timer.renderPartialTicks - Minecraft.getMinecraft().getRenderManager().renderPosY;
+                   double posZ = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)this.mc.timer.renderPartialTicks - Minecraft.getMinecraft().getRenderManager().renderPosZ;
    				renderNameTag((EntityPlayer) ent, String.valueOf(ent.getDisplayName()) , posX, posY, posZ);
                 }
              }

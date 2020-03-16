@@ -42,7 +42,7 @@ public class NBTTagByteArray extends NBTBase
      */
     public byte getId()
     {
-        return (byte)7;
+        return 7;
     }
 
     public String toString()

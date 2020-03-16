@@ -7,21 +7,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.lwjgl.input.Mouse;
-import org.newdawn.slick.opengl.TextureLoader;
 
 import me.skidsense.Client;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 
 public class Window
 
@@ -31,7 +27,7 @@ extends GuiScreen {
 	public static String modulename;
 	public static String valuename;
     public ModuleType category;
-    public Module module;
+    public Mod module;
     public Value option;
 	int bg = 0;
     public Window() {
@@ -58,7 +54,7 @@ extends GuiScreen {
     	}
 		int moduleY = y;
 		RenderUtil.rectangleBordered(x+70, y+15, x+390, y+240, 0.5, new Color(14,14,14,bg).getRGB(), new Color(25,25,25,bg).getRGB());
-    	for(Module m:Client.instance.getModuleManager().modules) {
+    	for(Mod m:Client.instance.getModuleManager().modules) {
     		if(m.getType().toString()!=modulename) {
     			continue;
     		}
@@ -124,7 +120,7 @@ extends GuiScreen {
             	categoryY+=20;
         	}
     		int moduleY = y;
-        	for(Module m:Client.instance.getModuleManager().modules) {
+        	for(Mod m:Client.instance.getModuleManager().modules) {
         		if(m.getType().toString()!=modulename) {
         			continue;
         		}

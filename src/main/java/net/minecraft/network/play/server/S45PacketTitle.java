@@ -42,7 +42,7 @@ public class S45PacketTitle implements Packet<INetHandlerPlayClient>
      */
     public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.type = (S45PacketTitle.Type)buf.readEnumValue(S45PacketTitle.Type.class);
+        this.type = buf.readEnumValue(S45PacketTitle.Type.class);
 
         if (this.type == S45PacketTitle.Type.TITLE || this.type == S45PacketTitle.Type.SUBTITLE)
         {

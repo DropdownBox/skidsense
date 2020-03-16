@@ -4,7 +4,6 @@ import com.google.common.base.Predicate;
 import java.util.List;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockState;
@@ -40,7 +39,7 @@ public class BlockHopper extends BlockContainer
     public BlockHopper()
     {
         super(Material.iron, MapColor.stoneColor);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, Boolean.valueOf(true)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.DOWN).withProperty(ENABLED, true));
         this.setCreativeTab(CreativeTabs.tabRedstone);
         this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
     }
@@ -82,7 +81,7 @@ public class BlockHopper extends BlockContainer
             enumfacing = EnumFacing.DOWN;
         }
 
-        return this.getDefaultState().withProperty(FACING, enumfacing).withProperty(ENABLED, Boolean.valueOf(true));
+        return this.getDefaultState().withProperty(FACING, enumfacing).withProperty(ENABLED, true);
     }
 
     /**
@@ -148,9 +147,9 @@ public class BlockHopper extends BlockContainer
     {
         boolean flag = !worldIn.isBlockPowered(pos);
 
-        if (flag != ((Boolean)state.getValue(ENABLED)).booleanValue())
+        if (flag != state.getValue(ENABLED))
         {
-            worldIn.setBlockState(pos, state.withProperty(ENABLED, Boolean.valueOf(flag)), 4);
+            worldIn.setBlockState(pos, state.withProperty(ENABLED, flag), 4);
         }
     }
 
@@ -227,7 +226,7 @@ public class BlockHopper extends BlockContainer
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(FACING, getFacing(meta)).withProperty(ENABLED, Boolean.valueOf(isEnabled(meta)));
+        return this.getDefaultState().withProperty(FACING, getFacing(meta)).withProperty(ENABLED, isEnabled(meta));
     }
 
     /**
@@ -236,9 +235,9 @@ public class BlockHopper extends BlockContainer
     public int getMetaFromState(IBlockState state)
     {
         int i = 0;
-        i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
+        i = i | state.getValue(FACING).getIndex();
 
-        if (!((Boolean)state.getValue(ENABLED)).booleanValue())
+        if (!state.getValue(ENABLED))
         {
             i |= 8;
         }
@@ -248,6 +247,6 @@ public class BlockHopper extends BlockContainer
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {FACING, ENABLED});
+        return new BlockState(this, FACING, ENABLED);
     }
 }

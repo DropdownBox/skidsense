@@ -25,7 +25,7 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(16, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(16, (byte)0);
         this.dataWatcher.addObject(17, "");
     }
 
@@ -93,7 +93,7 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
             double d0 = this.rand.nextGaussian() * 0.02D;
             double d1 = this.rand.nextGaussian() * 0.02D;
             double d2 = this.rand.nextGaussian() * 0.02D;
-            this.worldObj.spawnParticle(enumparticletypes, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d0, d1, d2, new int[0]);
+            this.worldObj.spawnParticle(enumparticletypes, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, d0, d1, d2);
         }
     }
 
@@ -124,11 +124,11 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
 
         if (tamed)
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 | 4)));
+            this.dataWatcher.updateObject(16, (byte)(b0 | 4));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 & -5)));
+            this.dataWatcher.updateObject(16, (byte)(b0 & -5));
         }
 
         this.setupTamedAI();
@@ -149,11 +149,11 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
 
         if (sitting)
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 | 1)));
+            this.dataWatcher.updateObject(16, (byte)(b0 | 1));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 & -2)));
+            this.dataWatcher.updateObject(16, (byte)(b0 & -2));
         }
     }
 

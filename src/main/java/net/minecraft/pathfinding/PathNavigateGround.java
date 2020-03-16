@@ -203,7 +203,7 @@ public class PathNavigateGround extends PathNavigate
                     double d0 = (double)k + 0.5D - vec31.xCoord;
                     double d1 = (double)l + 0.5D - vec31.zCoord;
 
-                    if (d0 * p_179683_8_ + d1 * p_179683_10_ >= 0.0D)
+                    if (!(d0 * p_179683_8_ + d1 * p_179683_10_ < 0.0D))
                     {
                         Block block = this.worldObj.getBlockState(new BlockPos(k, y - 1, l)).getBlock();
                         Material material = block.getMaterial();
@@ -240,7 +240,7 @@ public class PathNavigateGround extends PathNavigate
             double d0 = (double)blockpos.getX() + 0.5D - p_179692_7_.xCoord;
             double d1 = (double)blockpos.getZ() + 0.5D - p_179692_7_.zCoord;
 
-            if (d0 * p_179692_8_ + d1 * p_179692_10_ >= 0.0D)
+            if (!(d0 * p_179692_8_ + d1 * p_179692_10_ < 0.0D))
             {
                 Block block = this.worldObj.getBlockState(blockpos).getBlock();
 
