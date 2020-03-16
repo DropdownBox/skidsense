@@ -57,7 +57,7 @@ public class Critical extends Module {
     }
 
     public void doCrit() {
-        if (mode.getValue().equals(CritMode.Edit)) {
+        if (mode.getValue().equals(CritMode.Old)) {
             Random randomValue = new Random(System.currentTimeMillis() + System.nanoTime());
             double[] offsets = new double[]{0.041, 0.002};
             for (int i = 0; i < offsets.length; ++i) {
@@ -65,7 +65,6 @@ public class Critical extends Module {
                 p.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(p.posX,
                         p.posY + offsets[i] + randomValue.nextDouble() / 10000000, p.posZ, false));
             }
-            Notifications.getManager().post("Do criticals.");
         }
         if (mode.getValue().equals(CritMode.Hypixel)) {
             double[] offsets = new double[]{0.033600000987064504, 0.000650000001769514, 0.032300000774313276, 0.000650000001769514};
@@ -74,7 +73,6 @@ public class Critical extends Module {
                 double offset = offsets[i];
                 mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
             }
-            Notifications.getManager().post("Do criticals.");
         }
         if(mode.getValue().equals(CritMode.HVH)){
             double[] offsets = new double[]{0.41999998688697815,0.33320000767707825,0.00120000005699695};
@@ -83,14 +81,14 @@ public class Critical extends Module {
                 double offset = offsets[i];
                 mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
             }
-            Notifications.getManager().post("Do criticals.");
         }
+        Notifications.getManager().post("Do criticals.");
         this.timer.reset();
     }
     enum CritMode{
         Hypixel,
-        Edit,
-        HVH
+        HVH,
+        Old
     }
 }
 
