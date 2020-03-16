@@ -1,5 +1,9 @@
 package net.minecraft.client.entity;
 
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventChat;
+import me.skidsense.hooks.events.EventPostUpdate;
+import me.skidsense.hooks.events.EventPreUpdate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -51,6 +55,7 @@ import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
+import org.greenrobot.eventbus.EventBus;
 
 public class EntityPlayerSP extends AbstractClientPlayer
 {
@@ -142,6 +147,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         return false;
     }
 
+
     /**
      * Heal living entity (param: amount of half-hearts)
      */
@@ -189,7 +195,13 @@ public class EntityPlayerSP extends AbstractClientPlayer
     public void onUpdateWalkingPlayer()
     {
         boolean flag = this.isSprinting();
-
+        EventPreUpdate e = new EventPreUpdate(this.rotationYaw, this.rotationPitch, this.posY, this.mc.thePlayer.onGround);
+        EventPostUpdate post = new EventPostUpdate(this.rotationYaw, this.rotationPitch);
+        EventManager.getInstance().postAll(e);
+        if (e.isCancelled()) {
+            EventManager.getInstance().postAll(post);
+            return;
+        }
         if (flag != this.serverSprintState)
         {
             if (flag)
@@ -271,6 +283,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 this.lastReportedPitch = this.rotationPitch;
             }
         }
+        EventManager.getInstance().postAll(post);
     }
 
     /**
@@ -293,9 +306,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
     /**
      * Sends a chat message from the player. Args: chatMessage
      */
-    public void sendChatMessage(String message)
-    {
-        this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));
+    public void sendChatMessage(String message)  {
+        EventChat event = new EventChat(message);
+        EventManager.getInstance().postAll(event);
+        if(!event.isCancelled()) {
+            this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));
+        }
     }
 
     /**

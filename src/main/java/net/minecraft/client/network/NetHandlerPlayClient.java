@@ -13,6 +13,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.Map.Entry;
+
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventChat;
 import net.minecraft.block.Block;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -849,7 +852,8 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
     public void handleChat(S02PacketChat packetIn)
     {
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.gameController);
-
+        EventChat event = new EventChat(packetIn.getChatComponent().getUnformattedText());
+        EventManager.getInstance().postAll(event);
         if (packetIn.getType() == 2)
         {
             this.gameController.ingameGUI.setRecordPlaying(packetIn.getChatComponent(), false);
