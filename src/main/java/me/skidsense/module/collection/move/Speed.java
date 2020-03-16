@@ -14,6 +14,8 @@ import me.skidsense.hooks.events.EventPacketRecieve;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
+import me.skidsense.management.notifications.Notification;
+import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
@@ -135,8 +137,9 @@ public class Speed
     @EventHandler
     public void onHypixelMove(EventMove em) {
         if (mode.getValue() == SpeedMode.Hypixel) {
-            if(mode.getValue() == SpeedMode.Hypixel){
-                //Sigma
+            Random randomValue = new Random(System.currentTimeMillis()+System.nanoTime());
+
+            //Sigma
                 if (Speed.mc.thePlayer.isCollidedHorizontally) {
                     this.collided = true;
                 }
@@ -154,10 +157,11 @@ public class Speed
                     this.collided = Speed.mc.thePlayer.isCollidedHorizontally;
                     if (Speed.stage >= 0 || this.collided) {
                         Speed.stage = 0;
-                        final double a = 0.4086666 + MoveUtil.getJumpEffect() * 0.1;
+                        final double a = 0.4086666 + MoveUtil.getJumpEffect() * 0.1+(randomValue.nextFloat()*0.001);
                         if (this.stair == 0.0) {
                             Speed.mc.thePlayer.jump();
                             em.setY(Speed.mc.thePlayer.motionY = a);
+                            System.out.println(a);
                         }
                         ++this.less;
                         this.lessSlow = (this.less > 1.0 && !this.lessSlow);
@@ -166,8 +170,8 @@ public class Speed
                         }
                     }
                 }
-                this.speed = this.getHypixelSpeed(Speed.stage) + 0.03066;
-                this.speed *= 0.8688;
+                this.speed = this.getHypixelSpeed(Speed.stage) + 0.0321;
+                this.speed *= 0.888+(randomValue.nextFloat()*0.001);
                 if (this.stair > 0.0) {
                     this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
                 }
@@ -192,7 +196,7 @@ public class Speed
                 }
             }
         }
-    }
+
 
     private double getHypixelSpeed(final int stage) {
         double value = MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;
@@ -351,6 +355,7 @@ public class Speed
         FastPort,
         Bhop,
         Hypixel,
+        Experimental,
         AAC;
     }
 

@@ -39,7 +39,7 @@ extends Module {
     private boolean isStealing;
     
     public ChestStealer() {
-        super("Chest Steal", new String[]{"cheststealS","cheststeal", "chests", "stealer"}, ModuleType.World);
+        super("Chest Steal", new String[]{"cheststealS","cheststeal", "chests", "stealer","cheststealer"}, ModuleType.World);
         this.addValues(this.delay,tarshskip);
         this.setColor(new Color(218, 97, 127).getRGB());
     }
