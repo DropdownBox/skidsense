@@ -355,7 +355,6 @@ public class Speed
         FastPort,
         Bhop,
         Hypixel,
-        Experimental,
         AAC;
     }
 
