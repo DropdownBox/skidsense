@@ -170,8 +170,8 @@ public class Speed
                         }
                     }
                 }
-                this.speed = this.getHypixelSpeed(Speed.stage) + 0.0401;
-                this.speed *= 0.906+(randomValue.nextFloat()*0.001);
+                this.speed = this.getHypixelSpeed(Speed.stage) + 0.0448;
+                this.speed *= 0.89+(randomValue.nextFloat()*0.001);
                 if (this.stair > 0.0) {
                     this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
                 }
