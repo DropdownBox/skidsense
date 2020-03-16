@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import me.skidsense.hooks.Sub;
@@ -34,7 +35,6 @@ extends Mod {
         super("Name Tag", new String[]{"NameTag"}, ModuleType.Visual);
         this.setColor(new Color(29, 187, 102).getRGB());
     }
-
     @Sub
     private void onRender(EventRender3D render) {
     	 if (Minecraft.getMinecraft().theWorld != null) {
