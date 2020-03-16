@@ -1,6 +1,7 @@
 package net.minecraft.client.network;
 
 import com.google.common.collect.Maps;
+import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.mojang.authlib.GameProfile;
@@ -16,6 +17,7 @@ import java.util.Map.Entry;
 
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventChat;
+import me.skidsense.hooks.events.EventPacketSend;
 import net.minecraft.block.Block;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -814,9 +816,14 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         }
     }
 
-    public void addToSendQueue(Packet p_147297_1_)
+    public void addToSendQueue(Packet sendpacket)
     {
-        this.netManager.sendPacket(p_147297_1_);
+        EventPacketSend packetSent = new EventPacketSend(sendpacket);
+        EventManager.getInstance().postAll(packetSent);
+        if (packetSent.isCancelled()) {
+            return;
+        }
+        this.netManager.sendPacket(sendpacket);
     }
 
     public void handleCollectItem(S0DPacketCollectItem packetIn)

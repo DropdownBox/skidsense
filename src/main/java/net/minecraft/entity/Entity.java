@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+
+import me.skidsense.Client;
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventStep;
+import me.skidsense.module.collection.move.SafeWalk;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -12,6 +17,7 @@ import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.state.pattern.BlockPattern;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReport;
@@ -620,7 +626,7 @@ public abstract class Entity implements ICommandSender
             {
                 this.isInWeb = false;
                 x *= 0.25D;
-                y *= (double)0.05F;
+                y *= 0.05000000074505806D;
                 z *= 0.25D;
                 this.motionX = 0.0D;
                 this.motionY = 0.0D;
@@ -630,7 +636,7 @@ public abstract class Entity implements ICommandSender
             double d3 = x;
             double d4 = y;
             double d5 = z;
-            boolean flag = this.onGround && this.isSneaking() && this instanceof EntityPlayer;
+            boolean flag = this.onGround && this.isSneaking() && this instanceof EntityPlayer || Client.instance.getModuleManager().getModuleByClass(SafeWalk.class).isEnabled() && this instanceof EntityPlayer;;
 
             if (flag)
             {
@@ -724,15 +730,18 @@ public abstract class Entity implements ICommandSender
             }
 
             this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, 0.0D, z));
-
-            if (this.stepHeight > 0.0F && flag1 && (d3 != x || d5 != z))
+            EventStep em = new EventStep(true,stepHeight);
+            if (this == Minecraft.getMinecraft().thePlayer) {
+                EventManager.getInstance().postAll(em);
+            }
+            if (em.getStepHeight() > 0.0F && flag1 && (d3 != x || d5 != z))
             {
                 double d11 = x;
                 double d7 = y;
                 double d8 = z;
                 AxisAlignedBB axisalignedbb3 = this.getEntityBoundingBox();
                 this.setEntityBoundingBox(axisalignedbb);
-                y = (double)this.stepHeight;
+                y = (double)em.getStepHeight();
                 List<AxisAlignedBB> list = this.worldObj.getCollidingBoundingBoxes(this, this.getEntityBoundingBox().addCoord(d3, y, d5));
                 AxisAlignedBB axisalignedbb4 = this.getEntityBoundingBox();
                 AxisAlignedBB axisalignedbb5 = axisalignedbb4.addCoord(d3, 0.0D, d5);
@@ -817,6 +826,10 @@ public abstract class Entity implements ICommandSender
                     z = d8;
                     this.setEntityBoundingBox(axisalignedbb3);
                 }
+                if (this == Minecraft.getMinecraft().thePlayer) {
+                    em = new EventStep(false,stepHeight+1D);
+                    EventManager.getInstance().postAll(em);
+                }
             }
 
             this.worldObj.theProfiler.endSection();
@@ -827,7 +840,7 @@ public abstract class Entity implements ICommandSender
             this.onGround = this.isCollidedVertically && d4 < 0.0D;
             this.isCollided = this.isCollidedHorizontally || this.isCollidedVertically;
             int i = MathHelper.floor_double(this.posX);
-            int j = MathHelper.floor_double(this.posY - (double)0.2F);
+            int j = MathHelper.floor_double(this.posY - 0.20000000298023224D);
             int k = MathHelper.floor_double(this.posZ);
             BlockPos blockpos = new BlockPos(i, j, k);
             Block block1 = this.worldObj.getBlockState(blockpos).getBlock();
@@ -885,7 +898,7 @@ public abstract class Entity implements ICommandSender
 
                     if (this.isInWater())
                     {
-                        float f = MathHelper.sqrt_double(this.motionX * this.motionX * (double)0.2F + this.motionY * this.motionY + this.motionZ * this.motionZ * (double)0.2F) * 0.35F;
+                        float f = MathHelper.sqrt_double(this.motionX * this.motionX * 0.20000000298023224D + this.motionY * this.motionY + this.motionZ * this.motionZ * 0.20000000298023224D) * 0.35F;
 
                         if (f > 1.0F)
                         {

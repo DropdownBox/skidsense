@@ -58,12 +58,13 @@ public class EventManager<T,O> {
 		return instance;
 	}
 
-	public static void postAll(Event event){
+	public static <P extends Event> P postAll(P event){
 
 		// FIXED: 2020/2/8 Events not working as expected
 		// FIXME: 2020/3/14 Events not working as expected
 		getInstance().post(event);
 		getOtherEventManager().post(event);
+		return event;
 	}
 	public void post(Event event){
 		Map<Method,O> l;

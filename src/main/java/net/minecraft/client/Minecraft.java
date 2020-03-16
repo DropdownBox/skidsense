@@ -438,7 +438,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                     	var10.printStackTrace();
 //                        this.freeMemory();
 //                        this.displayGuiScreen(new GuiMemoryErrorScreen());
-//                        System.gc();
+//                        ;
                     }
 
                     continue;
@@ -907,6 +907,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     private void drawSplashScreen(TextureManager textureManagerInstance) throws LWJGLException
     {
+        SplashProgress.setProgress(0,"Start Game...");
     	SplashProgress.drawSplash(textureManagerInstance);
         /*ScaledResolution scaledresolution = new ScaledResolution(this);
         int i = scaledresolution.getScaleFactor();
@@ -1090,7 +1091,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             }
         }
 
-        System.gc();
+        ;
     }
 
     /**
@@ -1290,7 +1291,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
         try
         {
-            System.gc();
+            ;
             this.loadWorld((WorldClient)null);
         }
         catch (Throwable var2)
@@ -1298,7 +1299,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             ;
         }
 
-        System.gc();
+        ;
     }
 
     /**
@@ -2294,7 +2295,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     public void launchIntegratedServer(String folderName, String worldName, WorldSettings worldSettingsIn)
     {
         this.loadWorld((WorldClient)null);
- //       System.gc();
+ //       ;
         ISaveHandler isavehandler = this.saveLoader.getSaveLoader(folderName, false);
         WorldInfo worldinfo = isavehandler.loadWorldInfo();
 
@@ -2441,7 +2442,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             this.thePlayer = null;
         }
 
-    //    System.gc();
+    //    ;
         this.systemTime = 0L;
     }
 

@@ -31,6 +31,9 @@ import java.net.SocketAddress;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.crypto.SecretKey;
+
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventPacketRecieve;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.CryptManager;
@@ -147,7 +150,9 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
 
     protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet p_channelRead0_2_) throws Exception
     {
-        if (this.channel.isOpen())
+        EventPacketRecieve packetRecieve = new EventPacketRecieve((Packet)p_channelRead0_2_);
+        EventManager.getInstance().postAll(packetRecieve);
+        if (this.channel.isOpen() && !packetRecieve.isCancelled())
         {
             try
             {

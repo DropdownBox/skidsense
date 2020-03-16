@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.management.notifications.Notifications;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -197,7 +198,8 @@ public class GuiIngame extends Gui
         {
             this.renderPlayerStats(scaledresolution);
         }
-
+        GlStateManager.disableBlend();
+        EventManager.getInstance().postAll(new EventRenderGui(scaledresolution));
         GlStateManager.disableBlend();
 
         if (this.mc.thePlayer.getSleepTimer() > 0)

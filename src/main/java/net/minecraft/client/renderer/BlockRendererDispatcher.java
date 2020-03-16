@@ -1,5 +1,8 @@
 package net.minecraft.client.renderer;
 
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventRenderBlock;
+import me.skidsense.hooks.value.Event;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -52,6 +55,8 @@ public class BlockRendererDispatcher implements IResourceManagerReloadListener
 
     public boolean renderBlock(IBlockState state, BlockPos pos, IBlockAccess blockAccess, WorldRenderer worldRendererIn)
     {
+        EventRenderBlock event = new EventRenderBlock(pos.getX(), pos.getY(), pos.getZ(), state.getBlock(),pos);
+        EventManager.getInstance().postAll(event);
         try
         {
             int i = state.getBlock().getRenderType();

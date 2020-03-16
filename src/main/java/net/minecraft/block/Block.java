@@ -2,6 +2,10 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+
+import me.skidsense.Client;
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventCollideWithBlock;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockState;
@@ -511,7 +515,10 @@ public class Block
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
     {
         AxisAlignedBB axisalignedbb = this.getCollisionBoundingBox(worldIn, pos, state);
-
+        if (collidingEntity == Client.mc.thePlayer) {
+            EventCollideWithBlock e = EventManager.getInstance().postAll(new EventCollideWithBlock(this, pos, axisalignedbb));
+            axisalignedbb = e.getBoundingBox();
+        }
         if (axisalignedbb != null && mask.intersectsWith(axisalignedbb))
         {
             list.add(axisalignedbb);

@@ -1,5 +1,10 @@
 package net.minecraft.client.renderer.entity;
 
+import com.google.common.eventbus.EventBus;
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventPostRenderPlayer;
+import me.skidsense.hooks.events.EventPreRenderPlayer;
+import me.skidsense.hooks.value.Event;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.model.ModelPlayer;
@@ -50,6 +55,8 @@ public class RenderPlayer extends RendererLivingEntity<AbstractClientPlayer>
      */
     public void doRender(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
+        EventPreRenderPlayer event = new EventPreRenderPlayer();
+        EventManager.getInstance().postAll(event);
         if (!entity.isUser() || this.renderManager.livingPlayer == entity)
         {
             double d0 = y;
@@ -62,6 +69,8 @@ public class RenderPlayer extends RendererLivingEntity<AbstractClientPlayer>
             this.setModelVisibilities(entity);
             super.doRender(entity, x, d0, z, entityYaw, partialTicks);
         }
+        EventPostRenderPlayer event2 = new EventPostRenderPlayer();
+        EventManager.getInstance().postAll(event2);
     }
 
     private void setModelVisibilities(AbstractClientPlayer clientPlayer)

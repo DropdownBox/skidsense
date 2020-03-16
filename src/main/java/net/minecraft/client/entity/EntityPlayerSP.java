@@ -2,6 +2,7 @@ package net.minecraft.client.entity;
 
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventChat;
+import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
 import net.minecraft.client.Minecraft;
@@ -55,7 +56,6 @@ import net.minecraft.util.MovementInput;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
-import org.greenrobot.eventbus.EventBus;
 
 public class EntityPlayerSP extends AbstractClientPlayer
 {
@@ -535,6 +535,11 @@ public class EntityPlayerSP extends AbstractClientPlayer
         this.sprintingTicksLeft = sprinting ? 600 : 0;
     }
 
+    @Override
+    public void moveEntity(double x,double y,double z){
+        EventMove e = (EventMove) EventManager.postAll(new EventMove(x,y,z));
+        super.moveEntity(e.getX(),e.getY(),e.getZ());
+    }
     /**
      * Sets the current XP, total XP, and level number.
      */

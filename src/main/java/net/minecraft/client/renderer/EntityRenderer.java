@@ -10,6 +10,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
+
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventRender3D;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
@@ -1894,7 +1897,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
 
         this.mc.mcProfiler.endStartSection("hand");
-
+        GL11.glPushMatrix();
+        EventManager.getInstance().postAll(new EventRender3D(partialTicks));
+        GL11.glColor4f((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
+        GL11.glPopMatrix();
         if (this.renderHand && !Shaders.isShadowPass)
         {
             if (flag)

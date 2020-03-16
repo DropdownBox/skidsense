@@ -1,5 +1,7 @@
 package net.minecraft.inventory;
 
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
@@ -97,6 +99,11 @@ public class ContainerPlayer extends Container
      */
     public void onContainerClosed(EntityPlayer playerIn)
     {
+        EventInventory event = new EventInventory(playerIn);
+        EventManager.getInstance().postAll(event);
+        if (event.isCancelled()) {
+            return;
+        }
         super.onContainerClosed(playerIn);
 
         for (int i = 0; i < 4; ++i)
