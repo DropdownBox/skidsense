@@ -11,14 +11,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
+import java.awt.*;
+
 public class NoFall
 extends Mod {
 	private float fall;
-    public static Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])fallmode.values(), (Enum)fallmode.Normal);
-    public NoFall() {
-        super("No Fall", new String[]{"Nofalldamage"}, ModuleType.Player);
-        //this.addValues(mode);
-    }
+    //public static Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])fallmode.values(), (Enum)fallmode.Normal);
 
     public NoFall() {
         super("No Fall", new String[] { "Nofalldamage","nofall" }, ModuleType.Player);

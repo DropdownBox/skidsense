@@ -12,16 +12,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
-public class AntiFall extends Module {
+public class AntiFall extends Mod {
 
     public AntiFall() {
         super("Anti Void", new String[] { "novoid", "antifall" }, ModuleType.World);
         setColor(new Color(223,233,233).getRGB());
     }
 
-    @EventHandler
+    @Sub
     private void onUpdate(EventPreUpdate e) {
         //variable to hold if a block is underneath us
         boolean blockUnderneath = false;

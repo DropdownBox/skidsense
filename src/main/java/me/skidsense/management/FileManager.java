@@ -101,43 +101,6 @@ public class FileManager
 		catch (Exception ex) {}
 	}
 
-	public static void saveAlts() {
-		try {
-			StringBuilder stringBuffer = new StringBuilder();
-			final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
-			//Client.instance.getAltManager();
-			for (final Alt alt : AltManager.getAlts()) {
-				stringBuffer.append(String.format("%s:%s\n", alt.getUsername(), alt.getPassword()));
-			}
-			printWriter.write(Objects.requireNonNull(EncryptionUtil.encrypt(stringBuffer.toString())));
-			printWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static File getConfigFile(final String name) {
-		final File file = new File(FileManager.dir, String.format("%s.txt", name));
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			}
-			catch (IOException ex) {}
-		}
-		return file;
-	}
-
-	public static File getConfigFileEncrypt(final String name) {
-		final File file = new File(FileManager.dir, String.format("%s.kody", name));
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			}
-			catch (IOException ex) {}
-		}
-		return file;
-	}
-
 	public static void init() {
 		SplashProgress.setProgress(7, "Initializing FileManager...");
 		if (!FileManager.dir.exists()) {
@@ -148,25 +111,6 @@ public class FileManager
 		getAnnouncement();
 	}
 
-	public static void getAnnouncement() {
-		try {
-			URL realUrl = new URL("https://kody.cf/suckkid/nivialc.txt");
-			URLConnection connection = realUrl.openConnection();
-			connection.setRequestProperty("accept", "*/*");
-			connection.setRequestProperty("connection", "Keep-Alive");
-			connection.setRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36");
-			connection.setConnectTimeout(20000);
-			connection.setReadTimeout(20000);
-			connection.connect();
-			BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			//while ((s = bReader.readLine()) != null) {
-			//GuiMainMenu.AnnouncementList.add(s);
-			//}
-			bReader.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public static List<String> read(final String file) {
 		final List<String> out = new ArrayList<String>();
@@ -179,75 +123,21 @@ public class FileManager
 				f.createNewFile();
 			}
 			Throwable t = null;
-			try {
-				final FileInputStream fis = new FileInputStream(f);
-				try {
-					final InputStreamReader isr = new InputStreamReader(fis);
-					try {
-						final BufferedReader br = new BufferedReader(isr);
-						try {
-							String line = "";
-							while ((line = br.readLine()) != null) {
-								out.add(line);
-							}
+
+			try (FileInputStream fis = new FileInputStream(f)) {
+				try (InputStreamReader isr = new InputStreamReader(fis)) {
+					try (BufferedReader br = new BufferedReader(isr)) {
+						String line = "";
+						while ((line = br.readLine()) != null) {
+							out.add(line);
 						}
-						finally {
-							if (br != null) {
-								br.close();
-							}
-						}
-						if (isr != null) {
-							isr.close();
-						}
-					}
-					finally {
-						if (t == null) {
-							final Throwable t2 = null;
-							t = t2;
-						}
-						else {
-							final Throwable t2 = null;
-							if (t != t2) {
-								t.addSuppressed(t2);
-							}
-						}
-						if (isr != null) {
-							isr.close();
-						}
-					}
-					if (fis != null) {
-						fis.close();
-						return out;
 					}
 				}
-				finally {
-					if (t == null) {
-						final Throwable t3 = null;
-						t = t3;
-					}
-					else {
-						final Throwable t3 = null;
-						if (t != t3) {
-							t.addSuppressed(t3);
-						}
-					}
-					if (fis != null) {
-						fis.close();
-					}
-				}
+				fis.close();
+				return out;
 			}
-			finally {
-				if (t == null) {
-					final Throwable t4 = null;
-					t = t4;
-				}
-				else {
-					final Throwable t4 = null;
-					if (t != t4) {
-						t.addSuppressed(t4);
-					}
-				}
-			}
+
+
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -255,11 +145,7 @@ public class FileManager
 		return out;
 	}
 
-            }
-            bufferedReader.close();
-        }
-        catch (Exception ex) {}
-    }
+
     
     public static void saveAlts() {
         try {
@@ -298,15 +184,7 @@ public class FileManager
         return file;
     }
     
-    public static void init() {
-    	SplashProgress.setProgress(7, "Initializing FileManager...");
-        if (!FileManager.dir.exists()) {
-            FileManager.dir.mkdir();
-        }
-        loadLastAlt();
-        loadAlts();
-        getAnnouncement();
-    }
+
     
     public static void getAnnouncement() {
         try {
@@ -328,92 +206,7 @@ public class FileManager
         }
     }
     
-    public static List<String> read(final String file) {
-        final List<String> out = new ArrayList<String>();
-        try {
-            if (!FileManager.dir.exists()) {
-                FileManager.dir.mkdir();
-            }
-            final File f = new File(FileManager.dir, file);
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-            Throwable t = null;
-            try {
-                final FileInputStream fis = new FileInputStream(f);
-                try {
-                    final InputStreamReader isr = new InputStreamReader(fis);
-                    try {
-                        final BufferedReader br = new BufferedReader(isr);
-                        try {
-                            String line = "";
-                            while ((line = br.readLine()) != null) {
-                                out.add(line);
-                            }
-                        }
-                        finally {
-                            if (br != null) {
-                                br.close();
-                            }
-                        }
-                        if (isr != null) {
-                            isr.close();
-                        }
-                    }
-                    finally {
-                        if (t == null) {
-                            final Throwable t2 = null;
-                            t = t2;
-                        }
-                        else {
-                            final Throwable t2 = null;
-                            if (t != t2) {
-                                t.addSuppressed(t2);
-                            }
-                        }
-                        if (isr != null) {
-                            isr.close();
-                        }
-                    }
-                    if (fis != null) {
-                        fis.close();
-                        return out;
-                    }
-                }
-                finally {
-                    if (t == null) {
-                        final Throwable t3 = null;
-                        t = t3;
-                    }
-                    else {
-                        final Throwable t3 = null;
-                        if (t != t3) {
-                            t.addSuppressed(t3);
-                        }
-                    }
-                    if (fis != null) {
-                        fis.close();
-                    }
-                }
-            }
-            finally {
-                if (t == null) {
-                    final Throwable t4 = null;
-                    t = t4;
-                }
-                else {
-                    final Throwable t4 = null;
-                    if (t != t4) {
-                        t.addSuppressed(t4);
-                    }
-                }
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        return out;
-    }
+
     
     public static void save(final String file, final String content, final boolean append) {
         try {

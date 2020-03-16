@@ -4,7 +4,9 @@ import java.util.function.ToDoubleFunction;
 
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
+import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
+import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventRender3D;
@@ -326,7 +328,7 @@ public class KillAura extends Mod {
 		 }**/
 		++this.attackSpeed;
 		EventAttack e = new EventAttack(target,false);
-		EventBus.getInstance().call(e);
+		EventManager.postAll(e);
 		if(e.cancelled)
 			return;
 		this.mc.thePlayer.swingItem();

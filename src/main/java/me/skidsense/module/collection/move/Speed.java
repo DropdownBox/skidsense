@@ -3,6 +3,7 @@ package me.skidsense.module.collection.move;
 import java.awt.*;
 
 import java.util.List;
+import java.util.Random;
 
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
@@ -128,7 +129,7 @@ public class Speed
     @Sub
     public void onHypixelMove(EventMove em) {
         if (mode.getValue() == SpeedMode.Hypixel) {
-            Random randomValue = new Random(System.currentTimeMillis()+System.nanoTime());
+            Random randomValue = new Random();
 
             //Sigma
                 if (Speed.mc.thePlayer.isCollidedHorizontally) {

@@ -1,6 +1,7 @@
 package net.minecraft.client.multiplayer;
 
-import me.skidsense.hooks.EventBus;
+//import me.skidsense.hooks.EventBus;
+import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventAttack;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -497,7 +498,7 @@ public class PlayerControllerMP
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity)
     {
         EventAttack e = new EventAttack(targetEntity,false);
-        EventBus.getInstance().call(e);
+        EventManager.postAll(e);
         if(e.cancelled)
             return;
         this.syncCurrentPlayItem();

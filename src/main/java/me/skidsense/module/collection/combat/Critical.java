@@ -3,7 +3,8 @@ package me.skidsense.module.collection.combat;
 import java.awt.Color;
 
 import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+//import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
@@ -30,10 +31,10 @@ public class Critical extends Mod {
     public Critical() {
         super("Critical", new String[]{"Critical"}, ModuleType.Fight);
         this.setColor(new Color(208, 30, 142).getRGB());
-        addValues(mode,delay);
+        //addValues(mode,delay);
     }
 
-    @EventHandler
+    @Sub
     public void onAttack(EventAttack e) {
         if (canCrit())
             doCrit();
