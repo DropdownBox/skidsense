@@ -68,7 +68,15 @@ public class Critical extends Module {
             Notifications.getManager().post("Do criticals.");
         }
         if (mode.getValue().equals(CritMode.Hypixel)) {
-           double[] offsets = new double[]{0.033600000987064504,0.000650000001769514, 0.032300000774313276,0.000650000001769514};
+            double[] offsets = new double[]{0.033600000987064504, 0.000650000001769514, 0.032300000774313276, 0.000650000001769514};
+            int l = offsets.length;
+            for (int i = 0; i < l; ++i) {
+                double offset = offsets[i];
+                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+            }
+        }
+        if(mode.getValue().equals(CritMode.HVH)){
+            double[] offsets = new double[]{0.41999998688697815,0.33320000767707825,0.00120000005699695};
             int l = offsets.length;
             for (int i = 0; i < l; ++i) {
                 double offset = offsets[i];
@@ -78,8 +86,9 @@ public class Critical extends Module {
         this.timer.reset();
     }
     enum CritMode{
+        Hypixel,
         Edit,
-        Hypixel
+        HVH
     }
 }
 
