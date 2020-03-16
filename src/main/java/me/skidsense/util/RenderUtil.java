@@ -370,7 +370,26 @@ public class RenderUtil {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
 	}
-	
+
+    public static void drawImage(ResourceLocation image, float x, float y, int width, int height, int color) {
+        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+        GlStateManager.color(0, 0, 0);
+        GL11.glColor4f(0, 0, 0, 0);
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(1, 1, 1, 1);
+        glColor(color);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(image);
+        Gui.drawModalRectWithCustomSizedTexture(x, y, 0.0f, 0.0f, width, height, width, height);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
     public static void drawImage(ResourceLocation image, int x, int y, int width, int height, Color color) {
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         GL11.glDisable(2929);
