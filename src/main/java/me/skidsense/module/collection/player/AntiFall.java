@@ -60,7 +60,6 @@ public class AntiFall extends Module {
                     saveMe = true;
                     timer.reset();
                 }
-                mc.thePlayer.fallDistance = 0;
                 if (this.mode.getValue() == AntiMode.Hypixel) {
                     mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
                             mc.thePlayer.posY + 12, mc.thePlayer.posZ, false));
