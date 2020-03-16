@@ -2,7 +2,7 @@ package me.skidsense.module.collection.move;
 
 import java.awt.Color;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
@@ -20,13 +20,13 @@ extends Module {
         this.setColor(new Color(216, 253, 100).getRGB());
     }
 
-    @EventHandler
+    @Sub
     private void onPreUpdate(EventPreUpdate e) {
         if (mc.thePlayer.isUsingItem() && this.mc.thePlayer.isBlocking() && KillAura.target == null) {
             this.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
         }
     }
-    @EventHandler
+    @Sub
     private void onPostUpdate(EventPreUpdate e) {
         if (mc.thePlayer.isUsingItem() && this.mc.thePlayer.isBlocking() && KillAura.target == null) {
             mc.thePlayer.sendQueue.addToSendQueue((Packet)new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));

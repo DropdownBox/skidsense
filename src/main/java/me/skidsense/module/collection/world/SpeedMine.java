@@ -2,7 +2,7 @@ package me.skidsense.module.collection.world;
 
 import java.awt.*;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.module.Module;
@@ -26,7 +26,7 @@ public class SpeedMine extends Module
         this.setColor(new Color(223, 233, 233).getRGB());
     }
     
-    @EventHandler
+    @Sub
     private void onPacket(EventPacketSend event) {
     	if (event.packet instanceof C07PacketPlayerDigging && !Minecraft.getMinecraft().playerController.extendedReach() && Minecraft.getMinecraft().playerController != null) {
             C07PacketPlayerDigging c07PacketPlayerDigging = (C07PacketPlayerDigging)event.packet;
@@ -43,7 +43,7 @@ public class SpeedMine extends Module
         }
     }
     
-    @EventHandler
+    @Sub
     private void onUpdate(EventPreUpdate e) {
     	String copy = "skidded kody";
     	  if (Minecraft.getMinecraft().playerController.extendedReach()) {

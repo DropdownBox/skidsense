@@ -2,7 +2,7 @@ package me.skidsense.module.collection.visual;
 
 import com.google.common.collect.Lists;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.events.EventRenderBlock;
 import me.skidsense.hooks.value.Numbers;
@@ -15,7 +15,6 @@ import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 
 import java.awt.*;
@@ -73,7 +72,7 @@ public class Xray
         }
         return false;
     }
-    @EventHandler
+    @Sub
     public void onRenderBlock(EventRenderBlock event){
         BlockPos pos = new BlockPos(event.getX(), event.getY(), event.getZ());
         if(gold.getValue().booleanValue()&&getDistanceToPos(pos)<=range.getValue()&&godPosToRender.size()<=blockLimit.getValue()&&!godPosToRender.contains(pos)&&Block.getIdFromBlock(event.getBlock())==14&&canRender(pos)){
@@ -138,7 +137,7 @@ public class Xray
         }    
     }
     
-    @EventHandler
+    @Sub
     public void onRender(EventRender3D event) {
         for (BlockPos pos : this.godPosToRender) {
             this.renderBlock(pos, Color.ORANGE,0.2f);

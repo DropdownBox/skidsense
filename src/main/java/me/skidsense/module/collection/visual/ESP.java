@@ -28,7 +28,7 @@ import org.lwjgl.util.glu.GLU;
 
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
@@ -64,13 +64,13 @@ extends Module {
         this.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).getRGB());
     }
 
-    @EventHandler
+    @Sub
     public void onScreen(EventRender2D eventRender) {
         this.setSuffix(mode.getValue());
 
     }
 
-    @EventHandler
+    @Sub
     public void onRender(EventRender3D event) {
         if (mode.getValue() == ESPMode.Moon) {
             this.doCornerESP2();
@@ -80,7 +80,7 @@ extends Module {
         }
     }
 
-    @EventHandler
+    @Sub
     public void onRender1(EventRender3D event) {
         try {
             this.updatePositions();
@@ -90,7 +90,7 @@ extends Module {
         }
     }
 
-    @EventHandler
+    @Sub
     public void onRender2D(EventRender2D event) {
         GlStateManager.pushMatrix();
         for (Entity entity : this.entityConvertedPointsMap.keySet()) {

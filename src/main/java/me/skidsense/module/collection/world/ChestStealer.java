@@ -2,26 +2,18 @@ package me.skidsense.module.collection.world;
 
 import java.awt.Color;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.hooks.events.EventTick;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.hooks.value.Value;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemGlassBottle;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemPotion;
@@ -44,7 +36,7 @@ extends Module {
         this.setColor(new Color(218, 97, 127).getRGB());
     }
 
-    @EventHandler
+    @Sub
     private void onUpdate(EventPreUpdate event) {
     	if (this.mc.currentScreen instanceof GuiChest) {
             String[] list;

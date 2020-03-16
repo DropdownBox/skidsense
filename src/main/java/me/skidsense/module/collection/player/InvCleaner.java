@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
-import me.skidsense.management.ModuleManager;
 import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.combat.AutoArmor;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -65,7 +63,7 @@ public class InvCleaner extends Module {
       super.onEnable();
    }
 
-   @EventHandler
+   @Sub
    public void onEvent(EventPreUpdate event) {
       InvCleaner i3 = (InvCleaner)Client.getModuleManager().getModuleByName("Inv Cleaner");
       long delay = ((Double)this.Delay.getValue()).longValue() * 50L;

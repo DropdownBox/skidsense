@@ -1,12 +1,11 @@
 package me.skidsense.module.collection.visual;
 
 import java.awt.Color;
-import java.util.List;
 
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.hooks.EventBus;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventKey;
 import me.skidsense.hooks.value.Mode;
@@ -18,13 +17,10 @@ import me.skidsense.management.ModuleManager;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.visual.HUD;
 import me.skidsense.util.MathUtil;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.settings.GameSettings;
 
 public class TabGUI
 implements Manager {
@@ -88,7 +84,7 @@ implements Manager {
         this.maxValue += this.maxModule;
     }
 
-    @EventHandler
+    @Sub
     private void renderTabGUI(EventRender2D e) {
                 if (!Client.mc.gameSettings.showDebugInfo && Client.instance.getModuleManager().getModuleByClass(HUD.class).isEnabled()) {
                 int categoryY = this.height;
@@ -153,7 +149,7 @@ implements Manager {
             }
         }
 
-    @EventHandler
+    @Sub
     private void onKey(EventKey e) {
         if (!Client.mc.gameSettings.showDebugInfo) {
             block0 : switch (e.getKey()) {

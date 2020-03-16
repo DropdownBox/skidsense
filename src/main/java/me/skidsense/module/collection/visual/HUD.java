@@ -1,14 +1,11 @@
 package me.skidsense.module.collection.visual;
 
 import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.hooks.value.Value;
-import me.skidsense.management.FriendManager;
-import me.skidsense.management.ModuleManager;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
@@ -16,34 +13,17 @@ import me.skidsense.util.RenderUtil;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Collections;
-import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.opengl.TextureLoader;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
 public class HUD
@@ -63,7 +43,7 @@ extends Module {
 		this.removed=true;
     }
 
-    @EventHandler
+    @Sub
     private void renderHud(EventRender2D event) {
     	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.comfortaa18;
         if (!this.mc.gameSettings.showDebugInfo) {

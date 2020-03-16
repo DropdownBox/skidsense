@@ -2,7 +2,7 @@ package me.skidsense.module.collection.combat;
 
 import java.awt.Color;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -32,7 +32,7 @@ extends Module {
         this.setColor(new Color(27, 104, 204).getRGB());
     }
 
-    @EventHandler
+    @Sub
     private void onPre(EventPreUpdate e) {
         if (this.timer.hasReached(this.delay.getValue()) && !Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode && (this.mc.currentScreen != null || !this.openinv.getValue()) && !(this.mc.currentScreen instanceof GuiChat)) {
             for(int b = 5; b <= 8; ++b) {

@@ -3,7 +3,7 @@ package me.skidsense.module.collection.combat;
 import java.awt.Color;
 
 import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
@@ -13,10 +13,7 @@ import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.move.Speed;
 import me.skidsense.module.collection.player.Scaffold;
-import me.skidsense.module.collection.visual.clickgui.LAC.ClickUI;
-import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
 import me.skidsense.util.TimerUtil;
-import me.theresa.music.ui.MusicWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -36,7 +33,7 @@ public class Critical extends Module {
         addValues(mode,delay);
     }
 
-    @EventHandler
+    @Sub
     public void onAttack(EventAttack e) {
         if (canCrit())
             doCrit();

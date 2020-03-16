@@ -2,7 +2,7 @@ package me.skidsense.module.collection.move;
 
 import org.lwjgl.input.Keyboard;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
@@ -16,7 +16,7 @@ public class InvMove extends Module{
 		super("Gui Move", new String[] {"GuiMove"}, ModuleType.Move);
 	}
 	
-	@EventHandler
+	@Sub
 	public void onUpdate(EventPreUpdate event) {
 		if (this.mc.currentScreen != null && !(this.mc.currentScreen instanceof GuiChat)) {
 			KeyBinding[] key = { this.mc.gameSettings.keyBindForward, this.mc.gameSettings.keyBindBack, this.mc.gameSettings.keyBindLeft, this.mc.gameSettings.keyBindRight, this.mc.gameSettings.keyBindSprint, this.mc.gameSettings.keyBindJump };

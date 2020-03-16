@@ -39,12 +39,12 @@ public class EventBus {
             int n4 = 0;
             while (n4 < n3) {
                 Method m = arrmethod[n4];
-                if (m.getParameterCount() == 1 && m.isAnnotationPresent(EventHandler.class)) {
+                if (m.getParameterCount() == 1 && m.isAnnotationPresent(Sub.class)) {
                     Class<?> eventClass = m.getParameterTypes()[0];
                     if (!this.registry.containsKey(eventClass)) {
                         this.registry.put((Class<? extends Event>) eventClass, new CopyOnWriteArrayList());
                     }
-                    this.registry.get(eventClass).add(new Handler(m, obj, m.getDeclaredAnnotation(EventHandler.class).priority()));
+                    this.registry.get(eventClass).add(new Handler(m, obj, m.getDeclaredAnnotation(Sub.class).priority()));
                     this.registry.get(eventClass).sort(this.comparator);
                 }
                 ++n4;

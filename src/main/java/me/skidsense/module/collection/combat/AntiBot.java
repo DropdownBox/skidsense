@@ -1,35 +1,18 @@
 package me.skidsense.module.collection.combat;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
-import me.skidsense.hooks.value.Option;
-import me.skidsense.hooks.value.Value;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
-import me.skidsense.util.MathUtil;
 import me.skidsense.util.TimerUtil;
 
-import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiPlayerTabOverlay;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.IChatComponent;
 
 public class AntiBot extends Module {
 	public Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) AntiMode.values(), (Enum) AntiMode.WatchDog);
@@ -42,7 +25,7 @@ public class AntiBot extends Module {
 		this.addValues(this.mode);
 	}
 
-	@EventHandler
+	@Sub
 	public void onUpdate(EventPreUpdate event) {
         this.setSuffix(this.mode.getValue());
 		if (mode.getValue() == AntiMode.WatchDog) {

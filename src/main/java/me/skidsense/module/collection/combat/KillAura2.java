@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11;
 
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
@@ -19,7 +19,6 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
-import me.skidsense.management.ModuleManager;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MathUtil;
@@ -35,16 +34,11 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.server.S00PacketKeepAlive;
-import net.minecraft.network.play.server.S12PacketEntityVelocity;
-import net.minecraft.network.play.server.S27PacketExplosion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
 
 public class KillAura2
 extends Module {
@@ -93,7 +87,7 @@ extends Module {
 	}
 
 
-	@EventHandler
+	@Sub
 	private void render(EventRender3D e) {
 		int hurtcolor; 
 		if(target != null && target.hurtResistantTime <= 0) {
@@ -135,7 +129,7 @@ extends Module {
         }
 	}
 
-	@EventHandler
+	@Sub
 	private void onPreUpdate(EventPreUpdate event) {
 		this.setSuffix(this.mode.getValue());
 		if (this.mc.thePlayer.getHealth() <= 0 && this.mode.getValue() == AuraMode.NCP && this.targets.size() > 0) {
@@ -224,7 +218,7 @@ extends Module {
 		
 
 
-	@EventHandler
+	@Sub
 	public void onPost(EventPostUpdate event) {
 		this.sortList(targets);
 		if (this.target != null && this.shouldAttack()) {
@@ -306,7 +300,7 @@ extends Module {
 		super.onEnable();
 	}
 
-	@EventHandler
+	@Sub
 	private void setPingSpoof(EventPacketSend event) {
         if (event.getPacket() instanceof S00PacketKeepAlive) {
             event.setCancelled(true);

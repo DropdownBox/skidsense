@@ -1,9 +1,8 @@
 package me.skidsense.module.collection.move;
 
 import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventMove;
-import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -41,7 +40,7 @@ public class AutoStrafe extends Module
 		return vel;
 	}
 
-	@EventHandler
+	@Sub
 	public void onMotion(final EventMove eventMove) {
 		if (KillAura.target != null && Client.instance.getModuleManager().getModuleByClass((Class)KillAura.class).isEnabled() && !AutoStrafe.mc.thePlayer.isOnLadder() && !(boolean)AutoStrafe.OnlySpeed.getValue()) {
 			onStrafe(eventMove);
@@ -91,7 +90,7 @@ public class AutoStrafe extends Module
 		EventMove.z = forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f));
 	}
 
-	@EventHandler
+	@Sub
 	public void onRender(final EventRender3D render) {
 		if (KillAura.target != null) {
 			this.drawESP(render);

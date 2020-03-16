@@ -1,6 +1,6 @@
 package me.skidsense.module.collection.visual;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
@@ -30,7 +30,7 @@ extends Module {
         this.setColor(new Color(90, 209, 165).getRGB());
     }
 
-    @EventHandler
+    @Sub
     public void onRender(EventRender3D eventRender) {
         Iterator var3;
     	var3 = this.mc.theWorld.loadedTileEntityList.iterator();

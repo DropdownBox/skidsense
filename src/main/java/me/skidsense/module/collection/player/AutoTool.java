@@ -1,6 +1,6 @@
 package me.skidsense.module.collection.player;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventTick;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
@@ -12,7 +12,7 @@ public class AutoTool extends Module {
 		super("Auto Tool", new String[] {"AutoTool"},ModuleType.Player);
     }
 
-	@EventHandler
+	@Sub
 	    public void onEvent(EventTick event) {
 	        if (!mc.gameSettings.keyBindAttack.isKeyDown()) {
 	            return;

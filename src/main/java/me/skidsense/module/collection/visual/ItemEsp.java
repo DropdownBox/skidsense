@@ -2,7 +2,7 @@ package me.skidsense.module.collection.visual;
 
 import org.lwjgl.opengl.GL11;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Module;
@@ -23,7 +23,7 @@ public class ItemEsp extends Module {
         this.addValues(this.outlinedboundingBox);
 	}
 	
-	@EventHandler
+	@Sub
 	public void onRender(EventRender3D event) {
 		for (Object o : mc.theWorld.loadedEntityList) {
     		if (!(o instanceof EntityItem)) continue;

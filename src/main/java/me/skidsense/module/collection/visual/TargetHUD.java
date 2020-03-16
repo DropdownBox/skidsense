@@ -3,7 +3,6 @@ package me.skidsense.module.collection.visual;
 import java.awt.Color;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Iterator;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -12,7 +11,7 @@ import com.ibm.icu.text.NumberFormat;
 
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
@@ -24,7 +23,6 @@ import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.PlayerUtil;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
@@ -32,15 +30,11 @@ import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
 
 public class TargetHUD
 extends Module {
@@ -59,7 +53,7 @@ extends Module {
     Colors hurtcolor;
     String hurtrender;
     String linehealth = null;
-    @EventHandler
+    @Sub
     public void onRender(EventRender2D event) {
         FontRenderer font2 = this.mc.fontRendererObj;
         FontRenderer font = Client.fontManager.sansation16;
@@ -323,7 +317,7 @@ extends Module {
 
     
     
- @EventHandler
+ @Sub
 	public void onScreenDrawx(EventRender2D er) {
 	 if(this.mode.getValue() == rendermode.Mikov){
 		ScaledResolution res = new ScaledResolution(this.mc);	 
@@ -549,7 +543,7 @@ extends Module {
   }
 
   
-  @EventHandler
+  @Sub
   public void onScreenDraw(EventRender2D er2) {
       double Dis;
       ScaledResolution res;

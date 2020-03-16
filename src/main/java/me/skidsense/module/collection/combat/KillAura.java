@@ -5,7 +5,7 @@ import java.util.function.ToDoubleFunction;
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
 import me.skidsense.hooks.EventBus;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender2D;
@@ -16,13 +16,10 @@ import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.player.Teams;
-import me.skidsense.util.BlockUtil;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
 import me.skidsense.util.TimerUtil;
-import me.tojatta.api.utilities.vector.impl.Vector3;
 
 import java.util.Comparator;
 import java.util.ArrayList;
@@ -30,10 +27,8 @@ import java.util.ArrayList;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.ScaledResolution;
@@ -122,7 +117,7 @@ public class KillAura extends Module {
 		target = null;
 	}
 
-	@EventHandler
+	@Sub
 	public void onEvent(EventRender2D e) {
 		final ScaledResolution res = new ScaledResolution(KillAura.mc);
 		if (target != null &&
@@ -168,7 +163,7 @@ public class KillAura extends Module {
 		}
 	}
 
-	@EventHandler
+	@Sub
 	public void targetHud(EventRender2D event) {
 		ScaledResolution sr2 = new ScaledResolution(mc);
 		if (target != null) {
@@ -188,7 +183,7 @@ public class KillAura extends Module {
 			}
 		}
 	}
-	@EventHandler
+	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
 		if (!this.mc.thePlayer.isEntityAlive() && this.autodisable.getValue()) {
 			this.setEnabled(false);
@@ -233,7 +228,7 @@ public class KillAura extends Module {
 		this.lastRotations = new float[] { eventMotion.yaw, eventMotion.pitch };
 	}
 
-	@EventHandler
+	@Sub
 	public void EventPostUpdate(me.skidsense.hooks.events.EventPostUpdate e) {
 		if (target != null && this.shouldAttack()) {
 			this.attack();
@@ -247,7 +242,7 @@ public class KillAura extends Module {
 		}
 	}
 
-	@EventHandler
+	@Sub
 	private void render(EventRender3D e) {
 		int hurtcolor;
 		boolean setcolor = target != null && target.hurtResistantTime <= 0;

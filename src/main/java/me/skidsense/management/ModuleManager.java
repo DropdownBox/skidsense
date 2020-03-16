@@ -3,7 +3,7 @@ package me.skidsense.management;
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.hooks.EventBus;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventKey;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventRender3D;
@@ -11,8 +11,6 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
-import me.skidsense.management.FileManager;
-import me.skidsense.management.Manager;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.AntiBot;
@@ -30,7 +28,6 @@ import me.skidsense.module.collection.world.SpeedMine;
 import me.skidsense.util.GLUtils;
 
 import java.lang.reflect.Field;
-import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -153,7 +150,7 @@ implements Manager {
         return output;
     }
 
-    @EventHandler
+    @Sub
     private void onKeyPress(EventKey e) {
         for (Module m : modules) {
             if (m.getKey() != e.getKey()) continue;
@@ -161,14 +158,14 @@ implements Manager {
         }
     }
 
-    @EventHandler
+    @Sub
     private void onGLHack(EventRender3D e) {
         GlStateManager.getFloat(2982, (FloatBuffer)GLUtils.MODELVIEW.clear());
         GlStateManager.getFloat(2983, (FloatBuffer)GLUtils.PROJECTION.clear());
         GlStateManager.glGetInteger(2978, (IntBuffer)GLUtils.VIEWPORT.clear());
     }
 
-    @EventHandler
+    @Sub
     private void on2DRender(EventRender2D e) {
         if (this.enabledNeededMod) {
             this.enabledNeededMod = false;

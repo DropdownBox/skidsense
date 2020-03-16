@@ -3,7 +3,7 @@
  */
 package me.skidsense.module.collection.move;
 
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventCollideWithBlock;
 import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.events.EventPreUpdate;
@@ -20,7 +20,6 @@ import java.util.Arrays;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.state.pattern.BlockHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -77,7 +76,7 @@ public class Jesus extends Module {
 		return false;
 	}
 
-	@EventHandler
+	@Sub
 	public void onPre(EventPreUpdate e) {
 		this.setSuffix(this.mode.getValue());
 		if (this.mode.getValue() == JMode.Dolphin) {
@@ -192,7 +191,7 @@ public class Jesus extends Module {
 		}
 	}
 
-	@EventHandler
+	@Sub
 	public void onPacket(EventPacketSend e) {
 		if (this.mode.getValue() == JMode.Motion) {
 			if (e.getPacket() instanceof C03PacketPlayer && this.canJeboos() && BlockUtil.isOnLiquid()) {
@@ -202,7 +201,7 @@ public class Jesus extends Module {
 		}
 	}
 
-	@EventHandler
+	@Sub
 	public void onBB(EventCollideWithBlock e) {
 		if (this.mode.getValue() == JMode.Motion) {
 			if (e.getBlock() instanceof BlockLiquid && this.canJeboos()) {

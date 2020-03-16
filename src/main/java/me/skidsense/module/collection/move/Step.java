@@ -3,10 +3,9 @@ package me.skidsense.module.collection.move;
 
 import me.skidsense.hooks.value.Option;
 import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventStep;
 import me.skidsense.hooks.value.Numbers;
-import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
@@ -34,7 +33,7 @@ extends Module {
         return !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled();
     }
 
-    @EventHandler
+    @Sub
     private void onUpdate(EventStep e) {
         this.setSuffix("NCP");
         if(reset){
