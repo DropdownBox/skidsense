@@ -5,6 +5,7 @@ import java.awt.Color;
 import me.skidsense.Client;
 import me.skidsense.hooks.EventHandler;
 import me.skidsense.hooks.events.EventAttack;
+import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Module;
@@ -21,6 +22,7 @@ import java.util.Random;
 
 
 public class Critical extends Module {
+    static Mode <Enum> mode =new Mode<>("Mode","Mode",CritMode.values(),CritMode.Hypixel);
     static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
     private static TimerUtil timer = new TimerUtil();
 
@@ -28,7 +30,7 @@ public class Critical extends Module {
     public Critical() {
         super("Critical", new String[]{"Critical"}, ModuleType.Fight);
         this.setColor(new Color(208, 30, 142).getRGB());
-        addValues(delay);
+        addValues(mode,delay);
     }
 
     @EventHandler
@@ -55,15 +57,29 @@ public class Critical extends Module {
     }
 
     public void doCrit() {
-        Random randomValue = new Random(System.currentTimeMillis()+System.nanoTime());
-        double[] offsets = new double[] { 0.041, 0.002 };
-        for (int i = 0; i < offsets.length; ++i) {
-            EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-            p.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(p.posX,
-                    p.posY + offsets[i] + randomValue.nextDouble() / 10000000, p.posZ, false));
+        if (mode.getValue().equals(CritMode.Edit)) {
+            Random randomValue = new Random(System.currentTimeMillis() + System.nanoTime());
+            double[] offsets = new double[]{0.041, 0.002};
+            for (int i = 0; i < offsets.length; ++i) {
+                EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+                p.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(p.posX,
+                        p.posY + offsets[i] + randomValue.nextDouble() / 10000000, p.posZ, false));
+            }
+            Notifications.getManager().post("Do criticals.");
         }
-            this.timer.reset();
-        Notifications.getManager().post("Do criticals.");
+        if (mode.getValue().equals(CritMode.Hypixel)) {
+           double[] offsets = new double[]{0.033600000987064504,0.000650000001769514, 0.032300000774313276,0.000650000001769514};
+            int l = offsets.length;
+            for (int i = 0; i < l; ++i) {
+                double offset = offsets[i];
+                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+            }
+        }
+        this.timer.reset();
+    }
+    enum CritMode{
+        Edit,
+        Hypixel
     }
 }
 
