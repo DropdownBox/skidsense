@@ -3,16 +3,15 @@ package net.minecraft.client.model;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.src.Config;
 import net.minecraft.util.Vec3;
-import optifine.Config;
-import shadersmod.client.SVertexFormat;
+import net.optifine.shaders.SVertexFormat;
 
 public class TexturedQuad
 {
     public PositionTextureVertex[] vertexPositions;
     public int nVertices;
     private boolean invertNormal;
-    private static final String __OBFID = "CL_00000850";
 
     public TexturedQuad(PositionTextureVertex[] vertices)
     {

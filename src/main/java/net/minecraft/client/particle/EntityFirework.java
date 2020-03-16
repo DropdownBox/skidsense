@@ -145,14 +145,14 @@ public class EntityFirework
             this.setParticleTextureIndex(this.baseTextureIndex + (7 - this.particleAge * 8 / this.particleMaxAge));
             this.motionY -= 0.004D;
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX *= 0.9100000262260437D;
-            this.motionY *= 0.9100000262260437D;
-            this.motionZ *= 0.9100000262260437D;
+            this.motionX *= (double)0.91F;
+            this.motionY *= (double)0.91F;
+            this.motionZ *= (double)0.91F;
 
             if (this.onGround)
             {
-                this.motionX *= 0.699999988079071D;
-                this.motionZ *= 0.699999988079071D;
+                this.motionX *= (double)0.7F;
+                this.motionZ *= (double)0.7F;
             }
 
             if (this.trail && this.particleAge < this.particleMaxAge / 2 && (this.particleAge + this.particleMaxAge) % 2 == 0)
@@ -325,7 +325,7 @@ public class EntityFirework
         private boolean func_92037_i()
         {
             Minecraft minecraft = Minecraft.getMinecraft();
-            return minecraft == null || minecraft.getRenderViewEntity() == null || minecraft.getRenderViewEntity().getDistanceSq(this.posX, this.posY, this.posZ) >= 256.0D;
+            return minecraft == null || minecraft.getRenderViewEntity() == null || !(minecraft.getRenderViewEntity().getDistanceSq(this.posX, this.posY, this.posZ) < 256.0D);
         }
 
         private void createParticle(double p_92034_1_, double p_92034_3_, double p_92034_5_, double p_92034_7_, double p_92034_9_, double p_92034_11_, int[] p_92034_13_, int[] p_92034_14_, boolean p_92034_15_, boolean p_92034_16_)

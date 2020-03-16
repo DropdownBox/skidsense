@@ -84,27 +84,27 @@ public class EntityZombie extends EntityMob
         this.tasks.addTask(4, new EntityAIAttackOnCollide(this, EntityVillager.class, 1.0D, true));
         this.tasks.addTask(4, new EntityAIAttackOnCollide(this, EntityIronGolem.class, 1.0D, true));
         this.tasks.addTask(6, new EntityAIMoveThroughVillage(this, 1.0D, false));
-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[] {EntityPigZombie.class}));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityVillager.class, false));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, true));
+        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, EntityPigZombie.class));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityVillager.class, false));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityIronGolem.class, true));
     }
 
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(35.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.23000000417232513D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.23F);
         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(3.0D);
-        this.getAttributeMap().registerAttribute(reinforcementChance).setBaseValue(this.rand.nextDouble() * 0.10000000149011612D);
+        this.getAttributeMap().registerAttribute(reinforcementChance).setBaseValue(this.rand.nextDouble() * (double)0.1F);
     }
 
     protected void entityInit()
     {
         super.entityInit();
-        this.getDataWatcher().addObject(12, Byte.valueOf((byte)0));
-        this.getDataWatcher().addObject(13, Byte.valueOf((byte)0));
-        this.getDataWatcher().addObject(14, Byte.valueOf((byte)0));
+        this.getDataWatcher().addObject(12, (byte)0);
+        this.getDataWatcher().addObject(13, (byte)0);
+        this.getDataWatcher().addObject(14, (byte)0);
     }
 
     /**
@@ -173,7 +173,7 @@ public class EntityZombie extends EntityMob
      */
     public void setChild(boolean childZombie)
     {
-        this.getDataWatcher().updateObject(12, Byte.valueOf((byte)(childZombie ? 1 : 0)));
+        this.getDataWatcher().updateObject(12, (byte)(childZombie ? 1 : 0));
 
         if (this.worldObj != null && !this.worldObj.isRemote)
         {
@@ -202,7 +202,7 @@ public class EntityZombie extends EntityMob
      */
     public void setVillager(boolean villager)
     {
-        this.getDataWatcher().updateObject(13, Byte.valueOf((byte)(villager ? 1 : 0)));
+        this.getDataWatcher().updateObject(13, (byte)(villager ? 1 : 0));
     }
 
     /**
@@ -288,8 +288,8 @@ public class EntityZombie extends EntityMob
                             this.worldObj.spawnEntityInWorld(entityzombie);
                             entityzombie.setAttackTarget(entitylivingbase);
                             entityzombie.onInitialSpawn(this.worldObj.getDifficultyForLocation(new BlockPos(entityzombie)), (IEntityLivingData)null);
-                            this.getEntityAttribute(reinforcementChance).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05000000074505806D, 0));
-                            entityzombie.getEntityAttribute(reinforcementChance).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05000000074505806D, 0));
+                            this.getEntityAttribute(reinforcementChance).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", (double) -0.05F, 0));
+                            entityzombie.getEntityAttribute(reinforcementChance).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", (double) -0.05F, 0));
                             break;
                         }
                     }
@@ -556,11 +556,11 @@ public class EntityZombie extends EntityMob
 
                 if ((double)this.worldObj.rand.nextFloat() < 0.05D)
                 {
-                    List<EntityChicken> list = this.worldObj.<EntityChicken>getEntitiesWithinAABB(EntityChicken.class, this.getEntityBoundingBox().expand(5.0D, 3.0D, 5.0D), EntitySelectors.IS_STANDALONE);
+                    List<EntityChicken> list = this.worldObj.getEntitiesWithinAABB(EntityChicken.class, this.getEntityBoundingBox().expand(5.0D, 3.0D, 5.0D), EntitySelectors.IS_STANDALONE);
 
                     if (!list.isEmpty())
                     {
-                        EntityChicken entitychicken = (EntityChicken)list.get(0);
+                        EntityChicken entitychicken = list.get(0);
                         entitychicken.setChickenJockey(true);
                         this.mountEntity(entitychicken);
                     }
@@ -592,7 +592,7 @@ public class EntityZombie extends EntityMob
             }
         }
 
-        this.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("Random spawn bonus", this.rand.nextDouble() * 0.05000000074505806D, 0));
+        this.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("Random spawn bonus", this.rand.nextDouble() * (double)0.05F, 0));
         double d0 = this.rand.nextDouble() * 1.5D * (double)f;
 
         if (d0 > 1.0D)
@@ -649,7 +649,7 @@ public class EntityZombie extends EntityMob
     protected void startConversion(int ticks)
     {
         this.conversionTime = ticks;
-        this.getDataWatcher().updateObject(14, Byte.valueOf((byte)1));
+        this.getDataWatcher().updateObject(14, (byte)1);
         this.removePotionEffect(Potion.weakness.id);
         this.addPotionEffect(new PotionEffect(Potion.damageBoost.id, ticks, Math.min(this.worldObj.getDifficulty().getDifficultyId() - 1, 0)));
         this.worldObj.setEntityState(this, (byte)16);
@@ -807,13 +807,11 @@ public class EntityZombie extends EntityMob
 
     class GroupData implements IEntityLivingData
     {
-        public boolean isChild;
-        public boolean isVillager;
+        public boolean isChild = false;
+        public boolean isVillager = false;
 
         private GroupData(boolean isBaby, boolean isVillagerZombie)
         {
-            this.isChild = false;
-            this.isVillager = false;
             this.isChild = isBaby;
             this.isVillager = isVillagerZombie;
         }

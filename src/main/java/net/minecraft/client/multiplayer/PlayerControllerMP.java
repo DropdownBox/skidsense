@@ -485,39 +485,6 @@ public class PlayerControllerMP
             }
         }
     }
-    
-    public boolean csendUseItem(EntityPlayer playerIn, World worldIn, ItemStack itemStackIn)
-    {
-        if (this.currentGameType == WorldSettings.GameType.SPECTATOR)
-        {
-            return false;
-        }
-        else
-        {
-            this.syncCurrentPlayItem();
-            mc.getNetHandler().getNetworkManager().sendPacket(
-                    new C08PacketPlayerBlockPlacement(
-                  		  new BlockPos(new BlockPos(-0.8f, -0.8f, -0.8f)),255,mc.thePlayer.getCurrentEquippedItem(),0,0,0));
-            int i = itemStackIn.stackSize;
-            ItemStack itemstack = itemStackIn.useItemRightClick(worldIn, playerIn);
-
-            if (itemstack != itemStackIn || itemstack != null && itemstack.stackSize != i)
-            {
-                playerIn.inventory.mainInventory[playerIn.inventory.currentItem] = itemstack;
-
-                if (itemstack.stackSize == 0)
-                {
-                    playerIn.inventory.mainInventory[playerIn.inventory.currentItem] = null;
-                }
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
 
     public EntityPlayerSP func_178892_a(World worldIn, StatFileWriter statWriter)
     {

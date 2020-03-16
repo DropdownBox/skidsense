@@ -2,16 +2,22 @@ package net.minecraft.util;
 
 public class IntHashMap<V>
 {
-    private transient IntHashMap.Entry<V>[] slots = new IntHashMap.Entry[16];
+    private transient IntHashMap.Entry<V>[] slots;
 
     /** The number of items stored in this map */
     private transient int count;
 
     /** The grow threshold */
-    private int threshold = 12;
+    private int threshold;
 
     /** The scale factor used to determine when to grow the table */
     private final float growFactor = 0.75F;
+
+    public IntHashMap()
+    {
+        this.threshold = 12;
+        this.slots = new IntHashMap.Entry[16];
+    }
 
     /**
      * Makes the passed in integer suitable for hashing by a number of shifts
@@ -209,7 +215,7 @@ public class IntHashMap<V>
     private void insert(int p_76040_1_, int p_76040_2_, V p_76040_3_, int p_76040_4_)
     {
         IntHashMap.Entry<V> entry = this.slots[p_76040_4_];
-        this.slots[p_76040_4_] = new IntHashMap.Entry(p_76040_1_, p_76040_2_, p_76040_3_, entry);
+        this.slots[p_76040_4_] = new IntHashMap.Entry<>(p_76040_1_, p_76040_2_, p_76040_3_, entry);
 
         if (this.count++ >= this.threshold)
         {
@@ -251,8 +257,8 @@ public class IntHashMap<V>
             else
             {
                 IntHashMap.Entry<V> entry = (IntHashMap.Entry)p_equals_1_;
-                Object object = Integer.valueOf(this.getHash());
-                Object object1 = Integer.valueOf(entry.getHash());
+                Object object = this.getHash();
+                Object object1 = entry.getHash();
 
                 if (object == object1 || object != null && object.equals(object1))
                 {

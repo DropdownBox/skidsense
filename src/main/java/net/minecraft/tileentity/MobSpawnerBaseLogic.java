@@ -23,7 +23,7 @@ public abstract class MobSpawnerBaseLogic
     /** The delay to spawn. */
     private int spawnDelay = 20;
     private String mobID = "Pig";
-    private final List<MobSpawnerBaseLogic.WeightedRandomMinecart> minecartToSpawn = Lists.<MobSpawnerBaseLogic.WeightedRandomMinecart>newArrayList();
+    private final List<MobSpawnerBaseLogic.WeightedRandomMinecart> minecartToSpawn = Lists.newArrayList();
     private MobSpawnerBaseLogic.WeightedRandomMinecart randomEntity;
 
     /** The rotation of the mob inside the mob spawner */
@@ -90,8 +90,8 @@ public abstract class MobSpawnerBaseLogic
                 double d3 = (double)((float)blockpos.getX() + this.getSpawnerWorld().rand.nextFloat());
                 double d4 = (double)((float)blockpos.getY() + this.getSpawnerWorld().rand.nextFloat());
                 double d5 = (double)((float)blockpos.getZ() + this.getSpawnerWorld().rand.nextFloat());
-                this.getSpawnerWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d3, d4, d5, 0.0D, 0.0D, 0.0D, new int[0]);
-                this.getSpawnerWorld().spawnParticle(EnumParticleTypes.FLAME, d3, d4, d5, 0.0D, 0.0D, 0.0D, new int[0]);
+                this.getSpawnerWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d3, d4, d5, 0.0D, 0.0D, 0.0D);
+                this.getSpawnerWorld().spawnParticle(EnumParticleTypes.FLAME, d3, d4, d5, 0.0D, 0.0D, 0.0D);
 
                 if (this.spawnDelay > 0)
                 {
@@ -240,7 +240,7 @@ public abstract class MobSpawnerBaseLogic
 
         if (this.minecartToSpawn.size() > 0)
         {
-            this.setRandomEntity((MobSpawnerBaseLogic.WeightedRandomMinecart)WeightedRandom.getRandomItem(this.getSpawnerWorld().rand, this.minecartToSpawn));
+            this.setRandomEntity(WeightedRandom.getRandomItem(this.getSpawnerWorld().rand, this.minecartToSpawn));
         }
 
         this.func_98267_a(1);

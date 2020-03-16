@@ -1,5 +1,7 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
@@ -31,12 +33,14 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
                 this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 96, I18n.format("deathScreen.leaveServer")));
             }
         }
-        else {
+        else
+        {
             this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 72, I18n.format("deathScreen.respawn")));
             this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 96, I18n.format("deathScreen.titleScreen")));
 
-            if (this.mc.getSession() == null) {
-                this.buttonList.get(1).enabled = false;
+            if (this.mc.getSession() == null)
+            {
+                (this.buttonList.get(1)).enabled = false;
             }
         }
 
@@ -50,21 +54,25 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
      * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
-    protected void keyTyped(char typedChar, int keyCode) {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException
+    {
     }
 
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        switch (button.id) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        switch (button.id)
+        {
             case 0:
                 this.mc.thePlayer.respawnPlayer();
-                this.mc.displayGuiScreen(null);
+                this.mc.displayGuiScreen((GuiScreen)null);
                 break;
 
             case 1:
-                if (this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled()) {
+                if (this.mc.theWorld.getWorldInfo().isHardcoreModeEnabled())
+                {
                     this.mc.displayGuiScreen(new GuiMainMenu());
                 }
                 else
@@ -81,13 +89,13 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
         if (result)
         {
             this.mc.theWorld.sendQuittingDisconnectingPacket();
-            this.mc.loadWorld(null);
+            this.mc.loadWorld((WorldClient)null);
             this.mc.displayGuiScreen(new GuiMainMenu());
         }
         else
         {
             this.mc.thePlayer.respawnPlayer();
-            this.mc.displayGuiScreen(null);
+            this.mc.displayGuiScreen((GuiScreen)null);
         }
     }
 

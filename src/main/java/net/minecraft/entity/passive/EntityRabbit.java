@@ -67,7 +67,7 @@ public class EntityRabbit extends EntityAnimal
         this.tasks.addTask(5, new EntityRabbit.AIRaidFarm(this));
         this.tasks.addTask(5, new EntityAIWander(this, 0.6D));
         this.tasks.addTask(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
-        this.aiAvoidWolves = new EntityRabbit.AIAvoidEntity(this, EntityWolf.class, 16.0F, 1.33D, 1.33D);
+        this.aiAvoidWolves = new EntityRabbit.AIAvoidEntity<>(this, EntityWolf.class, 16.0F, 1.33D, 1.33D);
         this.tasks.addTask(4, this.aiAvoidWolves);
         this.setMovementSpeed(0.0D);
     }
@@ -128,7 +128,7 @@ public class EntityRabbit extends EntityAnimal
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(18, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(18, (byte)0);
     }
 
     public void updateAITasks()
@@ -214,7 +214,7 @@ public class EntityRabbit extends EntityAnimal
 
     private void calculateRotationYaw(double x, double z)
     {
-        this.rotationYaw = (float)(MathHelper.atan2(z - this.posZ, x - this.posX) * 180.0D / Math.PI) - 90.0F;
+        this.rotationYaw = (float)(MathHelper.atan2(z - this.posZ, x - this.posX) * 180.0D / (double)(float)Math.PI) - 90.0F;
     }
 
     private void func_175518_cr()
@@ -266,7 +266,7 @@ public class EntityRabbit extends EntityAnimal
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.3F);
     }
 
     /**
@@ -423,9 +423,9 @@ public class EntityRabbit extends EntityAnimal
         {
             this.tasks.removeTask(this.aiAvoidWolves);
             this.tasks.addTask(4, new EntityRabbit.AIEvilAttack(this));
-            this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
-            this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
-            this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityWolf.class, true));
+            this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+            this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
+            this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<>(this, EntityWolf.class, true));
 
             if (!this.hasCustomName())
             {
@@ -433,7 +433,7 @@ public class EntityRabbit extends EntityAnimal
             }
         }
 
-        this.dataWatcher.updateObject(18, Byte.valueOf((byte)rabbitTypeId));
+        this.dataWatcher.updateObject(18, (byte)rabbitTypeId);
     }
 
     /**
@@ -484,7 +484,7 @@ public class EntityRabbit extends EntityAnimal
 
     protected void createEatingParticles()
     {
-        this.worldObj.spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 0.0D, 0.0D, 0.0D, new int[] {Block.getStateId(Blocks.carrots.getStateFromMeta(7))});
+        this.worldObj.spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 0.0D, 0.0D, 0.0D, Block.getStateId(Blocks.carrots.getStateFromMeta(7)));
         this.carrotTicks = 100;
     }
 
@@ -556,7 +556,7 @@ public class EntityRabbit extends EntityAnimal
 
         public AIRaidFarm(EntityRabbit rabbitIn)
         {
-            super(rabbitIn, 0.699999988079071D, 16);
+            super(rabbitIn, (double)0.7F, 16);
             this.rabbit = rabbitIn;
         }
 
@@ -603,7 +603,7 @@ public class EntityRabbit extends EntityAnimal
                 IBlockState iblockstate = world.getBlockState(blockpos);
                 Block block = iblockstate.getBlock();
 
-                if (this.field_179499_e && block instanceof BlockCarrot && ((Integer)iblockstate.getValue(BlockCarrot.AGE)).intValue() == 7)
+                if (this.field_179499_e && block instanceof BlockCarrot && iblockstate.getValue(BlockCarrot.AGE) == 7)
                 {
                     world.setBlockState(blockpos, Blocks.air.getDefaultState(), 2);
                     world.destroyBlock(blockpos, true);
@@ -625,7 +625,7 @@ public class EntityRabbit extends EntityAnimal
                 IBlockState iblockstate = worldIn.getBlockState(pos);
                 block = iblockstate.getBlock();
 
-                if (block instanceof BlockCarrot && ((Integer)iblockstate.getValue(BlockCarrot.AGE)).intValue() == 7 && this.field_179498_d && !this.field_179499_e)
+                if (block instanceof BlockCarrot && iblockstate.getValue(BlockCarrot.AGE) == 7 && this.field_179498_d && !this.field_179499_e)
                 {
                     this.field_179499_e = true;
                     return true;

@@ -79,8 +79,9 @@ public class JSONWriter
         int i = set.size();
         int j = 0;
 
-        for (String s : (Set<String>)set)
+        for (Object ffObject : set)
         {
+        	String s = (String)ffObject;
             Object object = jObj.get(s);
             this.writeIndent();
             this.writer.write(JSONValue.toJSONString(s));

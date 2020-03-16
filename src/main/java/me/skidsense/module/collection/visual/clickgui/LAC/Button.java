@@ -6,20 +6,17 @@ import com.google.common.collect.Lists;
 import me.skidsense.Client;
 import me.skidsense.hooks.value.Value;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.collection.visual.HUD;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 
 public class Button {
-    public Module cheat;
+    public Mod cheat;
     public Window parent;
     public int anima;
     public int x;
@@ -30,7 +27,7 @@ public class Button {
     public ArrayList<ValueButton> buttons = Lists.newArrayList();
     public boolean expand;
 
-    public Button(Module cheat, int x2, int y2) {
+    public Button(Mod cheat, int x2, int y2) {
         this.cheat = cheat;
         this.x = x2;
         this.y = y2;

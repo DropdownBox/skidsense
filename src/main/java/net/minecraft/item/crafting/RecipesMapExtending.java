@@ -44,7 +44,15 @@ public class RecipesMapExtending extends ShapedRecipes
             else
             {
                 MapData mapdata = Items.filled_map.getMapData(itemstack, worldIn);
-                return mapdata == null ? false : mapdata.scale < 4;
+
+                if (mapdata == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return mapdata.scale < 4;
+                }
             }
         }
     }

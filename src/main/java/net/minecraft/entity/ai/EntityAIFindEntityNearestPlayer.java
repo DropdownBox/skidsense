@@ -56,7 +56,7 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
 
                     if (p_apply_1_.isSneaking())
                     {
-                        d0 *= 0.800000011920929D;
+                        d0 *= (double)0.8F;
                     }
 
                     if (p_apply_1_.isInvisible())
@@ -84,7 +84,7 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
     public boolean shouldExecute()
     {
         double d0 = this.maxTargetRange();
-        List<EntityPlayer> list = this.entityLiving.worldObj.<EntityPlayer>getEntitiesWithinAABB(EntityPlayer.class, this.entityLiving.getEntityBoundingBox().expand(d0, 4.0D, d0), this.predicate);
+        List<EntityPlayer> list = this.entityLiving.worldObj.getEntitiesWithinAABB(EntityPlayer.class, this.entityLiving.getEntityBoundingBox().expand(d0, 4.0D, d0), this.predicate);
         Collections.sort(list, this.sorter);
 
         if (list.isEmpty())
@@ -93,7 +93,7 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
         }
         else
         {
-            this.entityTarget = (EntityLivingBase)list.get(0);
+            this.entityTarget = list.get(0);
             return true;
         }
     }
@@ -129,7 +129,15 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
             else
             {
                 double d0 = this.maxTargetRange();
-                return this.entityLiving.getDistanceSqToEntity(entitylivingbase) > d0 * d0 ? false : !(entitylivingbase instanceof EntityPlayerMP) || !((EntityPlayerMP)entitylivingbase).theItemInWorldManager.isCreative();
+
+                if (this.entityLiving.getDistanceSqToEntity(entitylivingbase) > d0 * d0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return !(entitylivingbase instanceof EntityPlayerMP) || !((EntityPlayerMP)entitylivingbase).theItemInWorldManager.isCreative();
+                }
             }
         }
     }

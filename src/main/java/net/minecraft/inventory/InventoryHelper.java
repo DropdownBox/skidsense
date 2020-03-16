@@ -60,7 +60,7 @@ public class InventoryHelper
 
             float f3 = 0.05F;
             entityitem.motionX = RANDOM.nextGaussian() * (double)f3;
-            entityitem.motionY = RANDOM.nextGaussian() * (double)f3 + 0.20000000298023224D;
+            entityitem.motionY = RANDOM.nextGaussian() * (double)f3 + (double)0.2F;
             entityitem.motionZ = RANDOM.nextGaussian() * (double)f3;
             worldIn.spawnEntityInWorld(entityitem);
         }

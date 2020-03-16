@@ -47,7 +47,7 @@ public class EntityMinecartTNT extends EntityMinecart
         if (this.minecartTNTFuse > 0)
         {
             --this.minecartTNTFuse;
-            this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
+            this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
         }
         else if (this.minecartTNTFuse == 0)
         {
@@ -58,7 +58,7 @@ public class EntityMinecartTNT extends EntityMinecart
         {
             double d0 = this.motionX * this.motionX + this.motionZ * this.motionZ;
 
-            if (d0 >= 0.009999999776482582D)
+            if (d0 >= (double)0.01F)
             {
                 this.explodeCart(d0);
             }
@@ -95,7 +95,7 @@ public class EntityMinecartTNT extends EntityMinecart
             this.entityDropItem(new ItemStack(Blocks.tnt, 1), 0.0F);
         }
 
-        if (source.isFireDamage() || source.isExplosion() || d0 >= 0.009999999776482582D)
+        if (source.isFireDamage() || source.isExplosion() || d0 >= (double)0.01F)
         {
             this.explodeCart(d0);
         }

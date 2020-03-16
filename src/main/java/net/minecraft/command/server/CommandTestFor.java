@@ -1,8 +1,6 @@
 package net.minecraft.command.server;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -12,6 +10,7 @@ import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandTestFor extends CommandBase
@@ -47,7 +46,7 @@ public class CommandTestFor extends CommandBase
     {
         if (args.length < 1)
         {
-            throw new WrongUsageException("commands.testfor.usage", new Object[0]);
+            throw new WrongUsageException("commands.testfor.usage");
         }
         else
         {
@@ -62,7 +61,7 @@ public class CommandTestFor extends CommandBase
                 }
                 catch (NBTException nbtexception)
                 {
-                    throw new CommandException("commands.testfor.tagError", new Object[] {nbtexception.getMessage()});
+                    throw new CommandException("commands.testfor.tagError", nbtexception.getMessage());
                 }
             }
 
@@ -73,7 +72,7 @@ public class CommandTestFor extends CommandBase
 
                 if (!NBTUtil.func_181123_a(nbttagcompound, nbttagcompound1, true))
                 {
-                    throw new CommandException("commands.testfor.failure", new Object[] {entity.getName()});
+                    throw new CommandException("commands.testfor.failure", entity.getName());
                 }
             }
 

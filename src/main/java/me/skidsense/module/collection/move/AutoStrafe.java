@@ -1,14 +1,13 @@
 package me.skidsense.module.collection.move;
 
 import me.skidsense.Client;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventMove;
-import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.RotationUtil;
@@ -19,7 +18,7 @@ import net.minecraft.client.renderer.*;
 import org.lwjgl.util.glu.*;
 
 
-public class AutoStrafe extends Module
+public class AutoStrafe extends Mod
 {
 	public static Numbers<Double> MaxDistance = (Numbers<Double>)new Numbers("Distance", "Distance", (Number)3.0, (Number)1.0, (Number)5.0, (Number)0.1);;
 	public static Option<Boolean> keep = (Option<Boolean>)new Option("KeepDistance", "KeepDistance", (Object)true);;
@@ -29,7 +28,7 @@ public class AutoStrafe extends Module
 
 	public AutoStrafe() {
 		super("Auto Strafe", new String[] { "AutoStrafe" }, ModuleType.Move);
-		this.addValues(new Value[] { (Value)AutoStrafe.MaxDistance, (Value)AutoStrafe.keep, (Value)AutoStrafe.Esp, (Value)AutoStrafe.OnlySpeed, (Value)AutoStrafe.Auto });
+		//this.addValues(new Value[] { (Value)AutoStrafe.MaxDistance, (Value)AutoStrafe.keep, (Value)AutoStrafe.Esp, (Value)AutoStrafe.OnlySpeed, (Value)AutoStrafe.Auto });
 	}
 
 	public void onDisable() {
@@ -41,7 +40,7 @@ public class AutoStrafe extends Module
 		return vel;
 	}
 
-	@EventHandler
+	@Sub
 	public void onMotion(final EventMove eventMove) {
 		if (KillAura.target != null && Client.instance.getModuleManager().getModuleByClass((Class)KillAura.class).isEnabled() && !AutoStrafe.mc.thePlayer.isOnLadder() && !(boolean)AutoStrafe.OnlySpeed.getValue()) {
 			onStrafe(eventMove);
@@ -91,7 +90,7 @@ public class AutoStrafe extends Module
 		EventMove.z = forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f));
 	}
 
-	@EventHandler
+	@Sub
 	public void onRender(final EventRender3D render) {
 		if (KillAura.target != null) {
 			this.drawESP(render);

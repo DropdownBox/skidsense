@@ -29,9 +29,9 @@ public abstract class EntityFlying extends EntityLiving
         {
             this.moveFlying(strafe, forward, 0.02F);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
-            this.motionX *= 0.800000011920929D;
-            this.motionY *= 0.800000011920929D;
-            this.motionZ *= 0.800000011920929D;
+            this.motionX *= (double)0.8F;
+            this.motionY *= (double)0.8F;
+            this.motionZ *= (double)0.8F;
         }
         else if (this.isInLava())
         {

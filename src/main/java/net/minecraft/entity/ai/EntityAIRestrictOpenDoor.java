@@ -42,7 +42,15 @@ public class EntityAIRestrictOpenDoor extends EntityAIBase
             else
             {
                 this.frontDoor = village.getNearestDoor(blockpos);
-                return this.frontDoor == null ? false : (double)this.frontDoor.getDistanceToInsideBlockSq(blockpos) < 2.25D;
+
+                if (this.frontDoor == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return (double)this.frontDoor.getDistanceToInsideBlockSq(blockpos) < 2.25D;
+                }
             }
         }
     }
@@ -52,7 +60,14 @@ public class EntityAIRestrictOpenDoor extends EntityAIBase
      */
     public boolean continueExecuting()
     {
-        return this.entityObj.worldObj.isDaytime() ? false : !this.frontDoor.getIsDetachedFromVillageFlag() && this.frontDoor.func_179850_c(new BlockPos(this.entityObj));
+        if (this.entityObj.worldObj.isDaytime())
+        {
+            return false;
+        }
+        else
+        {
+            return !this.frontDoor.getIsDetachedFromVillageFlag() && this.frontDoor.func_179850_c(new BlockPos(this.entityObj));
+        }
     }
 
     /**

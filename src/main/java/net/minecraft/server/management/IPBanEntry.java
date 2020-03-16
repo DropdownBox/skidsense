@@ -29,7 +29,7 @@ public class IPBanEntry extends BanEntry<String>
     {
         if (this.getValue() != null)
         {
-            data.addProperty("ip", (String)this.getValue());
+            data.addProperty("ip", this.getValue());
             super.onSerialization(data);
         }
     }

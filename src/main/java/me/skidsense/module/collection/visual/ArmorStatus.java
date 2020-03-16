@@ -1,11 +1,8 @@
 package me.skidsense.module.collection.visual;
 
-import me.skidsense.hooks.EventHandler;
-import me.skidsense.hooks.events.EventRender3D;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRenderGui;
-import me.skidsense.hooks.value.Mode;
-import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,13 +14,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ArmorStatus extends Module{
+public class ArmorStatus extends Mod {
     public ArmorStatus() {
         super("Armor Status", new String[] {"ArmorStatus"}, ModuleType.Visual);
         this.setRemoved(true);
     }
 
-    @EventHandler
+    @Sub
     public void onRender(EventRenderGui e) {
         GL11.glPushMatrix();
         List stuff = new ArrayList();

@@ -2,8 +2,7 @@ package net.minecraft.command;
 
 import java.util.List;
 import java.util.Random;
-
-import net.minecraft.MinecraftServer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
@@ -73,7 +72,7 @@ public class CommandWeather extends CommandBase
             {
                 if (!"thunder".equalsIgnoreCase(args[0]))
                 {
-                    throw new WrongUsageException("commands.weather.usage", new Object[0]);
+                    throw new WrongUsageException("commands.weather.usage");
                 }
 
                 worldinfo.setCleanWeatherTime(0);
@@ -86,12 +85,12 @@ public class CommandWeather extends CommandBase
         }
         else
         {
-            throw new WrongUsageException("commands.weather.usage", new Object[0]);
+            throw new WrongUsageException("commands.weather.usage");
         }
     }
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"clear", "rain", "thunder"}): null;
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"clear", "rain", "thunder"}) : null;
     }
 }

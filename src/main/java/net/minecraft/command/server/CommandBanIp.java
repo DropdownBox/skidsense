@@ -4,14 +4,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.IPBanEntry;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.IChatComponent;
@@ -72,7 +71,7 @@ public class CommandBanIp extends CommandBase
 
                 if (entityplayermp == null)
                 {
-                    throw new PlayerNotFoundException("commands.banip.invalid", new Object[0]);
+                    throw new PlayerNotFoundException("commands.banip.invalid");
                 }
 
                 this.func_147210_a(sender, entityplayermp.getPlayerIP(), ichatcomponent == null ? null : ichatcomponent.getUnformattedText());
@@ -80,7 +79,7 @@ public class CommandBanIp extends CommandBase
         }
         else
         {
-            throw new WrongUsageException("commands.banip.usage", new Object[0]);
+            throw new WrongUsageException("commands.banip.usage");
         }
     }
 

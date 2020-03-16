@@ -1,12 +1,10 @@
 package net.minecraft.client.entity;
 
-import me.skidsense.Client;
-import me.skidsense.hooks.EventBus;
+import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventChat;
 import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.module.collection.move.NoSlow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -74,7 +72,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
      * The last Y position which was transmitted to the server, used to determine when the Y position changes and needs
      * to be re-transmitted
      */
-    public double lastReportedPosY;
+    private double lastReportedPosY;
 
     /**
      * The last Z position which was transmitted to the server, used to determine when the Z position changes and needs
@@ -149,6 +147,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         return false;
     }
 
+
     /**
      * Heal living entity (param: amount of half-hearts)
      */
@@ -169,12 +168,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
         }
     }
 
-    @Override
-    public void moveEntity(double x, double y, double z) {
-        EventMove e = EventBus.getInstance().call(new EventMove(x, y, z));
-        super.moveEntity(e.getX(), e.getY(), e.getZ());
-    }
-    
     /**
      * Called to update the entity's position/logic.
      */
@@ -201,25 +194,14 @@ public class EntityPlayerSP extends AbstractClientPlayer
      */
     public void onUpdateWalkingPlayer()
     {
-        boolean var2;
+        boolean flag = this.isSprinting();
         EventPreUpdate e = new EventPreUpdate(this.rotationYaw, this.rotationPitch, this.posY, this.mc.thePlayer.onGround);
         EventPostUpdate post = new EventPostUpdate(this.rotationYaw, this.rotationPitch);
-        EventBus.getInstance().call(e);
+        EventManager.getInstance().postAll(e);
         if (e.isCancelled()) {
-            EventBus.getInstance().call(post);
+            EventManager.getInstance().postAll(post);
             return;
         }
-        double oldX = this.posX;
-        double oldZ = this.posZ;
-        float oldPitch = this.rotationPitch;
-        float oldYaw = this.rotationYaw;
-        boolean oldGround = this.onGround;
-        this.rotationPitch = e.getPitch();
-        this.rotationYaw = e.getYaw();
-        this.onGround = e.isOnGround();
-        
-        boolean flag = this.isSprinting();
-
         if (flag != this.serverSprintState)
         {
             if (flag)
@@ -264,19 +246,19 @@ public class EntityPlayerSP extends AbstractClientPlayer
             {
                 if (flag2 && flag3)
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, e.getY(), this.posZ, this.rotationYaw, this.rotationPitch, e.isOnGround()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
                 }
                 else if (flag2)
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, e.getY(), this.posZ, e.isOnGround()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, this.getEntityBoundingBox().minY, this.posZ, this.onGround));
                 }
                 else if (flag3)
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, e.isOnGround()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
                 }
                 else
                 {
-                    this.sendQueue.addToSendQueue(new C03PacketPlayer(e.isOnGround()));
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer(this.onGround));
                 }
             }
             else
@@ -301,12 +283,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 this.lastReportedPitch = this.rotationPitch;
             }
         }
-        this.posX = oldX;
-        this.posZ = oldZ;
-        this.rotationYaw = oldYaw;
-        this.rotationPitch = oldPitch;
-        this.onGround = oldGround;
-        EventBus.getInstance().call(post);
+        EventManager.getInstance().postAll(post);
     }
 
     /**
@@ -329,12 +306,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
     /**
      * Sends a chat message from the player. Args: chatMessage
      */
-    public void sendChatMessage(String message)
-    {
-    	EventChat event = new EventChat(message);
-    	EventBus.getInstance().call(event);
-    	if(!event.isCancelled()) 
-    		this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));
+    public void sendChatMessage(String message)  {
+        EventChat event = new EventChat(message);
+        EventManager.getInstance().postAll(event);
+        if(!event.isCancelled()) {
+            this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));
+        }
     }
 
     /**
@@ -475,57 +452,70 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     protected boolean pushOutOfBlocks(double x, double y, double z)
     {
-        if (!this.noClip) {
+        if (this.noClip)
+        {
+            return false;
+        }
+        else
+        {
             BlockPos blockpos = new BlockPos(x, y, z);
-            double d0 = x - (double) blockpos.getX();
-            double d1 = z - (double) blockpos.getZ();
+            double d0 = x - (double)blockpos.getX();
+            double d1 = z - (double)blockpos.getZ();
 
-            if (!this.isOpenBlockSpace(blockpos)) {
+            if (!this.isOpenBlockSpace(blockpos))
+            {
                 int i = -1;
                 double d2 = 9999.0D;
 
-                if (this.isOpenBlockSpace(blockpos.west()) && d0 < d2) {
+                if (this.isOpenBlockSpace(blockpos.west()) && d0 < d2)
+                {
                     d2 = d0;
                     i = 0;
                 }
 
-                if (this.isOpenBlockSpace(blockpos.east()) && 1.0D - d0 < d2) {
+                if (this.isOpenBlockSpace(blockpos.east()) && 1.0D - d0 < d2)
+                {
                     d2 = 1.0D - d0;
                     i = 1;
                 }
 
-                if (this.isOpenBlockSpace(blockpos.north()) && d1 < d2) {
+                if (this.isOpenBlockSpace(blockpos.north()) && d1 < d2)
+                {
                     d2 = d1;
                     i = 4;
                 }
 
-                if (this.isOpenBlockSpace(blockpos.south()) && 1.0D - d1 < d2) {
+                if (this.isOpenBlockSpace(blockpos.south()) && 1.0D - d1 < d2)
+                {
                     d2 = 1.0D - d1;
                     i = 5;
                 }
 
                 float f = 0.1F;
 
-                if (i == 0) {
-                    this.motionX = (double) (-f);
+                if (i == 0)
+                {
+                    this.motionX = (double)(-f);
                 }
 
-                if (i == 1) {
-                    this.motionX = (double) f;
+                if (i == 1)
+                {
+                    this.motionX = (double)f;
                 }
 
-                if (i == 4) {
-                    this.motionZ = (double) (-f);
+                if (i == 4)
+                {
+                    this.motionZ = (double)(-f);
                 }
 
-                if (i == 5) {
-                    this.motionZ = (double) f;
+                if (i == 5)
+                {
+                    this.motionZ = (double)f;
                 }
-                return true;
             }
 
+            return false;
         }
-        return false;
     }
 
     /**
@@ -545,6 +535,11 @@ public class EntityPlayerSP extends AbstractClientPlayer
         this.sprintingTicksLeft = sprinting ? 600 : 0;
     }
 
+    @Override
+    public void moveEntity(double x,double y,double z){
+        EventMove e = (EventMove) EventManager.postAll(new EventMove(x,y,z));
+        super.moveEntity(e.getX(),e.getY(),e.getZ());
+    }
     /**
      * Sets the current XP, total XP, and level number.
      */
@@ -734,35 +729,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
         return this.mc.getRenderViewEntity() == this;
     }
 
-    public void setMoveSpeed(final EventMove event, final double speed) {
-        double forward = MovementInput.moveForward;
-        double strafe = MovementInput.moveStrafe;
-        float yaw = this.mc.thePlayer.rotationYaw;
-        if (forward == 0.0 && strafe == 0.0) {
-            event.setX(0.0);
-            event.setZ(0.0);
-        }
-        else {
-            if (forward != 0.0) {
-                if (strafe > 0.0) {
-                    yaw += ((forward > 0.0) ? -45 : 45);
-                }
-                else if (strafe < 0.0) {
-                    yaw += ((forward > 0.0) ? 45 : -45);
-                }
-                strafe = 0.0;
-                if (forward > 0.0) {
-                    forward = 1.0;
-                }
-                else if (forward < 0.0) {
-                    forward = -1.0;
-                }
-            }
-            event.setX(forward * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f))) + strafe * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f))));
-            event.setZ(forward * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f))) - strafe * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f))));
-        }
-    }
-    
     /**
      * Called frequently so the entity can update its state every tick as required. For example, zombies and skeletons
      * use this to react to sunlight and start to burn.
@@ -840,7 +806,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
 
-        if (this.isUsingItem() && !this.isRiding() && !Client.instance.getModuleManager().getModuleByClass(NoSlow.class).isEnabled())
+        if (this.isUsingItem() && !this.isRiding())
         {
             this.movementInput.moveStrafe *= 0.2F;
             this.movementInput.moveForward *= 0.2F;
@@ -961,13 +927,5 @@ public class EntityPlayerSP extends AbstractClientPlayer
             this.capabilities.isFlying = false;
             this.sendPlayerAbilities();
         }
-    }
-
-    public boolean moving() {
-        return this.moveForward != 0.0f || this.moveStrafing != 0.0f;
-    }
-
-    public boolean isMoving() {
-        return moveForward != 0.0f || moveStrafing != 0.0f;
     }
 }

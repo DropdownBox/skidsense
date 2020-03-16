@@ -233,7 +233,7 @@ public class BlockPos extends Vec3i
                         }
                         else if (this.lastReturned.equals(blockpos1))
                         {
-                            return (BlockPos)this.endOfData();
+                            return this.endOfData();
                         }
                         else
                         {
@@ -286,7 +286,7 @@ public class BlockPos extends Vec3i
                         }
                         else if (this.theBlockPos.equals(blockpos1))
                         {
-                            return (BlockPos.MutableBlockPos)this.endOfData();
+                            return this.endOfData();
                         }
                         else
                         {

@@ -2,25 +2,16 @@ package me.skidsense.module.collection.player;
 
 import java.awt.Color;
 
-import me.skidsense.Client;
-import me.skidsense.hooks.events.EventMove;
-import me.skidsense.hooks.value.Mode;
-import me.skidsense.hooks.value.Option;
-import me.skidsense.module.collection.move.Flight;
-import net.minecraft.util.AxisAlignedBB;
-import org.lwjgl.opengl.GL11;
-
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Numbers;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
 public class AntiFall extends Module {

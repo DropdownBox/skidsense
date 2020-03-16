@@ -7,8 +7,8 @@ import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.command.Command;
 import me.skidsense.command.commands.*;
-import me.skidsense.hooks.EventBus;
-import me.skidsense.hooks.EventHandler;
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventChat;
 
 import java.util.ArrayList;
@@ -41,7 +41,8 @@ implements Manager {
         this.commands.add(new Cheats());
         this.commands.add(new Enchant());
         this.commands.add(new ClientName());
-        EventBus.getInstance().register(this);
+        EventManager.getOtherEventManager().register(this);
+        //EventBus.getInstance().register(this);
     }
 
     public List<Command> getCommands() {
@@ -70,7 +71,7 @@ implements Manager {
         this.commands.add(command);
     }
 
-    @EventHandler
+    @Sub
     private void onChat(EventChat e) {
         if (e.getMessage().length() > 1 && e.getMessage().startsWith(PREFIX)) {
             e.setCancelled(true);

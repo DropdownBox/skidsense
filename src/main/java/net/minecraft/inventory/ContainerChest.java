@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 
 public class ContainerChest extends Container
 {
-    public IInventory lowerChestInventory;
+    private IInventory lowerChestInventory;
     private int numRows;
 
     public ContainerChest(IInventory playerInventory, IInventory chestInventory, EntityPlayer player)
@@ -48,7 +48,7 @@ public class ContainerChest extends Container
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
         ItemStack itemstack = null;
-        Slot slot = (Slot)this.inventorySlots.get(index);
+        Slot slot = this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
         {

@@ -1,5 +1,9 @@
 package net.minecraft.client.multiplayer;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDisconnected;
@@ -15,10 +19,6 @@ import net.minecraft.util.ChatComponentTranslation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class GuiConnecting extends GuiScreen
 {
     private static final AtomicInteger CONNECTION_ID = new AtomicInteger(0);
@@ -32,7 +32,7 @@ public class GuiConnecting extends GuiScreen
         this.mc = mcIn;
         this.previousGuiScreen = p_i1181_1_;
         ServerAddress serveraddress = ServerAddress.fromString(p_i1181_3_.serverIP);
-        mcIn.loadWorld(null);
+        mcIn.loadWorld((WorldClient)null);
         mcIn.setServerData(p_i1181_3_);
         this.connect(serveraddress.getIP(), serveraddress.getPort());
     }
@@ -41,14 +41,12 @@ public class GuiConnecting extends GuiScreen
     {
         this.mc = mcIn;
         this.previousGuiScreen = p_i1182_1_;
-        mcIn.loadWorld(null);
+        mcIn.loadWorld((WorldClient)null);
         this.connect(hostName, port);
     }
-    
+
     private void connect(final String ip, final int port)
     {
-        logger.info("");
-        //"dlfjajsfasflasdfjjsfa";
         logger.info("Connecting to " + ip + ", " + port);
         (new Thread("Server Connector #" + CONNECTION_ID.incrementAndGet())
         {
@@ -69,12 +67,14 @@ public class GuiConnecting extends GuiScreen
                     GuiConnecting.this.networkManager.sendPacket(new C00Handshake(47, ip, port, EnumConnectionState.LOGIN));
                     GuiConnecting.this.networkManager.sendPacket(new C00PacketLoginStart(GuiConnecting.this.mc.getSession().getProfile()));
                 }
-                catch (UnknownHostException unknownhostexception) {
-                    if (GuiConnecting.this.cancel) {
+                catch (UnknownHostException unknownhostexception)
+                {
+                    if (GuiConnecting.this.cancel)
+                    {
                         return;
                     }
 
-                    GuiConnecting.logger.error("Couldn't connect to server", unknownhostexception);
+                    GuiConnecting.logger.error("Couldn't connect to server", (Throwable)unknownhostexception);
                     GuiConnecting.this.mc.displayGuiScreen(new GuiDisconnected(GuiConnecting.this.previousGuiScreen, "connect.failed", new ChatComponentTranslation("disconnect.genericReason", "Unknown host")));
                 }
                 catch (Exception exception)
@@ -84,7 +84,7 @@ public class GuiConnecting extends GuiScreen
                         return;
                     }
 
-                    GuiConnecting.logger.error("Couldn't connect to server", exception);
+                    GuiConnecting.logger.error("Couldn't connect to server", (Throwable)exception);
                     String s = exception.toString();
 
                     if (inetaddress != null)
@@ -121,7 +121,8 @@ public class GuiConnecting extends GuiScreen
      * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
      */
-    protected void keyTyped(char typedChar, int keyCode) {
+    protected void keyTyped(char typedChar, int keyCode) throws IOException
+    {
     }
 
     /**
@@ -137,11 +138,14 @@ public class GuiConnecting extends GuiScreen
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.id == 0) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.id == 0)
+        {
             this.cancel = true;
 
-            if (this.networkManager != null) {
+            if (this.networkManager != null)
+            {
                 this.networkManager.closeChannel(new ChatComponentText("Aborted"));
             }
 

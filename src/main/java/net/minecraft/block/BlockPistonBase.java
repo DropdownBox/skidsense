@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.List;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockPistonStructureHelper;
@@ -33,7 +32,7 @@ public class BlockPistonBase extends Block
     public BlockPistonBase(boolean isSticky)
     {
         super(Material.piston);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(EXTENDED, Boolean.valueOf(false)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(EXTENDED, false));
         this.isSticky = isSticky;
         this.setStepSound(soundTypePiston);
         this.setHardness(0.5F);
@@ -86,24 +85,24 @@ public class BlockPistonBase extends Block
      */
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, getFacingFromEntity(worldIn, pos, placer)).withProperty(EXTENDED, Boolean.valueOf(false));
+        return this.getDefaultState().withProperty(FACING, getFacingFromEntity(worldIn, pos, placer)).withProperty(EXTENDED, false);
     }
 
     private void checkForMove(World worldIn, BlockPos pos, IBlockState state)
     {
-        EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
+        EnumFacing enumfacing = state.getValue(FACING);
         boolean flag = this.shouldBeExtended(worldIn, pos, enumfacing);
 
-        if (flag && !((Boolean)state.getValue(EXTENDED)).booleanValue())
+        if (flag && !state.getValue(EXTENDED))
         {
             if ((new BlockPistonStructureHelper(worldIn, pos, enumfacing, true)).canMove())
             {
                 worldIn.addBlockEvent(pos, this, 0, enumfacing.getIndex());
             }
         }
-        else if (!flag && ((Boolean)state.getValue(EXTENDED)).booleanValue())
+        else if (!flag && state.getValue(EXTENDED))
         {
-            worldIn.setBlockState(pos, state.withProperty(EXTENDED, Boolean.valueOf(false)), 2);
+            worldIn.setBlockState(pos, state.withProperty(EXTENDED, false), 2);
             worldIn.addBlockEvent(pos, this, 1, enumfacing.getIndex());
         }
     }
@@ -143,7 +142,7 @@ public class BlockPistonBase extends Block
      */
     public boolean onBlockEventReceived(World worldIn, BlockPos pos, IBlockState state, int eventID, int eventParam)
     {
-        EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
+        EnumFacing enumfacing = state.getValue(FACING);
 
         if (!worldIn.isRemote)
         {
@@ -151,7 +150,7 @@ public class BlockPistonBase extends Block
 
             if (flag && eventID == 1)
             {
-                worldIn.setBlockState(pos, state.withProperty(EXTENDED, Boolean.valueOf(true)), 2);
+                worldIn.setBlockState(pos, state.withProperty(EXTENDED, true), 2);
                 return false;
             }
 
@@ -168,7 +167,7 @@ public class BlockPistonBase extends Block
                 return false;
             }
 
-            worldIn.setBlockState(pos, state.withProperty(EXTENDED, Boolean.valueOf(true)), 2);
+            worldIn.setBlockState(pos, state.withProperty(EXTENDED, true), 2);
             worldIn.playSoundEffect((double)pos.getX() + 0.5D, (double)pos.getY() + 0.5D, (double)pos.getZ() + 0.5D, "tile.piston.out", 0.5F, worldIn.rand.nextFloat() * 0.25F + 0.6F);
         }
         else if (eventID == 1)
@@ -225,10 +224,10 @@ public class BlockPistonBase extends Block
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (iblockstate.getBlock() == this && ((Boolean)iblockstate.getValue(EXTENDED)).booleanValue())
+        if (iblockstate.getBlock() == this && iblockstate.getValue(EXTENDED))
         {
             float f = 0.25F;
-            EnumFacing enumfacing = (EnumFacing)iblockstate.getValue(FACING);
+            EnumFacing enumfacing = iblockstate.getValue(FACING);
 
             if (enumfacing != null)
             {
@@ -355,7 +354,7 @@ public class BlockPistonBase extends Block
                         return true;
                     }
                 }
-                else if (((Boolean)worldIn.getBlockState(pos).getValue(EXTENDED)).booleanValue())
+                else if (worldIn.getBlockState(pos).getValue(EXTENDED))
                 {
                     return false;
                 }
@@ -396,7 +395,7 @@ public class BlockPistonBase extends Block
 
             for (int j = list1.size() - 1; j >= 0; --j)
             {
-                BlockPos blockpos = (BlockPos)list1.get(j);
+                BlockPos blockpos = list1.get(j);
                 Block block = worldIn.getBlockState(blockpos).getBlock();
                 block.dropBlockAsItem(worldIn, blockpos, worldIn.getBlockState(blockpos), 0);
                 worldIn.setBlockToAir(blockpos);
@@ -406,7 +405,7 @@ public class BlockPistonBase extends Block
 
             for (int k = list.size() - 1; k >= 0; --k)
             {
-                BlockPos blockpos2 = (BlockPos)list.get(k);
+                BlockPos blockpos2 = list.get(k);
                 IBlockState iblockstate = worldIn.getBlockState(blockpos2);
                 Block block1 = iblockstate.getBlock();
                 block1.getMetaFromState(iblockstate);
@@ -431,12 +430,12 @@ public class BlockPistonBase extends Block
 
             for (int l = list1.size() - 1; l >= 0; --l)
             {
-                worldIn.notifyNeighborsOfStateChange((BlockPos)list1.get(l), ablock[i++]);
+                worldIn.notifyNeighborsOfStateChange(list1.get(l), ablock[i++]);
             }
 
             for (int i1 = list.size() - 1; i1 >= 0; --i1)
             {
-                worldIn.notifyNeighborsOfStateChange((BlockPos)list.get(i1), ablock[i++]);
+                worldIn.notifyNeighborsOfStateChange(list.get(i1), ablock[i++]);
             }
 
             if (extending)
@@ -462,7 +461,7 @@ public class BlockPistonBase extends Block
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(FACING, getFacing(meta)).withProperty(EXTENDED, Boolean.valueOf((meta & 8) > 0));
+        return this.getDefaultState().withProperty(FACING, getFacing(meta)).withProperty(EXTENDED, (meta & 8) > 0);
     }
 
     /**
@@ -471,9 +470,9 @@ public class BlockPistonBase extends Block
     public int getMetaFromState(IBlockState state)
     {
         int i = 0;
-        i = i | ((EnumFacing)state.getValue(FACING)).getIndex();
+        i = i | state.getValue(FACING).getIndex();
 
-        if (((Boolean)state.getValue(EXTENDED)).booleanValue())
+        if (state.getValue(EXTENDED))
         {
             i |= 8;
         }
@@ -483,6 +482,6 @@ public class BlockPistonBase extends Block
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {FACING, EXTENDED});
+        return new BlockState(this, FACING, EXTENDED);
     }
 }

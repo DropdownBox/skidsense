@@ -38,7 +38,7 @@ public class InventoryBasic implements IInventory
     {
         if (this.changeListeners == null)
         {
-            this.changeListeners = Lists.<IInvBasic>newArrayList();
+            this.changeListeners = Lists.newArrayList();
         }
 
         this.changeListeners.add(listener);
@@ -207,7 +207,7 @@ public class InventoryBasic implements IInventory
      */
     public IChatComponent getDisplayName()
     {
-        return (IChatComponent)(this.hasCustomName() ? new ChatComponentText(this.getName()) : new ChatComponentTranslation(this.getName(), new Object[0]));
+        return (IChatComponent)(this.hasCustomName() ? new ChatComponentText(this.getName()) : new ChatComponentTranslation(this.getName()));
     }
 
     /**
@@ -228,7 +228,7 @@ public class InventoryBasic implements IInventory
         {
             for (int i = 0; i < this.changeListeners.size(); ++i)
             {
-                ((IInvBasic)this.changeListeners.get(i)).onInventoryChanged(this);
+                this.changeListeners.get(i).onInventoryChanged(this);
             }
         }
     }

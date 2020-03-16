@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
@@ -33,13 +34,17 @@ public class GuiShareToLan extends GuiScreen
         this.func_146595_g();
     }
 
-    private void func_146595_g() {
+    private void func_146595_g()
+    {
         this.field_146597_g.displayString = I18n.format("selectWorld.gameMode") + " " + I18n.format("selectWorld.gameMode." + this.field_146599_h);
         this.field_146596_f.displayString = I18n.format("selectWorld.allowCommands") + " ";
 
-        if (this.field_146600_i) {
+        if (this.field_146600_i)
+        {
             this.field_146596_f.displayString = this.field_146596_f.displayString + I18n.format("options.on");
-        } else {
+        }
+        else
+        {
             this.field_146596_f.displayString = this.field_146596_f.displayString + I18n.format("options.off");
         }
     }
@@ -47,11 +52,16 @@ public class GuiShareToLan extends GuiScreen
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.id == 102) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.id == 102)
+        {
             this.mc.displayGuiScreen(this.field_146598_a);
-        } else if (button.id == 104) {
-            if (this.field_146599_h.equals("spectator")) {
+        }
+        else if (button.id == 104)
+        {
+            if (this.field_146599_h.equals("spectator"))
+            {
                 this.field_146599_h = "creative";
             }
             else if (this.field_146599_h.equals("creative"))
@@ -76,7 +86,7 @@ public class GuiShareToLan extends GuiScreen
         }
         else if (button.id == 101)
         {
-            this.mc.displayGuiScreen(null);
+            this.mc.displayGuiScreen((GuiScreen)null);
             String s = this.mc.getIntegratedServer().shareToLAN(WorldSettings.GameType.getByName(this.field_146599_h), this.field_146600_i);
             IChatComponent ichatcomponent;
 
@@ -96,7 +106,8 @@ public class GuiShareToLan extends GuiScreen
     /**
      * Draws the screen and all the components in it. Args : mouseX, mouseY, renderPartialTicks
      */
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+    {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRendererObj, I18n.format("lanServer.title"), this.width / 2, 50, 16777215);
         this.drawCenteredString(this.fontRendererObj, I18n.format("lanServer.otherPlayers"), this.width / 2, 82, 16777215);

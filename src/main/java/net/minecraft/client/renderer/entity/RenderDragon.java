@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerEnderDragonDeath;
 import net.minecraft.client.renderer.entity.layers.LayerEnderDragonEyes;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.util.MathHelper;
@@ -21,12 +20,11 @@ public class RenderDragon extends RenderLiving<EntityDragon>
     private static final ResourceLocation enderDragonTextures = new ResourceLocation("textures/entity/enderdragon/dragon.png");
 
     /** An instance of the dragon model in RenderDragon */
-    protected ModelDragon modelDragon;
+    protected ModelDragon modelDragon = (ModelDragon)this.mainModel;
 
     public RenderDragon(RenderManager renderManagerIn)
     {
         super(renderManagerIn, new ModelDragon(0.0F), 0.5F);
-        this.modelDragon = (ModelDragon)this.mainModel;
         this.addLayer(new LayerEnderDragonEyes(this));
         this.addLayer(new LayerEnderDragonDeath());
     }

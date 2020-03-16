@@ -1,7 +1,7 @@
 package net.minecraft.command;
 
-import net.minecraft.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 
@@ -42,8 +42,9 @@ public class CommandShowSeed extends CommandBase
     /**
      * Callback when the command is invoked
      */
-    public void processCommand(ICommandSender sender, String[] args) {
-        World world = sender instanceof EntityPlayer ? ((EntityPlayer) sender).worldObj : MinecraftServer.getServer().worldServerForDimension(0);
-        sender.addChatMessage(new ChatComponentTranslation("commands.seed.success", Long.valueOf(world.getSeed())));
+    public void processCommand(ICommandSender sender, String[] args) throws CommandException
+    {
+        World world = (World)(sender instanceof EntityPlayer ? ((EntityPlayer)sender).worldObj : MinecraftServer.getServer().worldServerForDimension(0));
+        sender.addChatMessage(new ChatComponentTranslation("commands.seed.success", world.getSeed()));
     }
 }

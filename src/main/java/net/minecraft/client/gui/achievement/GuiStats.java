@@ -1,6 +1,10 @@
 package net.minecraft.client.gui.achievement;
 
 import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiButton;
@@ -24,12 +28,8 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-public class GuiStats extends GuiScreen implements IProgressMeter {
+public class GuiStats extends GuiScreen implements IProgressMeter
+{
     protected GuiScreen parentScreen;
     protected String screenTitle = "Select world";
     private GuiStats.StatsGeneral generalStats;
@@ -84,7 +84,8 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
         this.mobStats.registerScrollButtons(1, 1);
     }
 
-    public void createButtons() {
+    public void createButtons()
+    {
         this.buttonList.add(new GuiButton(0, this.width / 2 + 4, this.height - 28, 150, 20, I18n.format("gui.done")));
         this.buttonList.add(new GuiButton(1, this.width / 2 - 160, this.height - 52, 80, 20, I18n.format("stat.generalButton")));
         GuiButton guibutton;
@@ -94,7 +95,8 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
         GuiButton guibutton2;
         this.buttonList.add(guibutton2 = new GuiButton(4, this.width / 2 + 80, this.height - 52, 80, 20, I18n.format("stat.mobsButton")));
 
-        if (this.blockStats.getSize() == 0) {
+        if (this.blockStats.getSize() == 0)
+        {
             guibutton.enabled = false;
         }
 
@@ -112,11 +114,16 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.enabled) {
-            if (button.id == 0) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.enabled)
+        {
+            if (button.id == 0)
+            {
                 this.mc.displayGuiScreen(this.parentScreen);
-            } else if (button.id == 1) {
+            }
+            else if (button.id == 1)
+            {
                 this.displaySlot = this.generalStats;
             }
             else if (button.id == 3)
@@ -147,7 +154,7 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
         {
             this.drawDefaultBackground();
             this.drawCenteredString(this.fontRendererObj, I18n.format("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
-            this.drawCenteredString(this.fontRendererObj, lanSearchStates[(int) (Minecraft.getSystemTime() / 150L % (long) lanSearchStates.length)], this.width / 2, this.height / 2 + this.fontRendererObj.FONT_HEIGHT * 2, 16777215);
+            this.drawCenteredString(this.fontRendererObj, lanSearchStates[(int)(Minecraft.getSystemTime() / 150L % (long)lanSearchStates.length)], this.width / 2, this.height / 2 + this.fontRendererObj.FONT_HEIGHT * 2, 16777215);
         }
         else
         {
@@ -197,7 +204,8 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
     /**
      * Draws a sprite from assets/textures/gui/container/stats_icons.png
      */
-    private void drawSprite(int p_146527_1_, int p_146527_2_, int p_146527_3_, int p_146527_4_) {
+    private void drawSprite(int p_146527_1_, int p_146527_2_, int p_146527_3_, int p_146527_4_)
+    {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(statIcons);
         float f = 0.0078125F;
@@ -207,10 +215,10 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos(p_146527_1_ + 0, p_146527_2_ + 18, this.zLevel).tex((float) (p_146527_3_ + 0) * 0.0078125F, (float) (p_146527_4_ + 18) * 0.0078125F).endVertex();
-        worldrenderer.pos(p_146527_1_ + 18, p_146527_2_ + 18, this.zLevel).tex((float) (p_146527_3_ + 18) * 0.0078125F, (float) (p_146527_4_ + 18) * 0.0078125F).endVertex();
-        worldrenderer.pos(p_146527_1_ + 18, p_146527_2_ + 0, this.zLevel).tex((float) (p_146527_3_ + 18) * 0.0078125F, (float) (p_146527_4_ + 0) * 0.0078125F).endVertex();
-        worldrenderer.pos(p_146527_1_ + 0, p_146527_2_ + 0, this.zLevel).tex((float) (p_146527_3_ + 0) * 0.0078125F, (float) (p_146527_4_ + 0) * 0.0078125F).endVertex();
+        worldrenderer.pos((double)(p_146527_1_ + 0), (double)(p_146527_2_ + 18), (double)this.zLevel).tex((double)((float)(p_146527_3_ + 0) * 0.0078125F), (double)((float)(p_146527_4_ + 18) * 0.0078125F)).endVertex();
+        worldrenderer.pos((double)(p_146527_1_ + 18), (double)(p_146527_2_ + 18), (double)this.zLevel).tex((double)((float)(p_146527_3_ + 18) * 0.0078125F), (double)((float)(p_146527_4_ + 18) * 0.0078125F)).endVertex();
+        worldrenderer.pos((double)(p_146527_1_ + 18), (double)(p_146527_2_ + 0), (double)this.zLevel).tex((double)((float)(p_146527_3_ + 18) * 0.0078125F), (double)((float)(p_146527_4_ + 0) * 0.0078125F)).endVertex();
+        worldrenderer.pos((double)(p_146527_1_ + 0), (double)(p_146527_2_ + 0), (double)this.zLevel).tex((double)((float)(p_146527_3_ + 0) * 0.0078125F), (double)((float)(p_146527_4_ + 0) * 0.0078125F)).endVertex();
         tessellator.draw();
     }
 
@@ -571,7 +579,14 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
 
         protected String func_148210_b(int p_148210_1_)
         {
-            return p_148210_1_ == 0 ? "stat.crafted" : (p_148210_1_ == 1 ? "stat.used" : "stat.mined");
+            if (p_148210_1_ == 0)
+            {
+                return "stat.crafted";
+            }
+            else
+            {
+                return p_148210_1_ == 1 ? "stat.used" : "stat.mined";
+            }
         }
     }
 
@@ -743,7 +758,14 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
 
         protected String func_148210_b(int p_148210_1_)
         {
-            return p_148210_1_ == 1 ? "stat.crafted" : (p_148210_1_ == 2 ? "stat.used" : "stat.depleted");
+            if (p_148210_1_ == 1)
+            {
+                return "stat.crafted";
+            }
+            else
+            {
+                return p_148210_1_ == 2 ? "stat.used" : "stat.depleted";
+            }
         }
     }
 
@@ -789,19 +811,22 @@ public class GuiStats extends GuiScreen implements IProgressMeter {
             GuiStats.this.drawDefaultBackground();
         }
 
-        protected void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn) {
+        protected void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn)
+        {
             EntityList.EntityEggInfo entitylist$entityegginfo = this.field_148222_l.get(entryID);
             String s = I18n.format("entity." + EntityList.getStringFromID(entitylist$entityegginfo.spawnedID) + ".name");
             int i = GuiStats.this.field_146546_t.readStat(entitylist$entityegginfo.field_151512_d);
             int j = GuiStats.this.field_146546_t.readStat(entitylist$entityegginfo.field_151513_e);
-            String s1 = I18n.format("stat.entityKills", Integer.valueOf(i), s);
-            String s2 = I18n.format("stat.entityKilledBy", s, Integer.valueOf(j));
+            String s1 = I18n.format("stat.entityKills", i, s);
+            String s2 = I18n.format("stat.entityKilledBy", s, j);
 
-            if (i == 0) {
+            if (i == 0)
+            {
                 s1 = I18n.format("stat.entityKills.none", s);
             }
 
-            if (j == 0) {
+            if (j == 0)
+            {
                 s2 = I18n.format("stat.entityKilledBy.none", s);
             }
 

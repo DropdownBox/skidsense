@@ -2,16 +2,36 @@ package net.minecraft.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
-import net.minecraft.entity.item.*;
+import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.item.EntityEnderEye;
+import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.entity.item.EntityExpBottle;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.item.EntityFireworkRocket;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.item.EntityTNTPrimed;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.*;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityEgg;
+import net.minecraft.entity.projectile.EntityFireball;
+import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.entity.projectile.EntityPotion;
+import net.minecraft.entity.projectile.EntitySmallFireball;
+import net.minecraft.entity.projectile.EntitySnowball;
 import net.minecraft.network.Packet;
 import net.minecraft.util.IntHashMap;
 import net.minecraft.util.ReportedException;
@@ -20,15 +40,12 @@ import net.minecraft.world.chunk.Chunk;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-
-public class EntityTracker {
+public class EntityTracker
+{
     private static final Logger logger = LogManager.getLogger();
     private final WorldServer theWorld;
     private Set<EntityTrackerEntry> trackedEntities = Sets.newHashSet();
-    private IntHashMap<EntityTrackerEntry> trackedEntityHashTable = new IntHashMap();
+    private IntHashMap<EntityTrackerEntry> trackedEntityHashTable = new IntHashMap<>();
     private int maxTrackingDistanceThreshold;
 
     public EntityTracker(WorldServer theWorldIn)
@@ -188,10 +205,12 @@ public class EntityTracker {
             crashreportcategory.addCrashSection("Tracking range", trackingRange + " blocks");
             crashreportcategory.addCrashSectionCallable("Update interval", new Callable<String>()
             {
-                public String call() {
+                public String call() throws Exception
+                {
                     String s = "Once per " + updateFrequency + " ticks";
 
-                    if (updateFrequency == Integer.MAX_VALUE) {
+                    if (updateFrequency == Integer.MAX_VALUE)
+                    {
                         s = "Maximum (" + s + ")";
                     }
 
@@ -200,7 +219,7 @@ public class EntityTracker {
             });
             entityIn.addEntityCrashInfo(crashreportcategory);
             CrashReportCategory crashreportcategory1 = crashreport.makeCategory("Entity That Is Already Tracked");
-            this.trackedEntityHashTable.lookup(entityIn.getEntityId()).trackedEntity.addEntityCrashInfo(crashreportcategory1);
+            (this.trackedEntityHashTable.lookup(entityIn.getEntityId())).trackedEntity.addEntityCrashInfo(crashreportcategory1);
 
             try
             {
@@ -208,7 +227,7 @@ public class EntityTracker {
             }
             catch (ReportedException reportedexception)
             {
-                logger.error("\"Silently\" catching entity tracking error.", reportedexception);
+                logger.error("\"Silently\" catching entity tracking error.", (Throwable)reportedexception);
             }
         }
     }
@@ -248,11 +267,14 @@ public class EntityTracker {
             }
         }
 
-        for (int i = 0; i < list.size(); ++i) {
+        for (int i = 0; i < list.size(); ++i)
+        {
             EntityPlayerMP entityplayermp = list.get(i);
 
-            for (EntityTrackerEntry entitytrackerentry1 : this.trackedEntities) {
-                if (entitytrackerentry1.trackedEntity != entityplayermp) {
+            for (EntityTrackerEntry entitytrackerentry1 : this.trackedEntities)
+            {
+                if (entitytrackerentry1.trackedEntity != entityplayermp)
+                {
                     entitytrackerentry1.updatePlayerEntity(entityplayermp);
                 }
             }

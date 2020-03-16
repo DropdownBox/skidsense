@@ -141,12 +141,12 @@ public class ModelBiped extends ModelBase
 
         if (this.isRiding)
         {
-            this.bipedRightArm.rotateAngleX += -((float)Math.PI / 5F);
-            this.bipedLeftArm.rotateAngleX += -((float)Math.PI / 5F);
+            this.bipedRightArm.rotateAngleX += (-(float)Math.PI / 5F);
+            this.bipedLeftArm.rotateAngleX += (-(float)Math.PI / 5F);
             this.bipedRightLeg.rotateAngleX = -((float)Math.PI * 2F / 5F);
             this.bipedLeftLeg.rotateAngleX = -((float)Math.PI * 2F / 5F);
             this.bipedRightLeg.rotateAngleY = ((float)Math.PI / 10F);
-            this.bipedLeftLeg.rotateAngleY = -((float)Math.PI / 10F);
+            this.bipedLeftLeg.rotateAngleY = (-(float)Math.PI / 10F);
         }
 
         if (this.heldItemLeft != 0)
@@ -170,7 +170,7 @@ public class ModelBiped extends ModelBase
 
             case 3:
                 this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F - ((float)Math.PI / 10F) * (float)this.heldItemRight;
-                this.bipedRightArm.rotateAngleY = -0.5235988F;
+                this.bipedRightArm.rotateAngleY = (-(float)Math.PI / 6F);
         }
 
         this.bipedLeftArm.rotateAngleY = 0.0F;
@@ -231,8 +231,8 @@ public class ModelBiped extends ModelBase
             this.bipedLeftArm.rotateAngleZ = 0.0F;
             this.bipedRightArm.rotateAngleY = -(0.1F - f3 * 0.6F) + this.bipedHead.rotateAngleY;
             this.bipedLeftArm.rotateAngleY = 0.1F - f3 * 0.6F + this.bipedHead.rotateAngleY + 0.4F;
-            this.bipedRightArm.rotateAngleX = -((float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
-            this.bipedLeftArm.rotateAngleX = -((float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
+            this.bipedRightArm.rotateAngleX = (-(float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
+            this.bipedLeftArm.rotateAngleX = (-(float)Math.PI / 2F) + this.bipedHead.rotateAngleX;
             this.bipedRightArm.rotateAngleX -= f3 * 1.2F - f4 * 0.4F;
             this.bipedLeftArm.rotateAngleX -= f3 * 1.2F - f4 * 0.4F;
             this.bipedRightArm.rotateAngleZ += MathHelper.cos(ageInTicks * 0.09F) * 0.05F + 0.05F;

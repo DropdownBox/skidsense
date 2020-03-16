@@ -1,6 +1,8 @@
 package net.optifine.entity.model.anim;
 
 import net.minecraft.client.model.ModelRenderer;
+import net.optifine.expr.ExpressionType;
+import net.optifine.expr.IExpressionFloat;
 
 public class ModelVariableFloat implements IExpressionFloat
 {

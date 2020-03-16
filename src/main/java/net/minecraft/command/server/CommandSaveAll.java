@@ -1,9 +1,11 @@
 package net.minecraft.command.server;
 
-import net.minecraft.MinecraftServer;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.IProgressUpdate;
 import net.minecraft.world.MinecraftException;
 import net.minecraft.world.WorldServer;
 
@@ -28,15 +30,18 @@ public class CommandSaveAll extends CommandBase
     /**
      * Callback when the command is invoked
      */
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void processCommand(ICommandSender sender, String[] args) throws CommandException
+    {
         MinecraftServer minecraftserver = MinecraftServer.getServer();
         sender.addChatMessage(new ChatComponentTranslation("commands.save.start"));
 
-        if (minecraftserver.getConfigurationManager() != null) {
+        if (minecraftserver.getConfigurationManager() != null)
+        {
             minecraftserver.getConfigurationManager().saveAllPlayerData();
         }
 
-        try {
+        try
+        {
             for (int i = 0; i < minecraftserver.worldServers.length; ++i)
             {
                 if (minecraftserver.worldServers[i] != null)
@@ -44,7 +49,7 @@ public class CommandSaveAll extends CommandBase
                     WorldServer worldserver = minecraftserver.worldServers[i];
                     boolean flag = worldserver.disableLevelSaving;
                     worldserver.disableLevelSaving = false;
-                    worldserver.saveAllChunks(true, null);
+                    worldserver.saveAllChunks(true, (IProgressUpdate)null);
                     worldserver.disableLevelSaving = flag;
                 }
             }
@@ -70,10 +75,10 @@ public class CommandSaveAll extends CommandBase
         }
         catch (MinecraftException minecraftexception)
         {
-            notifyOperators(sender, this, "commands.save.failed", minecraftexception.getMessage());
+            notifyOperators(sender, this, "commands.save.failed", new Object[] {minecraftexception.getMessage()});
             return;
         }
 
-        notifyOperators(sender, this, "commands.save.success");
+        notifyOperators(sender, this, "commands.save.success", new Object[0]);
     }
 }

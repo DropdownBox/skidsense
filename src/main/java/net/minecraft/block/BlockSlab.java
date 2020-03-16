@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 public abstract class BlockSlab extends Block
 {
-    public static final PropertyEnum<BlockSlab.EnumBlockHalf> HALF = PropertyEnum.<BlockSlab.EnumBlockHalf>create("half", BlockSlab.EnumBlockHalf.class);
+    public static final PropertyEnum<BlockSlab.EnumBlockHalf> HALF = PropertyEnum.create("half", BlockSlab.EnumBlockHalf.class);
 
     public BlockSlab(Material materialIn)
     {
@@ -105,7 +105,15 @@ public abstract class BlockSlab extends Block
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
         IBlockState iblockstate = super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(HALF, BlockSlab.EnumBlockHalf.BOTTOM);
-        return this.isDouble() ? iblockstate : (facing != EnumFacing.DOWN && (facing == EnumFacing.UP || (double)hitY <= 0.5D) ? iblockstate : iblockstate.withProperty(HALF, BlockSlab.EnumBlockHalf.TOP));
+
+        if (this.isDouble())
+        {
+            return iblockstate;
+        }
+        else
+        {
+            return facing != EnumFacing.DOWN && (facing == EnumFacing.UP || !((double)hitY > 0.5D)) ? iblockstate : iblockstate.withProperty(HALF, BlockSlab.EnumBlockHalf.TOP);
+        }
     }
 
     /**
@@ -138,7 +146,34 @@ public abstract class BlockSlab extends Block
             IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
             boolean flag = isSlab(iblockstate.getBlock()) && iblockstate.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
             boolean flag1 = isSlab(iblockstate1.getBlock()) && iblockstate1.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
-            return flag1 ? (side == EnumFacing.DOWN ? true : (side == EnumFacing.UP && super.shouldSideBeRendered(worldIn, pos, side) ? true : !isSlab(iblockstate.getBlock()) || !flag)) : (side == EnumFacing.UP ? true : (side == EnumFacing.DOWN && super.shouldSideBeRendered(worldIn, pos, side) ? true : !isSlab(iblockstate.getBlock()) || flag));
+
+            if (flag1)
+            {
+                if (side == EnumFacing.DOWN)
+                {
+                    return true;
+                }
+                else if (side == EnumFacing.UP && super.shouldSideBeRendered(worldIn, pos, side))
+                {
+                    return true;
+                }
+                else
+                {
+                    return !isSlab(iblockstate.getBlock()) || !flag;
+                }
+            }
+            else if (side == EnumFacing.UP)
+            {
+                return true;
+            }
+            else if (side == EnumFacing.DOWN && super.shouldSideBeRendered(worldIn, pos, side))
+            {
+                return true;
+            }
+            else
+            {
+                return !isSlab(iblockstate.getBlock()) || flag;
+            }
         }
     }
 

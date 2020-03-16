@@ -2,6 +2,10 @@ package optifine.xdelta;
 
 public class SimplePrime
 {
+    private SimplePrime()
+    {
+    }
+
     public static long belowOrEqual(long number)
     {
         if (number < 2L)

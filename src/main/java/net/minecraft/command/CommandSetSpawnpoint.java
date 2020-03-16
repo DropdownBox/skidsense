@@ -1,9 +1,8 @@
 package net.minecraft.command;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandSetSpawnpoint extends CommandBase
@@ -39,7 +38,7 @@ public class CommandSetSpawnpoint extends CommandBase
     {
         if (args.length > 1 && args.length < 4)
         {
-            throw new WrongUsageException("commands.spawnpoint.usage", new Object[0]);
+            throw new WrongUsageException("commands.spawnpoint.usage");
         }
         else
         {
@@ -49,14 +48,21 @@ public class CommandSetSpawnpoint extends CommandBase
             if (entityplayermp.worldObj != null)
             {
                 entityplayermp.setSpawnPoint(blockpos, true);
-                notifyOperators(sender, this, "commands.spawnpoint.success", new Object[] {entityplayermp.getName(), Integer.valueOf(blockpos.getX()), Integer.valueOf(blockpos.getY()), Integer.valueOf(blockpos.getZ())});
+                notifyOperators(sender, this, "commands.spawnpoint.success", new Object[] {entityplayermp.getName(), blockpos.getX(), blockpos.getY(), blockpos.getZ()});
             }
         }
     }
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : (args.length > 1 && args.length <= 4 ? func_175771_a(args, 1, pos) : null);
+        if (args.length == 1)
+        {
+            return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+        }
+        else
+        {
+            return args.length > 1 && args.length <= 4 ? func_175771_a(args, 1, pos) : null;
+        }
     }
 
     /**

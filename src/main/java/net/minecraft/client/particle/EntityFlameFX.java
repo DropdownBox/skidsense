@@ -13,9 +13,9 @@ public class EntityFlameFX extends EntityFX
     protected EntityFlameFX(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn)
     {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
-        this.motionX = this.motionX * 0.009999999776482582D + xSpeedIn;
-        this.motionY = this.motionY * 0.009999999776482582D + ySpeedIn;
-        this.motionZ = this.motionZ * 0.009999999776482582D + zSpeedIn;
+        this.motionX = this.motionX * (double)0.01F + xSpeedIn;
+        this.motionY = this.motionY * (double)0.01F + ySpeedIn;
+        this.motionZ = this.motionZ * (double)0.01F + zSpeedIn;
         this.posX += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
         this.posY += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
         this.posZ += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
@@ -79,14 +79,14 @@ public class EntityFlameFX extends EntityFX
         }
 
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
-        this.motionX *= 0.9599999785423279D;
-        this.motionY *= 0.9599999785423279D;
-        this.motionZ *= 0.9599999785423279D;
+        this.motionX *= (double)0.96F;
+        this.motionY *= (double)0.96F;
+        this.motionZ *= (double)0.96F;
 
         if (this.onGround)
         {
-            this.motionX *= 0.699999988079071D;
-            this.motionZ *= 0.699999988079071D;
+            this.motionX *= (double)0.7F;
+            this.motionZ *= (double)0.7F;
         }
     }
 

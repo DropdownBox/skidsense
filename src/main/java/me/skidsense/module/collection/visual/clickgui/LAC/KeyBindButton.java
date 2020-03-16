@@ -3,24 +3,19 @@
  */
 package me.skidsense.module.collection.visual.clickgui.LAC;
 
-import java.awt.Color;
-
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-
 import org.lwjgl.input.Keyboard;
 
 import me.skidsense.Client;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 
 public class KeyBindButton
 extends ValueButton {
-    public Module cheat;
+    public Mod cheat;
     public double opacity = 0.0;
     public boolean bind;
 
-    public KeyBindButton(Module cheat, int x2, int y2) {
+    public KeyBindButton(Mod cheat, int x2, int y2) {
         super(null, x2, y2);
         this.custom = true;
         this.bind = false;

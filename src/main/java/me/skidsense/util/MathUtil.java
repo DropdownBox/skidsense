@@ -18,7 +18,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 
 public class MathUtil {
-    public static Random random = new Random();
+    public static Random random = new Random(System.currentTimeMillis() + System.nanoTime());
 
     public static double toDecimalLength(double in, int places) {
         return Double.parseDouble(String.format("%." + places + "f", in));

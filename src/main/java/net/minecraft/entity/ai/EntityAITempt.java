@@ -81,7 +81,15 @@ public class EntityAITempt extends EntityAIBase
             else
             {
                 ItemStack itemstack = this.temptingPlayer.getCurrentEquippedItem();
-                return itemstack == null ? false : itemstack.getItem() == this.temptItem;
+
+                if (itemstack == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return itemstack.getItem() == this.temptItem;
+                }
             }
         }
     }

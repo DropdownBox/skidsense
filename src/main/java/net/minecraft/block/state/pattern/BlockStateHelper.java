@@ -12,7 +12,7 @@ import net.minecraft.block.state.IBlockState;
 public class BlockStateHelper implements Predicate<IBlockState>
 {
     private final BlockState blockstate;
-    private final Map<IProperty, Predicate> propertyPredicates = Maps.<IProperty, Predicate>newHashMap();
+    private final Map<IProperty, Predicate> propertyPredicates = Maps.newHashMap();
 
     private BlockStateHelper(BlockState blockStateIn)
     {
@@ -30,9 +30,9 @@ public class BlockStateHelper implements Predicate<IBlockState>
         {
             for (Entry<IProperty, Predicate> entry : this.propertyPredicates.entrySet())
             {
-                Object object = p_apply_1_.getValue((IProperty)entry.getKey());
+                Object object = p_apply_1_.getValue(entry.getKey());
 
-                if (!((Predicate)entry.getValue()).apply(object))
+                if (!entry.getValue().apply(object))
                 {
                     return false;
                 }
@@ -46,7 +46,7 @@ public class BlockStateHelper implements Predicate<IBlockState>
         }
     }
 
-    public <V extends Comparable<V>> BlockStateHelper where(IProperty<V> property, Predicate <? extends V > is)
+    public <V extends Comparable<V>> BlockStateHelper where(IProperty<V> property, Predicate<? extends V> is)
     {
         if (!this.blockstate.getProperties().contains(property))
         {

@@ -12,7 +12,7 @@ public class FoodStats
     private int foodLevel = 20;
 
     /** The player's food saturation. */
-    private float foodSaturationLevel = 5.0F;
+    private float foodSaturationLevel;
 
     /** The player's food exhaustion. */
     private float foodExhaustionLevel;
@@ -20,6 +20,11 @@ public class FoodStats
     /** The player's food timer value. */
     private int foodTimer;
     private int prevFoodLevel = 20;
+
+    public FoodStats()
+    {
+        this.foodSaturationLevel = 5.0F;
+    }
 
     /**
      * Add food stats.

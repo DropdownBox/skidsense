@@ -1,18 +1,18 @@
 package me.skidsense.module.collection.visual;
 
 import me.skidsense.hooks.value.Mode;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.visual.clickgui.LAC.ClickUI;
 import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
 import me.theresa.music.ui.MusicWindow;
 
-public class ClickGui extends Module {
+public class ClickGui extends Mod {
     public Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])renderMode.values(), (Enum)renderMode.skidsense);
 
 	public ClickGui() {
 		super("Click GUI", new String[] { "ClickGUI","ClickHUD" }, ModuleType.Visual);
-	this.addValues(mode);
+	//this.addValues(mode);
 		
 	}
 

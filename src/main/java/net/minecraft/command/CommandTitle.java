@@ -1,12 +1,10 @@
 package net.minecraft.command;
 
 import com.google.gson.JsonParseException;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.List;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S45PacketTitle;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentProcessor;
 import net.minecraft.util.IChatComponent;
@@ -49,7 +47,7 @@ public class CommandTitle extends CommandBase
     {
         if (args.length < 2)
         {
-            throw new WrongUsageException("commands.title.usage", new Object[0]);
+            throw new WrongUsageException("commands.title.usage");
         }
         else
         {
@@ -57,12 +55,12 @@ public class CommandTitle extends CommandBase
             {
                 if ("title".equals(args[1]) || "subtitle".equals(args[1]))
                 {
-                    throw new WrongUsageException("commands.title.usage.title", new Object[0]);
+                    throw new WrongUsageException("commands.title.usage.title");
                 }
 
                 if ("times".equals(args[1]))
                 {
-                    throw new WrongUsageException("commands.title.usage.times", new Object[0]);
+                    throw new WrongUsageException("commands.title.usage.times");
                 }
             }
 
@@ -75,7 +73,7 @@ public class CommandTitle extends CommandBase
                 {
                     if (args.length != 5)
                     {
-                        throw new WrongUsageException("commands.title.usage", new Object[0]);
+                        throw new WrongUsageException("commands.title.usage");
                     }
                     else
                     {
@@ -89,7 +87,7 @@ public class CommandTitle extends CommandBase
                 }
                 else if (args.length < 3)
                 {
-                    throw new WrongUsageException("commands.title.usage", new Object[0]);
+                    throw new WrongUsageException("commands.title.usage");
                 }
                 else
                 {
@@ -103,7 +101,7 @@ public class CommandTitle extends CommandBase
                     catch (JsonParseException jsonparseexception)
                     {
                         Throwable throwable = ExceptionUtils.getRootCause(jsonparseexception);
-                        throw new SyntaxErrorException("commands.tellraw.jsonException", new Object[] {throwable == null ? "" : throwable.getMessage()});
+                        throw new SyntaxErrorException("commands.tellraw.jsonException", throwable == null ? "" : throwable.getMessage());
                     }
 
                     S45PacketTitle s45packettitle1 = new S45PacketTitle(s45packettitle$type, ChatComponentProcessor.processComponent(sender, ichatcomponent, entityplayermp));
@@ -113,7 +111,7 @@ public class CommandTitle extends CommandBase
             }
             else if (args.length != 2)
             {
-                throw new WrongUsageException("commands.title.usage", new Object[0]);
+                throw new WrongUsageException("commands.title.usage");
             }
             else
             {
@@ -126,7 +124,14 @@ public class CommandTitle extends CommandBase
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, S45PacketTitle.Type.getNames()) : null);
+        if (args.length == 1)
+        {
+            return getListOfStringsMatchingLastWord(args, MinecraftServer.getServer().getAllUsernames());
+        }
+        else
+        {
+            return args.length == 2 ? getListOfStringsMatchingLastWord(args, S45PacketTitle.Type.getNames()) : null;
+        }
     }
 
     /**

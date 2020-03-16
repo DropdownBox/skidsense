@@ -23,11 +23,11 @@ public class PropertyInteger extends PropertyHelper<Integer>
         }
         else
         {
-            Set<Integer> set = Sets.<Integer>newHashSet();
+            Set<Integer> set = Sets.newHashSet();
 
             for (int i = min; i <= max; ++i)
             {
-                set.add(Integer.valueOf(i));
+                set.add(i);
             }
 
             this.allowedValues = ImmutableSet.copyOf(set);

@@ -10,7 +10,7 @@ public class NoiseGeneratorImproved extends NoiseGenerator
      *  
      * Effectively a shuffled 0..255 that wraps once.
      */
-    private int[] permutations;
+    private int[] permutations = new int[512];
     public double xCoord;
     public double yCoord;
     public double zCoord;
@@ -27,7 +27,6 @@ public class NoiseGeneratorImproved extends NoiseGenerator
 
     public NoiseGeneratorImproved(Random p_i45469_1_)
     {
-        this.permutations = new int[512];
         this.xCoord = p_i45469_1_.nextDouble() * 256.0D;
         this.yCoord = p_i45469_1_.nextDouble() * 256.0D;
         this.zCoord = p_i45469_1_.nextDouble() * 256.0D;

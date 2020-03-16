@@ -48,7 +48,6 @@ public class MapColor
 
     /** Holds the index of the color used on map. */
     public final int colorIndex;
-    private static final String __OBFID = "CL_00000544";
 
     private MapColor(int index, int color)
     {
@@ -66,31 +65,31 @@ public class MapColor
 
     public int getMapColor(int p_151643_1_)
     {
-        short short1 = 220;
+        int i = 220;
 
         if (p_151643_1_ == 3)
         {
-            short1 = 135;
+            i = 135;
         }
 
         if (p_151643_1_ == 2)
         {
-            short1 = 255;
+            i = 255;
         }
 
         if (p_151643_1_ == 1)
         {
-            short1 = 220;
+            i = 220;
         }
 
         if (p_151643_1_ == 0)
         {
-            short1 = 180;
+            i = 180;
         }
 
-        int i = (this.colorValue >> 16 & 255) * short1 / 255;
-        int j = (this.colorValue >> 8 & 255) * short1 / 255;
-        int k = (this.colorValue & 255) * short1 / 255;
-        return -16777216 | i << 16 | j << 8 | k;
+        int j = (this.colorValue >> 16 & 255) * i / 255;
+        int k = (this.colorValue >> 8 & 255) * i / 255;
+        int l = (this.colorValue & 255) * i / 255;
+        return -16777216 | j << 16 | k << 8 | l;
     }
 }

@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -185,7 +184,7 @@ public class BlockChest extends BlockContainer
             IBlockState iblockstate1 = worldIn.getBlockState(pos.south());
             IBlockState iblockstate2 = worldIn.getBlockState(pos.west());
             IBlockState iblockstate3 = worldIn.getBlockState(pos.east());
-            EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
+            EnumFacing enumfacing = state.getValue(FACING);
             Block block = iblockstate.getBlock();
             Block block1 = iblockstate1.getBlock();
             Block block2 = iblockstate2.getBlock();
@@ -206,11 +205,11 @@ public class BlockChest extends BlockContainer
 
                     if (block2 == this)
                     {
-                        enumfacing2 = (EnumFacing)iblockstate2.getValue(FACING);
+                        enumfacing2 = iblockstate2.getValue(FACING);
                     }
                     else
                     {
-                        enumfacing2 = (EnumFacing)iblockstate3.getValue(FACING);
+                        enumfacing2 = iblockstate3.getValue(FACING);
                     }
 
                     if (enumfacing2 == EnumFacing.NORTH)
@@ -242,11 +241,11 @@ public class BlockChest extends BlockContainer
 
                 if (block == this)
                 {
-                    enumfacing1 = (EnumFacing)iblockstate.getValue(FACING);
+                    enumfacing1 = iblockstate.getValue(FACING);
                 }
                 else
                 {
-                    enumfacing1 = (EnumFacing)iblockstate1.getValue(FACING);
+                    enumfacing1 = iblockstate1.getValue(FACING);
                 }
 
                 if (enumfacing1 == EnumFacing.WEST)
@@ -305,7 +304,7 @@ public class BlockChest extends BlockContainer
         }
         else
         {
-            EnumFacing enumfacing2 = (EnumFacing)state.getValue(FACING);
+            EnumFacing enumfacing2 = state.getValue(FACING);
 
             if (worldIn.getBlockState(pos.offset(enumfacing2)).getBlock().isFullBlock())
             {
@@ -599,11 +598,11 @@ public class BlockChest extends BlockContainer
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((EnumFacing)state.getValue(FACING)).getIndex();
+        return state.getValue(FACING).getIndex();
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {FACING});
+        return new BlockState(this, FACING);
     }
 }

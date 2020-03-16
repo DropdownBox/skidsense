@@ -680,7 +680,7 @@ public class StructureOceanMonumentPieces
     {
         private StructureOceanMonumentPieces.RoomDefinition field_175845_o;
         private StructureOceanMonumentPieces.RoomDefinition field_175844_p;
-        private List<StructureOceanMonumentPieces.Piece> field_175843_q = Lists.<StructureOceanMonumentPieces.Piece>newArrayList();
+        private List<StructureOceanMonumentPieces.Piece> field_175843_q = Lists.newArrayList();
 
         public MonumentBuilding()
         {
@@ -706,7 +706,7 @@ public class StructureOceanMonumentPieces
             this.field_175845_o.field_175963_d = true;
             this.field_175843_q.add(new StructureOceanMonumentPieces.EntryRoom(this.coordBaseMode, this.field_175845_o));
             this.field_175843_q.add(new StructureOceanMonumentPieces.MonumentCoreRoom(this.coordBaseMode, this.field_175844_p, p_i45599_1_));
-            List<StructureOceanMonumentPieces.MonumentRoomFitHelper> list1 = Lists.<StructureOceanMonumentPieces.MonumentRoomFitHelper>newArrayList();
+            List<StructureOceanMonumentPieces.MonumentRoomFitHelper> list1 = Lists.newArrayList();
             list1.add(new StructureOceanMonumentPieces.XYDoubleRoomFitHelper());
             list1.add(new StructureOceanMonumentPieces.YZDoubleRoomFitHelper());
             list1.add(new StructureOceanMonumentPieces.ZDoubleRoomFitHelper());
@@ -714,7 +714,7 @@ public class StructureOceanMonumentPieces
             list1.add(new StructureOceanMonumentPieces.YDoubleRoomFitHelper());
             list1.add(new StructureOceanMonumentPieces.FitSimpleRoomTopHelper());
             list1.add(new StructureOceanMonumentPieces.FitSimpleRoomHelper());
-            label319:
+            label47:
 
             for (StructureOceanMonumentPieces.RoomDefinition structureoceanmonumentpieces$roomdefinition : list)
             {
@@ -727,7 +727,7 @@ public class StructureOceanMonumentPieces
                     {
                         if (!iterator.hasNext())
                         {
-                            continue label319;
+                            continue label47;
                         }
 
                         structureoceanmonumentpieces$monumentroomfithelper = (StructureOceanMonumentPieces.MonumentRoomFitHelper)iterator.next();
@@ -853,7 +853,7 @@ public class StructureOceanMonumentPieces
             this.field_175844_p.field_175965_b[EnumFacing.EAST.getIndex()].field_175965_b[EnumFacing.UP.getIndex()].field_175963_d = true;
             this.field_175844_p.field_175965_b[EnumFacing.NORTH.getIndex()].field_175965_b[EnumFacing.UP.getIndex()].field_175963_d = true;
             this.field_175844_p.field_175965_b[EnumFacing.EAST.getIndex()].field_175965_b[EnumFacing.NORTH.getIndex()].field_175965_b[EnumFacing.UP.getIndex()].field_175963_d = true;
-            List<StructureOceanMonumentPieces.RoomDefinition> list = Lists.<StructureOceanMonumentPieces.RoomDefinition>newArrayList();
+            List<StructureOceanMonumentPieces.RoomDefinition> list = Lists.newArrayList();
 
             for (StructureOceanMonumentPieces.RoomDefinition structureoceanmonumentpieces$roomdefinition4 : astructureoceanmonumentpieces$roomdefinition)
             {
@@ -1357,37 +1357,37 @@ public class StructureOceanMonumentPieces
             this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, i, 0, 15, i, 0, iblockstate, iblockstate, false);
             this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, i, 15, 14, i, 15, iblockstate, iblockstate, false);
 
-            for (i = 1; i <= 6; ++i)
+            for (int k = 1; k <= 6; ++k)
             {
                 iblockstate = field_175826_b;
 
-                if (i == 2 || i == 6)
+                if (k == 2 || k == 6)
                 {
                     iblockstate = field_175828_a;
                 }
 
                 for (int j = 0; j <= 15; j += 15)
                 {
-                    this.fillWithBlocks(worldIn, structureBoundingBoxIn, j, i, 0, j, i, 1, iblockstate, iblockstate, false);
-                    this.fillWithBlocks(worldIn, structureBoundingBoxIn, j, i, 6, j, i, 9, iblockstate, iblockstate, false);
-                    this.fillWithBlocks(worldIn, structureBoundingBoxIn, j, i, 14, j, i, 15, iblockstate, iblockstate, false);
+                    this.fillWithBlocks(worldIn, structureBoundingBoxIn, j, k, 0, j, k, 1, iblockstate, iblockstate, false);
+                    this.fillWithBlocks(worldIn, structureBoundingBoxIn, j, k, 6, j, k, 9, iblockstate, iblockstate, false);
+                    this.fillWithBlocks(worldIn, structureBoundingBoxIn, j, k, 14, j, k, 15, iblockstate, iblockstate, false);
                 }
 
-                this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, i, 0, 1, i, 0, iblockstate, iblockstate, false);
-                this.fillWithBlocks(worldIn, structureBoundingBoxIn, 6, i, 0, 9, i, 0, iblockstate, iblockstate, false);
-                this.fillWithBlocks(worldIn, structureBoundingBoxIn, 14, i, 0, 14, i, 0, iblockstate, iblockstate, false);
-                this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, i, 15, 14, i, 15, iblockstate, iblockstate, false);
+                this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, k, 0, 1, k, 0, iblockstate, iblockstate, false);
+                this.fillWithBlocks(worldIn, structureBoundingBoxIn, 6, k, 0, 9, k, 0, iblockstate, iblockstate, false);
+                this.fillWithBlocks(worldIn, structureBoundingBoxIn, 14, k, 0, 14, k, 0, iblockstate, iblockstate, false);
+                this.fillWithBlocks(worldIn, structureBoundingBoxIn, 1, k, 15, 14, k, 15, iblockstate, iblockstate, false);
             }
 
             this.fillWithBlocks(worldIn, structureBoundingBoxIn, 6, 3, 6, 9, 6, 9, field_175827_c, field_175827_c, false);
             this.fillWithBlocks(worldIn, structureBoundingBoxIn, 7, 4, 7, 8, 5, 8, Blocks.gold_block.getDefaultState(), Blocks.gold_block.getDefaultState(), false);
 
-            for (i = 3; i <= 6; i += 3)
+            for (int l = 3; l <= 6; l += 3)
             {
-                for (int k = 6; k <= 9; k += 3)
+                for (int i1 = 6; i1 <= 9; i1 += 3)
                 {
-                    this.setBlockState(worldIn, field_175825_e, k, i, 6, structureBoundingBoxIn);
-                    this.setBlockState(worldIn, field_175825_e, k, i, 9, structureBoundingBoxIn);
+                    this.setBlockState(worldIn, field_175825_e, i1, l, 6, structureBoundingBoxIn);
+                    this.setBlockState(worldIn, field_175825_e, i1, l, 9, structureBoundingBoxIn);
                 }
             }
 

@@ -7,6 +7,9 @@ import com.mojang.authlib.exceptions.InvalidCredentialsException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import java.math.BigInteger;
+import java.security.PublicKey;
+import javax.crypto.SecretKey;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiDisconnected;
 import net.minecraft.client.gui.GuiScreen;
@@ -24,11 +27,8 @@ import net.minecraft.util.IChatComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.crypto.SecretKey;
-import java.math.BigInteger;
-import java.security.PublicKey;
-
-public class NetHandlerLoginClient implements INetHandlerLoginClient {
+public class NetHandlerLoginClient implements INetHandlerLoginClient
+{
     private static final Logger logger = LogManager.getLogger();
     private final Minecraft mc;
     private final GuiScreen previousGuiScreen;
@@ -83,8 +83,10 @@ public class NetHandlerLoginClient implements INetHandlerLoginClient {
             }
         }
 
-        this.networkManager.sendPacket(new C01PacketEncryptionResponse(secretkey, publickey, packetIn.getVerifyToken()), new GenericFutureListener<Future<? super Void>>() {
-            public void operationComplete(Future<? super Void> p_operationComplete_1_) {
+        this.networkManager.sendPacket(new C01PacketEncryptionResponse(secretkey, publickey, packetIn.getVerifyToken()), new GenericFutureListener<Future<? super Void>>()
+        {
+            public void operationComplete(Future<? super Void> p_operationComplete_1_) throws Exception
+            {
                 NetHandlerLoginClient.this.networkManager.enableEncryption(secretkey);
             }
         });

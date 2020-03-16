@@ -72,7 +72,7 @@ public class EnchantmentHelper
 
     public static Map<Integer, Integer> getEnchantments(ItemStack stack)
     {
-        Map<Integer, Integer> map = Maps.<Integer, Integer>newLinkedHashMap();
+        Map<Integer, Integer> map = Maps.newLinkedHashMap();
         NBTTagList nbttaglist = stack.getItem() == Items.enchanted_book ? Items.enchanted_book.getEnchantments(stack) : stack.getEnchantmentTagList();
 
         if (nbttaglist != null)
@@ -81,7 +81,7 @@ public class EnchantmentHelper
             {
                 int j = nbttaglist.getCompoundTagAt(i).getShort("id");
                 int k = nbttaglist.getCompoundTagAt(i).getShort("lvl");
-                map.put(Integer.valueOf(j), Integer.valueOf(k));
+                map.put(j, k);
             }
         }
 
@@ -94,23 +94,21 @@ public class EnchantmentHelper
     public static void setEnchantments(Map<Integer, Integer> enchMap, ItemStack stack)
     {
         NBTTagList nbttaglist = new NBTTagList();
-        Iterator iterator = enchMap.keySet().iterator();
 
-        while (iterator.hasNext())
+        for (int i : enchMap.keySet())
         {
-            int i = ((Integer)iterator.next()).intValue();
             Enchantment enchantment = Enchantment.getEnchantmentById(i);
 
             if (enchantment != null)
             {
                 NBTTagCompound nbttagcompound = new NBTTagCompound();
                 nbttagcompound.setShort("id", (short)i);
-                nbttagcompound.setShort("lvl", (short)((Integer)enchMap.get(Integer.valueOf(i))).intValue());
+                nbttagcompound.setShort("lvl", (short)((int)enchMap.get(i)));
                 nbttaglist.appendTag(nbttagcompound);
 
                 if (stack.getItem() == Items.enchanted_book)
                 {
-                    Items.enchanted_book.addEnchantment(stack, new EnchantmentData(enchantment, ((Integer)enchMap.get(Integer.valueOf(i))).intValue()));
+                    Items.enchanted_book.addEnchantment(stack, new EnchantmentData(enchantment, enchMap.get(i)));
                 }
             }
         }
@@ -374,7 +372,15 @@ public class EnchantmentHelper
             }
 
             int j = rand.nextInt(8) + 1 + (power >> 1) + rand.nextInt(power + 1);
-            return enchantNum == 0 ? Math.max(j / 3, 1) : (enchantNum == 1 ? j * 2 / 3 + 1 : Math.max(j, power * 2));
+
+            if (enchantNum == 0)
+            {
+                return Math.max(j / 3, 1);
+            }
+            else
+            {
+                return enchantNum == 1 ? j * 2 / 3 + 1 : Math.max(j, power * 2);
+            }
         }
     }
 
@@ -436,11 +442,11 @@ public class EnchantmentHelper
 
             if (map != null && !map.isEmpty())
             {
-                EnchantmentData enchantmentdata = (EnchantmentData)WeightedRandom.getRandomItem(randomIn, map.values());
+                EnchantmentData enchantmentdata = WeightedRandom.getRandomItem(randomIn, map.values());
 
                 if (enchantmentdata != null)
                 {
-                    list = Lists.<EnchantmentData>newArrayList();
+                    list = Lists.newArrayList();
                     list.add(enchantmentdata);
 
                     for (int l = k; randomIn.nextInt(50) <= l; l >>= 1)
@@ -449,12 +455,12 @@ public class EnchantmentHelper
 
                         while (iterator.hasNext())
                         {
-                            Integer integer = (Integer)iterator.next();
+                            Integer integer = iterator.next();
                             boolean flag = true;
 
                             for (EnchantmentData enchantmentdata1 : list)
                             {
-                                if (!enchantmentdata1.enchantmentobj.canApplyTogether(Enchantment.getEnchantmentById(integer.intValue())))
+                                if (!enchantmentdata1.enchantmentobj.canApplyTogether(Enchantment.getEnchantmentById(integer)))
                                 {
                                     flag = false;
                                     break;
@@ -469,7 +475,7 @@ public class EnchantmentHelper
 
                         if (!map.isEmpty())
                         {
-                            EnchantmentData enchantmentdata2 = (EnchantmentData)WeightedRandom.getRandomItem(randomIn, map.values());
+                            EnchantmentData enchantmentdata2 = WeightedRandom.getRandomItem(randomIn, map.values());
                             list.add(enchantmentdata2);
                         }
                     }
@@ -496,10 +502,10 @@ public class EnchantmentHelper
                     {
                         if (map == null)
                         {
-                            map = Maps.<Integer, EnchantmentData>newHashMap();
+                            map = Maps.newHashMap();
                         }
 
-                        map.put(Integer.valueOf(enchantment.effectId), new EnchantmentData(enchantment, i));
+                        map.put(enchantment.effectId, new EnchantmentData(enchantment, i));
                     }
                 }
             }

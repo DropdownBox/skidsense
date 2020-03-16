@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 public abstract class StructureStart
 {
-    protected LinkedList<StructureComponent> components = new LinkedList();
+    protected LinkedList<StructureComponent> components = new LinkedList<>();
     protected StructureBoundingBox boundingBox;
     private int chunkPosX;
     private int chunkPosZ;
@@ -44,7 +44,7 @@ public abstract class StructureStart
 
         while (iterator.hasNext())
         {
-            StructureComponent structurecomponent = (StructureComponent)iterator.next();
+            StructureComponent structurecomponent = iterator.next();
 
             if (structurecomponent.getBoundingBox().intersectsWith(structurebb) && !structurecomponent.addComponentParts(worldIn, rand, structurebb))
             {

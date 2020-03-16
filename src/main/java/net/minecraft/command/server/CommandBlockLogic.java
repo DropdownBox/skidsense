@@ -1,7 +1,9 @@
 package net.minecraft.command.server;
 
-import net.minecraft.MinecraftServer;
 import io.netty.buffer.ByteBuf;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.Callable;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.ICommandSender;
@@ -9,26 +11,20 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.World;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.Callable;
+public abstract class CommandBlockLogic implements ICommandSender
+{
+    /** The formatting for the timestamp on commands run. */
+    private static final SimpleDateFormat timestampFormat = new SimpleDateFormat("HH:mm:ss");
 
-public abstract class CommandBlockLogic implements ICommandSender {
-	/**
-	 * The formatting for the timestamp on commands run.
-	 */
-	private static final SimpleDateFormat timestampFormat = new SimpleDateFormat("HH:mm:ss");
-
-	/**
-	 * The number of successful commands run. (used for redstone output)
-	 */
-	private int successCount;
-	private boolean trackOutput = true;
+    /** The number of successful commands run. (used for redstone output) */
+    private int successCount;
+    private boolean trackOutput = true;
 
     /** The previously run command. */
     private IChatComponent lastOutput = null;
@@ -147,14 +143,18 @@ public abstract class CommandBlockLogic implements ICommandSender {
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Executing command block");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Command to be executed");
-                crashreportcategory.addCrashSectionCallable("Command", new Callable<String>() {
-	                public String call() {
-		                return CommandBlockLogic.this.getCommand();
+                crashreportcategory.addCrashSectionCallable("Command", new Callable<String>()
+                {
+                    public String call() throws Exception
+                    {
+                        return CommandBlockLogic.this.getCommand();
                     }
                 });
-                crashreportcategory.addCrashSectionCallable("Name", new Callable<String>() {
-	                public String call() {
-		                return CommandBlockLogic.this.getName();
+                crashreportcategory.addCrashSectionCallable("Name", new Callable<String>()
+                {
+                    public String call() throws Exception
+                    {
+                        return CommandBlockLogic.this.getName();
                     }
                 });
                 throw new ReportedException(crashreport);

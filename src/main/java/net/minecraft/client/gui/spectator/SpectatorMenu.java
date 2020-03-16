@@ -34,25 +34,42 @@ public class SpectatorMenu
         }
     };
     private final ISpectatorMenuRecipient field_178651_f;
-    private final List<SpectatorDetails> field_178652_g = Lists.<SpectatorDetails>newArrayList();
-    private ISpectatorMenuView field_178659_h = new BaseSpectatorGroup();
+    private final List<SpectatorDetails> field_178652_g = Lists.newArrayList();
+    private ISpectatorMenuView field_178659_h;
     private int field_178660_i = -1;
     private int field_178658_j;
 
     public SpectatorMenu(ISpectatorMenuRecipient p_i45497_1_)
     {
+        this.field_178659_h = new BaseSpectatorGroup();
         this.field_178651_f = p_i45497_1_;
     }
 
     public ISpectatorMenuObject func_178643_a(int p_178643_1_)
     {
         int i = p_178643_1_ + this.field_178658_j * 6;
-        return this.field_178658_j > 0 && p_178643_1_ == 0 ? field_178656_c : (p_178643_1_ == 7 ? (i < this.field_178659_h.func_178669_a().size() ? field_178653_d : field_178654_e) : (p_178643_1_ == 8 ? field_178655_b : (i >= 0 && i < this.field_178659_h.func_178669_a().size() ? (ISpectatorMenuObject)Objects.firstNonNull(this.field_178659_h.func_178669_a().get(i), field_178657_a) : field_178657_a)));
+
+        if (this.field_178658_j > 0 && p_178643_1_ == 0)
+        {
+            return field_178656_c;
+        }
+        else if (p_178643_1_ == 7)
+        {
+            return i < this.field_178659_h.func_178669_a().size() ? field_178653_d : field_178654_e;
+        }
+        else if (p_178643_1_ == 8)
+        {
+            return field_178655_b;
+        }
+        else
+        {
+            return i >= 0 && i < this.field_178659_h.func_178669_a().size() ? Objects.firstNonNull(this.field_178659_h.func_178669_a().get(i), field_178657_a) : field_178657_a;
+        }
     }
 
     public List<ISpectatorMenuObject> func_178642_a()
     {
-        List<ISpectatorMenuObject> list = Lists.<ISpectatorMenuObject>newArrayList();
+        List<ISpectatorMenuObject> list = Lists.newArrayList();
 
         for (int i = 0; i <= 8; ++i)
         {

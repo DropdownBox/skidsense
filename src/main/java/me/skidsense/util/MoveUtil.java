@@ -3,6 +3,7 @@ package me.skidsense.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import me.skidsense.hooks.events.EventMove;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLiquid;
@@ -16,6 +17,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovementInput;
 import net.minecraft.util.Vec3;
 
 public class MoveUtil {
@@ -290,4 +292,33 @@ public class MoveUtil {
 	      }
 		return true;
 	}
+
+	public static void setMoveSpeed(final EventMove event, final double speed) {
+        double forward = MovementInput.moveForward;
+        double strafe = MovementInput.moveStrafe;
+        float yaw = mc.thePlayer.rotationYaw;
+        if (forward == 0.0 && strafe == 0.0) {
+            event.setX(0.0);
+            event.setZ(0.0);
+        }
+        else {
+            if (forward != 0.0) {
+                if (strafe > 0.0) {
+                    yaw += ((forward > 0.0) ? -45 : 45);
+                }
+                else if (strafe < 0.0) {
+                    yaw += ((forward > 0.0) ? 45 : -45);
+                }
+                strafe = 0.0;
+                if (forward > 0.0) {
+                    forward = 1.0;
+                }
+                else if (forward < 0.0) {
+                    forward = -1.0;
+                }
+            }
+            event.setX(forward * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f))) + strafe * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f))));
+            event.setZ(forward * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f))) - strafe * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f))));
+        }
+    }
 }

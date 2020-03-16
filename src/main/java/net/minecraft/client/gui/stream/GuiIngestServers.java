@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.stream;
 
+import java.io.IOException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -9,14 +10,14 @@ import net.minecraft.client.stream.IngestServerTester;
 import net.minecraft.util.EnumChatFormatting;
 import tv.twitch.broadcast.IngestServer;
 
-import java.io.IOException;
-
-public class GuiIngestServers extends GuiScreen {
+public class GuiIngestServers extends GuiScreen
+{
     private final GuiScreen field_152309_a;
     private String field_152310_f;
     private GuiIngestServers.ServerList field_152311_g;
 
-    public GuiIngestServers(GuiScreen p_i46312_1_) {
+    public GuiIngestServers(GuiScreen p_i46312_1_)
+    {
         this.field_152309_a = p_i46312_1_;
     }
 
@@ -24,11 +25,13 @@ public class GuiIngestServers extends GuiScreen {
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    public void initGui() {
+    public void initGui()
+    {
         this.field_152310_f = I18n.format("options.stream.ingest.title");
         this.field_152311_g = new GuiIngestServers.ServerList(this.mc);
 
-        if (!this.mc.getTwitchStream().func_152908_z()) {
+        if (!this.mc.getTwitchStream().func_152908_z())
+        {
             this.mc.getTwitchStream().func_152909_x();
         }
 
@@ -59,11 +62,16 @@ public class GuiIngestServers extends GuiScreen {
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.enabled) {
-            if (button.id == 1) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.enabled)
+        {
+            if (button.id == 1)
+            {
                 this.mc.displayGuiScreen(this.field_152309_a);
-            } else {
+            }
+            else
+            {
                 this.mc.gameSettings.streamPreferredServer = "";
                 this.mc.gameSettings.saveOptions();
             }

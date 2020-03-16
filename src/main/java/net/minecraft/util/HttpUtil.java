@@ -4,9 +4,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
-import net.minecraft.MinecraftServer;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -25,7 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import net.minecraft.server.MinecraftServer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -55,7 +52,7 @@ public class HttpUtil
 
             try
             {
-                stringbuilder.append(URLEncoder.encode((String)entry.getKey(), "UTF-8"));
+                stringbuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
             }
             catch (UnsupportedEncodingException unsupportedencodingexception1)
             {
@@ -131,7 +128,7 @@ public class HttpUtil
         {
             if (!skipLoggingErrors)
             {
-                logger.error((String)("Could not post to " + url), (Throwable)exception);
+                logger.error("Could not post to " + url, (Throwable)exception);
             }
 
             return "";
@@ -166,7 +163,7 @@ public class HttpUtil
 
                         for (Entry<String, String> entry : p_180192_2_.entrySet())
                         {
-                            httpurlconnection.setRequestProperty((String)entry.getKey(), (String)entry.getValue());
+                            httpurlconnection.setRequestProperty(entry.getKey(), entry.getValue());
 
                             if (p_180192_4_ != null)
                             {
@@ -180,7 +177,7 @@ public class HttpUtil
 
                         if (p_180192_4_ != null)
                         {
-                            p_180192_4_.displayLoadingString(String.format("Downloading file (%.2f MB)...", new Object[] {Float.valueOf(f1 / 1000.0F / 1000.0F)}));
+                            p_180192_4_.displayLoadingString(String.format("Downloading file (%.2f MB)...", f1 / 1000.0F / 1000.0F));
                         }
 
                         if (saveFile.exists())

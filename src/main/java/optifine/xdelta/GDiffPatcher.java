@@ -40,7 +40,7 @@ public class GDiffPatcher
 
     public GDiffPatcher(byte[] source, InputStream patch, OutputStream output) throws IOException, PatchException
     {
-        this((SeekableSource)(new ByteArraySeekableSource(source)), (InputStream)patch, (OutputStream)output);
+        this((SeekableSource)(new ByteArraySeekableSource(source)), patch, output);
     }
 
     public GDiffPatcher(SeekableSource source, InputStream patch, OutputStream out) throws IOException, PatchException

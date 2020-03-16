@@ -119,7 +119,7 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
 
                 for (int i = 0; i < BlockBrewingStand.HAS_BOTTLE.length; ++i)
                 {
-                    iblockstate = iblockstate.withProperty(BlockBrewingStand.HAS_BOTTLE[i], Boolean.valueOf(aboolean[i]));
+                    iblockstate = iblockstate.withProperty(BlockBrewingStand.HAS_BOTTLE[i], aboolean[i]);
                 }
 
                 this.worldObj.setBlockState(this.pos, iblockstate, 2);
@@ -224,7 +224,14 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
      */
     private int getPotionResult(int meta, ItemStack stack)
     {
-        return stack == null ? meta : (stack.getItem().isPotionIngredient(stack) ? PotionHelper.applyIngredient(meta, stack.getItem().getPotionEffect(stack)) : meta);
+        if (stack == null)
+        {
+            return meta;
+        }
+        else
+        {
+            return stack.getItem().isPotionIngredient(stack) ? PotionHelper.applyIngredient(meta, stack.getItem().getPotionEffect(stack)) : meta;
+        }
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -343,7 +350,14 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
      */
     public boolean isUseableByPlayer(EntityPlayer player)
     {
-        return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+        if (this.worldObj.getTileEntity(this.pos) != this)
+        {
+            return false;
+        }
+        else
+        {
+            return !(player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) > 64.0D);
+        }
     }
 
     public void openInventory(EntityPlayer player)
@@ -359,7 +373,14 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
      */
     public boolean isItemValidForSlot(int index, ItemStack stack)
     {
-        return index == 3 ? stack.getItem().isPotionIngredient(stack) : stack.getItem() == Items.potionitem || stack.getItem() == Items.glass_bottle;
+        if (index == 3)
+        {
+            return stack.getItem().isPotionIngredient(stack);
+        }
+        else
+        {
+            return stack.getItem() == Items.potionitem || stack.getItem() == Items.glass_bottle;
+        }
     }
 
     public boolean[] func_174902_m()

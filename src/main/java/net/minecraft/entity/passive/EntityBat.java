@@ -102,11 +102,11 @@ public class EntityBat extends EntityAmbientCreature
 
         if (isHanging)
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 | 1)));
+            this.dataWatcher.updateObject(16, (byte)(b0 | 1));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 & -2)));
+            this.dataWatcher.updateObject(16, (byte)(b0 & -2));
         }
     }
 
@@ -124,7 +124,7 @@ public class EntityBat extends EntityAmbientCreature
         }
         else
         {
-            this.motionY *= 0.6000000238418579D;
+            this.motionY *= (double)0.6F;
         }
     }
 
@@ -170,10 +170,10 @@ public class EntityBat extends EntityAmbientCreature
             double d0 = (double)this.spawnPosition.getX() + 0.5D - this.posX;
             double d1 = (double)this.spawnPosition.getY() + 0.1D - this.posY;
             double d2 = (double)this.spawnPosition.getZ() + 0.5D - this.posZ;
-            this.motionX += (Math.signum(d0) * 0.5D - this.motionX) * 0.10000000149011612D;
-            this.motionY += (Math.signum(d1) * 0.699999988079071D - this.motionY) * 0.10000000149011612D;
-            this.motionZ += (Math.signum(d2) * 0.5D - this.motionZ) * 0.10000000149011612D;
-            float f = (float)(MathHelper.atan2(this.motionZ, this.motionX) * 180.0D / Math.PI) - 90.0F;
+            this.motionX += (Math.signum(d0) * 0.5D - this.motionX) * (double)0.1F;
+            this.motionY += (Math.signum(d1) * (double)0.7F - this.motionY) * (double)0.1F;
+            this.motionZ += (Math.signum(d2) * 0.5D - this.motionZ) * (double)0.1F;
+            float f = (float)(MathHelper.atan2(this.motionZ, this.motionX) * 180.0D / (double)(float)Math.PI) - 90.0F;
             float f1 = MathHelper.wrapAngleTo180_float(f - this.rotationYaw);
             this.moveForward = 0.5F;
             this.rotationYaw += f1;
@@ -236,7 +236,7 @@ public class EntityBat extends EntityAmbientCreature
     public void readEntityFromNBT(NBTTagCompound tagCompund)
     {
         super.readEntityFromNBT(tagCompund);
-        this.dataWatcher.updateObject(16, Byte.valueOf(tagCompund.getByte("BatFlags")));
+        this.dataWatcher.updateObject(16, tagCompund.getByte("BatFlags"));
     }
 
     /**

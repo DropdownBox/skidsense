@@ -1,8 +1,6 @@
 package net.minecraft.client.gui.inventory;
 
 import com.google.common.collect.Sets;
-
-
 import java.io.IOException;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
@@ -65,7 +63,7 @@ public abstract class GuiContainer extends GuiScreen
     private ItemStack returningStack;
     private Slot currentDragTargetSlot;
     private long dragItemDropDelay;
-    protected final Set<Slot> dragSplittingSlots = Sets.<Slot>newHashSet();
+    protected final Set<Slot> dragSplittingSlots = Sets.newHashSet();
     protected boolean dragSplitting;
     private int dragSplittingLimit;
     private int dragSplittingButton;
@@ -95,43 +93,12 @@ public abstract class GuiContainer extends GuiScreen
         this.guiTop = (this.height - this.ySize) / 2;
     }
 
-    private float animState = 75f;
-	private boolean anim = true;
-
-	private static float defaultSpeed = 0.125f;
-
-	public static float moveTowards(float current, float end, float minSpeed) {
-		return moveTowards(current, end, defaultSpeed, minSpeed);
-	}
-
-	public static float moveTowards(float current, float end, float smoothSpeed, float minSpeed) {
-		float movement = (end - current) * smoothSpeed;
-
-		if (movement > 0) {
-			movement = Math.max(minSpeed, movement);
-			movement = Math.min(end - current, movement);
-		} else if (movement < 0) {
-			movement = Math.min(-minSpeed, movement);
-			movement = Math.max(end - current, movement);
-		}
-
-		return current + movement;
-	}
-	
     /**
      * Draws the screen and all the components in it. Args : mouseX, mouseY, renderPartialTicks
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-    	
         this.drawDefaultBackground();
-    	
-    	if (anim) {
-			animState = moveTowards(animState, 0, 0.2f, 0.5f);
-		}
-
-		GlStateManager.translate(0, animState, 0);
-		
         int i = this.guiLeft;
         int j = this.guiTop;
         this.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
@@ -153,7 +120,7 @@ public abstract class GuiContainer extends GuiScreen
 
         for (int i1 = 0; i1 < this.inventorySlots.inventorySlots.size(); ++i1)
         {
-            Slot slot = (Slot)this.inventorySlots.inventorySlots.get(i1);
+            Slot slot = this.inventorySlots.inventorySlots.get(i1);
             this.drawSlot(slot);
 
             if (this.isMouseOverSlot(slot, mouseX, mouseY) && slot.canBeHovered())
@@ -375,7 +342,7 @@ public abstract class GuiContainer extends GuiScreen
     {
         for (int i = 0; i < this.inventorySlots.inventorySlots.size(); ++i)
         {
-            Slot slot = (Slot)this.inventorySlots.inventorySlots.get(i);
+            Slot slot = this.inventorySlots.inventorySlots.get(i);
 
             if (this.isMouseOverSlot(slot, x, y))
             {

@@ -10,7 +10,6 @@ public class ImageBufferDownload implements IImageBuffer
     private int[] imageData;
     private int imageWidth;
     private int imageHeight;
-    private static final String __OBFID = "CL_00000956";
 
     public BufferedImage parseUserSkin(BufferedImage image)
     {
@@ -54,13 +53,13 @@ public class ImageBufferDownload implements IImageBuffer
 
             graphics.dispose();
             this.imageData = ((DataBufferInt)bufferedimage.getRaster().getDataBuffer()).getData();
-            this.setAreaOpaque(0, 0, 32 * k, 16 * k);
-            this.setAreaTransparent(32 * k, 0, 64 * k, 32 * k);
-            this.setAreaOpaque(0, 16 * k, 64 * k, 32 * k);
-            this.setAreaTransparent(0, 32 * k, 16 * k, 48 * k);
+            this.setAreaOpaque(0 * k, 0 * k, 32 * k, 16 * k);
+            this.setAreaTransparent(32 * k, 0 * k, 64 * k, 32 * k);
+            this.setAreaOpaque(0 * k, 16 * k, 64 * k, 32 * k);
+            this.setAreaTransparent(0 * k, 32 * k, 16 * k, 48 * k);
             this.setAreaTransparent(16 * k, 32 * k, 40 * k, 48 * k);
             this.setAreaTransparent(40 * k, 32 * k, 56 * k, 48 * k);
-            this.setAreaTransparent(0, 48 * k, 16 * k, 64 * k);
+            this.setAreaTransparent(0 * k, 48 * k, 16 * k, 64 * k);
             this.setAreaOpaque(16 * k, 48 * k, 48 * k, 64 * k);
             this.setAreaTransparent(48 * k, 48 * k, 64 * k, 64 * k);
             return bufferedimage;

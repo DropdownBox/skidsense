@@ -3,11 +3,10 @@ package net.minecraft.nbt;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Stack;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class JsonToNBT
 {
@@ -36,13 +35,13 @@ public class JsonToNBT
     {
         int i = 0;
         boolean flag = false;
-        Stack<Character> stack = new Stack();
+        Stack<Character> stack = new Stack<>();
 
         for (int j = 0; j < p_150310_0_.length(); ++j)
         {
             char c0 = p_150310_0_.charAt(j);
 
-            if (c0 == 34)
+            if (c0 == '"')
             {
                 if (func_179271_b(p_150310_0_, j))
                 {
@@ -58,13 +57,15 @@ public class JsonToNBT
             }
             else if (!flag)
             {
-                if (c0 != 123 && c0 != 91)
+                if (c0 != '{' && c0 != '[')
                 {
-                    if (c0 == 125 && (stack.isEmpty() || stack.pop().charValue() != 123)) {
+                    if (c0 == '}' && (stack.isEmpty() || stack.pop() != '{'))
+                    {
                         throw new NBTException("Unbalanced curly brackets {}: " + p_150310_0_);
                     }
 
-                    if (c0 == 93 && (stack.isEmpty() || stack.pop().charValue() != 91)) {
+                    if (c0 == ']' && (stack.isEmpty() || stack.pop() != '['))
+                    {
                         throw new NBTException("Unbalanced square brackets []: " + p_150310_0_);
                     }
                 }
@@ -75,7 +76,7 @@ public class JsonToNBT
                         ++i;
                     }
 
-                    stack.push(Character.valueOf(c0));
+                    stack.push(c0);
                 }
             }
         }
@@ -131,7 +132,7 @@ public class JsonToNBT
 
                 char c1 = p_150316_1_.charAt(s1.length());
 
-                if (c1 != 44 && c1 != 123 && c1 != 125 && c1 != 91 && c1 != 93)
+                if (c1 != ',' && c1 != '{' && c1 != '}' && c1 != '[' && c1 != ']')
                 {
                     throw new NBTException("Unexpected token '" + c1 + "' at: " + p_150316_1_.substring(s1.length()));
                 }
@@ -162,7 +163,7 @@ public class JsonToNBT
 
                 char c0 = p_150316_1_.charAt(s.length());
 
-                if (c0 != 44 && c0 != 123 && c0 != 125 && c0 != 91 && c0 != 93)
+                if (c0 != ',' && c0 != '{' && c0 != '}' && c0 != '[' && c0 != ']')
                 {
                     throw new NBTException("Unexpected token '" + c0 + "' at: " + p_150316_1_.substring(s.length()));
                 }
@@ -210,7 +211,7 @@ public class JsonToNBT
 
     private static String func_179269_a(String p_179269_0_, int p_179269_1_) throws NBTException
     {
-        Stack<Character> stack = new Stack();
+        Stack<Character> stack = new Stack<>();
         int i = p_179269_1_ + 1;
         boolean flag = false;
         boolean flag1 = false;
@@ -220,7 +221,7 @@ public class JsonToNBT
         {
             char c0 = p_179269_0_.charAt(i);
 
-            if (c0 == 34)
+            if (c0 == '"')
             {
                 if (func_179271_b(p_179269_0_, i))
                 {
@@ -246,24 +247,26 @@ public class JsonToNBT
             }
             else if (!flag)
             {
-                if (c0 != 123 && c0 != 91)
+                if (c0 != '{' && c0 != '[')
                 {
-                    if (c0 == 125 && (stack.isEmpty() || stack.pop().charValue() != 123)) {
+                    if (c0 == '}' && (stack.isEmpty() || stack.pop() != '{'))
+                    {
                         throw new NBTException("Unbalanced curly brackets {}: " + p_179269_0_);
                     }
 
-                    if (c0 == 93 && (stack.isEmpty() || stack.pop().charValue() != 91)) {
+                    if (c0 == ']' && (stack.isEmpty() || stack.pop() != '['))
+                    {
                         throw new NBTException("Unbalanced square brackets []: " + p_179269_0_);
                     }
 
-                    if (c0 == 44 && stack.isEmpty())
+                    if (c0 == ',' && stack.isEmpty())
                     {
                         return p_179269_0_.substring(0, i);
                     }
                 }
                 else
                 {
-                    stack.push(Character.valueOf(c0));
+                    stack.push(c0);
                 }
             }
 
@@ -351,7 +354,7 @@ public class JsonToNBT
         {
             char c0 = p_150312_0_.charAt(i);
 
-            if (c0 == 34)
+            if (c0 == '"')
             {
                 if (!func_179271_b(p_150312_0_, i))
                 {
@@ -365,7 +368,7 @@ public class JsonToNBT
                     return i;
                 }
 
-                if (c0 == 123 || c0 == 91)
+                if (c0 == '{' || c0 == '[')
                 {
                     return -1;
                 }
@@ -377,7 +380,7 @@ public class JsonToNBT
 
     private static boolean func_179271_b(String p_179271_0_, int p_179271_1_)
     {
-        return p_179271_1_ > 0 && p_179271_0_.charAt(p_179271_1_ - 1) == 92 && !func_179271_b(p_179271_0_, p_179271_1_ - 1);
+        return p_179271_1_ > 0 && p_179271_0_.charAt(p_179271_1_ - 1) == '\\' && !func_179271_b(p_179271_0_, p_179271_1_ - 1);
     }
 
     abstract static class Any
@@ -449,13 +452,17 @@ public class JsonToNBT
             this.jsonValue = p_i45139_2_;
         }
 
-        public NBTBase parse() {
-            try {
-                if (DOUBLE.matcher(this.jsonValue).matches()) {
+        public NBTBase parse() throws NBTException
+        {
+            try
+            {
+                if (DOUBLE.matcher(this.jsonValue).matches())
+                {
                     return new NBTTagDouble(Double.parseDouble(this.jsonValue.substring(0, this.jsonValue.length() - 1)));
                 }
 
-                if (FLOAT.matcher(this.jsonValue).matches()) {
+                if (FLOAT.matcher(this.jsonValue).matches())
+                {
                     return new NBTTagFloat(Float.parseFloat(this.jsonValue.substring(0, this.jsonValue.length() - 1)));
                 }
 
@@ -528,7 +535,7 @@ public class JsonToNBT
 
                 for (int i = 0; i < this.jsonValue.length(); ++i)
                 {
-                    if (i < this.jsonValue.length() - 1 && this.jsonValue.charAt(i) == 92 && this.jsonValue.charAt(i + 1) == 92)
+                    if (i < this.jsonValue.length() - 1 && this.jsonValue.charAt(i) == '\\' && this.jsonValue.charAt(i + 1) == '\\')
                     {
                         stringbuilder.append('\\');
                         ++i;
