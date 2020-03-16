@@ -5,19 +5,23 @@ import java.awt.Color;
 import me.skidsense.Client;
 import me.skidsense.hooks.EventHandler;
 import me.skidsense.hooks.events.EventAttack;
-import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.move.Speed;
+import me.skidsense.module.collection.player.Scaffold;
 import me.skidsense.util.TimerUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
+import java.util.Random;
+
 
 public class Critical extends Module {
-    static Numbers<Double> delay = new Numbers<Double>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
+    static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
     private static TimerUtil timer = new TimerUtil();
 
 
@@ -46,20 +50,20 @@ public class Critical extends Module {
                 && mc.thePlayer.onGround
                 && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
                 && !Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()
+                && !Client.getModuleManager().getModuleByClass(Scaffold.class).isEnabled()
                 && Critical.timer.hasReached(delay.getValue());
     }
 
     public void doCrit() {
-        double[] offsets = new double[] {0.0312622959183674, 0.0, 0.0312622959183674, 0.0};
-        int l = offsets.length;
-        for(int i = 0; i < l; ++i) {
-            double offset = offsets[i];
-            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+        Random randomValue = new Random(System.currentTimeMillis()+System.nanoTime());
+        double[] offsets = new double[] { 0.041, 0.002 };
+        for (int i = 0; i < offsets.length; ++i) {
+            EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+            p.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(p.posX,
+                    p.posY + offsets[i] + randomValue.nextDouble() / 10000000, p.posZ, false));
         }
-        this.timer.reset();
+            this.timer.reset();
         Notifications.getManager().post("Do criticals.");
     }
-
-
 }
 

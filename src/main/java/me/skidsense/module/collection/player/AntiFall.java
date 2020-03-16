@@ -2,6 +2,12 @@ package me.skidsense.module.collection.player;
 
 import java.awt.Color;
 
+import me.skidsense.Client;
+import me.skidsense.hooks.events.EventMove;
+import me.skidsense.hooks.value.Mode;
+import me.skidsense.hooks.value.Option;
+import me.skidsense.module.collection.move.Flight;
+import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
 import me.skidsense.hooks.EventHandler;
@@ -17,68 +23,71 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
-public class AntiFall
-extends Module {
-    private Numbers<Double> Distance = new Numbers<Double>("Distance", "Distance", 1.0, 1.0, 100.0, 1.0);
+public class AntiFall extends Module {
+
+    private boolean saveMe;
     private TimerUtil timer = new TimerUtil();
+    private Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) AntiMode.values(), (Enum) AntiMode.Motion);
+    private Option<Boolean> ov = new Option<Boolean>("OnlyVoid", "OnlyVoid", true);
+    private static Numbers<Double> distance = new Numbers<Double>("Distance", "Distance", 5.0, 1.0, 10.0, 1.0);
 
     public AntiFall() {
-        super("Anti Void", new String[]{"novoid", "antifall"}, ModuleType.Move);
+        super("AntiFall", new String[] { "novoid", "antifall" }, ModuleType.Move);
         this.setColor(new Color(223, 233, 233).getRGB());
-        this.addValues(this.Distance);
-    }
-
-    @EventHandler
-    private void onUpdate(EventPreUpdate e2) {
-        if (!this.isBlockUnder()) {
-            if (!Minecraft.getMinecraft().thePlayer.onGround) {
-                if (Minecraft.getMinecraft().thePlayer.motionY < 0.0) {
-                    if (Minecraft.getMinecraft().thePlayer.fallDistance >= Distance.getValue()) {
-                        if (!Minecraft.getMinecraft().thePlayer.onGround && timer.hasReached(100)) {
-                            //mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 12, mc.thePlayer.posZ, false));
-                            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + Distance.getValue() + 1, mc.thePlayer.posZ);
-                            mc.thePlayer.fallDistance = 0;
-                			//mc.thePlayer.motionY = 2.0;
-                            //Minecraft.thePlayer.moveEntity(0.0,Distance.getValue()+0.01212121, 0.0);
-                            //Minecraft.thePlayer.fallDistance = 0.0f;
-                        }
-                    }
-                    return;
-                }
-            }
-        }
-    }
-    
-    public double getDistanceToFall() {
-        double distance = 0.0;
-        double distancetofall = Minecraft.getMinecraft().thePlayer.posY;
-        while (distancetofall > 0.0) {
-            Block block = this.getBlockWithBlockPos(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, distancetofall, Minecraft.getMinecraft().thePlayer.posZ));
-            if (block.getMaterial() != Material.air && block.isFullCube() && block.isCollidable()) {
-                distance = distancetofall;
-                break;
-            }
-            distancetofall -= 1.0;
-        }
-        distancetofall = Minecraft.getMinecraft().thePlayer.posY - distance - 1.0;
-        return distancetofall;
-    }
-
-    public Block getBlockWithBlockPos(BlockPos blockPos) {
-        return Minecraft.getMinecraft().theWorld.getBlockState(blockPos).getBlock();
+        this.addValues(this.ov, this.distance, this.mode);
     }
 
     private boolean isBlockUnder() {
-        int i2 = (int)(Minecraft.getMinecraft().thePlayer.posY - 1.0);
-        while (i2 > 0) {
-            double var10003 = i2;
-            BlockPos pos = new BlockPos(Minecraft.getMinecraft().thePlayer.posX, var10003, Minecraft.getMinecraft().thePlayer.posZ);
-            if (!(Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockAir)) {
+        if (mc.thePlayer.posY < 0)
+            return false;
+        for (int off = 0; off < (int) mc.thePlayer.posY + 2; off += 2) {
+            AxisAlignedBB bb = mc.thePlayer.boundingBox.offset(0, -off, 0);
+            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty()) {
                 return true;
             }
-            --i2;
         }
         return false;
     }
-}
 
+    @EventHandler
+    private void onMove(EventMove e) {
+        if (mc.thePlayer.fallDistance > this.distance.getValue()
+                && !Client.instance.getModuleManager().getModuleByClass(Flight.class).isEnabled()
+                && Minecraft.getMinecraft().thePlayer.motionY < 0.0
+                && !mc.thePlayer.onGround   ) {
+            if (!(this.ov.getValue()) || !isBlockUnder()) {
+                if (!saveMe) {
+                    saveMe = true;
+                    timer.reset();
+                }
+                mc.thePlayer.fallDistance = 0;
+                if (this.mode.getValue() == AntiMode.Hypixel) {
+                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+                            mc.thePlayer.posY + 12, mc.thePlayer.posZ, false));
+                } else if (this.mode.getValue() == AntiMode.Motion) {
+                    e.setY(mc.thePlayer.motionY = 0);
+                }
+            }
+        }
+        if (this.mode.getValue() == AntiMode.Hypixel) {
+
+        }
+    }
+
+    @EventHandler
+    private void onUpdate(EventPreUpdate e) {
+        this.setSuffix(this.mode.getValue());
+        if ((saveMe && timer.delay(150F)) || mc.thePlayer.isCollidedVertically) {
+            saveMe = false;
+            timer.reset();
+        }
+    }
+
+    @Override
+    public void onEnable() {
+    }
+
+    static enum AntiMode {
+        Motion, Hypixel;
+    }
+}

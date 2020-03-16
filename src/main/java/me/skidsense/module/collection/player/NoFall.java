@@ -15,7 +15,7 @@ extends Module {
 	private float fall;
     public static Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])fallmode.values(), (Enum)fallmode.Normal);
     public NoFall() {
-        super("No Fall", new String[]{"Nofalldamage"}, ModuleType.Player);
+        super("No Fall", new String[]{"Nofalldamage","NoFall"}, ModuleType.Player);
         this.addValues(mode);
     }
 
