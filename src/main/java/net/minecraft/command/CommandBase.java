@@ -117,7 +117,7 @@ public abstract class CommandBase implements ICommand
     public static BlockPos parseBlockPos(ICommandSender sender, String[] args, int startIndex, boolean centerBlock) throws NumberInvalidException
     {
         BlockPos blockpos = sender.getPosition();
-        return new BlockPos(parseDouble((double)blockpos.getX(), args[startIndex], -30000000, 30000000, centerBlock), parseDouble((double)blockpos.getY(), args[startIndex + 1], 0, 256, false), parseDouble((double)blockpos.getZ(), args[startIndex + 2], -30000000, 30000000, centerBlock));
+        return new BlockPos(parseDouble(blockpos.getX(), args[startIndex], -30000000, 30000000, centerBlock), parseDouble((double)blockpos.getY(), args[startIndex + 1], 0, 256, false), parseDouble((double)blockpos.getZ(), args[startIndex + 2], -30000000, 30000000, centerBlock));
     }
 
     public static double parseDouble(String input) throws NumberInvalidException
@@ -208,9 +208,8 @@ public abstract class CommandBase implements ICommand
             {
                 entityplayermp = MinecraftServer.getServer().getConfigurationManager().getPlayerByUUID(UUID.fromString(username));
             }
-            catch (IllegalArgumentException var4)
+            catch (IllegalArgumentException ignored)
             {
-                ;
             }
         }
 
@@ -405,38 +404,43 @@ public abstract class CommandBase implements ICommand
         {
             double d0 = 0.0D;
 
-            if (!flag || p_175767_2_.length() > 1)
-            {
-                boolean flag1 = p_175767_2_.contains(".");
-
-                if (flag)
-                {
-                    p_175767_2_ = p_175767_2_.substring(1);
-                }
-
-                d0 += parseDouble(p_175767_2_);
-
-                if (!flag1 && !flag && centerBlock)
-                {
-                    d0 += 0.5D;
-                }
-            }
-
-            if (min != 0 || max != 0)
-            {
-                if (d0 < (double)min)
-                {
-                    throw new NumberInvalidException("commands.generic.double.tooSmall", d0, min);
-                }
-
-                if (d0 > (double)max)
-                {
-                    throw new NumberInvalidException("commands.generic.double.tooBig", d0, max);
-                }
-            }
+            d0 = getD0(p_175767_2_, min, max, centerBlock, flag, d0);
 
             return new CommandBase.CoordinateArg(d0 + (flag ? p_175767_0_ : 0.0D), d0, flag);
         }
+    }
+
+    private static double getD0(String p_175767_2_, int min, int max, boolean centerBlock, boolean flag, double d0) throws NumberInvalidException {
+        if (!flag || p_175767_2_.length() > 1)
+        {
+            boolean flag1 = p_175767_2_.contains(".");
+
+            if (flag)
+            {
+                p_175767_2_ = p_175767_2_.substring(1);
+            }
+
+            d0 += parseDouble(p_175767_2_);
+
+            if (!flag1 && !flag && centerBlock)
+            {
+                d0 += 0.5D;
+            }
+        }
+
+        if (min != 0 || max != 0)
+        {
+            if (d0 < (double)min)
+            {
+                throw new NumberInvalidException("commands.generic.double.tooSmall", d0, min);
+            }
+
+            if (d0 > (double)max)
+            {
+                throw new NumberInvalidException("commands.generic.double.tooBig", d0, max);
+            }
+        }
+        return d0;
     }
 
     public static double parseDouble(double base, String input, boolean centerBlock) throws NumberInvalidException
@@ -456,35 +460,7 @@ public abstract class CommandBase implements ICommand
         {
             double d0 = flag ? base : 0.0D;
 
-            if (!flag || input.length() > 1)
-            {
-                boolean flag1 = input.contains(".");
-
-                if (flag)
-                {
-                    input = input.substring(1);
-                }
-
-                d0 += parseDouble(input);
-
-                if (!flag1 && !flag && centerBlock)
-                {
-                    d0 += 0.5D;
-                }
-            }
-
-            if (min != 0 || max != 0)
-            {
-                if (d0 < (double)min)
-                {
-                    throw new NumberInvalidException("commands.generic.double.tooSmall", d0, min);
-                }
-
-                if (d0 > (double)max)
-                {
-                    throw new NumberInvalidException("commands.generic.double.tooBig", d0, max);
-                }
-            }
+            d0 = getD0(input, min, max, centerBlock, flag, d0);
 
             return d0;
         }
