@@ -8,6 +8,7 @@ import me.skidsense.module.Module;
 import me.skidsense.module.ModuleType;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
 public class NoFall
@@ -32,7 +33,9 @@ extends Module {
                if(!Minecraft.getMinecraft().thePlayer.isInWater()) {
                   if(!Minecraft.getMinecraft().thePlayer.isInLava()) {
       				if(isBlockUnder()) {
-                  	  Minecraft.getMinecraft().thePlayer.fallDistance = 0.0F;
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, true));
+                  	    Minecraft.getMinecraft().thePlayer.fallDistance = 0.0F;
       					Notifications.getManager().post("NoFall触发");
                         e.setOnGround(true);
       				}

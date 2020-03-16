@@ -32,7 +32,7 @@ public class AntiFall extends Module {
     private static Numbers<Double> distance = new Numbers<Double>("Distance", "Distance", 5.0, 1.0, 10.0, 1.0);
 
     public AntiFall() {
-        super("AntiFall", new String[] { "novoid", "antifall" }, ModuleType.Move);
+        super("Anti Void", new String[] { "novoid", "antifall" }, ModuleType.Move);
         this.setColor(new Color(223, 233, 233).getRGB());
         this.addValues(this.ov, this.distance, this.mode);
     }
@@ -54,7 +54,7 @@ public class AntiFall extends Module {
         if (mc.thePlayer.fallDistance > this.distance.getValue()
                 && !Client.instance.getModuleManager().getModuleByClass(Flight.class).isEnabled()
                 && Minecraft.getMinecraft().thePlayer.motionY < 0.0
-                && !mc.thePlayer.onGround   ) {
+                && !mc.thePlayer.onGround) {
             if (!(this.ov.getValue()) || !isBlockUnder()) {
                 if (!saveMe) {
                     saveMe = true;
@@ -64,13 +64,12 @@ public class AntiFall extends Module {
                 if (this.mode.getValue() == AntiMode.Hypixel) {
                     mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
                             mc.thePlayer.posY + 12, mc.thePlayer.posZ, false));
+
+
                 } else if (this.mode.getValue() == AntiMode.Motion) {
                     e.setY(mc.thePlayer.motionY = 0);
                 }
             }
-        }
-        if (this.mode.getValue() == AntiMode.Hypixel) {
-
         }
     }
 
