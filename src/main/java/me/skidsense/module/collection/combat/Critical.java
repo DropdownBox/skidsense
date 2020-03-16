@@ -13,7 +13,10 @@ import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.move.Speed;
 import me.skidsense.module.collection.player.Scaffold;
+import me.skidsense.module.collection.visual.clickgui.LAC.ClickUI;
+import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
 import me.skidsense.util.TimerUtil;
+import me.theresa.music.ui.MusicWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -57,30 +60,32 @@ public class Critical extends Module {
     }
 
     public void doCrit() {
-        if (mode.getValue().equals(CritMode.Old)) {
-            Random randomValue = new Random(System.currentTimeMillis() + System.nanoTime());
-            double[] offsets = new double[]{0.041, 0.002};
-            for (int i = 0; i < offsets.length; ++i) {
-                EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-                p.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(p.posX,
-                        p.posY + offsets[i] + randomValue.nextDouble() / 10000000, p.posZ, false));
-            }
-        }
-        if (mode.getValue().equals(CritMode.Hypixel)) {
-            double[] offsets = new double[]{0.033600000987064504, 0.000650000001769514, 0.032300000774313276, 0.000650000001769514};
-            int l = offsets.length;
-            for (int i = 0; i < l; ++i) {
-                double offset = offsets[i];
-                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
-            }
-        }
-        if(mode.getValue().equals(CritMode.HVH)){
-            double[] offsets = new double[]{0.41999998688697815,0.33320000767707825,0.00120000005699695};
-            int l = offsets.length;
-            for (int i = 0; i < l; ++i) {
-                double offset = offsets[i];
-                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
-            }
+        switch (this.mode.getValue().toString()) {
+            case "Old":
+                Random randomValue = new Random(System.currentTimeMillis() + System.nanoTime());
+                double[] oldoffsets = new double[]{0.041, 0.002};
+                for (int i = 0; i < oldoffsets.length; ++i) {
+                    EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+                    p.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(p.posX,
+                            p.posY + oldoffsets[i] + randomValue.nextDouble() / 10000000, p.posZ, false));
+                }
+                break;
+            case "Hypixel":
+                double[] hypixeloffsets = new double[]{0.033600000987064504, 0.000650000001769514, 0.032300000774313276, 0.000650000001769514};
+                int l = hypixeloffsets.length;
+                for (int i = 0; i < l; ++i) {
+                    double offset = hypixeloffsets[i];
+                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+                }
+                break;
+            case "HVH":
+                double[] offsets = new double[]{0.41888898688697815,0.33320000767707825,0.00120000005699695};
+                int HVHl = offsets.length;
+                for (int i = 0; i < HVHl; ++i) {
+                    double offset = offsets[i];
+                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+                }
+                break;
         }
         Notifications.getManager().post("Do criticals.");
         this.timer.reset();
@@ -88,7 +93,7 @@ public class Critical extends Module {
     enum CritMode{
         Hypixel,
         HVH,
-        Old
+        Old;
     }
 }
 
