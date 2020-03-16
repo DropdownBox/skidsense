@@ -128,8 +128,9 @@ public class Speed
     @Sub
     public void onHypixelMove(EventMove em) {
         if (mode.getValue() == SpeedMode.Hypixel) {
-            if(mode.getValue() == SpeedMode.Hypixel){
-                //Sigma
+            Random randomValue = new Random(System.currentTimeMillis()+System.nanoTime());
+
+            //Sigma
                 if (Speed.mc.thePlayer.isCollidedHorizontally) {
                     this.collided = true;
                 }
@@ -147,10 +148,11 @@ public class Speed
                     this.collided = Speed.mc.thePlayer.isCollidedHorizontally;
                     if (Speed.stage >= 0 || this.collided) {
                         Speed.stage = 0;
-                        final double a = 0.4086666 + MoveUtil.getJumpEffect() * 0.1;
+                        final double a = 0.4086666 + MoveUtil.getJumpEffect() * 0.1+(randomValue.nextFloat()*0.001);
                         if (this.stair == 0.0) {
                             Speed.mc.thePlayer.jump();
                             em.setY(Speed.mc.thePlayer.motionY = a);
+                            System.out.println(a);
                         }
                         ++this.less;
                         this.lessSlow = (this.less > 1.0 && !this.lessSlow);
@@ -159,8 +161,8 @@ public class Speed
                         }
                     }
                 }
-                this.speed = this.getHypixelSpeed(Speed.stage) + 0.03066;
-                this.speed *= 0.8688;
+                this.speed = this.getHypixelSpeed(Speed.stage) + 0.0388;
+                this.speed *= 0.888+(randomValue.nextFloat()*0.001);
                 if (this.stair > 0.0) {
                     this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
                 }
@@ -174,7 +176,7 @@ public class Speed
                     this.speed = 0.1;
                 }
                 if (Speed.mc.thePlayer.moveForward != 0.0f || Speed.mc.thePlayer.moveStrafing != 0.0f) {
-                    if (Client.instance.getModuleManager().getModuleByClass((Class)AutoStrafe.class).isEnabled() && KillAura.target != null) {
+                    if (Client.instance.getModuleManager().getModuleByClass((Class)AutoStrafe.class).isEnabled() && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target)<=AutoStrafe.MaxDistance.getValue()+1) {
                         AutoStrafe.onStrafe(em, this.speed);
                         ++Speed.stage;
                     }
@@ -185,7 +187,7 @@ public class Speed
                 }
             }
         }
-    }
+
 
     private double getHypixelSpeed(final int stage) {
         double value = MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;

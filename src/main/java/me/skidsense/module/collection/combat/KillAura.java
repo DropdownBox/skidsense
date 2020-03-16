@@ -103,7 +103,7 @@ public class KillAura extends Mod {
 	public void onEnable() {
 		this.rotation = new float[] { this.mc.thePlayer.rotationYaw, this.mc.thePlayer.rotationPitch };
 	}
-	
+
 	@Override
 	public void onDisable() {
 		super.onDisable();
@@ -161,23 +161,23 @@ public class KillAura extends Mod {
 
 	@Sub
 	public void targetHud(EventRender2D event) {
-			ScaledResolution sr2 = new ScaledResolution(mc);
-			if (target != null) {
-				GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-				FontRenderer font = KillAura.mc.fontRendererObj;
-				font.drawStringWithShadow(target.getDisplayName().getFormattedText(), sr2.getScaledWidth() / 2 - font.getStringWidth(target.getName()) / 2, sr2.getScaledHeight() / 2 - 30, 16777215);
-				mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/icons.png"));
-				int i2 = 0;
-				while ((float)i2 < ((EntityLivingBase)target).getMaxHealth() / 2.0f) {
-					KillAura.mc.ingameGUI.drawTexturedModalRect((float)(sr2.getScaledWidth() / 2) - ((EntityLivingBase)target).getMaxHealth() / 2.0f * 10.0f / 2.0f + (float)(i2 * 10), (float)(sr2.getScaledHeight() / 2 - 20), 16, 0, 9, 9);
-					++i2;
-				}
-				i2 = 0;
-				while ((float)i2 < ((EntityLivingBase)target).getHealth() / 2.0f) {
-					KillAura.mc.ingameGUI.drawTexturedModalRect((float)(sr2.getScaledWidth() / 2) - ((EntityLivingBase)target).getMaxHealth() / 2.0f * 10.0f / 2.0f + (float)(i2 * 10), (float)(sr2.getScaledHeight() / 2 - 20), 52, 0, 9, 9);
-					++i2;
-				}
+		ScaledResolution sr2 = new ScaledResolution(mc);
+		if (target != null) {
+			GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+			FontRenderer font = KillAura.mc.fontRendererObj;
+			font.drawStringWithShadow(target.getDisplayName().getFormattedText(), sr2.getScaledWidth() / 2 - font.getStringWidth(target.getName()) / 2, sr2.getScaledHeight() / 2 - 30, 16777215);
+			mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/icons.png"));
+			int i2 = 0;
+			while ((float)i2 < ((EntityLivingBase)target).getMaxHealth() / 2.0f) {
+				KillAura.mc.ingameGUI.drawTexturedModalRect((float)(sr2.getScaledWidth() / 2) - ((EntityLivingBase)target).getMaxHealth() / 2.0f * 10.0f / 2.0f + (float)(i2 * 10), (float)(sr2.getScaledHeight() / 2 - 20), 16, 0, 9, 9);
+				++i2;
 			}
+			i2 = 0;
+			while ((float)i2 < ((EntityLivingBase)target).getHealth() / 2.0f) {
+				KillAura.mc.ingameGUI.drawTexturedModalRect((float)(sr2.getScaledWidth() / 2) - ((EntityLivingBase)target).getMaxHealth() / 2.0f * 10.0f / 2.0f + (float)(i2 * 10), (float)(sr2.getScaledHeight() / 2 - 20), 52, 0, 9, 9);
+				++i2;
+			}
+		}
 	}
 	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
@@ -188,7 +188,7 @@ public class KillAura extends Mod {
 		if (autoBlock.getValue() && this.canBlock() && this.isBlocking) {
 			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-0.6,-0.6,-0.6), EnumFacing.DOWN));
+			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-1,-1,-1), EnumFacing.DOWN));
 			this.mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
@@ -203,7 +203,7 @@ public class KillAura extends Mod {
 			if (this.isBlocking) {
 				NetworkManager networkManager2 = this.mc.thePlayer.sendQueue.getNetworkManager();
 				C07PacketPlayerDigging.Action release_USE_ITEM2 = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-				networkManager2.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM2, new BlockPos(-0.6,-0.6,-0.6), EnumFacing.DOWN));
+				networkManager2.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM2, new BlockPos(-1,-1,-1), EnumFacing.DOWN));
 				this.mc.thePlayer.clearItemInUse();
 				this.isBlocking = false;
 			}
@@ -232,7 +232,7 @@ public class KillAura extends Mod {
 		}
 		if (!this.getTargets(blockrange.getValue()).isEmpty() && this.canBlock() && !this.isBlocking  && autoBlock.getValue()) {
 			mc.thePlayer.sendQueue.addToSendQueue(
-					new C08PacketPlayerBlockPlacement(new BlockPos(-0.6,-0.6,-0.6), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
@@ -309,25 +309,29 @@ public class KillAura extends Mod {
 		if (this.isBlocking && this.canBlock()) {
 			sendNotBlockingPacket();
 		}
-			if (BlockUtil.isOnGround(0.01) && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
-					&& this.mc.thePlayer.isCollidedVertically && !this.mc.thePlayer.isInWater()
-					&& Client.getModuleManager().getModuleByClass(Critical.class).isEnabled()) {
-				double[] offsets = new double[] { 0.05250000001303851D, 0.001500000013038516D, 0.014000000013038517D,
-						0.001500000013038516D };
-				int n = offsets.length;
-				int n2 = 0;
-				while (n2 < n) {
-					double offset = offsets[n2];
-					mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
-							mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
-					++n2;
-				}
-				this.attackSpeed = 0;
-			}
-			++this.attackSpeed;
-			this.mc.thePlayer.swingItem();
-			this.mc.thePlayer.sendQueue
-					.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+		/**if (BlockUtil.isOnGround(0.01) && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
+		 && this.mc.thePlayer.isCollidedVertically && !this.mc.thePlayer.isInWater()
+		 && Client.getModuleManager().getModuleByClass(Critical.class).isEnabled()) {
+		 double[] offsets = new double[] { 0.05250000001303851D, 0.001500000013038516D, 0.014000000013038517D,
+		 0.001500000013038516D };
+		 int n = offsets.length;
+		 int n2 = 0;
+		 while (n2 < n) {
+		 double offset = offsets[n2];
+		 mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+		 mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+		 ++n2;
+		 }
+		 this.attackSpeed = 0;
+		 }**/
+		++this.attackSpeed;
+		EventAttack e = new EventAttack(target,false);
+		EventBus.getInstance().call(e);
+		if(e.cancelled)
+			return;
+		this.mc.thePlayer.swingItem();
+		this.mc.thePlayer.sendQueue
+				.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
 		if (this.mode.getValue() == AuraMode.Switch) {
 			++this.hit;
 			if (this.hit >= this.hitswitch.getValue()) {
@@ -339,7 +343,7 @@ public class KillAura extends Mod {
 		if (this.canBlock() && !this.isBlocking && autoBlock.getValue()) {
 			NetworkManager networkManager2 = this.mc.thePlayer.sendQueue.getNetworkManager();
 			networkManager2.sendPacket(
-					new C08PacketPlayerBlockPlacement(new BlockPos(-0.6,-0.6,-0.6), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
@@ -458,25 +462,25 @@ public class KillAura extends Mod {
 	}
 
 	private float[] rotateNCP_backup(Entity entity) {
-        double diffX = entity.posX - mc.thePlayer.posX;
-        double diffY = entity.posY + (double)entity.getEyeHeight() * 0.9D - (mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight());
-        double diffZ = entity.posZ - mc.thePlayer.posZ;
-        double dist = (double)MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
-        float yaw = (float)(Math.atan2(diffZ, diffX) * 180.0D / 3.141592653589793D) - 90.0F;
-        float pitch = (float)(-(Math.atan2(diffY, dist) * 180.0D / 3.141592653589793D));
-        float[] neededRotations = new float[]{RotationUtil.yaw() + MathHelper.wrapAngleTo180_float(yaw - RotationUtil.yaw()), RotationUtil.pitch() + MathHelper.wrapAngleTo180_float(pitch - RotationUtil.pitch())};
-        float[] rlyneed = (float[])neededRotations.clone();
-        float d0 = 0.0F - RotationUtil.yaw();
-        float d0y = neededRotations[0] + d0;
-        boolean rotateRight = d0y > 0.0F;
-        if(rotateRight) {
-           neededRotations[0] = (RotationUtil.yaw()) + Math.min(Math.abs(0.0F - d0y), 25f);
-        } else {
-           neededRotations[0] = (RotationUtil.yaw()) - Math.min(Math.abs(0.0F - d0y), 35f);
-        }
+		double diffX = entity.posX - mc.thePlayer.posX;
+		double diffY = entity.posY + (double)entity.getEyeHeight() * 0.9D - (mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight());
+		double diffZ = entity.posZ - mc.thePlayer.posZ;
+		double dist = (double)MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
+		float yaw = (float)(Math.atan2(diffZ, diffX) * 180.0D / 3.141592653589793D) - 90.0F;
+		float pitch = (float)(-(Math.atan2(diffY, dist) * 180.0D / 3.141592653589793D));
+		float[] neededRotations = new float[]{RotationUtil.yaw() + MathHelper.wrapAngleTo180_float(yaw - RotationUtil.yaw()), RotationUtil.pitch() + MathHelper.wrapAngleTo180_float(pitch - RotationUtil.pitch())};
+		float[] rlyneed = (float[])neededRotations.clone();
+		float d0 = 0.0F - RotationUtil.yaw();
+		float d0y = neededRotations[0] + d0;
+		boolean rotateRight = d0y > 0.0F;
+		if(rotateRight) {
+			neededRotations[0] = (RotationUtil.yaw()) + Math.min(Math.abs(0.0F - d0y), 25f);
+		} else {
+			neededRotations[0] = (RotationUtil.yaw()) - Math.min(Math.abs(0.0F - d0y), 35f);
+		}
 
-        return neededRotations;
-     }
+		return neededRotations;
+	}
 
 	private int DistanceToEntity(Entity entity, Entity entity2) {
 		return (int) (entity.getDistanceToEntity(this.mc.thePlayer) - entity2.getDistanceToEntity(this.mc.thePlayer));

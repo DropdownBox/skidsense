@@ -8,6 +8,7 @@ import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.block.BlockAir;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
 public class NoFall
@@ -19,44 +20,18 @@ extends Mod {
         //this.addValues(mode);
     }
 
-    @Override
-    public void onEnable() {
-        super.onEnable();
+    public NoFall() {
+        super("No Fall", new String[] { "Nofalldamage","nofall" }, ModuleType.Player);
+        setColor(new Color(242, 137, 73).getRGB());
     }
 
     @Sub
     private void onUpdate(EventPreUpdate e) {
-        this.setSuffix(mode.getValue());  
-        if (mode.getValue() == fallmode.Normal) {
-            if(Minecraft.getMinecraft().thePlayer.fallDistance > 3.0F) {
-               if(!Minecraft.getMinecraft().thePlayer.isInWater()) {
-                  if(!Minecraft.getMinecraft().thePlayer.isInLava()) {
-      				if(isBlockUnder()) {
-                  	  Minecraft.getMinecraft().thePlayer.fallDistance = 0.0F;
-      					Notifications.getManager().post("NoFall触发");
-                        e.setOnGround(true);
-      				}
-                  }
-               }
-            }
-
-         }
-      }
-
-    private boolean isBlockUnder() {
-        int i2 = (int)(Minecraft.getMinecraft().thePlayer.posY - 1.0);
-        while (i2 > 0) {
-            double var10003 = i2;
-            BlockPos pos = new BlockPos(Minecraft.getMinecraft().thePlayer.posX, var10003, Minecraft.getMinecraft().thePlayer.posZ);
-            if (!(Minecraft.getMinecraft().theWorld.getBlockState(pos).getBlock() instanceof BlockAir)) {
-                return true;
-            }
-            --i2;
+        if (mc.thePlayer.fallDistance > 3.0f) {
+            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                    mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, true));
+            mc.thePlayer.fallDistance = 0.0f;
+            Notifications.getManager().post("触发NoFall");
         }
-        return false;
     }
-    
-    static enum fallmode {
-        Normal;
-    }        
 }

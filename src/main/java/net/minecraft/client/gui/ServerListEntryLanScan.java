@@ -17,16 +17,26 @@ public class ServerListEntryLanScan implements GuiListExtended.IGuiListEntry
         {
             case 0:
             default:
-                s = "O o o";
+                s = "N i g";
                 break;
 
             case 1:
             case 3:
-                s = "o O o";
+                s = "n I g";
                 break;
 
             case 2:
-                s = "o o O";
+                s = "n i G";
+                break;
+            /*case 4:
+                s = "n i g G e r";
+                break;
+            case 5:
+                s = "n i g g E r";
+                break;
+            case 6:
+                s = "n i g G e R";
+                break;*/
         }
 
         this.mc.fontRendererObj.drawString(s, this.mc.currentScreen.width / 2 - this.mc.fontRendererObj.getStringWidth(s) / 2, i + this.mc.fontRendererObj.FONT_HEIGHT, 8421504);
