@@ -50,23 +50,6 @@ public class AntiFall extends Module {
     }
 
     @EventHandler
-<<<<<<< HEAD
-    private void onUpdate(EventPreUpdate e2) {
-        if (!this.isBlockUnder()) {
-            if (!Minecraft.getMinecraft().thePlayer.onGround) {
-                if (Minecraft.getMinecraft().thePlayer.motionY < 0.0) {
-                    if (Minecraft.getMinecraft().thePlayer.fallDistance >= Distance.getValue()) {
-                        if (!Minecraft.getMinecraft().thePlayer.onGround && timer.hasReached(100)) {
-                            //mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 2.5, mc.thePlayer.posZ, false));
-                            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + Distance.getValue() + 1, mc.thePlayer.posZ);
-                            mc.thePlayer.fallDistance = 0;
-                			//mc.thePlayer.motionY = 2.0;
-                            //Minecraft.thePlayer.moveEntity(0.0,Distance.getValue()+0.01212121, 0.0);
-                            //Minecraft.thePlayer.fallDistance = 0.0f;
-                        }
-                    }
-                    return;
-=======
     private void onMove(EventMove e) {
         if (mc.thePlayer.fallDistance > this.distance.getValue()
                 && !Client.instance.getModuleManager().getModuleByClass(Flight.class).isEnabled()
@@ -85,7 +68,6 @@ public class AntiFall extends Module {
 
                 } else if (this.mode.getValue() == AntiMode.Motion) {
                     e.setY(mc.thePlayer.motionY = 0);
->>>>>>> 11e1f8933e4ce91566f9b9e076eb8334fb41e6cc
                 }
             }
         }
