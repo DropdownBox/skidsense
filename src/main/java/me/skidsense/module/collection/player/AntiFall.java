@@ -25,68 +25,34 @@ import net.minecraft.util.BlockPos;
 
 public class AntiFall extends Module {
 
-    private boolean saveMe;
-    private TimerUtil timer = new TimerUtil();
-    private Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) AntiMode.values(), (Enum) AntiMode.Motion);
-    private Option<Boolean> ov = new Option<Boolean>("OnlyVoid", "OnlyVoid", true);
-    private static Numbers<Double> distance = new Numbers<Double>("Distance", "Distance", 5.0, 1.0, 10.0, 1.0);
-
     public AntiFall() {
-        super("Anti Void", new String[] { "novoid", "antifall" }, ModuleType.Move);
-        this.setColor(new Color(223, 233, 233).getRGB());
-        this.addValues(this.ov, this.distance, this.mode);
-    }
-
-    private boolean isBlockUnder() {
-        if (mc.thePlayer.posY < 0)
-            return false;
-        for (int off = 0; off < (int) mc.thePlayer.posY + 2; off += 2) {
-            AxisAlignedBB bb = mc.thePlayer.boundingBox.offset(0, -off, 0);
-            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @EventHandler
-    private void onMove(EventMove e) {
-        if (mc.thePlayer.fallDistance > this.distance.getValue()
-                && !Client.instance.getModuleManager().getModuleByClass(Flight.class).isEnabled()
-                && Minecraft.getMinecraft().thePlayer.motionY < 0.0
-                && !mc.thePlayer.onGround) {
-            if (!(this.ov.getValue()) || !isBlockUnder()) {
-                if (!saveMe) {
-                    saveMe = true;
-                    timer.reset();
-                }
-                mc.thePlayer.fallDistance = 0;
-                if (this.mode.getValue() == AntiMode.Hypixel) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
-                            mc.thePlayer.posY + 12, mc.thePlayer.posZ, false));
-
-
-                } else if (this.mode.getValue() == AntiMode.Motion) {
-                    e.setY(mc.thePlayer.motionY = 0);
-                }
-            }
-        }
+        super("Anti Void", new String[] { "novoid", "antifall" }, ModuleType.World);
+        setColor(new Color(223,233,233).getRGB());
     }
 
     @EventHandler
     private void onUpdate(EventPreUpdate e) {
-        this.setSuffix(this.mode.getValue());
-        if ((saveMe && timer.delay(150F)) || mc.thePlayer.isCollidedVertically) {
-            saveMe = false;
-            timer.reset();
+        //variable to hold if a block is underneath us
+        boolean blockUnderneath = false;
+        //for the players posy
+        for (int i = 0; i < mc.thePlayer.posY + 2; i++) {
+            BlockPos pos = new BlockPos(mc.thePlayer.posX, i, mc.thePlayer.posZ);
+            //if block underneath is air stop the code
+            if (mc.theWorld.getBlockState(pos).getBlock() instanceof BlockAir)
+                continue;
+            //else set the boolean to true
+            blockUnderneath = true;
         }
-    }
-
-    @Override
-    public void onEnable() {
-    }
-
-    static enum AntiMode {
-        Motion, Hypixel;
+        //if blockunderneath return
+        if (blockUnderneath)
+            return;
+        //if the fall distance is over 2
+        if (mc.thePlayer.fallDistance < 2)
+            return;
+        //and if the player isnt onground or vertically colided put the player up
+        if (!mc.thePlayer.onGround && !mc.thePlayer.isCollidedVertically) {
+            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+                    mc.thePlayer.posY + 12, mc.thePlayer.posZ, false));
+        }
     }
 }
