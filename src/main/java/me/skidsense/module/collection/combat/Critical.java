@@ -1,11 +1,8 @@
 package me.skidsense.module.collection.combat;
 
-import java.awt.Color;
-
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
-import me.skidsense.hooks.value.Event;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.management.notifications.Notifications;
@@ -14,12 +11,15 @@ import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.move.Speed;
 import me.skidsense.module.collection.player.Scaffold;
+import me.skidsense.util.MoveUtil;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
+
+import java.awt.*;
 import java.util.Random;
 
 
@@ -49,15 +49,14 @@ public class Critical extends Mod {
 
     public static boolean canCrit() {
             return !mc.thePlayer.isOnLadder()
-                && !mc.thePlayer.isInWater()
-                && !mc.thePlayer.isPotionActive(Potion.blindness)
-                && mc.thePlayer.ridingEntity == null
-                && mc.thePlayer.onGround
-                && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
-                && !Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()
-                && !Client.getModuleManager().getModuleByClass(Scaffold.class).isEnabled()
-                && mc.thePlayer.isCollidedVertically
-                && Critical.timer.hasReached(delay.getValue());
+                    && !mc.thePlayer.isInWater()
+                    && !mc.thePlayer.isPotionActive(Potion.blindness)
+                    && mc.thePlayer.ridingEntity == null
+                    && MoveUtil.isOnGround(0.001)
+                    && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
+                    && !Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()
+                    && !Client.getModuleManager().getModuleByClass(Scaffold.class).isEnabled()
+                    && Critical.timer.hasReached(delay.getValue());
     }
 
     public void doCrit(Entity e) {

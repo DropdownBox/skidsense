@@ -1,10 +1,7 @@
 package me.skidsense.module.collection.combat;
 
-import java.util.function.ToDoubleFunction;
-
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
-//import me.skidsense.hooks.EventBus;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
@@ -21,23 +18,13 @@ import me.skidsense.module.collection.player.Teams;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
 import me.skidsense.util.TimerUtil;
-
-import java.util.Comparator;
-import java.util.ArrayList;
-
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.util.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.potion.Potion;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -50,13 +37,22 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.client.C02PacketUseEntity;
+import net.minecraft.network.play.client.C07PacketPlayerDigging;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.potion.Potion;
+import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.Random;
-import java.awt.Color;
+import java.awt.*;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.ToDoubleFunction;
 
 public class KillAura extends Mod {
 	public static float anima;

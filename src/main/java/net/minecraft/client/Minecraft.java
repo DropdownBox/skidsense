@@ -1065,6 +1065,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     public void shutdownMinecraftApplet()
     {
 //    	Thread.dumpStack();
+        Client.instance.shutDown();
         try
         {
             this.stream.shutdownStream();

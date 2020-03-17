@@ -1,10 +1,5 @@
 package me.skidsense.module.collection.move;
 
-import java.awt.*;
-
-import java.util.List;
-import java.util.Random;
-
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventMove;
@@ -28,6 +23,10 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
+
+import java.awt.*;
+import java.util.List;
+import java.util.Random;
 
 
 public class Speed
@@ -149,7 +148,7 @@ public class Speed
                     this.collided = Speed.mc.thePlayer.isCollidedHorizontally;
                     if (Speed.stage >= 0 || this.collided) {
                         Speed.stage = 0;
-                        final double a = 0.4086666 + MoveUtil.getJumpEffect() * 0.1+(randomValue.nextFloat()*0.001);
+                        final double a = 0.399999987334013 + MoveUtil.getJumpEffect() * 0.1;
                         if (this.stair == 0.0) {
                             Speed.mc.thePlayer.jump();
                             em.setY(Speed.mc.thePlayer.motionY = a);
@@ -162,8 +161,8 @@ public class Speed
                         }
                     }
                 }
-                this.speed = this.getHypixelSpeed(Speed.stage) + 0.0388;
-                this.speed *= 0.888+(randomValue.nextFloat()*0.001);
+            this.speed = this.getHypixelSpeed(Speed.stage) + 0.0388;
+            this.speed *= 0.888 + (randomValue.nextFloat() * 0.0001);
                 if (this.stair > 0.0) {
                     this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
                 }

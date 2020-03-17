@@ -90,6 +90,9 @@ extends Mod {
 			case "KoreaFish":
                 RenderUtil.drawImage(new ResourceLocation("skidsense/face/KoreaFish.png"), (int)xLeft + 7, (int)yUp - 25, 27, 30);
 				break;
+				case "Kyaru":
+				    RenderUtil.drawImage(new ResourceLocation("skidsense/face/Kyaru.png"), (int)xLeft + 7, (int)yUp - 25, 27, 33);
+				break;
 			}
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
             GL11.glNormal3f(1.0f, 1.0f, 1.0f);
@@ -105,6 +108,7 @@ extends Mod {
     	Haze,
     	KoreaFish,
     	LiangNuoYan,
-    	FanYangXiao
+        Kyaru,
+    	FanYangXiao;
     }
 }
