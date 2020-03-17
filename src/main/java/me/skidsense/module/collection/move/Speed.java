@@ -7,11 +7,13 @@ import me.skidsense.hooks.events.EventPacketRecieve;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
+import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.BlockUtil;
 import me.skidsense.util.MoveUtil;
+import me.skidsense.util.QuickMath;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -161,8 +163,8 @@ public class Speed
                         }
                     }
                 }
-            this.speed = this.getHypixelSpeed(Speed.stage) + 0.0388;
-            this.speed *= 0.888 + (randomValue.nextFloat() * 0.0001);
+            this.speed = this.getHypixelSpeed(Speed.stage) + 0.0380;
+            this.speed *= QuickMath.getRandomInRange(0.870,0.889);
                 if (this.stair > 0.0) {
                     this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
                 }
