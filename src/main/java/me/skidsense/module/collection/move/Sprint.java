@@ -8,6 +8,7 @@ import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
 
+import me.skidsense.util.MoveUtil;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 public class Sprint
@@ -23,10 +24,9 @@ extends Mod {
 
     @Sub
     private void onUpdate(EventPreUpdate event) {
-        //if (this.mc.thePlayer.getFoodStats().getFoodLevel() > 6 && this.omni.getValue() != false ? this.mc.thePlayer.moving() : this.mc.thePlayer.moveForward > 0.0f) {
-        //    this.mc.thePlayer.setSprinting(true);
-        //}
-        //FIXME
+        if (this.mc.thePlayer.getFoodStats().getFoodLevel() > 6 && this.omni.getValue() != false ? MoveUtil.isMoving() : this.mc.thePlayer.moveForward > 0.0f) {
+            this.mc.thePlayer.setSprinting(true);
+        }
     }
     
     @Sub
