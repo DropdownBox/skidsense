@@ -103,6 +103,7 @@ public class Critical extends Mod {
                                 mc.thePlayer.posY + v2, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                         ++v0;
                     }
+                    break;
             }
             Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
             this.timer.reset();
