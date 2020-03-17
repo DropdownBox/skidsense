@@ -78,7 +78,7 @@ public class Critical extends Mod {
                     for (int i = 0; i < l; ++i) {
                         double offset = hypixeloffsets[i];
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.target != null ? KillAura.rotateNCP(KillAura.target)[0] : mc.thePlayer.rotationYaw, KillAura.target != null ? KillAura.rotateNCP(KillAura.target)[1] : mc.thePlayer.rotationPitch, false));
                     }
                     break;
                 case "HVH":
@@ -87,7 +87,7 @@ public class Critical extends Mod {
                     for (int i = 0; i < HVHl; ++i) {
                         double offset = offsets[i];
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.target != null ?  KillAura.rotateNCP(KillAura.target)[0] : mc.thePlayer.rotationYaw, KillAura.target != null ? KillAura.rotateNCP(KillAura.target)[1] : mc.thePlayer.rotationPitch, false));
                     }
                     break;
                 case "Experimental":
