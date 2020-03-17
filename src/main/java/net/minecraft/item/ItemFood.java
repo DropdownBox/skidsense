@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 public class ItemFood extends Item
 {
     /** Number of ticks to run while 'EnumAction'ing until result. */
-    public final int itemUseDuration;
+    public final int itemUseDuration = 32;
 
     /** The amount this food item heals the player. */
     private final int healAmount;
@@ -39,7 +39,6 @@ public class ItemFood extends Item
 
     public ItemFood(int amount, float saturation, boolean isWolfFood)
     {
-        this.itemUseDuration = 32;
         this.healAmount = amount;
         this.isWolfsFavoriteMeat = isWolfFood;
         this.saturationModifier = saturation;

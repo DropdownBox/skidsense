@@ -1,5 +1,6 @@
 package net.minecraft.network.play.server;
 
+import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -45,16 +46,18 @@ public class S2APacketParticles implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) {
-	    this.particleType = EnumParticleTypes.getParticleFromId(buf.readInt());
+    public void readPacketData(PacketBuffer buf) throws IOException
+    {
+        this.particleType = EnumParticleTypes.getParticleFromId(buf.readInt());
 
-	    if (this.particleType == null) {
-		    this.particleType = EnumParticleTypes.BARRIER;
-	    }
+        if (this.particleType == null)
+        {
+            this.particleType = EnumParticleTypes.BARRIER;
+        }
 
-	    this.longDistance = buf.readBoolean();
-	    this.xCoord = buf.readFloat();
-	    this.yCoord = buf.readFloat();
+        this.longDistance = buf.readBoolean();
+        this.xCoord = buf.readFloat();
+        this.yCoord = buf.readFloat();
         this.zCoord = buf.readFloat();
         this.xOffset = buf.readFloat();
         this.yOffset = buf.readFloat();
@@ -70,20 +73,21 @@ public class S2APacketParticles implements Packet<INetHandlerPlayClient>
         }
     }
 
-	/**
-	 * Writes the raw packet data to the data stream.
-	 */
-	public void writePacketData(PacketBuffer buf) {
-		buf.writeInt(this.particleType.getParticleID());
-		buf.writeBoolean(this.longDistance);
-		buf.writeFloat(this.xCoord);
-		buf.writeFloat(this.yCoord);
-		buf.writeFloat(this.zCoord);
-		buf.writeFloat(this.xOffset);
-		buf.writeFloat(this.yOffset);
-		buf.writeFloat(this.zOffset);
-		buf.writeFloat(this.particleSpeed);
-		buf.writeInt(this.particleCount);
+    /**
+     * Writes the raw packet data to the data stream.
+     */
+    public void writePacketData(PacketBuffer buf) throws IOException
+    {
+        buf.writeInt(this.particleType.getParticleID());
+        buf.writeBoolean(this.longDistance);
+        buf.writeFloat(this.xCoord);
+        buf.writeFloat(this.yCoord);
+        buf.writeFloat(this.zCoord);
+        buf.writeFloat(this.xOffset);
+        buf.writeFloat(this.yOffset);
+        buf.writeFloat(this.zOffset);
+        buf.writeFloat(this.particleSpeed);
+        buf.writeInt(this.particleCount);
         int i = this.particleType.getArgumentCount();
 
         for (int j = 0; j < i; ++j)
@@ -107,7 +111,7 @@ public class S2APacketParticles implements Packet<INetHandlerPlayClient>
      */
     public double getXCoordinate()
     {
-	    return this.xCoord;
+        return (double)this.xCoord;
     }
 
     /**
@@ -115,7 +119,7 @@ public class S2APacketParticles implements Packet<INetHandlerPlayClient>
      */
     public double getYCoordinate()
     {
-	    return this.yCoord;
+        return (double)this.yCoord;
     }
 
     /**
@@ -123,7 +127,7 @@ public class S2APacketParticles implements Packet<INetHandlerPlayClient>
      */
     public double getZCoordinate()
     {
-	    return this.zCoord;
+        return (double)this.zCoord;
     }
 
     /**

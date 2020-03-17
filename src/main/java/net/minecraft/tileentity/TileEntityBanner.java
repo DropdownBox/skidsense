@@ -155,8 +155,8 @@ public class TileEntityBanner extends TileEntity
             }
             else
             {
-                this.patternList = Lists.<TileEntityBanner.EnumBannerPattern>newArrayList();
-                this.colorList = Lists.<EnumDyeColor>newArrayList();
+                this.patternList = Lists.newArrayList();
+                this.colorList = Lists.newArrayList();
                 this.patternList.add(TileEntityBanner.EnumBannerPattern.BASE);
                 this.colorList.add(EnumDyeColor.byDyeDamage(this.baseColor));
                 this.patternResourceLocation = "b" + this.baseColor;
@@ -253,12 +253,11 @@ public class TileEntityBanner extends TileEntity
 
         private String patternName;
         private String patternID;
-        private String[] craftingLayers;
+        private String[] craftingLayers = new String[3];
         private ItemStack patternCraftingStack;
 
         private EnumBannerPattern(String name, String id)
         {
-            this.craftingLayers = new String[3];
             this.patternName = name;
             this.patternID = id;
         }

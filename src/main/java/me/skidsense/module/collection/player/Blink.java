@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketSend;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 
 import java.awt.Color;
@@ -21,7 +21,7 @@ import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 public class Blink
-extends Module {
+extends Mod {
     private EntityOtherPlayerMP blinkEntity;
     private List<Packet> packetList = new ArrayList<Packet>();
 

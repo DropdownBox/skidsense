@@ -5,14 +5,14 @@ package me.skidsense.module.collection.world;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketSend;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
 
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
 public class NoRotate
-extends Module {
+extends Mod {
     public NoRotate() {
         super("No Rotate", new String[]{"rotate"}, ModuleType.World);
         this.setColor(new Color(17, 250, 154).getRGB());

@@ -1,5 +1,7 @@
 package optifine.xdelta;
 
+import java.io.IOException;
+
 public class ByteArraySeekableSource implements SeekableSource
 {
     byte[] source;
@@ -10,31 +12,39 @@ public class ByteArraySeekableSource implements SeekableSource
         this.source = source;
     }
 
-    public void seek(long pos) {
+    public void seek(long pos) throws IOException
+    {
         this.lastPos = pos;
     }
 
-    public int read(byte[] b, int off, int len) {
-        int i = this.source.length - (int) this.lastPos;
+    public int read(byte[] b, int off, int len) throws IOException
+    {
+        int i = this.source.length - (int)this.lastPos;
 
-        if (i <= 0) {
+        if (i <= 0)
+        {
             return -1;
-        } else {
-            if (i < len) {
+        }
+        else
+        {
+            if (i < len)
+            {
                 len = i;
             }
 
-            System.arraycopy(this.source, (int) this.lastPos, b, off, len);
-            this.lastPos += len;
+            System.arraycopy(this.source, (int)this.lastPos, b, off, len);
+            this.lastPos += (long)len;
             return len;
         }
     }
 
-    public long length() {
-        return this.source.length;
+    public long length() throws IOException
+    {
+        return (long)this.source.length;
     }
 
-    public void close() {
+    public void close() throws IOException
+    {
         this.source = null;
     }
 }

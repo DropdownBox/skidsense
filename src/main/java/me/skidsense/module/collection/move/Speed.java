@@ -12,7 +12,7 @@ import me.skidsense.hooks.events.EventPacketRecieve;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.BlockUtil;
@@ -31,7 +31,7 @@ import net.minecraft.util.MathHelper;
 
 
 public class Speed
-        extends Module {
+        extends Mod {
     private Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])SpeedMode.values(), (Enum)SpeedMode.Hypixel);
     private boolean firstJump;
     private boolean waitForGround;
@@ -56,7 +56,7 @@ public class Speed
     public Speed() {
         super("Speed", new String[]{"zoom"}, ModuleType.Move);
         this.setColor(new Color(99, 248, 91).getRGB());
-        this.addValues(this.mode,setback);
+        //this.addValues(this.mode,setback);
     }
     @Override
     public void onEnable() {
@@ -65,7 +65,7 @@ public class Speed
         this.movementSpeed = this.defaultSpeed();
         this.lastDist = 0.0D;
         boolean player = Minecraft.getMinecraft().thePlayer == null;
-        slow = randomNumber(1000,2000)/100000;
+        slow = randomNumber(1000,2000)/100000F;
         this.stage = 0;
         this.mc.timer.timerSpeed = 1.0f;
         super.onEnable();
@@ -264,7 +264,7 @@ public class Speed
                 ++Speed.stage;
             }
         }else if(mode.getValue() == SpeedMode.HypixelPort){
-            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() ||!mc.thePlayer.moving())
+            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() /*FIXME*//*||!mc.thePlayer.moving()*/)
                 return;
             double gay2 = 0.399921;
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
@@ -281,7 +281,8 @@ public class Speed
                 this.movementSpeed = this.lastDist - diff;
             } else {
                 if (getCollidingList(em.getY()).size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
-                    this.stage = this.mc.thePlayer.moving() ? 1 : 0;
+                    // FIXME
+                    //this.stage = this.mc.thePlayer.moving() ? 1 : 0;
                 }
                 this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted%2 == 0 ? -0.5 : -1)+159.21);
             }
@@ -289,11 +290,12 @@ public class Speed
                 em.setY(mc.thePlayer.motionY -= 1D);
             this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
             if(isInLiquid())movementSpeed=0.12;
-            mc.thePlayer.setMoveSpeed(em,movementSpeed);
+            //mc.thePlayer.setMoveSpeed(em,movementSpeed);
+            //FIXME
             stage++;
             mc.thePlayer.stepHeight = 0.6F;
         }else if(mode.getValue() == SpeedMode.FastPort){
-            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() || !mc.thePlayer.moving())
+            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava()  /*FIXME  ||!mc.thePlayer.moving()*/)
                 return;
             double gay2 = 0.399921;
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
@@ -310,7 +312,8 @@ public class Speed
                 this.movementSpeed = this.lastDist - diff;
             } else {
                 if (getCollidingList(em.getY()).size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
-                    this.stage = this.mc.thePlayer.moving() ? 1 : 0;
+                    // FIXME
+                    //this.stage = this.mc.thePlayer.moving() ? 1 : 0;
                 }
 
                 this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted%2 == 0 ? -0.5 : -1)+159.21);
@@ -320,7 +323,8 @@ public class Speed
                 em.setY(mc.thePlayer.motionY -= 2D);
             this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
             if(isInLiquid())movementSpeed=0.12;
-            mc.thePlayer.setMoveSpeed(em,movementSpeed);
+            // FIXME
+            //mc.thePlayer.setMoveSpeed(em,movementSpeed);
             stage++;
             mc.thePlayer.stepHeight = 0.6F;
         }
@@ -336,7 +340,8 @@ public class Speed
     }
 
     private boolean canZoom() {
-        if (this.mc.thePlayer.moving() && this.mc.thePlayer.onGround) {
+        /*FIXME*/
+        if (/*this.mc.thePlayer.moving() &&*/ this.mc.thePlayer.onGround) {
             return true;
         }
         return false;

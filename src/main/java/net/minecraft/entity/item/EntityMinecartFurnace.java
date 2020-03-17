@@ -62,7 +62,7 @@ public class EntityMinecartFurnace extends EntityMinecart
 
         if (this.isMinecartPowered() && this.rand.nextInt(4) == 0)
         {
-            this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX, this.posY + 0.8D, this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
+            this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX, this.posY + 0.8D, this.posZ, 0.0D, 0.0D, 0.0D);
         }
     }
 
@@ -119,17 +119,17 @@ public class EntityMinecartFurnace extends EntityMinecart
             this.pushX /= d0;
             this.pushZ /= d0;
             double d1 = 1.0D;
-            this.motionX *= 0.800000011920929D;
+            this.motionX *= (double)0.8F;
             this.motionY *= 0.0D;
-            this.motionZ *= 0.800000011920929D;
+            this.motionZ *= (double)0.8F;
             this.motionX += this.pushX * d1;
             this.motionZ += this.pushZ * d1;
         }
         else
         {
-            this.motionX *= 0.9800000190734863D;
+            this.motionX *= (double)0.98F;
             this.motionY *= 0.0D;
-            this.motionZ *= 0.9800000190734863D;
+            this.motionZ *= (double)0.98F;
         }
 
         super.applyDrag();
@@ -188,11 +188,11 @@ public class EntityMinecartFurnace extends EntityMinecart
     {
         if (p_94107_1_)
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(this.dataWatcher.getWatchableObjectByte(16) | 1)));
+            this.dataWatcher.updateObject(16, (byte)(this.dataWatcher.getWatchableObjectByte(16) | 1));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(this.dataWatcher.getWatchableObjectByte(16) & -2)));
+            this.dataWatcher.updateObject(16, (byte)(this.dataWatcher.getWatchableObjectByte(16) & -2));
         }
     }
 

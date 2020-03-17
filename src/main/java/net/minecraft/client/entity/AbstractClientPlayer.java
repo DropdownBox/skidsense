@@ -13,21 +13,24 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.src.Config;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
-import optifine.CapeUtils;
-import optifine.Config;
-import optifine.PlayerConfigurations;
-import optifine.Reflector;
+import net.optifine.player.CapeUtils;
+import net.optifine.player.PlayerConfigurations;
+import net.optifine.reflect.Reflector;
 
 public abstract class AbstractClientPlayer extends EntityPlayer
 {
     private NetworkPlayerInfo playerInfo;
     private ResourceLocation locationOfCape = null;
+    private long reloadCapeTimeMs = 0L;
+    private boolean elytraOfCape = false;
     private String nameClear = null;
-    private static final String __OBFID = "CL_00000935";
+    private static final ResourceLocation TEXTURE_ELYTRA = new ResourceLocation("textures/entity/elytra.png");
 
     public AbstractClientPlayer(World worldIn, GameProfile playerProfile)
     {
@@ -94,29 +97,38 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         {
             return null;
         }
-        else if (this.locationOfCape != null)
-        {
-            return this.locationOfCape;
-        }
         else
         {
-            NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
-            return networkplayerinfo == null ? null : networkplayerinfo.getLocationCape();
+            if (this.reloadCapeTimeMs != 0L && System.currentTimeMillis() > this.reloadCapeTimeMs)
+            {
+                CapeUtils.reloadCape(this);
+                this.reloadCapeTimeMs = 0L;
+            }
+
+            if (this.locationOfCape != null)
+            {
+                return this.locationOfCape;
+            }
+            else
+            {
+                NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
+                return networkplayerinfo == null ? null : networkplayerinfo.getLocationCape();
+            }
         }
     }
 
     public static ThreadDownloadImageData getDownloadImageSkin(ResourceLocation resourceLocationIn, String username)
     {
         TextureManager texturemanager = Minecraft.getMinecraft().getTextureManager();
-        Object object = texturemanager.getTexture(resourceLocationIn);
+        ITextureObject itextureobject = texturemanager.getTexture(resourceLocationIn);
 
-        if (object == null)
+        if (itextureobject == null)
         {
-            object = new ThreadDownloadImageData((File)null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", new Object[] {StringUtils.stripControlCodes(username)}), DefaultPlayerSkin.getDefaultSkin(getOfflineUUID(username)), new ImageBufferDownload());
-            texturemanager.loadTexture(resourceLocationIn, (ITextureObject)object);
+            itextureobject = new ThreadDownloadImageData((File)null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", StringUtils.stripControlCodes(username)), DefaultPlayerSkin.getDefaultSkin(getOfflineUUID(username)), new ImageBufferDownload());
+            texturemanager.loadTexture(resourceLocationIn, itextureobject);
         }
 
-        return (ThreadDownloadImageData)object;
+        return (ThreadDownloadImageData)itextureobject;
     }
 
     /**
@@ -167,7 +179,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
             f *= 1.0F - f1 * 0.15F;
         }
 
-        return Reflector.ForgeHooksClient_getOffsetFOV.exists() ? Reflector.callFloat(Reflector.ForgeHooksClient_getOffsetFOV, new Object[] {this, Float.valueOf(f)}): f;
+        return Reflector.ForgeHooksClient_getOffsetFOV.exists() ? Reflector.callFloat(Reflector.ForgeHooksClient_getOffsetFOV, this, f) : f;
     }
 
     public String getNameClear()
@@ -183,5 +195,47 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     public void setLocationOfCape(ResourceLocation p_setLocationOfCape_1_)
     {
         this.locationOfCape = p_setLocationOfCape_1_;
+    }
+
+    public boolean hasElytraCape()
+    {
+        ResourceLocation resourcelocation = this.getLocationCape();
+
+        if (resourcelocation == null)
+        {
+            return false;
+        }
+        else
+        {
+            return resourcelocation == this.locationOfCape ? this.elytraOfCape : true;
+        }
+    }
+
+    public void setElytraOfCape(boolean p_setElytraOfCape_1_)
+    {
+        this.elytraOfCape = p_setElytraOfCape_1_;
+    }
+
+    public boolean isElytraOfCape()
+    {
+        return this.elytraOfCape;
+    }
+
+    public long getReloadCapeTimeMs()
+    {
+        return this.reloadCapeTimeMs;
+    }
+
+    public void setReloadCapeTimeMs(long p_setReloadCapeTimeMs_1_)
+    {
+        this.reloadCapeTimeMs = p_setReloadCapeTimeMs_1_;
+    }
+
+    /**
+     * interpolated look vector
+     */
+    public Vec3 getLook(float partialTicks)
+    {
+        return this.getVectorForRotation(this.rotationPitch, this.rotationYaw);
     }
 }

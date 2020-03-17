@@ -6,7 +6,7 @@ import net.minecraft.util.MathHelper;
 
 public class ModelQuadruped extends ModelBase
 {
-    public ModelRenderer head = new ModelRenderer(this, 0, 0);
+    public ModelRenderer head;
     public ModelRenderer body;
     public ModelRenderer leg1;
     public ModelRenderer leg2;
@@ -17,6 +17,7 @@ public class ModelQuadruped extends ModelBase
 
     public ModelQuadruped(int p_i1154_1_, float p_i1154_2_)
     {
+        this.head = new ModelRenderer(this, 0, 0);
         this.head.addBox(-4.0F, -4.0F, -8.0F, 8, 8, 8, p_i1154_2_);
         this.head.setRotationPoint(0.0F, (float)(18 - p_i1154_1_), -6.0F);
         this.body = new ModelRenderer(this, 28, 8);

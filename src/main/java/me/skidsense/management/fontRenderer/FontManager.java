@@ -33,7 +33,8 @@ public class FontManager {
 	public FontRenderer notoSans30;
 	public FontRenderer jbmono25;
 	public FontRenderer jbmono30;
-    
+    public FontRenderer kiona16;
+	public FontRenderer kiona18;
 	
 	public FontManager() {
 		verdana12 = this.getFont("verdana", 12f);
@@ -59,6 +60,8 @@ public class FontManager {
 		notoSans30 = this.getFont("notosansCN", 30f,".otf",true);
 		jbmono25 = this.getFont("jetbrainsmono", 25f);
 		jbmono30 = this.getFont("jetbrainsmono", 30f);
+		kiona16 = this.getFont("Kiona-Regular", 16f);
+		kiona18 = this.getFont("Kiona-Regular", 18f);
 	}
 
 

@@ -16,6 +16,5 @@ public class MovementInput
 
     public void updatePlayerMoveState()
     {
-    	
     }
 }

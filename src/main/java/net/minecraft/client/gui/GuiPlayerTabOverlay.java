@@ -70,7 +70,7 @@ public class GuiPlayerTabOverlay extends Gui
     public void renderPlayerlist(int width, Scoreboard scoreboardIn, ScoreObjective scoreObjectiveIn)
     {
         NetHandlerPlayClient nethandlerplayclient = this.mc.thePlayer.sendQueue;
-        List<NetworkPlayerInfo> list = field_175252_a.<NetworkPlayerInfo>sortedCopy(nethandlerplayclient.getPlayerInfoMap());
+        List<NetworkPlayerInfo> list = field_175252_a.sortedCopy(nethandlerplayclient.getPlayerInfoMap());
         int i = 0;
         int j = 0;
 
@@ -172,7 +172,7 @@ public class GuiPlayerTabOverlay extends Gui
 
             if (k4 < list.size())
             {
-                NetworkPlayerInfo networkplayerinfo1 = (NetworkPlayerInfo)list.get(k4);
+                NetworkPlayerInfo networkplayerinfo1 = list.get(k4);
                 String s1 = this.getPlayerName(networkplayerinfo1);
                 GameProfile gameprofile = networkplayerinfo1.getGameProfile();
 

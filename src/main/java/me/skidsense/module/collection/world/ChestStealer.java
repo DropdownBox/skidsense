@@ -6,7 +6,7 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
@@ -24,7 +24,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
 public class ChestStealer
-extends Module {
+extends Mod {
     public static Numbers<Double> delay = new Numbers<Double>("Delay", "Delay", 50.0, 0.0, 1000.0, 10.0);
 	private Option<Boolean> tarshskip = new Option<Boolean>("Close", "Close", true);
     private TimerUtil timer = new TimerUtil();
@@ -32,7 +32,7 @@ extends Module {
     
     public ChestStealer() {
         super("Chest Steal", new String[]{"cheststealS","cheststeal", "chests", "stealer","cheststealer"}, ModuleType.World);
-        this.addValues(this.delay,tarshskip);
+        //this.addValues(this.delay,tarshskip);
         this.setColor(new Color(218, 97, 127).getRGB());
     }
 

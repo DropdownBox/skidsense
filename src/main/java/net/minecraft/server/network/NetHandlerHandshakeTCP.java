@@ -1,11 +1,11 @@
 package net.minecraft.server.network;
 
-import net.minecraft.MinecraftServer;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.handshake.INetHandlerHandshakeServer;
 import net.minecraft.network.handshake.client.C00Handshake;
 import net.minecraft.network.login.server.S00PacketDisconnect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 
@@ -34,7 +34,7 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
 
                 if (packetIn.getProtocolVersion() > 47)
                 {
-                    ChatComponentText chatcomponenttext = new ChatComponentText("Outdated server! I\'m still on 1.8.9");
+                    ChatComponentText chatcomponenttext = new ChatComponentText("Outdated server! I'm still on 1.8.9");
                     this.networkManager.sendPacket(new S00PacketDisconnect(chatcomponenttext));
                     this.networkManager.closeChannel(chatcomponenttext);
                 }

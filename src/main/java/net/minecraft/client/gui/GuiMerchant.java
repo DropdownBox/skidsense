@@ -1,6 +1,7 @@
 package net.minecraft.client.gui;
 
 import io.netty.buffer.Unpooled;
+import java.io.IOException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -94,14 +95,17 @@ public class GuiMerchant extends GuiContainer
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
         boolean flag = false;
 
-        if (button == this.nextButton) {
+        if (button == this.nextButton)
+        {
             ++this.selectedMerchantRecipe;
             MerchantRecipeList merchantrecipelist = this.merchant.getRecipes(this.mc.thePlayer);
 
-            if (merchantrecipelist != null && this.selectedMerchantRecipe >= merchantrecipelist.size()) {
+            if (merchantrecipelist != null && this.selectedMerchantRecipe >= merchantrecipelist.size())
+            {
                 this.selectedMerchantRecipe = merchantrecipelist.size() - 1;
             }
 

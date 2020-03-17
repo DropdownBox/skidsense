@@ -12,25 +12,22 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 
 public class KidFace
-extends Module {
-    public Mode<Enum> mode = new Mode("Mode","Mode",(Enum[])EmojiMode.values(),(Enum)EmojiMode.SunZheng);
+extends Mod {
+    public Mode<Enum> mode = new Mode("Mode","Mode", EmojiMode.values(), EmojiMode.SunZheng);
 
     public KidFace() {
         super("Kid Face", new String[] {"KidFace"}, ModuleType.Visual);
-        this.addValues(mode);
+        //this.addValues(mode);
         //this.setRemoved(true);
     }
 
     private boolean isValid(EntityLivingBase entity) {
-        if (entity instanceof EntityVillager ||entity instanceof EntityPlayer && entity.getHealth() >= 0.0f && entity != mc.thePlayer) {
-            return true;
-        }
-        return false;
+	    return entity instanceof EntityVillager || entity instanceof EntityPlayer && entity.getHealth() >= 0.0f && entity != mc.thePlayer;
     }
 
     @Sub
@@ -40,62 +37,62 @@ extends Module {
     
     @Sub
     public void onRender(EventRender3D event) {
-        for (EntityPlayer entity : this.mc.theWorld.playerEntities) {
-            if (!this.isValid((EntityLivingBase)entity)) continue;
+        for (EntityPlayer entity : mc.theWorld.playerEntities) {
+            if (!this.isValid(entity)) continue;
             GL11.glPushMatrix();
-            GL11.glEnable((int)3042);
-            GL11.glDisable((int)2929);
-            GL11.glNormal3f((float)0.0f, (float)1.0f, (float)0.0f);
+            GL11.glEnable(3042);
+            GL11.glDisable(2929);
+            GL11.glNormal3f(0.0f, 1.0f, 0.0f);
             GlStateManager.enableBlend();
-            GL11.glBlendFunc((int)770, (int)771);
-            GL11.glDisable((int)3553);
-            float partialTicks = this.mc.timer.renderPartialTicks;
-            this.mc.getRenderManager();
-            double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks - RenderManager.renderPosX;
-            this.mc.getRenderManager();
-            double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks - RenderManager.renderPosY;
-            this.mc.getRenderManager();
-            double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks - RenderManager.renderPosZ;
+            GL11.glBlendFunc(770, 771);
+            GL11.glDisable(3553);
+            float partialTicks = mc.timer.renderPartialTicks;
+            //this.mc.getRenderManager();
+            double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks - mc.getRenderManager().renderPosX;
+            //this.mc.getRenderManager();
+            double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks - mc.getRenderManager().renderPosY;
+            //this.mc.getRenderManager();
+            double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks - mc.getRenderManager().renderPosZ;
             float SCALE = 0.035f;
-            GlStateManager.translate((float)((float)x), (float)((float)y + entity.height + 0.5f - (entity.isChild() ? entity.height / 2.0f : 0.0f)), (float)((float)z));
-            GL11.glNormal3f((float)0.0f, (float)1.0f, (float)0.0f);
-            this.mc.getRenderManager();
-            GlStateManager.rotate((float)(- RenderManager.playerViewY), (float)0.0f, (float)1.0f, (float)0.0f);
-            GL11.glScalef((float)(- SCALE), (float)(- SCALE), (float)(- (SCALE /= 2.0f)));
+            GlStateManager.translate((float)x, (float)y + entity.height + 0.5f - (entity.isChild() ? entity.height / 2.0f : 0.0f), (float)z);
+            GL11.glNormal3f(0.0f, 1.0f, 0.0f);
+            //this.mc.getRenderManager();
+            GlStateManager.rotate(- mc.getRenderManager().playerViewY, 0.0f, 1.0f, 0.0f);
+            GL11.glScalef(- SCALE, - SCALE, - (SCALE /= 2.0f));
             double xLeft = -20.0;
             double yUp = 27.0;
-            GL11.glEnable((int)3553);
-            GL11.glEnable((int)2929);
+            GL11.glEnable(3553);
+            GL11.glEnable(2929);
             GlStateManager.disableBlend();
-            GL11.glDisable((int)3042);
+            GL11.glDisable(3042);
             switch (this.mode.getValue().toString()) {
 			case "SunZheng":
-                RenderUtil.drawImage(new ResourceLocation("skidsense/face/yaoer.png"), (int)((int)xLeft + 9), (int)((int)yUp - 20), (int)20, (int)25);
+                RenderUtil.drawImage(new ResourceLocation("skidsense/face/yaoer.png"), (int)xLeft + 9, (int)yUp - 20, 20, 25);
 				break;
 			case "FanYangXiao":
-                RenderUtil.drawImage(new ResourceLocation("skidsense/face/ganga.png"), (int)((int)xLeft + 7), (int)((int)yUp - 28), (int)27, (int)32);
+                RenderUtil.drawImage(new ResourceLocation("skidsense/face/ganga.png"), (int)xLeft + 7, (int)yUp - 28, 27, 32);
 				break;
 			case "SkidSenseDev":
-                RenderUtil.drawImage(new ResourceLocation("skidsense/face/zhangchengyu.png"), (int)((int)xLeft + 7), (int)((int)yUp - 28), (int)27, (int)32);
+                RenderUtil.drawImage(new ResourceLocation("skidsense/face/zhangchengyu.png"), (int)xLeft + 7, (int)yUp - 28, 27, 32);
 				break;
 			case "Hanxi":
-                RenderUtil.drawImage(new ResourceLocation("skidsense/face/hanxi.png"), (int)((int)xLeft + 7), (int)((int)yUp - 28), (int)27, (int)32);
+                RenderUtil.drawImage(new ResourceLocation("skidsense/face/hanxi.png"), (int)xLeft + 7, (int)yUp - 28, 27, 32);
 				break;
 			case "LiangNuoYan":
-                RenderUtil.drawImage(new ResourceLocation("skidsense/face/taijun.png"), (int)((int)xLeft + 7), (int)((int)yUp - 28), (int)27, (int)32);
+                RenderUtil.drawImage(new ResourceLocation("skidsense/face/taijun.png"), (int)xLeft + 7, (int)yUp - 28, 27, 32);
 				break;
 			case "Jesus191":
-                RenderUtil.drawImage(new ResourceLocation("skidsense/face/jesus191.png"), (int)((int)xLeft + 7), (int)((int)yUp - 22), (int)27, (int)32);
+                RenderUtil.drawImage(new ResourceLocation("skidsense/face/jesus191.png"), (int)xLeft + 7, (int)yUp - 22, 27, 32);
 				break;
 			case "Haze":
-                RenderUtil.drawImage(new ResourceLocation("skidsense/face/haze.png"), (int)((int)xLeft + 7), (int)((int)yUp - 22), (int)26, (int)25);
+                RenderUtil.drawImage(new ResourceLocation("skidsense/face/haze.png"), (int)xLeft + 7, (int)yUp - 22, 26, 25);
 				break;
 			case "KoreaFish":
-                RenderUtil.drawImage(new ResourceLocation("skidsense/face/KoreaFish.png"), (int)((int)xLeft + 7), (int)((int)yUp - 25), (int)27, (int)30);
+                RenderUtil.drawImage(new ResourceLocation("skidsense/face/KoreaFish.png"), (int)xLeft + 7, (int)yUp - 25, 27, 30);
 				break;
 			}
-            GL11.glColor4f((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
-            GL11.glNormal3f((float)1.0f, (float)1.0f, (float)1.0f);
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+            GL11.glNormal3f(1.0f, 1.0f, 1.0f);
             GL11.glPopMatrix();
         }
     }
@@ -108,6 +105,6 @@ extends Module {
     	Haze,
     	KoreaFish,
     	LiangNuoYan,
-    	FanYangXiao;
+    	FanYangXiao
     }
 }

@@ -1,9 +1,6 @@
 package net.minecraft.command;
 
 import com.google.common.collect.Maps;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
@@ -15,13 +12,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 public class CommandReplaceItem extends CommandBase
 {
-    private static final Map<String, Integer> SHORTCUTS = Maps.<String, Integer>newHashMap();
+    private static final Map<String, Integer> SHORTCUTS = Maps.newHashMap();
 
     /**
      * Gets the name of the command
@@ -54,7 +52,7 @@ public class CommandReplaceItem extends CommandBase
     {
         if (args.length < 1)
         {
-            throw new WrongUsageException("commands.replaceitem.usage", new Object[0]);
+            throw new WrongUsageException("commands.replaceitem.usage");
         }
         else
         {
@@ -68,7 +66,7 @@ public class CommandReplaceItem extends CommandBase
             {
                 if (!args[0].equals("block"))
                 {
-                    throw new WrongUsageException("commands.replaceitem.usage", new Object[0]);
+                    throw new WrongUsageException("commands.replaceitem.usage");
                 }
 
                 flag = true;
@@ -80,7 +78,7 @@ public class CommandReplaceItem extends CommandBase
             {
                 if (args.length < 6)
                 {
-                    throw new WrongUsageException("commands.replaceitem.block.usage", new Object[0]);
+                    throw new WrongUsageException("commands.replaceitem.block.usage");
                 }
 
                 i = 4;
@@ -89,7 +87,7 @@ public class CommandReplaceItem extends CommandBase
             {
                 if (args.length < 4)
                 {
-                    throw new WrongUsageException("commands.replaceitem.entity.usage", new Object[0]);
+                    throw new WrongUsageException("commands.replaceitem.entity.usage");
                 }
 
                 i = 2;
@@ -127,7 +125,7 @@ public class CommandReplaceItem extends CommandBase
                 }
                 catch (NBTException nbtexception)
                 {
-                    throw new CommandException("commands.replaceitem.tagError", new Object[] {nbtexception.getMessage()});
+                    throw new CommandException("commands.replaceitem.tagError", nbtexception.getMessage());
                 }
             }
 
@@ -145,7 +143,7 @@ public class CommandReplaceItem extends CommandBase
 
                 if (tileentity == null || !(tileentity instanceof IInventory))
                 {
-                    throw new CommandException("commands.replaceitem.noContainer", new Object[] {Integer.valueOf(blockpos.getX()), Integer.valueOf(blockpos.getY()), Integer.valueOf(blockpos.getZ())});
+                    throw new CommandException("commands.replaceitem.noContainer", blockpos.getX(), blockpos.getY(), blockpos.getZ());
                 }
 
                 IInventory iinventory = (IInventory)tileentity;
@@ -167,7 +165,7 @@ public class CommandReplaceItem extends CommandBase
 
                 if (!entity.replaceItemInInventory(j, itemstack))
                 {
-                    throw new CommandException("commands.replaceitem.failed", new Object[] {Integer.valueOf(j), Integer.valueOf(k), itemstack == null ? "Air" : itemstack.getChatComponent()});
+                    throw new CommandException("commands.replaceitem.failed", j, k, itemstack == null ? "Air" : itemstack.getChatComponent());
                 }
 
                 if (entity instanceof EntityPlayer)
@@ -177,7 +175,7 @@ public class CommandReplaceItem extends CommandBase
             }
 
             sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, k);
-            notifyOperators(sender, this, "commands.replaceitem.success", new Object[] {Integer.valueOf(j), Integer.valueOf(k), itemstack == null ? "Air" : itemstack.getChatComponent()});
+            notifyOperators(sender, this, "commands.replaceitem.success", new Object[] {j, k, itemstack == null ? "Air" : itemstack.getChatComponent()});
         }
     }
 
@@ -185,17 +183,36 @@ public class CommandReplaceItem extends CommandBase
     {
         if (!SHORTCUTS.containsKey(shortcut))
         {
-            throw new CommandException("commands.generic.parameter.invalid", new Object[] {shortcut});
+            throw new CommandException("commands.generic.parameter.invalid", shortcut);
         }
         else
         {
-            return ((Integer)SHORTCUTS.get(shortcut)).intValue();
+            return SHORTCUTS.get(shortcut);
         }
     }
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"entity", "block"}): (args.length == 2 && args[0].equals("entity") ? getListOfStringsMatchingLastWord(args, this.getUsernames()) : (args.length >= 2 && args.length <= 4 && args[0].equals("block") ? func_175771_a(args, 1, pos) : ((args.length != 3 || !args[0].equals("entity")) && (args.length != 5 || !args[0].equals("block")) ? ((args.length != 4 || !args[0].equals("entity")) && (args.length != 6 || !args[0].equals("block")) ? null : getListOfStringsMatchingLastWord(args, Item.itemRegistry.getKeys())) : getListOfStringsMatchingLastWord(args, SHORTCUTS.keySet()))));
+        if (args.length == 1)
+        {
+            return getListOfStringsMatchingLastWord(args, new String[] {"entity", "block"});
+        }
+        else if (args.length == 2 && args[0].equals("entity"))
+        {
+            return getListOfStringsMatchingLastWord(args, this.getUsernames());
+        }
+        else if (args.length >= 2 && args.length <= 4 && args[0].equals("block"))
+        {
+            return func_175771_a(args, 1, pos);
+        }
+        else if ((args.length != 3 || !args[0].equals("entity")) && (args.length != 5 || !args[0].equals("block")))
+        {
+            return (args.length != 4 || !args[0].equals("entity")) && (args.length != 6 || !args[0].equals("block")) ? null : getListOfStringsMatchingLastWord(args, Item.itemRegistry.getKeys());
+        }
+        else
+        {
+            return getListOfStringsMatchingLastWord(args, SHORTCUTS.keySet());
+        }
     }
 
     protected String[] getUsernames()
@@ -215,41 +232,41 @@ public class CommandReplaceItem extends CommandBase
     {
         for (int i = 0; i < 54; ++i)
         {
-            SHORTCUTS.put("slot.container." + i, Integer.valueOf(i));
+            SHORTCUTS.put("slot.container." + i, i);
         }
 
         for (int j = 0; j < 9; ++j)
         {
-            SHORTCUTS.put("slot.hotbar." + j, Integer.valueOf(j));
+            SHORTCUTS.put("slot.hotbar." + j, j);
         }
 
         for (int k = 0; k < 27; ++k)
         {
-            SHORTCUTS.put("slot.inventory." + k, Integer.valueOf(9 + k));
+            SHORTCUTS.put("slot.inventory." + k, 9 + k);
         }
 
         for (int l = 0; l < 27; ++l)
         {
-            SHORTCUTS.put("slot.enderchest." + l, Integer.valueOf(200 + l));
+            SHORTCUTS.put("slot.enderchest." + l, 200 + l);
         }
 
         for (int i1 = 0; i1 < 8; ++i1)
         {
-            SHORTCUTS.put("slot.villager." + i1, Integer.valueOf(300 + i1));
+            SHORTCUTS.put("slot.villager." + i1, 300 + i1);
         }
 
         for (int j1 = 0; j1 < 15; ++j1)
         {
-            SHORTCUTS.put("slot.horse." + j1, Integer.valueOf(500 + j1));
+            SHORTCUTS.put("slot.horse." + j1, 500 + j1);
         }
 
-        SHORTCUTS.put("slot.weapon", Integer.valueOf(99));
-        SHORTCUTS.put("slot.armor.head", Integer.valueOf(103));
-        SHORTCUTS.put("slot.armor.chest", Integer.valueOf(102));
-        SHORTCUTS.put("slot.armor.legs", Integer.valueOf(101));
-        SHORTCUTS.put("slot.armor.feet", Integer.valueOf(100));
-        SHORTCUTS.put("slot.horse.saddle", Integer.valueOf(400));
-        SHORTCUTS.put("slot.horse.armor", Integer.valueOf(401));
-        SHORTCUTS.put("slot.horse.chest", Integer.valueOf(499));
+        SHORTCUTS.put("slot.weapon", 99);
+        SHORTCUTS.put("slot.armor.head", 103);
+        SHORTCUTS.put("slot.armor.chest", 102);
+        SHORTCUTS.put("slot.armor.legs", 101);
+        SHORTCUTS.put("slot.armor.feet", 100);
+        SHORTCUTS.put("slot.horse.saddle", 400);
+        SHORTCUTS.put("slot.horse.armor", 401);
+        SHORTCUTS.put("slot.horse.chest", 499);
     }
 }

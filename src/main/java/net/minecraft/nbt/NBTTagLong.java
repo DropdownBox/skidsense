@@ -37,7 +37,7 @@ public class NBTTagLong extends NBTBase.NBTPrimitive
      */
     public byte getId()
     {
-        return (byte)4;
+        return 4;
     }
 
     public String toString()

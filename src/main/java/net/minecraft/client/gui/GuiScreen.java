@@ -47,7 +47,7 @@ import tv.twitch.chat.ChatUserInfo;
 public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Set<String> PROTOCOLS = Sets.newHashSet(new String[] {"http", "https"});
+    private static final Set<String> PROTOCOLS = Sets.newHashSet("http", "https");
     private static final Splitter NEWLINE_SPLITTER = Splitter.on('\n');
 
     /** Reference to the Minecraft object. */
@@ -63,8 +63,8 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
     /** The height of the screen object. */
     public int height;
-    protected List<GuiButton> buttonList = Lists.<GuiButton>newArrayList();
-    protected List<GuiLabel> labelList = Lists.<GuiLabel>newArrayList();
+    protected List<GuiButton> buttonList = Lists.newArrayList();
+    protected List<GuiLabel> labelList = Lists.newArrayList();
     public boolean allowUserInput;
 
     /** The FontRenderer used by GuiScreen */
@@ -88,12 +88,12 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     {
         for (int i = 0; i < this.buttonList.size(); ++i)
         {
-            ((GuiButton)this.buttonList.get(i)).drawButton(this.mc, mouseX, mouseY);
+            this.buttonList.get(i).drawButton(this.mc, mouseX, mouseY);
         }
 
         for (int j = 0; j < this.labelList.size(); ++j)
         {
-            ((GuiLabel)this.labelList.get(j)).drawLabel(this.mc, mouseX, mouseY);
+            this.labelList.get(j).drawLabel(this.mc, mouseX, mouseY);
         }
     }
 
@@ -180,7 +180,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
      */
     protected void drawCreativeTabHoveringText(String tabName, int mouseX, int mouseY)
     {
-        this.drawHoveringText(Arrays.<String>asList(new String[] {tabName}), mouseX, mouseY);
+        this.drawHoveringText(Arrays.asList(tabName), mouseX, mouseY);
     }
 
     /**
@@ -242,7 +242,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
             for (int k1 = 0; k1 < textLines.size(); ++k1)
             {
-                String s1 = (String)textLines.get(k1);
+                String s1 = textLines.get(k1);
                 this.fontRendererObj.drawStringWithShadow(s1, (float)l1, (float)i2, -1);
 
                 if (k1 == 0)
@@ -312,7 +312,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
                         if (nbtbase1 instanceof NBTTagCompound)
                         {
-                            List<String> list1 = Lists.<String>newArrayList();
+                            List<String> list1 = Lists.newArrayList();
                             NBTTagCompound nbttagcompound = (NBTTagCompound)nbtbase1;
                             list1.add(nbttagcompound.getString("name"));
 
@@ -347,10 +347,10 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                 if (statbase != null)
                 {
                     IChatComponent ichatcomponent = statbase.getStatName();
-                    IChatComponent ichatcomponent1 = new ChatComponentTranslation("stats.tooltip.type." + (statbase.isAchievement() ? "achievement" : "statistic"), new Object[0]);
-                    ichatcomponent1.getChatStyle().setItalic(Boolean.valueOf(true));
+                    IChatComponent ichatcomponent1 = new ChatComponentTranslation("stats.tooltip.type." + (statbase.isAchievement() ? "achievement" : "statistic"));
+                    ichatcomponent1.getChatStyle().setItalic(true);
                     String s1 = statbase instanceof Achievement ? ((Achievement)statbase).getDescription() : null;
-                    List<String> list = Lists.newArrayList(new String[] {ichatcomponent.getFormattedText(), ichatcomponent1.getFormattedText()});
+                    List<String> list = Lists.newArrayList(ichatcomponent.getFormattedText(), ichatcomponent1.getFormattedText());
 
                     if (s1 != null)
                     {
@@ -434,7 +434,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                     }
                     catch (URISyntaxException urisyntaxexception)
                     {
-                        LOGGER.error((String)("Can\'t open url for " + clickevent), (Throwable)urisyntaxexception);
+                        LOGGER.error("Can't open url for " + clickevent, (Throwable)urisyntaxexception);
                     }
                 }
                 else if (clickevent.getAction() == ClickEvent.Action.OPEN_FILE)
@@ -460,12 +460,12 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                     }
                     else
                     {
-                        LOGGER.error("Tried to handle twitch user but couldn\'t find them!");
+                        LOGGER.error("Tried to handle twitch user but couldn't find them!");
                     }
                 }
                 else
                 {
-                    LOGGER.error("Don\'t know how to handle " + clickevent);
+                    LOGGER.error("Don't know how to handle " + clickevent);
                 }
 
                 return true;
@@ -502,7 +502,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         {
             for (int i = 0; i < this.buttonList.size(); ++i)
             {
-                GuiButton guibutton = (GuiButton)this.buttonList.get(i);
+                GuiButton guibutton = this.buttonList.get(i);
 
                 if (guibutton.mousePressed(this.mc, mouseX, mouseY))
                 {
@@ -638,13 +638,10 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     /**
      * Handles keyboard input.
      */
-    public void handleKeyboardInput() throws IOException
-    {
-        char c = Keyboard.getEventCharacter();
-        int k = Keyboard.getEventKey();
-        if (Keyboard.getEventKeyState() || (k == 0 && Character.isDefined(c)))
-        {
-            this.keyTyped(c, k);
+    public void handleKeyboardInput() throws IOException {
+        final char c0 = Keyboard.getEventCharacter();
+        if ((Keyboard.getEventKey() == 0 && c0 >= ' ') || Keyboard.getEventKeyState()) {
+            this.keyTyped(c0, Keyboard.getEventKey());
         }
         this.mc.dispatchKeypresses();
     }
@@ -666,43 +663,6 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     /**
      * Draws either a gradient over the background screen (when it exists) or a flat gradient over background.png
      */
-    public void customdrawDefaultBackground(float alpha)
-    {
-        this.customdrawWorldBackground(0,alpha);
-    }
-
-    public void customdrawWorldBackground(int tint,float alpha)
-    {
-        if (this.mc.theWorld != null)
-        {
-            this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
-        }
-        else
-        {
-            this.customdrawBackground(tint,alpha);
-        }
-    }
-
-    /**
-     * Draws the background (i is always 0 as of 1.2.2)
-     */
-    public void customdrawBackground(int tint,float alpha)
-    {
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        this.mc.getTextureManager().bindTexture(optionsBackground);
-        GlStateManager.color(1.0F, 1.0F, 1.0F,alpha);
-        float f = 32.0F;
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        worldrenderer.pos(0.0D, (double)this.height, 0.0D).tex(0.0D, (double)((float)this.height / 32.0F + (float)tint)).color(64, 64, 64, 255).endVertex();
-        worldrenderer.pos((double)this.width, (double)this.height, 0.0D).tex((double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F + (float)tint)).color(64, 64, 64, 255).endVertex();
-        worldrenderer.pos((double)this.width, 0.0D, 0.0D).tex((double)((float)this.width / 32.0F), (double)tint).color(64, 64, 64, 255).endVertex();
-        worldrenderer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, (double)tint).color(64, 64, 64, 255).endVertex();
-        tessellator.draw();
-    }
-
     public void drawDefaultBackground()
     {
         this.drawWorldBackground(0);
@@ -739,7 +699,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         worldrenderer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, (double)tint).color(64, 64, 64, 255).endVertex();
         tessellator.draw();
     }
-    
+
     /**
      * Returns true if this GUI should pause the game when it is displayed in single-player
      */
@@ -767,12 +727,12 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         try
         {
             Class<?> oclass = Class.forName("java.awt.Desktop");
-            Object object = oclass.getMethod("getDesktop", new Class[0]).invoke((Object)null, new Object[0]);
-            oclass.getMethod("browse", new Class[] {URI.class}).invoke(object, new Object[] {url});
+            Object object = oclass.getMethod("getDesktop").invoke((Object)null);
+            oclass.getMethod("browse", URI.class).invoke(object, url);
         }
         catch (Throwable throwable)
         {
-            LOGGER.error("Couldn\'t open link", throwable);
+            LOGGER.error("Couldn't open link", throwable);
         }
     }
 
@@ -781,7 +741,14 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
      */
     public static boolean isCtrlKeyDown()
     {
-        return Minecraft.isRunningOnMac ? Keyboard.isKeyDown(219) || Keyboard.isKeyDown(220) : Keyboard.isKeyDown(29) || Keyboard.isKeyDown(157);
+        if (Minecraft.isRunningOnMac)
+        {
+            return Keyboard.isKeyDown(219) || Keyboard.isKeyDown(220);
+        }
+        else
+        {
+            return Keyboard.isKeyDown(29) || Keyboard.isKeyDown(157);
+        }
     }
 
     /**

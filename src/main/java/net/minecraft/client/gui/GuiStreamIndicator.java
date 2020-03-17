@@ -21,36 +21,36 @@ public class GuiStreamIndicator
 
     public void render(int p_152437_1_, int p_152437_2_)
     {
-        if (this.mc.getTwitchStream().isBroadcasting())
-        {
-            GlStateManager.enableBlend();
-            int i = this.mc.getTwitchStream().func_152920_A();
-
-            if (i > 0)
-            {
-                String s = "" + i;
-                int j = this.mc.fontRendererObj.getStringWidth(s);
-                int k = 20;
-                int l = p_152437_1_ - j - 1;
-                int i1 = p_152437_2_ + 20 - 1;
-                int j1 = p_152437_2_ + 20 + this.mc.fontRendererObj.FONT_HEIGHT - 1;
-                GlStateManager.disableTexture2D();
-                Tessellator tessellator = Tessellator.getInstance();
-                WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-                GlStateManager.color(0.0F, 0.0F, 0.0F, (0.65F + 0.35000002F * this.streamAlpha) / 2.0F);
-                worldrenderer.begin(7, DefaultVertexFormats.POSITION);
-                worldrenderer.pos((double)l, (double)j1, 0.0D).endVertex();
-                worldrenderer.pos((double)p_152437_1_, (double)j1, 0.0D).endVertex();
-                worldrenderer.pos((double)p_152437_1_, (double)i1, 0.0D).endVertex();
-                worldrenderer.pos((double)l, (double)i1, 0.0D).endVertex();
-                tessellator.draw();
-                GlStateManager.enableTexture2D();
-                this.mc.fontRendererObj.drawString(s, p_152437_1_ - j, p_152437_2_ + 20, 16777215);
-            }
-
-            this.render(p_152437_1_, p_152437_2_, this.func_152440_b(), 0);
-            this.render(p_152437_1_, p_152437_2_, this.func_152438_c(), 17);
-        }
+//        if (this.mc.getTwitchStream().isBroadcasting())
+//        {
+//            GlStateManager.enableBlend();
+//            int i = this.mc.getTwitchStream().func_152920_A();
+//
+//            if (i > 0)
+//            {
+//                String s = "" + i;
+//                int j = this.mc.fontRendererObj.getStringWidth(s);
+//                int k = 20;
+//                int l = p_152437_1_ - j - 1;
+//                int i1 = p_152437_2_ + 20 - 1;
+//                int j1 = p_152437_2_ + 20 + this.mc.fontRendererObj.FONT_HEIGHT - 1;
+//                GlStateManager.disableTexture2D();
+//                Tessellator tessellator = Tessellator.getInstance();
+//                WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+//                GlStateManager.color(0.0F, 0.0F, 0.0F, (0.65F + 0.35000002F * this.streamAlpha) / 2.0F);
+//                worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+//                worldrenderer.pos((double)l, (double)j1, 0.0D).endVertex();
+//                worldrenderer.pos((double)p_152437_1_, (double)j1, 0.0D).endVertex();
+//                worldrenderer.pos((double)p_152437_1_, (double)i1, 0.0D).endVertex();
+//                worldrenderer.pos((double)l, (double)i1, 0.0D).endVertex();
+//                tessellator.draw();
+//                GlStateManager.enableTexture2D();
+//                this.mc.fontRendererObj.drawString(s, p_152437_1_ - j, p_152437_2_ + 20, 16777215);
+//            }
+//
+//            this.render(p_152437_1_, p_152437_2_, this.func_152440_b(), 0);
+//            this.render(p_152437_1_, p_152437_2_, this.func_152438_c(), 17);
+//        }
     }
 
     private void render(int p_152436_1_, int p_152436_2_, int p_152436_3_, int p_152436_4_)

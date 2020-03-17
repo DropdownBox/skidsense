@@ -4,7 +4,8 @@ import java.awt.Color;
 
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
-import me.skidsense.hooks.EventBus;
+//import me.skidsense.hooks.EventBus;
+import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventKey;
@@ -13,9 +14,9 @@ import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
 import me.skidsense.management.Manager;
-import me.skidsense.management.ModuleManager;
+import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MathUtil;
 import me.skidsense.util.RenderUtil;
@@ -26,7 +27,7 @@ public class TabGUI
 implements Manager {
     private Section section = Section.TYPES;
     private ModuleType selectedType = ModuleType.values()[0];
-    private Module selectedModule = null;
+    private Mod selectedMod = null;
     private Value selectedValue = null;
     private int currentType = 0;
     private int currentModule = 0;
@@ -51,15 +52,15 @@ implements Manager {
             ++n2;
         }
         //Client.getModuleManager();
-        for (Module m : ModuleManager.getModules()) {
+        for (Mod m : ModManager.getMods()) {
         	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.verdana16;
             if (this.maxModule > font.getStringWidth(m.getName().toUpperCase()) + 4) continue;
             this.maxModule = font.getStringWidth(m.getName().toUpperCase()) + 4;
         }
         //Client.getModuleManager();
-        for (Module m : ModuleManager.getModules()) {
+        for (Mod m : ModManager.getMods()) {
             if (m.getValues().isEmpty()) continue;
-            for (Value val : m.getValues()) {
+            for (Value<?> val : m.getValues()) {
                 if (this.maxValue > Client.mc.fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + 4) continue;
                 this.maxValue = Client.mc.fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + 4;
             }
@@ -70,12 +71,12 @@ implements Manager {
         this.maxType = this.maxType < this.maxModule ? this.maxModule : this.maxType;
         this.maxModule += this.maxType;
         this.maxValue += this.maxModule;
-        EventBus.getInstance().register(this);
+        EventManager.getOtherEventManager().register(this);
     }
 
     private void resetValuesLength() {
         this.maxValue = 0;
-        for (Value val : this.selectedModule.getValues()) {
+        for (Value val : this.selectedMod.getValues()) {
             int off;
             int n = off = val instanceof Option ? 6 : Client.mc.fontRendererObj.getStringWidth(String.format(" \u00a77%s", val.getValue().toString())) + 6;
             if (this.maxValue > Client.mc.fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + off) continue;
@@ -113,20 +114,20 @@ implements Manager {
                 }
                 if (this.section == Section.MODULES || this.section == Section.VALUES) {
                     RenderUtil.drawRect(this.maxType+19, moduleY, this.maxModule+70, moduleY + 12 * Client.instance.getModuleManager().getModulesInType(this.selectedType).size()+4, new Color(20, 20, 20, 220).getRGB());
-                    for (Module m : Client.instance.getModuleManager().getModulesInType(this.selectedType)) {
-                        if (this.selectedModule == m) {
+                    for (Mod m : Client.instance.getModuleManager().getModulesInType(this.selectedType)) {
+                        if (this.selectedMod == m) {
                         	RenderUtil.rectangle((double)this.maxType+20, (double)moduleY +2, (double)this.maxModule +9, (double)(moduleY + Client.mc.fontRendererObj.FONT_HEIGHT) + 5, new Color(200,0,0).getRGB());
                             valueY = moduleY;
                         }
-                        if (this.selectedModule == m) {
+                        if (this.selectedMod == m) {
                             Client.fontManager.zeroarr.drawStringWithShadow(m.getName(), this.maxType+22, moduleY + 2, m.isEnabled() ? -1 : 11184810);
                         } else {
                         	Client.fontManager.zeroarr.drawStringWithShadow(m.getName(), this.maxType+22, moduleY + 2, m.isEnabled() ? -1 : 11184810);
                         }
                         if (!m.getValues().isEmpty()) {
-                            if (this.section == Section.VALUES && this.selectedModule == m) {
-                                RenderUtil.drawRect(this.maxModule +72, valueY, this.maxValue +70, valueY + 12 * this.selectedModule.getValues().size()+4, new Color(20,20,20,220).getRGB());
-                                for (Value val : this.selectedModule.getValues()) {
+                            if (this.section == Section.VALUES && this.selectedMod == m) {
+                                RenderUtil.drawRect(this.maxModule +72, valueY, this.maxValue +70, valueY + 12 * this.selectedMod.getValues().size()+4, new Color(20,20,20,220).getRGB());
+                                for (Value val : this.selectedMod.getValues()) {
                                 	if(this.selectedValue == val) {
                                 	RenderUtil.rectangle((double)this.maxModule +74, (double)valueY+2, (double)this.maxValue +68, (double)(valueY + Client.mc.fontRendererObj.FONT_HEIGHT) + 5, new Color(200,0,0,120).getRGB());
                                 	}if (val instanceof Option) {
@@ -168,15 +169,15 @@ implements Manager {
                             if (this.currentModule > Client.instance.getModuleManager().getModulesInType(this.selectedType).size() - 1) {
                                 this.currentModule = 0;
                             }
-                            this.selectedModule = Client.instance.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
+                            this.selectedMod = Client.instance.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
                             break block0;
                         }
                         case 3: {
                             ++this.currentValue;
-                            if (this.currentValue > this.selectedModule.getValues().size() - 1) {
+                            if (this.currentValue > this.selectedMod.getValues().size() - 1) {
                                 this.currentValue = 0;
                             }
-                            this.selectedValue = this.selectedModule.getValues().get(this.currentValue);
+                            this.selectedValue = this.selectedMod.getValues().get(this.currentValue);
                         }
                     }
                     break;
@@ -196,15 +197,15 @@ implements Manager {
                             if (this.currentModule < 0) {
                                 this.currentModule = Client.instance.getModuleManager().getModulesInType(this.selectedType).size() - 1;
                             }
-                            this.selectedModule = Client.instance.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
+                            this.selectedMod = Client.instance.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
                             break block0;
                         }
                         case 3: {
                             --this.currentValue;
                             if (this.currentValue < 0) {
-                                this.currentValue = this.selectedModule.getValues().size() - 1;
+                                this.currentValue = this.selectedMod.getValues().size() - 1;
                             }
-                            this.selectedValue = this.selectedModule.getValues().get(this.currentValue);
+                            this.selectedValue = this.selectedMod.getValues().get(this.currentValue);
                         }
                     }
                     break;
@@ -213,15 +214,15 @@ implements Manager {
                     switch (TabGUI.$SWITCH_TABLE$com$enjoytheban$module$modules$render$UI$TabUI$Section()[this.section.ordinal()]) {
                         case 1: {
                             this.currentModule = 0;
-                            this.selectedModule = Client.instance.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
+                            this.selectedMod = Client.instance.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
                             this.section = Section.MODULES;
                             break block0;
                         }
                         case 2: {
-                            if (this.selectedModule.getValues().isEmpty()) break block0;
+                            if (this.selectedMod.getValues().isEmpty()) break block0;
                             this.resetValuesLength();
                             this.currentValue = 0;
-                            this.selectedValue = this.selectedModule.getValues().get(this.currentValue);
+                            this.selectedValue = this.selectedMod.getValues().get(this.currentValue);
                             this.section = Section.VALUES;
                             break block0;
                         }
@@ -254,7 +255,7 @@ implements Manager {
                             break block0;
                         }
                         case 2: {
-                            this.selectedModule.setEnabled(!this.selectedModule.isEnabled());
+                            this.selectedMod.setEnabled(!this.selectedMod.isEnabled());
                             break block0;
                         }
                         case 3: {
@@ -292,7 +293,7 @@ implements Manager {
                                 this.selectedValue.setValue(theme.getModes()[next]);
                             }
                             this.maxValue = 0;
-                            for (Value val : this.selectedModule.getValues()) {
+                            for (Value val : this.selectedMod.getValues()) {
                                 int off;
                                 int n = off = val instanceof Option ? 6 : Minecraft.getMinecraft().fontRendererObj.getStringWidth(String.format(" \u00a77%s", val.getValue().toString())) + 6;
                                 if (this.maxValue > Minecraft.getMinecraft().fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + off) continue;

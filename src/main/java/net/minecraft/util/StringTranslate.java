@@ -25,7 +25,7 @@ public class StringTranslate
 
     /** Is the private singleton instance of StringTranslate. */
     private static StringTranslate instance = new StringTranslate();
-    private final Map<String, String> languageList = Maps.<String, String>newHashMap();
+    private final Map<String, String> languageList = Maps.newHashMap();
 
     /**
      * The time, in milliseconds since epoch, that this instance was last updated
@@ -40,9 +40,9 @@ public class StringTranslate
 
             for (String s : IOUtils.readLines(inputstream, Charsets.UTF_8))
             {
-                if (!s.isEmpty() && s.charAt(0) != 35)
+                if (!s.isEmpty() && s.charAt(0) != '#')
                 {
-                    String[] astring = (String[])Iterables.toArray(equalSignSplitter.split(s), String.class);
+                    String[] astring = Iterables.toArray(equalSignSplitter.split(s), String.class);
 
                     if (astring != null && astring.length == 2)
                     {
@@ -109,7 +109,7 @@ public class StringTranslate
      */
     private String tryTranslateKey(String key)
     {
-        String s = (String)this.languageList.get(key);
+        String s = this.languageList.get(key);
         return s == null ? key : s;
     }
 

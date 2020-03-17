@@ -5,7 +5,7 @@ import java.awt.*;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.block.Block;
 import net.minecraft.client.*;
@@ -14,7 +14,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
-public class SpeedMine extends Module
+public class SpeedMine extends Mod
 {
     private boolean block22 = false;
     private float block1 = 0.0f;

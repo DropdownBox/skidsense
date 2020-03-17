@@ -28,24 +28,22 @@ public class EntityItem extends Entity
     private int delayBeforeCanPickup;
 
     /** The health of this EntityItem. (For example, damage for tools) */
-    private int health;
+    private int health = 5;
     private String thrower;
     private String owner;
 
     /** The EntityItem's random initial float height. */
-    public float hoverStart;
+    public float hoverStart = (float)(Math.random() * Math.PI * 2.0D);
 
     public EntityItem(World worldIn, double x, double y, double z)
     {
         super(worldIn);
-        this.health = 5;
-        this.hoverStart = (float)(Math.random() * Math.PI * 2.0D);
         this.setSize(0.25F, 0.25F);
         this.setPosition(x, y, z);
         this.rotationYaw = (float)(Math.random() * 360.0D);
-        this.motionX = (double)((float)(Math.random() * 0.20000000298023224D - 0.10000000149011612D));
-        this.motionY = 0.20000000298023224D;
-        this.motionZ = (double)((float)(Math.random() * 0.20000000298023224D - 0.10000000149011612D));
+        this.motionX = (double)((float)(Math.random() * (double)0.2F - (double)0.1F));
+        this.motionY = (double)0.2F;
+        this.motionZ = (double)((float)(Math.random() * (double)0.2F - (double)0.1F));
     }
 
     public EntityItem(World worldIn, double x, double y, double z, ItemStack stack)
@@ -66,8 +64,6 @@ public class EntityItem extends Entity
     public EntityItem(World worldIn)
     {
         super(worldIn);
-        this.health = 5;
-        this.hoverStart = (float)(Math.random() * Math.PI * 2.0D);
         this.setSize(0.25F, 0.25F);
         this.setEntityItemStack(new ItemStack(Blocks.air, 0));
     }
@@ -98,7 +94,7 @@ public class EntityItem extends Entity
             this.prevPosX = this.posX;
             this.prevPosY = this.posY;
             this.prevPosZ = this.posZ;
-            this.motionY -= 0.03999999910593033D;
+            this.motionY -= (double)0.04F;
             this.noClip = this.pushOutOfBlocks(this.posX, (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D, this.posZ);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             boolean flag = (int)this.prevPosX != (int)this.posX || (int)this.prevPosY != (int)this.posY || (int)this.prevPosZ != (int)this.posZ;
@@ -107,7 +103,7 @@ public class EntityItem extends Entity
             {
                 if (this.worldObj.getBlockState(new BlockPos(this)).getBlock().getMaterial() == Material.lava)
                 {
-                    this.motionY = 0.20000000298023224D;
+                    this.motionY = (double)0.2F;
                     this.motionX = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
                     this.motionZ = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
                     this.playSound("random.fizz", 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
@@ -127,7 +123,7 @@ public class EntityItem extends Entity
             }
 
             this.motionX *= (double)f;
-            this.motionY *= 0.9800000190734863D;
+            this.motionY *= (double)0.98F;
             this.motionZ *= (double)f;
 
             if (this.onGround)

@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 
@@ -45,14 +46,18 @@ public class ScreenChatOptions extends GuiScreen
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.enabled) {
-            if (button.id < 100 && button instanceof GuiOptionButton) {
-                this.game_settings.setOptionValue(((GuiOptionButton) button).returnEnumOptions(), 1);
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.enabled)
+        {
+            if (button.id < 100 && button instanceof GuiOptionButton)
+            {
+                this.game_settings.setOptionValue(((GuiOptionButton)button).returnEnumOptions(), 1);
                 button.displayString = this.game_settings.getKeyBinding(GameSettings.Options.getEnumOptions(button.id));
             }
 
-            if (button.id == 200) {
+            if (button.id == 200)
+            {
                 this.mc.gameSettings.saveOptions();
                 this.mc.displayGuiScreen(this.parentScreen);
             }

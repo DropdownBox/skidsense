@@ -16,7 +16,7 @@ public class EnumTypeAdapterFactory implements TypeAdapterFactory
 {
     public <T> TypeAdapter<T> create(Gson p_create_1_, TypeToken<T> p_create_2_)
     {
-        Class<T> oclass = (Class<T>)p_create_2_.getRawType();
+        Class<T> oclass = (Class<T>) p_create_2_.getRawType();
 
         if (!oclass.isEnum())
         {
@@ -24,7 +24,7 @@ public class EnumTypeAdapterFactory implements TypeAdapterFactory
         }
         else
         {
-            final Map<String, T> map = Maps.<String, T>newHashMap();
+            final Map<String, T> map = Maps.newHashMap();
 
             for (T t : oclass.getEnumConstants())
             {
@@ -53,7 +53,7 @@ public class EnumTypeAdapterFactory implements TypeAdapterFactory
                     }
                     else
                     {
-                        return (T)map.get(p_read_1_.nextString());
+                        return map.get(p_read_1_.nextString());
                     }
                 }
             };

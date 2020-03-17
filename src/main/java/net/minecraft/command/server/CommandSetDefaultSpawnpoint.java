@@ -1,13 +1,12 @@
 package net.minecraft.command.server;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.network.play.server.S05PacketSpawnPosition;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandSetDefaultSpawnpoint extends CommandBase
@@ -51,7 +50,7 @@ public class CommandSetDefaultSpawnpoint extends CommandBase
         {
             if (args.length != 3 || sender.getEntityWorld() == null)
             {
-                throw new WrongUsageException("commands.setworldspawn.usage", new Object[0]);
+                throw new WrongUsageException("commands.setworldspawn.usage");
             }
 
             blockpos = parseBlockPos(sender, args, 0, true);
@@ -59,7 +58,7 @@ public class CommandSetDefaultSpawnpoint extends CommandBase
 
         sender.getEntityWorld().setSpawnPoint(blockpos);
         MinecraftServer.getServer().getConfigurationManager().sendPacketToAllPlayers(new S05PacketSpawnPosition(blockpos));
-        notifyOperators(sender, this, "commands.setworldspawn.success", new Object[] {Integer.valueOf(blockpos.getX()), Integer.valueOf(blockpos.getY()), Integer.valueOf(blockpos.getZ())});
+        notifyOperators(sender, this, "commands.setworldspawn.success", new Object[] {blockpos.getX(), blockpos.getY(), blockpos.getZ()});
     }
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)

@@ -7,7 +7,7 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 
@@ -27,7 +27,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 
 public class HUD
-extends Module {
+extends Mod {
     private Option<Boolean> info = new Option<>("Information", "information", true);
     private Numbers<Double> rainbowspeed = new Numbers<>("Rainbow", "Rainbow", 0.5, 0.0, 1.0, 0.1);
     public Mode<Enum<?>> color = new Mode("ColorMode", "ColorMode", colormode.values(), colormode.Client);
@@ -39,7 +39,7 @@ extends Module {
     public HUD() {
         super("HUD", new String[]{"gui"}, ModuleType.Visual);
         this.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).getRGB());
-        this.addValues(this.info,this.rainbowspeed,this.color);
+        //this.addValues(this.info,this.rainbowspeed,this.color);
 		this.removed=true;
     }
 
@@ -49,8 +49,8 @@ extends Module {
         if (!this.mc.gameSettings.showDebugInfo) {
             int y = 1;
             int rainbowTick = 0;
-    		ArrayList<Module> mods = (ArrayList<Module>) ((ArrayList<Module>) Client.instance.getModuleManager().getModules()).clone();
-            Collections.sort(mods, new Comparator<Module>() { public int compare(Module m1, Module m2) { if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) > Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return -1; } if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) < Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return 1; } return 0; } }); 
+    		ArrayList<Mod> mods = (ArrayList<Mod>) ((ArrayList<Mod>) Client.instance.getModuleManager().getMods()).clone();
+            Collections.sort(mods, new Comparator<Mod>() { public int compare(Mod m1, Mod m2) { if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) > Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return -1; } if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) < Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return 1; } return 0; } });
             
 
 	        String[] a;
@@ -100,7 +100,7 @@ extends Module {
                 //坐标
             	font.drawStringWithShadow(CoordStringBuilder.toString(), 3, RenderUtil.height()-20, new Color(255,255,255).getRGB());
 			}
-            for (Module m : mods) {
+            for (Mod m : mods) {
             	if(m.wasRemoved()) {
             		continue;
             	}

@@ -1,6 +1,9 @@
 package net.minecraft.client.multiplayer;
 
 import com.google.common.collect.Sets;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -17,21 +20,25 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.src.Config;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.*;
+import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
+import net.minecraft.world.WorldSettings;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.SaveDataMemoryStorage;
 import net.minecraft.world.storage.SaveHandlerMP;
 import net.minecraft.world.storage.WorldInfo;
-import optifine.*;
-
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.Callable;
+import net.optifine.CustomGuis;
+import net.optifine.DynamicLights;
+import net.optifine.override.PlayerControllerOF;
+import net.optifine.reflect.Reflector;
 
 public class WorldClient extends World
 {
@@ -40,19 +47,10 @@ public class WorldClient extends World
 
     /** The ChunkProviderClient instance */
     private ChunkProviderClient clientChunkProvider;
-
-    /** Contains all entities for this client, both spawned and non-spawned. */
-    private final Set entityList = Sets.newHashSet();
-
-    /**
-     * Contains all entities for this client that were not spawned due to a non-present chunk. The game will attempt to
-     * spawn up to 10 pending entities with each subsequent tick until the spawn queue is empty.
-     */
-    private final Set entitySpawnQueue = Sets.newHashSet();
+    private final Set<Entity> entityList = Sets.newHashSet();
+    private final Set<Entity> entitySpawnQueue = Sets.newHashSet();
     private final Minecraft mc = Minecraft.getMinecraft();
-    private final Set previousActiveChunkSet = Sets.newHashSet();
-    private static final String __OBFID = "CL_00000882";
-    private BlockPosM randomTickPosM = new BlockPosM(0, 0, 0, 3);
+    private final Set<ChunkCoordIntPair> previousActiveChunkSet = Sets.newHashSet();
     private boolean playerUpdate = false;
 
     public WorldClient(NetHandlerPlayClient netHandler, WorldSettings settings, int dimension, EnumDifficulty difficulty, Profiler profilerIn)
@@ -92,7 +90,7 @@ public class WorldClient extends World
 
         for (int i = 0; i < 10 && !this.entitySpawnQueue.isEmpty(); ++i)
         {
-            Entity entity = (Entity)this.entitySpawnQueue.iterator().next();
+            Entity entity = this.entitySpawnQueue.iterator().next();
             this.entitySpawnQueue.remove(entity);
 
             if (!this.loadedEntityList.contains(entity))
@@ -215,7 +213,10 @@ public class WorldClient extends World
     {
         super.onEntityAdded(entityIn);
 
-        this.entitySpawnQueue.remove(entityIn);
+        if (this.entitySpawnQueue.contains(entityIn))
+        {
+            this.entitySpawnQueue.remove(entityIn);
+        }
     }
 
     protected void onEntityRemoved(Entity entityIn)
@@ -268,7 +269,7 @@ public class WorldClient extends World
      */
     public Entity getEntityByID(int id)
     {
-        return id == this.mc.thePlayer.getEntityId() ? this.mc.thePlayer : super.getEntityByID(id);
+        return (Entity)(id == this.mc.thePlayer.getEntityId() ? this.mc.thePlayer : super.getEntityByID(id));
     }
 
     public Entity removeEntityFromWorld(int entityID)
@@ -315,24 +316,24 @@ public class WorldClient extends World
 
     public void doVoidFogParticles(int posX, int posY, int posZ)
     {
-        byte b0 = 16;
+        int i = 16;
         Random random = new Random();
         ItemStack itemstack = this.mc.thePlayer.getHeldItem();
         boolean flag = this.mc.playerController.getCurrentGameType() == WorldSettings.GameType.CREATIVE && itemstack != null && Block.getBlockFromItem(itemstack.getItem()) == Blocks.barrier;
-        BlockPosM blockposm = this.randomTickPosM;
+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-        for (int i = 0; i < 1000; ++i)
+        for (int j = 0; j < 1000; ++j)
         {
-            int j = posX + this.rand.nextInt(b0) - this.rand.nextInt(b0);
-            int k = posY + this.rand.nextInt(b0) - this.rand.nextInt(b0);
-            int l = posZ + this.rand.nextInt(b0) - this.rand.nextInt(b0);
-            blockposm.setXyz(j, k, l);
-            IBlockState iblockstate = this.getBlockState(blockposm);
-            iblockstate.getBlock().randomDisplayTick(this, blockposm, iblockstate, random);
+            int k = posX + this.rand.nextInt(i) - this.rand.nextInt(i);
+            int l = posY + this.rand.nextInt(i) - this.rand.nextInt(i);
+            int i1 = posZ + this.rand.nextInt(i) - this.rand.nextInt(i);
+            blockpos$mutableblockpos.set(k, l, i1);
+            IBlockState iblockstate = this.getBlockState(blockpos$mutableblockpos);
+            iblockstate.getBlock().randomDisplayTick(this, blockpos$mutableblockpos, iblockstate, random);
 
             if (flag && iblockstate.getBlock() == Blocks.barrier)
             {
-                this.spawnParticle(EnumParticleTypes.BARRIER, (float) j + 0.5F, (float) k + 0.5F, (float) l + 0.5F, 0.0D, 0.0D, 0.0D);
+                this.spawnParticle(EnumParticleTypes.BARRIER, (double)((float)k + 0.5F), (double)((float)l + 0.5F), (double)((float)i1 + 0.5F), 0.0D, 0.0D, 0.0D, new int[0]);
             }
         }
     }
@@ -400,35 +401,31 @@ public class WorldClient extends World
     public CrashReportCategory addWorldInfoToCrashReport(CrashReport report)
     {
         CrashReportCategory crashreportcategory = super.addWorldInfoToCrashReport(report);
-        crashreportcategory.addCrashSectionCallable("Forced entities", new Callable()
+        crashreportcategory.addCrashSectionCallable("Forced entities", new Callable<String>()
         {
-            private static final String __OBFID = "CL_00000883";
             public String call()
             {
                 return WorldClient.this.entityList.size() + " total; " + WorldClient.this.entityList.toString();
             }
         });
-        crashreportcategory.addCrashSectionCallable("Retry entities", new Callable()
+        crashreportcategory.addCrashSectionCallable("Retry entities", new Callable<String>()
         {
-            private static final String __OBFID = "CL_00000884";
             public String call()
             {
                 return WorldClient.this.entitySpawnQueue.size() + " total; " + WorldClient.this.entitySpawnQueue.toString();
             }
         });
-        crashreportcategory.addCrashSectionCallable("Server brand", new Callable()
+        crashreportcategory.addCrashSectionCallable("Server brand", new Callable<String>()
         {
-            private static final String __OBFID = "CL_00000885";
-
-            public String call() {
+            public String call() throws Exception
+            {
                 return WorldClient.this.mc.thePlayer.getClientBrand();
             }
         });
-        crashreportcategory.addCrashSectionCallable("Server type", new Callable()
+        crashreportcategory.addCrashSectionCallable("Server type", new Callable<String>()
         {
-            private static final String __OBFID = "CL_00000886";
-
-            public String call() {
+            public String call() throws Exception
+            {
                 return WorldClient.this.mc.getIntegratedServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server";
             }
         });

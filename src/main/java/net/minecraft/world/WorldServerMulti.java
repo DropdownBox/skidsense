@@ -1,7 +1,7 @@
 package net.minecraft.world;
 
-import net.minecraft.MinecraftServer;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.village.VillageCollection;
 import net.minecraft.world.border.IBorderListener;
 import net.minecraft.world.border.WorldBorder;
@@ -52,7 +52,8 @@ public class WorldServerMulti extends WorldServer
     /**
      * Saves the chunks to disk.
      */
-    protected void saveLevel() {
+    protected void saveLevel() throws MinecraftException
+    {
     }
 
     public World init()

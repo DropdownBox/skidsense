@@ -1,6 +1,6 @@
 package net.minecraft.client.multiplayer;
 
-import me.skidsense.hooks.EventBus;
+import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventAttack;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -485,39 +485,6 @@ public class PlayerControllerMP
             }
         }
     }
-    
-    public boolean csendUseItem(EntityPlayer playerIn, World worldIn, ItemStack itemStackIn)
-    {
-        if (this.currentGameType == WorldSettings.GameType.SPECTATOR)
-        {
-            return false;
-        }
-        else
-        {
-            this.syncCurrentPlayItem();
-            mc.getNetHandler().getNetworkManager().sendPacket(
-                    new C08PacketPlayerBlockPlacement(
-                  		  new BlockPos(new BlockPos(-0.8f, -0.8f, -0.8f)),255,mc.thePlayer.getCurrentEquippedItem(),0,0,0));
-            int i = itemStackIn.stackSize;
-            ItemStack itemstack = itemStackIn.useItemRightClick(worldIn, playerIn);
-
-            if (itemstack != itemStackIn || itemstack != null && itemstack.stackSize != i)
-            {
-                playerIn.inventory.mainInventory[playerIn.inventory.currentItem] = itemstack;
-
-                if (itemstack.stackSize == 0)
-                {
-                    playerIn.inventory.mainInventory[playerIn.inventory.currentItem] = null;
-                }
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
 
     public EntityPlayerSP func_178892_a(World worldIn, StatFileWriter statWriter)
     {
@@ -529,9 +496,9 @@ public class PlayerControllerMP
      */
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity)
     {
-        EventAttack e = new EventAttack(targetEntity,false);
-        EventBus.getInstance().call(e);
-        if(e.cancelled)
+        EventAttack ent = new EventAttack(targetEntity);
+        EventManager.postAll(ent);
+        if(ent.isCancelled())
             return;
         this.syncCurrentPlayItem();
         this.netClientHandler.addToSendQueue(new C02PacketUseEntity(targetEntity, C02PacketUseEntity.Action.ATTACK));

@@ -8,7 +8,7 @@ import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -17,7 +17,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
 
 public class Flight
-extends Module {
+extends Mod {
     private static final EntityPlayerSP MoveUtil = null;
 	public Mode mode = new Mode("Mode", "Mode", FlightMode.values(), FlightMode.Guardian);
     private Option<Boolean> Stop = new Option("Stop", "Stop", Boolean.valueOf(true));
@@ -28,12 +28,12 @@ extends Module {
     public Flight() {
         super("Flight", new String[]{"fly", "angel"}, ModuleType.Move);
         this.setColor(new Color(158, 114, 243).getRGB());
-        this.addValues(this.mode,UHC,Stop);
+        //this.addValues(this.mode,UHC,Stop);
     }
 
 	public void damagePlayerNew() {
 		if (mc.thePlayer.onGround) {
-			mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+			mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(
 					mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
 			for (int index = 0; index <= (UHC.getValue() ? 9 : 7); ++index) {
                 mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
@@ -74,7 +74,8 @@ extends Module {
 		lastDist = 0.0D;
     }
     private boolean canZoom() {
-	    return mc.thePlayer.moving() && mc.thePlayer.onGround;
+    	//FIXME
+	    return /*mc.thePlayer.moving() &&*/ mc.thePlayer.onGround;
     }
     @Sub
     private void onUpdate(EventPreUpdate e) {
@@ -93,13 +94,14 @@ extends Module {
             }
         } else if (this.mode.getValue() == FlightMode.Motion) {
             mc.thePlayer.motionY = mc.thePlayer.movementInput.jump ? 1.0 : (mc.thePlayer.movementInput.sneak ? -1.0 : 0.0);
-            if (mc.thePlayer.moving()) {
+            // FIXME
+            //if (mc.thePlayer.moving()) {
             	// FIXME
                 //mc.thePlayer.setSpeed(3.0);
-            } else {
+            //} else {
             	// FIXME
                 //mc.thePlayer.setSpeed(0.0);
-            }
+            //}
         } else if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
 
             Minecraft.getMinecraft().thePlayer.motionY = 0.0D;
@@ -231,8 +233,8 @@ extends Module {
                 }
 
 				moveSpeed = this.mode.getValue() == FlightMode.Damage ? Math.max(moveSpeed, MathUtil.getBaseMovementSpeed()) : MathUtil.getBaseMovementSpeed();
-				mc.thePlayer.setMoveSpeed(e,moveSpeed);
-
+				//mc.thePlayer.setMoveSpeed(e,moveSpeed);
+//FIXME
 			}
 		}
     }

@@ -26,24 +26,23 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
+import net.minecraft.src.Config;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
-import optifine.Config;
-import optifine.Reflector;
-
+import net.optifine.reflect.Reflector;
+import net.optifine.shaders.Shaders;
 import org.lwjgl.opengl.GL11;
-import shadersmod.client.ShadersTex;
 
-public class RenderItemFrame extends Render
+public class RenderItemFrame extends Render<EntityItemFrame>
 {
     private static final ResourceLocation mapBackgroundTextures = new ResourceLocation("textures/map/map_background.png");
     private final Minecraft mc = Minecraft.getMinecraft();
     private final ModelResourceLocation itemFrameModel = new ModelResourceLocation("item_frame", "normal");
     private final ModelResourceLocation mapModel = new ModelResourceLocation("item_frame", "map");
     private RenderItem itemRenderer;
-    private static final String __OBFID = "CL_00001002";
+    private static double itemRenderDistanceSq = 4096.0D;
 
     public RenderItemFrame(RenderManager renderManagerIn, RenderItem itemRendererIn)
     {
@@ -101,6 +100,22 @@ public class RenderItemFrame extends Render
 
         if (itemstack != null)
         {
+            if (!this.isRenderItem(itemFrame))
+            {
+                return;
+            }
+
+            if (!Config.zoomMode)
+            {
+                Entity entity = this.mc.thePlayer;
+                double d0 = itemFrame.getDistanceSq(entity.posX, entity.posY, entity.posZ);
+
+                if (d0 > 4096.0D)
+                {
+                    return;
+                }
+            }
+
             EntityItem entityitem = new EntityItem(itemFrame.worldObj, 0.0D, 0.0D, 0.0D, itemstack);
             Item item = entityitem.getEntityItem().getItem();
             entityitem.getEntityItem().stackSize = 1;
@@ -116,7 +131,7 @@ public class RenderItemFrame extends Render
 
             GlStateManager.rotate((float)i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
 
-            if (!Reflector.postForgeBusEvent(Reflector.RenderItemInFrameEvent_Constructor, new Object[] {itemFrame, this}))
+            if (!Reflector.postForgeBusEvent(Reflector.RenderItemInFrameEvent_Constructor, itemFrame, this))
             {
                 if (item instanceof ItemMap)
                 {
@@ -140,26 +155,18 @@ public class RenderItemFrame extends Render
                     if (item == Items.compass)
                     {
                         textureatlassprite = this.mc.getTextureMapBlocks().getAtlasSprite(TextureCompass.locationSprite);
-
-                        if (Config.isShaders())
-                        {
-                            ShadersTex.bindTextureMapForUpdateAndRender(this.mc.getTextureManager(), TextureMap.locationBlocksTexture);
-                        }
-                        else
-                        {
-                            this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
-                        }
+                        this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
 
                         if (textureatlassprite instanceof TextureCompass)
                         {
                             TextureCompass texturecompass = (TextureCompass)textureatlassprite;
-                            double d0 = texturecompass.currentAngle;
-                            double d1 = texturecompass.angleDelta;
+                            double d1 = texturecompass.currentAngle;
+                            double d2 = texturecompass.angleDelta;
                             texturecompass.currentAngle = 0.0D;
                             texturecompass.angleDelta = 0.0D;
                             texturecompass.updateCompass(itemFrame.worldObj, itemFrame.posX, itemFrame.posZ, (double)MathHelper.wrapAngleTo180_float((float)(180 + itemFrame.facingDirection.getHorizontalIndex() * 90)), false, true);
-                            texturecompass.currentAngle = d0;
-                            texturecompass.angleDelta = d1;
+                            texturecompass.currentAngle = d1;
+                            texturecompass.angleDelta = d2;
                         }
                         else
                         {
@@ -186,6 +193,7 @@ public class RenderItemFrame extends Render
                     }
                 }
             }
+
             GlStateManager.enableLighting();
             GlStateManager.popMatrix();
         }
@@ -244,24 +252,34 @@ public class RenderItemFrame extends Render
         }
     }
 
-    /**
-     * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
-     */
-    protected ResourceLocation getEntityTexture(Entity entity)
+    private boolean isRenderItem(EntityItemFrame p_isRenderItem_1_)
     {
-        return this.getEntityTexture((EntityItemFrame)entity);
+        if (Shaders.isShadowPass)
+        {
+            return false;
+        }
+        else
+        {
+            if (!Config.zoomMode)
+            {
+                Entity entity = this.mc.getRenderViewEntity();
+                double d0 = p_isRenderItem_1_.getDistanceSq(entity.posX, entity.posY, entity.posZ);
+
+                if (d0 > itemRenderDistanceSq)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 
-    protected void renderName(Entity entity, double x, double y, double z)
+    public static void updateItemRenderDistance()
     {
-        this.renderName((EntityItemFrame)entity, x, y, z);
-    }
-
-    /**
-     * Renders the desired {@code T} type Entity.
-     */
-    public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks)
-    {
-        this.doRender((EntityItemFrame)entity, x, y, z, entityYaw, partialTicks);
+        Minecraft minecraft = Config.getMinecraft();
+        double d0 = (double)Config.limit(minecraft.gameSettings.fovSetting, 1.0F, 120.0F);
+        double d1 = Math.max(6.0D * (double)minecraft.displayHeight / d0, 16.0D);
+        itemRenderDistanceSq = d1 * d1;
     }
 }

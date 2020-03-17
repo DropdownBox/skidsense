@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public abstract class BlockStoneSlabNew extends BlockSlab
 {
     public static final PropertyBool SEAMLESS = PropertyBool.create("seamless");
-    public static final PropertyEnum<BlockStoneSlabNew.EnumType> VARIANT = PropertyEnum.<BlockStoneSlabNew.EnumType>create("variant", BlockStoneSlabNew.EnumType.class);
+    public static final PropertyEnum<BlockStoneSlabNew.EnumType> VARIANT = PropertyEnum.create("variant", BlockStoneSlabNew.EnumType.class);
 
     public BlockStoneSlabNew()
     {
@@ -30,7 +30,7 @@ public abstract class BlockStoneSlabNew extends BlockSlab
 
         if (this.isDouble())
         {
-            iblockstate = iblockstate.withProperty(SEAMLESS, Boolean.valueOf(false));
+            iblockstate = iblockstate.withProperty(SEAMLESS, false);
         }
         else
         {
@@ -103,7 +103,7 @@ public abstract class BlockStoneSlabNew extends BlockSlab
 
         if (this.isDouble())
         {
-            iblockstate = iblockstate.withProperty(SEAMLESS, Boolean.valueOf((meta & 8) != 0));
+            iblockstate = iblockstate.withProperty(SEAMLESS, (meta & 8) != 0);
         }
         else
         {
@@ -119,11 +119,11 @@ public abstract class BlockStoneSlabNew extends BlockSlab
     public int getMetaFromState(IBlockState state)
     {
         int i = 0;
-        i = i | ((BlockStoneSlabNew.EnumType)state.getValue(VARIANT)).getMetadata();
+        i = i | state.getValue(VARIANT).getMetadata();
 
         if (this.isDouble())
         {
-            if (((Boolean)state.getValue(SEAMLESS)).booleanValue())
+            if (state.getValue(SEAMLESS))
             {
                 i |= 8;
             }
@@ -138,7 +138,7 @@ public abstract class BlockStoneSlabNew extends BlockSlab
 
     protected BlockState createBlockState()
     {
-        return this.isDouble() ? new BlockState(this, new IProperty[] {SEAMLESS, VARIANT}): new BlockState(this, new IProperty[] {HALF, VARIANT});
+        return this.isDouble() ? new BlockState(this, SEAMLESS, VARIANT) : new BlockState(this, HALF, VARIANT);
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class BlockStoneSlabNew extends BlockSlab
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return ((BlockStoneSlabNew.EnumType)state.getValue(VARIANT)).func_181068_c();
+        return state.getValue(VARIANT).func_181068_c();
     }
 
     /**
@@ -155,7 +155,7 @@ public abstract class BlockStoneSlabNew extends BlockSlab
      */
     public int damageDropped(IBlockState state)
     {
-        return ((BlockStoneSlabNew.EnumType)state.getValue(VARIANT)).getMetadata();
+        return state.getValue(VARIANT).getMetadata();
     }
 
     public static enum EnumType implements IStringSerializable

@@ -5,8 +5,7 @@ package me.skidsense.command.commands;
 
 import me.skidsense.Client;
 import me.skidsense.command.Command;
-import me.skidsense.management.ModuleManager;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import net.minecraft.util.EnumChatFormatting;
 
 public class Toggle
@@ -24,7 +23,7 @@ extends Command {
         	Client.sendMessageWithoutPrefix("\u00a7bCorrect usage:\u00a77 .t <module>");
         }
         boolean found = false;
-        Module m = Client.instance.getModuleManager().getAlias(args[0]);
+        Mod m = Client.instance.getModuleManager().getAlias(args[0]);
         if (m != null) {
             if (!m.isEnabled()) {
                 m.setEnabled(true);

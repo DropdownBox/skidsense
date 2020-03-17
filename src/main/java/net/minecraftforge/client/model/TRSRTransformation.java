@@ -9,4 +9,9 @@ public class TRSRTransformation
     {
         throw new NotImplementedException("Forge dummy class");
     }
+
+    public static boolean isInteger(Matrix4f matrix)
+    {
+        return false;
+    }
 }

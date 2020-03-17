@@ -19,7 +19,7 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MathUtil;
 import me.skidsense.util.RenderUtil;
@@ -41,7 +41,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
 public class KillAura2
-extends Module {
+extends Mod {
 	protected ModelBase mainModel;
 	TimerUtil kms = new TimerUtil();
 	public static float rotationPitch;
@@ -73,8 +73,8 @@ extends Module {
 
 	public KillAura2() {
 		super("Kill Aura", new String[] { "ka", "aura", "killa","killaura" }, ModuleType.Fight);
-		this.addValues(this.emode, this.Priority, this.mode, this.aps, this.reach, this.blocking,this.players,
-				this.animals, this.mobs, this.invis);
+		//this.addValues(this.emode, this.Priority, this.mode, this.aps, this.reach, this.blocking,this.players,
+		//		this.animals, this.mobs, this.invis);
 	}
 
 	public static double random(double min, double max) {
@@ -106,11 +106,11 @@ extends Module {
         double var31 = this.currentEntity.posX - this.currentEntity.prevPosX;
         double var32 = this.currentEntity.posZ - this.currentEntity.prevPosZ;
         attackDelay = this.currentEntity.posX + var31;
-        double var33 = attackDelay - RenderManager.renderPosX;
+        double var33 = attackDelay - mc.getRenderManager().renderPosX;
         double var34 = this.currentEntity.posY + 1.0D;
-        double y = var34 - RenderManager.renderPosY;
+        double y = var34 - mc.getRenderManager().renderPosY;
         double var39 = this.currentEntity.posZ + var32;
-        double var42 = var39 - RenderManager.renderPosZ;
+        double var42 = var39 - mc.getRenderManager().renderPosZ;
         double sin = Math.sin((double)System.currentTimeMillis() / 500.0D) * 50.0D;
         double xA = sin / 100.0D;
         double zA = sin / 100.0D;
@@ -247,7 +247,7 @@ extends Module {
 
 	
 	private void block() {
-		mc.playerController.csendUseItem(mc.thePlayer, this.mc.theWorld, mc.thePlayer.inventory.getCurrentItem());
+		mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem());
 	}
 
 	private void settarget() {

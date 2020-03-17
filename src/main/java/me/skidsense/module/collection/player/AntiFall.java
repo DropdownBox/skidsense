@@ -1,17 +1,16 @@
 package me.skidsense.module.collection.player;
 
 import java.awt.Color;
-import java.lang.reflect.Field;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.block.BlockAir;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
-public class AntiFall extends Module {
+public class AntiFall extends Mod {
 
     public AntiFall() {
         super("Anti Void", new String[] { "novoid", "antifall" }, ModuleType.World);

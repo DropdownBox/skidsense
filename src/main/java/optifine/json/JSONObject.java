@@ -91,7 +91,7 @@ public class JSONObject extends LinkedHashMap implements Map, JSONAware, JSONStr
 
     private static String toJSONString(String key, Object value, StringBuffer sb)
     {
-        sb.append('\"');
+        sb.append('"');
 
         if (key == null)
         {
@@ -102,7 +102,7 @@ public class JSONObject extends LinkedHashMap implements Map, JSONAware, JSONStr
             JSONValue.escape(key, sb);
         }
 
-        sb.append('\"').append(':');
+        sb.append('"').append(':');
         sb.append(JSONValue.toJSONString(value));
         return sb.toString();
     }

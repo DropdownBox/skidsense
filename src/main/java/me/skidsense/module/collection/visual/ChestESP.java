@@ -2,7 +2,7 @@ package me.skidsense.module.collection.visual;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.GLUtils;
 import me.skidsense.util.RenderUtil;
@@ -24,7 +24,7 @@ import java.awt.*;
 import java.util.Iterator;
 
 public class ChestESP
-extends Module {
+extends Mod {
     public ChestESP() {
         super("Chest ESP", new String[]{"chesthack"}, ModuleType.Visual);
         this.setColor(new Color(90, 209, 165).getRGB());
@@ -73,7 +73,7 @@ extends Module {
         } else {
             GL11.glColor4d((double)0.7, (double)0.4, (double)0.0, (double)0.5);
         }
-        RenderUtil.drawBoundingBox(new AxisAlignedBB(vec.xCoord - RenderManager.renderPosX, vec.yCoord - RenderManager.renderPosY, vec.zCoord - RenderManager.renderPosZ, vec2.xCoord - RenderManager.renderPosX, vec2.yCoord - RenderManager.renderPosY, vec2.zCoord - RenderManager.renderPosZ));
+        RenderUtil.drawBoundingBox(new AxisAlignedBB(vec.xCoord - mc.getRenderManager().renderPosX, vec.yCoord - mc.getRenderManager().renderPosY, vec.zCoord - mc.getRenderManager().renderPosZ, vec2.xCoord - mc.getRenderManager().renderPosX, vec2.yCoord - mc.getRenderManager().renderPosY, vec2.zCoord - mc.getRenderManager().renderPosZ));
         GL11.glColor4f((float)0.0f, (float)0.0f, (float)0.0f, (float)1.0f);
         RenderUtil.post3D();
         GL11.glPopMatrix();

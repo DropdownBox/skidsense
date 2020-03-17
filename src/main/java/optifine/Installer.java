@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.zip.ZipEntry;
@@ -74,6 +76,7 @@ public class Installer
         Utils.dbg("Minecraft_OptiFine Version: " + s3);
         copyMinecraftVersion(s1, s3, file2);
         installOptiFineLibrary(s1, s2, file1, false);
+        installLaunchwrapperLibrary(s1, s2, file1);
         updateJson(file2, s3, file1, s1, s2);
         updateLauncherJson(dirMc, s3);
     }
@@ -106,17 +109,21 @@ public class Installer
             String s = Utils.readFile(file1, "UTF-8");
             JSONParser jsonparser = new JSONParser();
             JSONObject jsonobject = (JSONObject)jsonparser.parse(s);
-            JSONObject jsonobject1 = (JSONObject)jsonobject.get("profiles");
-            JSONObject jsonobject2 = (JSONObject)jsonobject1.get("OptiFine");
+            JSONObject jsonobject1 = (JSONObject) jsonobject.get("profiles");
+            JSONObject jsonobject2 = (JSONObject) jsonobject1.get("OptiFine");
 
             if (jsonobject2 == null)
             {
                 jsonobject2 = new JSONObject();
                 jsonobject2.put("name", "OptiFine");
+                jsonobject2.put("created", formatDateMs(new Date()));
                 jsonobject1.put("OptiFine", jsonobject2);
             }
 
+            jsonobject2.put("type", "custom");
             jsonobject2.put("lastVersionId", mcVerOf);
+            jsonobject2.put("lastUsed", formatDateMs(new Date()));
+            jsonobject2.put("icon", ProfileIcon.DATA);
             jsonobject.put("selectedProfile", "OptiFine");
             FileOutputStream fileoutputstream = new FileOutputStream(file1);
             OutputStreamWriter outputstreamwriter = new OutputStreamWriter(fileoutputstream, "UTF-8");
@@ -139,34 +146,75 @@ public class Installer
         String s = Utils.readFile(file2, "UTF-8");
         JSONParser jsonparser = new JSONParser();
         JSONObject jsonobject = (JSONObject)jsonparser.parse(s);
-        jsonobject.put("id", mcVerOf);
-        JSONArray jsonarray = (JSONArray)jsonobject.get("libraries");
-        jsonobject.put("inheritsFrom", mcVer);
-        jsonarray = new JSONArray();
-        jsonobject.put("libraries", jsonarray);
-        String s1 = (String)jsonobject.get("mainClass");
+        JSONObject jsonobject1 = new JSONObject();
+        jsonobject1.put("id", mcVerOf);
+        jsonobject1.put("inheritsFrom", mcVer);
+        jsonobject1.put("time", formatDate(new Date()));
+        jsonobject1.put("releaseTime", formatDate(new Date()));
+        jsonobject1.put("type", "release");
+        JSONArray jsonarray = new JSONArray();
+        jsonobject1.put("libraries", jsonarray);
+        String s1 = (String) jsonobject.get("mainClass");
 
         if (!s1.startsWith("net.minecraft.launchwrapper."))
         {
             s1 = "net.minecraft.launchwrapper.Launch";
-            jsonobject.put("mainClass", s1);
-            String s2 = (String)jsonobject.get("minecraftArguments");
-            s2 = s2 + "  --tweakClass optifine.OptiFineTweaker";
-            jsonobject.put("minecraftArguments", s2);
-            JSONObject jsonobject1 = new JSONObject();
-            jsonobject1.put("name", "net.minecraft:launchwrapper:1.12");
-            jsonarray.add(0, jsonobject1);
+            jsonobject1.put("mainClass", s1);
+            String s2 = (String) jsonobject.get("minecraftArguments");
+
+            if (s2 != null)
+            {
+                s2 = s2 + "  --tweakClass optifine.OptiFineTweaker";
+                jsonobject1.put("minecraftArguments", s2);
+            }
+            else
+            {
+                jsonobject1.put("minimumLauncherVersion", "21");
+                JSONObject jsonobject2 = new JSONObject();
+                JSONArray jsonarray1 = new JSONArray();
+                jsonarray1.add("--tweakClass");
+                jsonarray1.add("optifine.OptiFineTweaker");
+                jsonobject2.put("game", jsonarray1);
+                jsonobject1.put("arguments", jsonobject2);
+            }
+
+            JSONObject jsonobject4 = new JSONObject();
+            jsonobject4.put("name", "optifine:launchwrapper-of:" + getLaunchwrapperVersion());
+            jsonarray.add(0, jsonobject4);
         }
 
-        JSONObject jsonobject2 = new JSONObject();
-        jsonobject2.put("name", "optifine:OptiFine:" + mcVer + "_" + ofEd);
-        jsonarray.add(0, jsonobject2);
+        JSONObject jsonobject3 = new JSONObject();
+        jsonobject3.put("name", "optifine:OptiFine:" + mcVer + "_" + ofEd);
+        jsonarray.add(0, jsonobject3);
         FileOutputStream fileoutputstream = new FileOutputStream(file2);
         OutputStreamWriter outputstreamwriter = new OutputStreamWriter(fileoutputstream, "UTF-8");
         JSONWriter jsonwriter = new JSONWriter(outputstreamwriter);
-        jsonwriter.writeObject(jsonobject);
+        jsonwriter.writeObject(jsonobject1);
         outputstreamwriter.flush();
         outputstreamwriter.close();
+    }
+
+    private static Object formatDate(Date date)
+    {
+        try
+        {
+            SimpleDateFormat simpledateformat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+            String s1 = simpledateformat.format(date);
+            return s1;
+        }
+        catch (Exception var4)
+        {
+            SimpleDateFormat simpledateformat1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            String s = simpledateformat1.format(date);
+            return s;
+        }
+    }
+
+    private static Object formatDateMs(Date date)
+    {
+        SimpleDateFormat simpledateformat = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String s = simpledateformat.format(date);
+        return s;
     }
 
     public static String getOptiFineEdition(String[] ofVers)
@@ -255,6 +303,36 @@ public class Installer
         }
     }
 
+    private static boolean installLaunchwrapperLibrary(String mcVer, String ofEd, File dirMcLib) throws Exception
+    {
+        String s = getLaunchwrapperVersion();
+        String s1 = "launchwrapper-of-" + s + ".jar";
+        File file1 = new File(dirMcLib, "optifine/launchwrapper-of/" + s);
+        File file2 = new File(file1, s1);
+        Utils.dbg("Source: " + s1);
+        Utils.dbg("Dest: " + file2);
+        InputStream inputstream = Installer.class.getResourceAsStream("/" + s1);
+
+        if (inputstream == null)
+        {
+            throw new IOException("File not found: " + s1);
+        }
+        else
+        {
+            if (file2.getParentFile() != null)
+            {
+                file2.getParentFile().mkdirs();
+            }
+
+            FileOutputStream fileoutputstream = new FileOutputStream(file2);
+            Utils.copyAll(inputstream, fileoutputstream);
+            fileoutputstream.flush();
+            inputstream.close();
+            fileoutputstream.close();
+            return true;
+        }
+    }
+
     public static File getOptiFineZipFile() throws Exception
     {
         URL url = Installer.class.getProtectionDomain().getCodeSource().getLocation();
@@ -275,7 +353,7 @@ public class Installer
 
             while (enumeration.hasMoreElements())
             {
-                ZipEntry zipentry = (ZipEntry)enumeration.nextElement();
+                ZipEntry zipentry = enumeration.nextElement();
 
                 if (zipentry.getName().startsWith("patch/"))
                 {
@@ -326,24 +404,41 @@ public class Installer
 
     private static void showMessageVersionNotFound(String mcVer)
     {
-        Utils.showErrorMessage("Minecraft version " + mcVer + " not found.\nYou need to start the version " + mcVer + " manually once.");
+        Utils.showErrorMessage("Cannot find Minecraft " + mcVer + ".\nYou must download and start Minecraft " + mcVer + " once in the official launcher.");
     }
 
     public static String getOptiFineVersion() throws IOException
     {
-        InputStream inputstream = Installer.class.getResourceAsStream("/Config.class");
+        InputStream inputstream = Installer.class.getResourceAsStream("/net/optifine/Config.class");
+
+        if (inputstream == null)
+        {
+            inputstream = Installer.class.getResourceAsStream("/Config.class");
+        }
 
         if (inputstream == null)
         {
             inputstream = Installer.class.getResourceAsStream("/VersionThread.class");
         }
 
-        return getOptiFineVersion(inputstream);
+        if (inputstream == null)
+        {
+            throw new IOException("OptiFine version not found");
+        }
+        else
+        {
+            return getOptiFineVersion(inputstream);
+        }
     }
 
     public static String getOptiFineVersion(ZipFile zipFile) throws IOException
     {
-        ZipEntry zipentry = zipFile.getEntry("Config.class");
+        ZipEntry zipentry = zipFile.getEntry("net/optifine/Config.class");
+
+        if (zipentry == null)
+        {
+            zipentry = zipFile.getEntry("Config.class");
+        }
 
         if (zipentry == null)
         {
@@ -352,7 +447,7 @@ public class Installer
 
         if (zipentry == null)
         {
-            return null;
+            throw new IOException("OptiFine version not found");
         }
         else
         {
@@ -408,6 +503,31 @@ public class Installer
             {
                 String s = astring[1];
                 return s;
+            }
+        }
+    }
+
+    private static String getLaunchwrapperVersion() throws IOException
+    {
+        String s = "/launchwrapper-of.txt";
+        InputStream inputstream = Installer.class.getResourceAsStream(s);
+
+        if (inputstream == null)
+        {
+            throw new IOException("File not found: " + s);
+        }
+        else
+        {
+            String s1 = Utils.readText(inputstream, "ASCII");
+            s1 = s1.trim();
+
+            if (!s1.matches("[0-9\\.]+"))
+            {
+                throw new IOException("Invalid launchwrapper version: " + s1);
+            }
+            else
+            {
+                return s1;
             }
         }
     }

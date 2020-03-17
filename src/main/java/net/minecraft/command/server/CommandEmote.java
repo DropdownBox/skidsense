@@ -1,13 +1,12 @@
 package net.minecraft.command.server;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.IChatComponent;
@@ -45,12 +44,12 @@ public class CommandEmote extends CommandBase
     {
         if (args.length <= 0)
         {
-            throw new WrongUsageException("commands.me.usage", new Object[0]);
+            throw new WrongUsageException("commands.me.usage");
         }
         else
         {
             IChatComponent ichatcomponent = getChatComponentFromNthArg(sender, args, 0, !(sender instanceof EntityPlayer));
-            MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentTranslation("chat.type.emote", new Object[] {sender.getDisplayName(), ichatcomponent}));
+            MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentTranslation("chat.type.emote", sender.getDisplayName(), ichatcomponent));
         }
     }
 

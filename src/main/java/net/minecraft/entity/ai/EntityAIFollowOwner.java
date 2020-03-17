@@ -102,7 +102,15 @@ public class EntityAIFollowOwner extends EntityAIBase
     {
         IBlockState iblockstate = this.theWorld.getBlockState(p_181065_1_);
         Block block = iblockstate.getBlock();
-        return block == Blocks.air ? true : !block.isFullCube();
+
+        if (block == Blocks.air)
+        {
+            return true;
+        }
+        else
+        {
+            return !block.isFullCube();
+        }
     }
 
     /**
@@ -122,7 +130,7 @@ public class EntityAIFollowOwner extends EntityAIBase
                 {
                     if (!this.thePet.getLeashed())
                     {
-                        if (this.thePet.getDistanceSqToEntity(this.theOwner) >= 144.0D)
+                        if (!(this.thePet.getDistanceSqToEntity(this.theOwner) < 144.0D))
                         {
                             int i = MathHelper.floor_double(this.theOwner.posX) - 2;
                             int j = MathHelper.floor_double(this.theOwner.posZ) - 2;

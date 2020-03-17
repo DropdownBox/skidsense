@@ -38,9 +38,9 @@ public class EntityXPOrb extends Entity
         this.setSize(0.5F, 0.5F);
         this.setPosition(x, y, z);
         this.rotationYaw = (float)(Math.random() * 360.0D);
-        this.motionX = (double)((float)(Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
+        this.motionX = (double)((float)(Math.random() * (double)0.2F - (double)0.1F) * 2.0F);
         this.motionY = (double)((float)(Math.random() * 0.2D) * 2.0F);
-        this.motionZ = (double)((float)(Math.random() * 0.20000000298023224D - 0.10000000149011612D) * 2.0F);
+        this.motionZ = (double)((float)(Math.random() * (double)0.2F - (double)0.1F) * 2.0F);
         this.xpValue = expValue;
     }
 
@@ -95,11 +95,11 @@ public class EntityXPOrb extends Entity
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
-        this.motionY -= 0.029999999329447746D;
+        this.motionY -= (double)0.03F;
 
         if (this.worldObj.getBlockState(new BlockPos(this)).getBlock().getMaterial() == Material.lava)
         {
-            this.motionY = 0.20000000298023224D;
+            this.motionY = (double)0.2F;
             this.motionX = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
             this.motionZ = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
             this.playSound("random.fizz", 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
@@ -149,12 +149,12 @@ public class EntityXPOrb extends Entity
         }
 
         this.motionX *= (double)f;
-        this.motionY *= 0.9800000190734863D;
+        this.motionY *= (double)0.98F;
         this.motionZ *= (double)f;
 
         if (this.onGround)
         {
-            this.motionY *= -0.8999999761581421D;
+            this.motionY *= (double) -0.9F;
         }
 
         ++this.xpColor;
@@ -258,7 +258,46 @@ public class EntityXPOrb extends Entity
      */
     public int getTextureByXP()
     {
-        return this.xpValue >= 2477 ? 10 : (this.xpValue >= 1237 ? 9 : (this.xpValue >= 617 ? 8 : (this.xpValue >= 307 ? 7 : (this.xpValue >= 149 ? 6 : (this.xpValue >= 73 ? 5 : (this.xpValue >= 37 ? 4 : (this.xpValue >= 17 ? 3 : (this.xpValue >= 7 ? 2 : (this.xpValue >= 3 ? 1 : 0)))))))));
+        if (this.xpValue >= 2477)
+        {
+            return 10;
+        }
+        else if (this.xpValue >= 1237)
+        {
+            return 9;
+        }
+        else if (this.xpValue >= 617)
+        {
+            return 8;
+        }
+        else if (this.xpValue >= 307)
+        {
+            return 7;
+        }
+        else if (this.xpValue >= 149)
+        {
+            return 6;
+        }
+        else if (this.xpValue >= 73)
+        {
+            return 5;
+        }
+        else if (this.xpValue >= 37)
+        {
+            return 4;
+        }
+        else if (this.xpValue >= 17)
+        {
+            return 3;
+        }
+        else if (this.xpValue >= 7)
+        {
+            return 2;
+        }
+        else
+        {
+            return this.xpValue >= 3 ? 1 : 0;
+        }
     }
 
     /**
@@ -266,7 +305,46 @@ public class EntityXPOrb extends Entity
      */
     public static int getXPSplit(int expValue)
     {
-        return expValue >= 2477 ? 2477 : (expValue >= 1237 ? 1237 : (expValue >= 617 ? 617 : (expValue >= 307 ? 307 : (expValue >= 149 ? 149 : (expValue >= 73 ? 73 : (expValue >= 37 ? 37 : (expValue >= 17 ? 17 : (expValue >= 7 ? 7 : (expValue >= 3 ? 3 : 1)))))))));
+        if (expValue >= 2477)
+        {
+            return 2477;
+        }
+        else if (expValue >= 1237)
+        {
+            return 1237;
+        }
+        else if (expValue >= 617)
+        {
+            return 617;
+        }
+        else if (expValue >= 307)
+        {
+            return 307;
+        }
+        else if (expValue >= 149)
+        {
+            return 149;
+        }
+        else if (expValue >= 73)
+        {
+            return 73;
+        }
+        else if (expValue >= 37)
+        {
+            return 37;
+        }
+        else if (expValue >= 17)
+        {
+            return 17;
+        }
+        else if (expValue >= 7)
+        {
+            return 7;
+        }
+        else
+        {
+            return expValue >= 3 ? 3 : 1;
+        }
     }
 
     /**

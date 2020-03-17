@@ -1,12 +1,11 @@
 package net.minecraft.command;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandEnchant extends CommandBase
@@ -42,7 +41,7 @@ public class CommandEnchant extends CommandBase
     {
         if (args.length < 2)
         {
-            throw new WrongUsageException("commands.enchant.usage", new Object[0]);
+            throw new WrongUsageException("commands.enchant.usage");
         }
         else
         {
@@ -71,7 +70,7 @@ public class CommandEnchant extends CommandBase
 
             if (itemstack == null)
             {
-                throw new CommandException("commands.enchant.noItem", new Object[0]);
+                throw new CommandException("commands.enchant.noItem");
             }
             else
             {
@@ -79,11 +78,11 @@ public class CommandEnchant extends CommandBase
 
                 if (enchantment1 == null)
                 {
-                    throw new NumberInvalidException("commands.enchant.notFound", new Object[] {Integer.valueOf(i)});
+                    throw new NumberInvalidException("commands.enchant.notFound", i);
                 }
                 else if (!enchantment1.canApply(itemstack))
                 {
-                    throw new CommandException("commands.enchant.cantEnchant", new Object[0]);
+                    throw new CommandException("commands.enchant.cantEnchant");
                 }
                 else
                 {
@@ -108,7 +107,7 @@ public class CommandEnchant extends CommandBase
 
                                     if (!enchantment2.canApplyTogether(enchantment1))
                                     {
-                                        throw new CommandException("commands.enchant.cantCombine", new Object[] {enchantment1.getTranslatedName(j), enchantment2.getTranslatedName(nbttaglist.getCompoundTagAt(k).getShort("lvl"))});
+                                        throw new CommandException("commands.enchant.cantCombine", enchantment1.getTranslatedName(j), enchantment2.getTranslatedName(nbttaglist.getCompoundTagAt(k).getShort("lvl")));
                                     }
                                 }
                             }
@@ -125,7 +124,14 @@ public class CommandEnchant extends CommandBase
 
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, this.getListOfPlayers()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, Enchantment.func_181077_c()) : null);
+        if (args.length == 1)
+        {
+            return getListOfStringsMatchingLastWord(args, this.getListOfPlayers());
+        }
+        else
+        {
+            return args.length == 2 ? getListOfStringsMatchingLastWord(args, Enchantment.func_181077_c()) : null;
+        }
     }
 
     protected String[] getListOfPlayers()

@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import java.io.IOException;
-import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.EnumPacketDirection;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -28,29 +27,34 @@ public class MessageSerializer extends MessageToByteEncoder<Packet>
 
     protected void encode(ChannelHandlerContext p_encode_1_, Packet p_encode_2_, ByteBuf p_encode_3_) throws IOException, Exception
     {
-        Integer integer = ((EnumConnectionState)p_encode_1_.channel().attr(NetworkManager.attrKeyConnectionState).get()).getPacketId(this.direction, p_encode_2_);
+        Integer integer = p_encode_1_.channel().attr(NetworkManager.attrKeyConnectionState).get().getPacketId(this.direction, p_encode_2_);
 
         if (logger.isDebugEnabled())
         {
-            logger.debug(RECEIVED_PACKET_MARKER, "OUT: [{}:{}] {}", new Object[] {p_encode_1_.channel().attr(NetworkManager.attrKeyConnectionState).get(), integer, p_encode_2_.getClass().getName()});
+            logger.debug(RECEIVED_PACKET_MARKER, "OUT: [{}:{}] {}", p_encode_1_.channel().attr(NetworkManager.attrKeyConnectionState).get(), integer, p_encode_2_.getClass().getName());
         }
 
         if (integer == null)
         {
-            throw new IOException("Can\'t serialize unregistered packet");
+            throw new IOException("Can't serialize unregistered packet");
         }
         else
         {
             PacketBuffer packetbuffer = new PacketBuffer(p_encode_3_);
-            packetbuffer.writeVarIntToBuffer(integer.intValue());
+            packetbuffer.writeVarIntToBuffer(integer);
 
             try
             {
+                if (p_encode_2_ instanceof S0CPacketSpawnPlayer)
+                {
+                    p_encode_2_ = p_encode_2_;
+                }
+
                 p_encode_2_.writePacketData(packetbuffer);
             }
             catch (Throwable throwable)
             {
-                logger.error((Object)throwable);
+                logger.error(throwable);
             }
         }
     }

@@ -221,7 +221,14 @@ public class TileEntityChest extends TileEntityLockable implements ITickable, II
      */
     public boolean isUseableByPlayer(EntityPlayer player)
     {
-        return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+        if (this.worldObj.getTileEntity(this.pos) != this)
+        {
+            return false;
+        }
+        else
+        {
+            return !(player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) > 64.0D);
+        }
     }
 
     public void updateContainingBlockInfo()
@@ -230,7 +237,6 @@ public class TileEntityChest extends TileEntityLockable implements ITickable, II
         this.adjacentChestChecked = false;
     }
 
-    @SuppressWarnings("incomplete-switch")
     private void func_174910_a(TileEntityChest chestTe, EnumFacing side)
     {
         if (chestTe.isInvalid())

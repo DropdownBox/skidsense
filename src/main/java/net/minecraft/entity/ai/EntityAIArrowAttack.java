@@ -20,7 +20,7 @@ public class EntityAIArrowAttack extends EntityAIBase
      * A decrementing tick that spawns a ranged attack once this value reaches 0. It is then set back to the
      * maxRangedAttackTime.
      */
-    private int rangedAttackTime;
+    private int rangedAttackTime = -1;
     private double entityMoveSpeed;
     private int field_75318_f;
     private int field_96561_g;
@@ -39,8 +39,6 @@ public class EntityAIArrowAttack extends EntityAIBase
 
     public EntityAIArrowAttack(IRangedAttackMob attacker, double movespeed, int p_i1650_4_, int maxAttackTime, float maxAttackDistanceIn)
     {
-        this.rangedAttackTime = -1;
-
         if (!(attacker instanceof EntityLivingBase))
         {
             throw new IllegalArgumentException("ArrowAttackGoal requires Mob implements RangedAttackMob");
@@ -111,7 +109,7 @@ public class EntityAIArrowAttack extends EntityAIBase
             this.field_75318_f = 0;
         }
 
-        if (d0 <= (double)this.maxAttackDistance && this.field_75318_f >= 20)
+        if (!(d0 > (double)this.maxAttackDistance) && this.field_75318_f >= 20)
         {
             this.entityHost.getNavigator().clearPathEntity();
         }

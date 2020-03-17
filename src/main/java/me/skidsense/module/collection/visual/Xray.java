@@ -7,7 +7,7 @@ import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.events.EventRenderBlock;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.block.Block;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Xray
-        extends Module {
+        extends Mod {
     public static List<Integer> KEY_IDS = Lists.newArrayList(10, 11, 8, 9, 14, 15, 16, 21, 41, 42, 46, 48, 52, 56, 57, 61, 62, 73, 74, 84, 89, 103, 116, 117, 118, 120, 129, 133, 137, 145, 152, 153, 154);
     private ArrayList<BlockPos> toRender = new ArrayList();
     private ArrayList<BlockPos> rsPosToRender = new ArrayList();
@@ -40,7 +40,7 @@ public class Xray
     public static Option<Boolean> coal = new Option<Boolean> ("Coal", "Coal", true);
     public Xray() {
         super("Xray", new String[]{}, ModuleType.Visual);
-        addValues(blockLimit,range,dia,gold,rs,iron,coal);
+        //addValues(blockLimit,range,dia,gold,rs,iron,coal);
     }
     @Override
     public void onEnable(){
@@ -173,9 +173,9 @@ public class Xray
         return (float) yaw;
     }
     private void renderBlock(BlockPos pos,Color color,float alpha) {
-        double x = (double)pos.getX() - RenderManager.renderPosX;
-        double y = (double)pos.getY() - RenderManager.renderPosY;
-        double z = (double)pos.getZ() - RenderManager.renderPosZ;
+        double x = (double)pos.getX() - mc.getRenderManager().renderPosX;
+        double y = (double)pos.getY() - mc.getRenderManager().renderPosY;
+        double z = (double)pos.getZ() - mc.getRenderManager().renderPosZ;
         RenderUtil.drawSolidBlockESP(x, y, z, color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
 	

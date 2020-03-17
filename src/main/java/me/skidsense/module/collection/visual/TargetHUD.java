@@ -17,7 +17,7 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.fontRenderer.CFontRenderer;
 import me.skidsense.management.fontRenderer.FontLoaders;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.PlayerUtil;
@@ -37,7 +37,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 
 public class TargetHUD
-extends Module {
+extends Mod {
     public static boolean shouldMove;
     public static boolean useFont;
 	public static float AnimotaiX;
@@ -48,7 +48,7 @@ extends Module {
     public TargetHUD() {
         super("TargetHUD", new String[]{"gui"}, ModuleType.Fight);
         this.setColor(new Color(244, 255, 149).getRGB());
-        this.addValues(this.mode,black);
+        //this.addValues(this.mode,black);
     }
     Colors hurtcolor;
     String hurtrender;

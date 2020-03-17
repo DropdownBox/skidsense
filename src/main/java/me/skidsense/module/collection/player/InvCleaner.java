@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.hooks.value.Value;
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
@@ -36,17 +35,17 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
-public class InvCleaner extends Module {
-   private Numbers BlockCap = new Numbers("BlockCap", "BlockCap", Double.valueOf(128.0D), Double.valueOf(-1.0D), Double.valueOf(256.0D), Double.valueOf(8.0D));
-   private Numbers Delay = new Numbers("Delay", "Delay", Double.valueOf(1.0D), Double.valueOf(0.0D), Double.valueOf(10.0D), Double.valueOf(1.0D));
-   private Option Food = new Option("Food", "Food", Boolean.valueOf(true));
-   private Option sort = new Option("sort", "sort", Boolean.valueOf(true));
-   private Option Archery = new Option("Archery", "Archery", Boolean.valueOf(true));
-   private Option Sword = new Option("Sword", "Sword", Boolean.valueOf(true));
-   private Mode Mode = new Mode("Mode", "Mode", EMode.values(), EMode.Basic);
-   private Option InvCleaner = new Option("InvCleaner", "InvCleaner", Boolean.valueOf(true));
-   private Option OpenInv = new Option("OpenInv", "OpenInv", Boolean.valueOf(true));
-   private Option UHC = new Option("UHC", "UHC", Boolean.valueOf(false));
+public class InvCleaner extends Mod {
+   private Numbers<Double> BlockCap = new Numbers<>("BlockCap", "BlockCap", 128.0D, -1.0D, 256.0D, 8.0D);
+   private Numbers<Double> Delay = new Numbers<>("Delay", "Delay", 1.0D, 0.0D, 10.0D, 1.0D);
+   private Option<Boolean> Food = new Option<>("Food", "Food", Boolean.TRUE);
+   private Option<Boolean> sort = new Option<>("sort", "sort", Boolean.TRUE);
+   private Option<Boolean> Archery = new Option<>("Archery", "Archery", Boolean.TRUE);
+   private Option<Boolean> Sword = new Option<>("Sword", "Sword", Boolean.TRUE);
+   private me.skidsense.hooks.value.Mode<EMode> Mode = new Mode<>("Mode", "Mode", EMode.values(), EMode.Basic);
+   private Option<Boolean> InvCleaner = new Option<>("InvCleaner", "InvCleaner", Boolean.TRUE);
+   private Option<Boolean> OpenInv = new Option<>("OpenInv", "OpenInv", Boolean.TRUE);
+   private Option<Boolean> UHC = new Option<>("UHC", "UHC", Boolean.FALSE);
    public static int weaponSlot = 36;
    public static int pickaxeSlot = 37;
    public static int axeSlot = 38;
@@ -56,7 +55,7 @@ public class InvCleaner extends Module {
 
    public InvCleaner() {
       super("Inv Cleaner", new String[]{"InvCleaner"}, ModuleType.Player);
-      this.addValues(new Value[]{this.BlockCap, this.Delay, OpenInv,this.Food, this.Archery, this.Sword, this.Mode, this.InvCleaner, this.sort, this.UHC});
+      //this.addValues(new Value[]{this.BlockCap, this.Delay, OpenInv,this.Food, this.Archery, this.Sword, this.Mode, this.InvCleaner, this.sort, this.UHC});
    }
 
    public void onEnable() {
@@ -66,9 +65,9 @@ public class InvCleaner extends Module {
    @Sub
    public void onEvent(EventPreUpdate event) {
       InvCleaner i3 = (InvCleaner)Client.getModuleManager().getModuleByName("Inv Cleaner");
-      long delay = ((Double)this.Delay.getValue()).longValue() * 50L;
-      long Adelay = ((Double)Delay.getValue()).longValue() * 50L;
-      if(this.timer.check((float)Adelay) && i3.isEnabled() && (i3.Mode.getValue() != OpenInv.getValue() || mc.currentScreen instanceof GuiInventory) && (mc.currentScreen == null || mc.currentScreen instanceof GuiInventory || mc.currentScreen instanceof GuiChat)) {
+      long delay = (this.Delay.getValue()).longValue() * 50L;
+      long Adelay = (Delay.getValue()).longValue() * 50L;
+      if(this.timer.check((float) Adelay) && i3.isEnabled() && mc.currentScreen instanceof GuiInventory) {
          this.getBestArmor();
       }
 
@@ -99,7 +98,7 @@ public class InvCleaner extends Module {
                }
             }
 
-            if(((Boolean)this.sort.getValue()).booleanValue()) {
+            if((this.sort.getValue()).booleanValue()) {
                if(this.timer.check((float)delay) && pickaxeSlot >= 36) {
                   this.getBestPickaxe(pickaxeSlot);
                }
@@ -113,7 +112,7 @@ public class InvCleaner extends Module {
                }
             }
 
-            if(this.timer.check((float)delay) && ((Boolean)this.InvCleaner.getValue()).booleanValue()) {
+            if(this.timer.check((float)delay) && (this.InvCleaner.getValue()).booleanValue()) {
                for(int i = 9; i < 45; ++i) {
                   Minecraft var15 = mc;
                   if(Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(i).getHasStack()) {
@@ -181,13 +180,13 @@ public class InvCleaner extends Module {
       for(int i = 9; i < 45; ++i) {
          if(Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(i).getHasStack()) {
             ItemStack is = Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(i).getStack();
-            if(this.getDamage(is) > damage && (is.getItem() instanceof ItemSword || !((Boolean)this.Sword.getValue()).booleanValue())) {
+            if(this.getDamage(is) > damage && (is.getItem() instanceof ItemSword || !(this.Sword.getValue()).booleanValue())) {
                return false;
             }
          }
       }
 
-      if(!(stack.getItem() instanceof ItemSword) && ((Boolean)this.Sword.getValue()).booleanValue()) {
+      if(!(stack.getItem() instanceof ItemSword) && (this.Sword.getValue()).booleanValue()) {
          return false;
       } else {
          return true;
@@ -200,7 +199,7 @@ public class InvCleaner extends Module {
          if(Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(i).getHasStack()) {
             var10000 = mc;
             ItemStack is = Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(i).getStack();
-            if(this.isBestWeapon(is) && this.getDamage(is) > 0.0F && (is.getItem() instanceof ItemSword || !((Boolean)this.Sword.getValue()).booleanValue())) {
+            if(this.isBestWeapon(is) && this.getDamage(is) > 0.0F && (is.getItem() instanceof ItemSword || !(this.Sword.getValue()).booleanValue())) {
                this.swap(i, slot - 36);
                timer.reset();
                break;
@@ -233,7 +232,7 @@ public class InvCleaner extends Module {
       } else if(stack.getDisplayName().toLowerCase().contains("(right click)")) {
          return false;
       } else {
-         if(((Boolean)this.UHC.getValue()).booleanValue()) {
+         if((this.UHC.getValue()).booleanValue()) {
             if(stack.getDisplayName().toLowerCase().contains("apple")) {
                return false;
             }
@@ -300,13 +299,13 @@ public class InvCleaner extends Module {
             }
          }
 
-         if(!(stack.getItem() instanceof ItemBlock) || this.getBlockCount() <= ((Double)this.BlockCap.getValue()).intValue() && !Scaffold.blacklistedBlocks.contains(((ItemBlock)stack.getItem()).getBlock())) {
+         if(!(stack.getItem() instanceof ItemBlock) || this.getBlockCount() <= (this.BlockCap.getValue()).intValue() && !Scaffold.blacklistedBlocks.contains(((ItemBlock)stack.getItem()).getBlock())) {
             if(stack.getItem() instanceof ItemPotion && this.isBadPotion(stack)) {
                return true;
-            } else if(stack.getItem() instanceof ItemFood && ((Boolean)this.Food.getValue()).booleanValue() && !(stack.getItem() instanceof ItemAppleGold)) {
+            } else if(stack.getItem() instanceof ItemFood && (this.Food.getValue()).booleanValue() && !(stack.getItem() instanceof ItemAppleGold)) {
                return true;
             } else if(!(stack.getItem() instanceof ItemHoe) && !(stack.getItem() instanceof ItemTool) && !(stack.getItem() instanceof ItemSword) && !(stack.getItem() instanceof ItemArmor)) {
-               if((stack.getItem() instanceof ItemBow || stack.getItem().getUnlocalizedName().contains("arrow")) && ((Boolean)this.Archery.getValue()).booleanValue()) {
+               if((stack.getItem() instanceof ItemBow || stack.getItem().getUnlocalizedName().contains("arrow")) && (this.Archery.getValue()).booleanValue()) {
                   return true;
                } else if(!stack.getItem().getUnlocalizedName().contains("tnt") && !stack.getItem().getUnlocalizedName().contains("stick") && !stack.getItem().getUnlocalizedName().contains("egg") && !stack.getItem().getUnlocalizedName().contains("string") && !stack.getItem().getUnlocalizedName().contains("cake") && !stack.getItem().getUnlocalizedName().contains("mushroom") && !stack.getItem().getUnlocalizedName().contains("flint") && !stack.getItem().getUnlocalizedName().contains("compass") && !stack.getItem().getUnlocalizedName().contains("dyePowder") && !stack.getItem().getUnlocalizedName().contains("feather") && !stack.getItem().getUnlocalizedName().contains("bucket") && (!stack.getItem().getUnlocalizedName().contains("chest") || stack.getDisplayName().toLowerCase().contains("collect")) && !stack.getItem().getUnlocalizedName().contains("snow") && !stack.getItem().getUnlocalizedName().contains("fish") && !stack.getItem().getUnlocalizedName().contains("enchant") && !stack.getItem().getUnlocalizedName().contains("exp") && !stack.getItem().getUnlocalizedName().contains("shears") && !stack.getItem().getUnlocalizedName().contains("anvil") && !stack.getItem().getUnlocalizedName().contains("torch") && !stack.getItem().getUnlocalizedName().contains("seeds") && !stack.getItem().getUnlocalizedName().contains("leather") && !stack.getItem().getUnlocalizedName().contains("reeds") && !stack.getItem().getUnlocalizedName().contains("skull") && !stack.getItem().getUnlocalizedName().contains("record") && !stack.getItem().getUnlocalizedName().contains("snowball") && !(stack.getItem() instanceof ItemGlassBottle) && !stack.getItem().getUnlocalizedName().contains("piston")) {
                   return false;
@@ -352,14 +351,14 @@ public class InvCleaner extends Module {
                if(!Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(pickaxeSlot).getHasStack()) {
                   this.swap(i, pickaxeSlot - 36);
                   timer.reset();
-                  if(((Double)this.Delay.getValue()).longValue() > 0L) {
+                  if((this.Delay.getValue()).longValue() > 0L) {
                      return;
                   }
                } else {
                   if(!this.isBestPickaxe(Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(pickaxeSlot).getStack())) {
                      this.swap(i, pickaxeSlot - 36);
                      timer.reset();
-                     if(((Double)this.Delay.getValue()).longValue() > 0L) {
+                     if((this.Delay.getValue()).longValue() > 0L) {
                         return;
                      }
                   }
@@ -380,14 +379,14 @@ public class InvCleaner extends Module {
                if(!Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(shovelSlot).getHasStack()) {
                   this.swap(i, shovelSlot - 36);
                   timer.reset();
-                  if(((Double)this.Delay.getValue()).longValue() > 0L) {
+                  if((this.Delay.getValue()).longValue() > 0L) {
                      return;
                   }
                } else {
                   if(!this.isBestShovel(Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(shovelSlot).getStack())) {
                      this.swap(i, shovelSlot - 36);
                      timer.reset();
-                     if(((Double)this.Delay.getValue()).longValue() > 0L) {
+                     if((this.Delay.getValue()).longValue() > 0L) {
                         return;
                      }
                   }
@@ -406,7 +405,7 @@ public class InvCleaner extends Module {
                if(!Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(axeSlot).getHasStack()) {
                   this.swap(i, axeSlot - 36);
                   timer.reset();
-                  if(((Double)this.Delay.getValue()).longValue() > 0L) {
+                  if((this.Delay.getValue()).longValue() > 0L) {
                      return;
                   }
                } else {
@@ -414,7 +413,7 @@ public class InvCleaner extends Module {
                   if(!this.isBestAxe(Minecraft.getMinecraft().thePlayer.inventoryContainer.getSlot(axeSlot).getStack())) {
                      this.swap(i, axeSlot - 36);
                      timer.reset();
-                     if(((Double)this.Delay.getValue()).longValue() > 0L) {
+                     if((this.Delay.getValue()).longValue() > 0L) {
                         return;
                      }
                   }
@@ -584,7 +583,7 @@ public class InvCleaner extends Module {
                if(isBestArmor(is, type) && getProtection(is) > 0.0F) {
                   this.shiftClick(i);
                   timer.reset();
-                  if(((Double)this.Delay.getValue()).longValue() > 0L) {
+                  if((this.Delay.getValue()).longValue() > 0L) {
                      return;
                   }
                }

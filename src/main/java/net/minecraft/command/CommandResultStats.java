@@ -19,16 +19,10 @@ public class CommandResultStats
     /**
      * List of entityID who set a stat, username for a player, UUID for all entities
      */
-    private String[] entitiesID;
+    private String[] entitiesID = STRING_RESULT_TYPES;
 
     /** List of all the Objectives names */
-    private String[] objectives;
-
-    public CommandResultStats()
-    {
-        this.entitiesID = STRING_RESULT_TYPES;
-        this.objectives = STRING_RESULT_TYPES;
-    }
+    private String[] objectives = STRING_RESULT_TYPES;
 
     /**
      * Set the score on the ScoreBoard

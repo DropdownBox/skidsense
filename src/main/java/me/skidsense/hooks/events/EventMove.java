@@ -35,7 +35,7 @@ extends Event {
         return y;
     }
 
-    public static void setY(double y) {
+    public void setY(double y) {
         EventMove.y = y;
     }
 

@@ -14,8 +14,8 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
-import me.skidsense.management.ModuleManager;
-import me.skidsense.module.Module;
+import me.skidsense.management.ModManager;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.gui.FontRenderer;
@@ -38,7 +38,7 @@ extends GuiScreen {
 	public static String category;
 	public static String modname;
 	public static String valuename;
-    public Module cheat;
+    public Mod cheat;
     public Value value;
     
     public ClickGUI() {
@@ -113,8 +113,8 @@ extends GuiScreen {
     		} 
             float y2=this.startY;
      	//button
-        for (Module c2 : ModuleManager.getModules()) {
-            if (c2.getType().toString() != category) continue;
+        for (Mod c2 : ModManager.getMods()) {
+            if (!c2.getType().toString().equals(category)) continue;
             this.cheat=c2;
             y2+=27; 
           //TODO 一大堆BUG的滑轮
@@ -224,11 +224,11 @@ extends GuiScreen {
               mc.entityRenderer.theShaderGroup.deleteShaderGroup();
               mc.entityRenderer.theShaderGroup = null;
           }
-    	Module.lastX=(int) this.startX;
-    	Module.lastY=(int) this.startY;
-    	Module.clickguicategory=this.category;
-    	Module.clickguimodname=this.modname;
-    	Module.clickguivaluename=this.valuename;
+    	Mod.lastX=(int) this.startX;
+    	Mod.lastY=(int) this.startY;
+    	Mod.clickguicategory=this.category;
+    	Mod.clickguimodname=this.modname;
+    	Mod.clickguivaluename=this.valuename;
     	  
     	super.onGuiClosed();
     	
@@ -256,7 +256,7 @@ extends GuiScreen {
         float valueY=this.startY;
 
 
-        for (Module c2 : ModuleManager.getModules()) {
+        for (Mod c2 : ModManager.getMods()) {
             if (c2.getType().toString() != category) continue;
             this.cheat=c2;
             y2+=27; 

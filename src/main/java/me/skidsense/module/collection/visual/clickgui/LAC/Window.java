@@ -6,24 +6,17 @@ package me.skidsense.module.collection.visual.clickgui.LAC;
 import com.google.common.collect.Lists;
 
 import me.skidsense.Client;
-import me.skidsense.management.ModuleManager;
+import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
 
@@ -56,7 +49,7 @@ public class Window {
         this.y = y2;
         this.max = 120;
         int y22 = y2 + 22;
-        for (Module c2 : ModuleManager.getModules()) {
+        for (Mod c2 : ModManager.getMods()) {
             if (c2.getType() != category) continue;
             this.buttons.add(new Button(c2, x2 + 5, y22));
             y22 += 15;

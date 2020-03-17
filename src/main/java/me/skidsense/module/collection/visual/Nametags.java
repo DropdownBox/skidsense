@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
@@ -27,7 +27,7 @@ import net.minecraft.item.ItemTool;
 import org.lwjgl.opengl.GL11;
 
 public class Nametags
-extends Module {
+extends Mod {
 	private boolean armor = true;
 	public boolean formatting = true;
     public Nametags() {
@@ -45,9 +45,9 @@ extends Module {
                 Object o = var4.next();
                 Entity ent = (Entity)o;
                 if (ent != Minecraft.getMinecraft().thePlayer && !ent.isInvisible() && ent instanceof EntityPlayer) {
-                   double posX = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)this.mc.timer.renderPartialTicks - RenderManager.renderPosX;
-                   double posY = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)this.mc.timer.renderPartialTicks - RenderManager.renderPosY;
-                   double posZ = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)this.mc.timer.renderPartialTicks - RenderManager.renderPosZ;
+                   double posX = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosX;
+                   double posY = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosY;
+                   double posZ = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosZ;
    				renderNameTag((EntityPlayer) ent, String.valueOf(ent.getDisplayName()) , posX, posY, posZ);
                 }
              }

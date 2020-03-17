@@ -20,6 +20,8 @@ import optifine.xdelta.PatchException;
 public class Patcher
 {
     public static final String CONFIG_FILE = "patch.cfg";
+    public static final String CONFIG_FILE2 = "patch2.cfg";
+    public static final String CONFIG_FILE3 = "patch3.cfg";
     public static final String PREFIX_PATCH = "patch/";
     public static final String SUFFIX_DELTA = ".xdelta";
     public static final String SUFFIX_MD5 = ".md5";
@@ -147,7 +149,7 @@ public class Patcher
 
     public static Pattern[] getConfigurationPatterns(Map<String, String> cfgMap)
     {
-        String[] astring = (String[])cfgMap.keySet().toArray(new String[0]);
+        String[] astring = cfgMap.keySet().toArray(new String[0]);
         Pattern[] apattern = new Pattern[astring.length];
 
         for (int i = 0; i < astring.length; ++i)
@@ -161,7 +163,17 @@ public class Patcher
 
     public static Map<String, String> getConfigurationMap(ZipFile modZip) throws IOException
     {
-        Map<String, String> map = new LinkedHashMap();
+        Map<String, String> map = getConfigurationMap(modZip, "patch.cfg");
+        Map<String, String> map1 = getConfigurationMap(modZip, "patch2.cfg");
+        Map<String, String> map2 = getConfigurationMap(modZip, "patch3.cfg");
+        map.putAll(map1);
+        map.putAll(map2);
+        return map;
+    }
+
+    public static Map<String, String> getConfigurationMap(ZipFile modZip, String pathConfig) throws IOException
+    {
+        Map<String, String> map = new LinkedHashMap<>();
 
         if (modZip == null)
         {
@@ -169,7 +181,7 @@ public class Patcher
         }
         else
         {
-            ZipEntry zipentry = modZip.getEntry("patch.cfg");
+            ZipEntry zipentry = modZip.getEntry(pathConfig);
 
             if (zipentry == null)
             {
@@ -216,7 +228,7 @@ public class Patcher
 
             if (matcher.matches())
             {
-                String s = (String)cfgMap.get(pattern.pattern());
+                String s = cfgMap.get(pattern.pattern());
 
                 if (s != null && s.trim().equals("*"))
                 {

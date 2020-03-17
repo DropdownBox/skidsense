@@ -55,13 +55,13 @@ public class EntityOcelot extends EntityTameable
         this.tasks.addTask(9, new EntityAIMate(this, 0.8D));
         this.tasks.addTask(10, new EntityAIWander(this, 0.8D));
         this.tasks.addTask(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
-        this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, false, (Predicate)null));
+        this.targetTasks.addTask(1, new EntityAITargetNonTamed<>(this, EntityChicken.class, false, (Predicate<EntityChicken>)null));
     }
 
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(18, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(18, (byte)0);
     }
 
     public void updateAITasks()
@@ -105,7 +105,7 @@ public class EntityOcelot extends EntityTameable
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(10.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.3F);
     }
 
     public void fall(float distance, float damageMultiplier)
@@ -135,7 +135,21 @@ public class EntityOcelot extends EntityTameable
      */
     protected String getLivingSound()
     {
-        return this.isTamed() ? (this.isInLove() ? "mob.cat.purr" : (this.rand.nextInt(4) == 0 ? "mob.cat.purreow" : "mob.cat.meow")) : "";
+        if (this.isTamed())
+        {
+            if (this.isInLove())
+            {
+                return "mob.cat.purr";
+            }
+            else
+            {
+                return this.rand.nextInt(4) == 0 ? "mob.cat.purreow" : "mob.cat.meow";
+            }
+        }
+        else
+        {
+            return "";
+        }
     }
 
     /**
@@ -292,7 +306,15 @@ public class EntityOcelot extends EntityTameable
         else
         {
             EntityOcelot entityocelot = (EntityOcelot)otherAnimal;
-            return !entityocelot.isTamed() ? false : this.isInLove() && entityocelot.isInLove();
+
+            if (!entityocelot.isTamed())
+            {
+                return false;
+            }
+            else
+            {
+                return this.isInLove() && entityocelot.isInLove();
+            }
         }
     }
 
@@ -303,7 +325,7 @@ public class EntityOcelot extends EntityTameable
 
     public void setTameSkin(int skinId)
     {
-        this.dataWatcher.updateObject(18, Byte.valueOf((byte)skinId));
+        this.dataWatcher.updateObject(18, (byte)skinId);
     }
 
     /**
@@ -344,7 +366,14 @@ public class EntityOcelot extends EntityTameable
      */
     public String getName()
     {
-        return this.hasCustomName() ? this.getCustomNameTag() : (this.isTamed() ? StatCollector.translateToLocal("entity.Cat.name") : super.getName());
+        if (this.hasCustomName())
+        {
+            return this.getCustomNameTag();
+        }
+        else
+        {
+            return this.isTamed() ? StatCollector.translateToLocal("entity.Cat.name") : super.getName();
+        }
     }
 
     public void setTamed(boolean tamed)
@@ -356,7 +385,7 @@ public class EntityOcelot extends EntityTameable
     {
         if (this.avoidEntity == null)
         {
-            this.avoidEntity = new EntityAIAvoidEntity(this, EntityPlayer.class, 16.0F, 0.8D, 1.33D);
+            this.avoidEntity = new EntityAIAvoidEntity<>(this, EntityPlayer.class, 16.0F, 0.8D, 1.33D);
         }
 
         this.tasks.removeTask(this.avoidEntity);

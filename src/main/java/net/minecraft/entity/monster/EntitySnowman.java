@@ -32,14 +32,14 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
         this.tasks.addTask(2, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(3, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(4, new EntityAILookIdle(this));
-        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityLiving.class, 10, true, false, IMob.mobSelector));
+        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<>(this, EntityLiving.class, 10, true, false, IMob.mobSelector));
     }
 
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(4.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.20000000298023224D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.2F);
     }
 
     /**
@@ -109,7 +109,7 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
     public void attackEntityWithRangedAttack(EntityLivingBase target, float p_82196_2_)
     {
         EntitySnowball entitysnowball = new EntitySnowball(this.worldObj, this);
-        double d0 = target.posY + (double)target.getEyeHeight() - 1.100000023841858D;
+        double d0 = target.posY + (double)target.getEyeHeight() - (double)1.1F;
         double d1 = target.posX - this.posX;
         double d2 = d0 - entitysnowball.posY;
         double d3 = target.posZ - this.posZ;

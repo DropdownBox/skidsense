@@ -27,8 +27,8 @@ class Yylex
     private static final String ZZ_ATTRIBUTE_PACKED_0 = "\u0002\u0000\u0001\t\u0003\u0001\u0001\t\u0003\u0001\u0006\t\u0002\u0001\u0001\t\u0005\u0000\b\t\u0001\u0000\u0001\u0001\u0001\u0000\u0001\u0001\u0004\u0000\u0002\t\u0002\u0000\u0001\t";
     private Reader zzReader;
     private int zzState;
-    private int zzLexicalState;
-    private char[] zzBuffer;
+    private int zzLexicalState = 0;
+    private char[] zzBuffer = new char[16384];
     private int zzMarkedPos;
     private int zzCurrentPos;
     private int zzStartRead;
@@ -36,9 +36,9 @@ class Yylex
     private int yyline;
     private int yychar;
     private int yycolumn;
-    private boolean zzAtBOL;
+    private boolean zzAtBOL = true;
     private boolean zzAtEOF;
-    private StringBuffer sb;
+    private StringBuffer sb = new StringBuffer();
 
     private static int[] zzUnpackAction()
     {
@@ -135,16 +135,12 @@ class Yylex
 
     Yylex(Reader in)
     {
-        this.zzLexicalState = 0;
-        this.zzBuffer = new char[16384];
-        this.zzAtBOL = true;
-        this.sb = new StringBuffer();
         this.zzReader = in;
     }
 
     Yylex(InputStream in)
     {
-        this((Reader)(new InputStreamReader(in)));
+        this(new InputStreamReader(in));
     }
 
     private static char[] zzUnpackCMap(String packed)
@@ -435,7 +431,7 @@ class Yylex
                     return new Yytoken(0, this.sb.toString());
 
                 case 14:
-                    this.sb.append('\"');
+                    this.sb.append('"');
                     break;
 
                 case 15:

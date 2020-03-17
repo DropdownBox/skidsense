@@ -128,7 +128,7 @@ public class EntitySquid extends EntityWaterMob
      */
     public boolean isInWater()
     {
-        return this.worldObj.handleMaterialAcceleration(this.getEntityBoundingBox().expand(0.0D, -0.6000000238418579D, 0.0D), Material.water, this);
+        return this.worldObj.handleMaterialAcceleration(this.getEntityBoundingBox().expand(0.0D, (double) -0.6F, 0.0D), Material.water, this);
     }
 
     /**
@@ -208,7 +208,7 @@ public class EntitySquid extends EntityWaterMob
             {
                 this.motionX = 0.0D;
                 this.motionY -= 0.08D;
-                this.motionY *= 0.9800000190734863D;
+                this.motionY *= (double)0.98F;
                 this.motionZ = 0.0D;
             }
 

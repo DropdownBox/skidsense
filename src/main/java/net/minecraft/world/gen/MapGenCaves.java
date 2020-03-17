@@ -87,7 +87,7 @@ public class MapGenCaves extends MapGenBase
                     return;
                 }
 
-                if (p_180702_6_ >= d0 - 16.0D - d2 * 2.0D && p_180702_10_ >= d1 - 16.0D - d2 * 2.0D && p_180702_6_ <= d0 + 16.0D + d2 * 2.0D && p_180702_10_ <= d1 + 16.0D + d2 * 2.0D)
+                if (!(p_180702_6_ < d0 - 16.0D - d2 * 2.0D) && !(p_180702_10_ < d1 - 16.0D - d2 * 2.0D) && !(p_180702_6_ > d0 + 16.0D + d2 * 2.0D) && !(p_180702_10_ > d1 + 16.0D + d2 * 2.0D))
                 {
                     int k2 = MathHelper.floor_double(p_180702_6_ - d2) - p_180702_3_ * 16 - 1;
                     int k = MathHelper.floor_double(p_180702_6_ + d2) - p_180702_3_ * 16 + 1;
@@ -174,7 +174,7 @@ public class MapGenCaves extends MapGenBase
                                         if (d9 > -0.7D && d10 * d10 + d9 * d9 + d8 * d8 < 1.0D)
                                         {
                                             IBlockState iblockstate1 = p_180702_5_.getBlockState(j3, j2, i2);
-                                            IBlockState iblockstate2 = (IBlockState)Objects.firstNonNull(p_180702_5_.getBlockState(j3, j2 + 1, i2), Blocks.air.getDefaultState());
+                                            IBlockState iblockstate2 = Objects.firstNonNull(p_180702_5_.getBlockState(j3, j2 + 1, i2), Blocks.air.getDefaultState());
 
                                             if (iblockstate1.getBlock() == Blocks.grass || iblockstate1.getBlock() == Blocks.mycelium)
                                             {
@@ -221,7 +221,46 @@ public class MapGenCaves extends MapGenBase
 
     protected boolean func_175793_a(IBlockState p_175793_1_, IBlockState p_175793_2_)
     {
-        return p_175793_1_.getBlock() == Blocks.stone ? true : (p_175793_1_.getBlock() == Blocks.dirt ? true : (p_175793_1_.getBlock() == Blocks.grass ? true : (p_175793_1_.getBlock() == Blocks.hardened_clay ? true : (p_175793_1_.getBlock() == Blocks.stained_hardened_clay ? true : (p_175793_1_.getBlock() == Blocks.sandstone ? true : (p_175793_1_.getBlock() == Blocks.red_sandstone ? true : (p_175793_1_.getBlock() == Blocks.mycelium ? true : (p_175793_1_.getBlock() == Blocks.snow_layer ? true : (p_175793_1_.getBlock() == Blocks.sand || p_175793_1_.getBlock() == Blocks.gravel) && p_175793_2_.getBlock().getMaterial() != Material.water))))))));
+        if (p_175793_1_.getBlock() == Blocks.stone)
+        {
+            return true;
+        }
+        else if (p_175793_1_.getBlock() == Blocks.dirt)
+        {
+            return true;
+        }
+        else if (p_175793_1_.getBlock() == Blocks.grass)
+        {
+            return true;
+        }
+        else if (p_175793_1_.getBlock() == Blocks.hardened_clay)
+        {
+            return true;
+        }
+        else if (p_175793_1_.getBlock() == Blocks.stained_hardened_clay)
+        {
+            return true;
+        }
+        else if (p_175793_1_.getBlock() == Blocks.sandstone)
+        {
+            return true;
+        }
+        else if (p_175793_1_.getBlock() == Blocks.red_sandstone)
+        {
+            return true;
+        }
+        else if (p_175793_1_.getBlock() == Blocks.mycelium)
+        {
+            return true;
+        }
+        else if (p_175793_1_.getBlock() == Blocks.snow_layer)
+        {
+            return true;
+        }
+        else
+        {
+            return (p_175793_1_.getBlock() == Blocks.sand || p_175793_1_.getBlock() == Blocks.gravel) && p_175793_2_.getBlock().getMaterial() != Material.water;
+        }
     }
 
     /**

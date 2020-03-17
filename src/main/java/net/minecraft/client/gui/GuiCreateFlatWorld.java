@@ -1,5 +1,6 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
@@ -15,15 +16,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.gen.FlatGeneratorInfo;
 import net.minecraft.world.gen.FlatLayerInfo;
 
-import java.io.IOException;
-
-public class GuiCreateFlatWorld extends GuiScreen {
+public class GuiCreateFlatWorld extends GuiScreen
+{
     private final GuiCreateWorld createWorldGui;
     private FlatGeneratorInfo theFlatGeneratorInfo = FlatGeneratorInfo.getDefaultFlatGenerator();
 
-    /**
-     * The title given to the flat world currently in creation
-     */
+    /** The title given to the flat world currently in creation */
     private String flatWorldTitle;
     private String field_146394_i;
     private String field_146391_r;
@@ -52,7 +50,8 @@ public class GuiCreateFlatWorld extends GuiScreen {
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    public void initGui() {
+    public void initGui()
+    {
         this.buttonList.clear();
         this.flatWorldTitle = I18n.format("createWorld.customize.flat.title");
         this.field_146394_i = I18n.format("createWorld.customize.flat.tile");
@@ -81,12 +80,16 @@ public class GuiCreateFlatWorld extends GuiScreen {
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
         int i = this.theFlatGeneratorInfo.getFlatLayers().size() - this.createFlatWorldListSlotGui.field_148228_k - 1;
 
-        if (button.id == 1) {
+        if (button.id == 1)
+        {
             this.mc.displayGuiScreen(this.createWorldGui);
-        } else if (button.id == 0) {
+        }
+        else if (button.id == 0)
+        {
             this.createWorldGui.chunkProviderSettingsJson = this.func_146384_e();
             this.mc.displayGuiScreen(this.createWorldGui);
         }
@@ -161,7 +164,8 @@ public class GuiCreateFlatWorld extends GuiScreen {
             this.func_148224_c(p_148226_1_, p_148226_2_, 0, 0);
         }
 
-        private void func_148224_c(int p_148224_1_, int p_148224_2_, int p_148224_3_, int p_148224_4_) {
+        private void func_148224_c(int p_148224_1_, int p_148224_2_, int p_148224_3_, int p_148224_4_)
+        {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.mc.getTextureManager().bindTexture(Gui.statIcons);
             float f = 0.0078125F;
@@ -171,10 +175,10 @@ public class GuiCreateFlatWorld extends GuiScreen {
             Tessellator tessellator = Tessellator.getInstance();
             WorldRenderer worldrenderer = tessellator.getWorldRenderer();
             worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-            worldrenderer.pos(p_148224_1_ + 0, p_148224_2_ + 18, GuiCreateFlatWorld.this.zLevel).tex((float) (p_148224_3_ + 0) * 0.0078125F, (float) (p_148224_4_ + 18) * 0.0078125F).endVertex();
-            worldrenderer.pos(p_148224_1_ + 18, p_148224_2_ + 18, GuiCreateFlatWorld.this.zLevel).tex((float) (p_148224_3_ + 18) * 0.0078125F, (float) (p_148224_4_ + 18) * 0.0078125F).endVertex();
-            worldrenderer.pos(p_148224_1_ + 18, p_148224_2_ + 0, GuiCreateFlatWorld.this.zLevel).tex((float) (p_148224_3_ + 18) * 0.0078125F, (float) (p_148224_4_ + 0) * 0.0078125F).endVertex();
-            worldrenderer.pos(p_148224_1_ + 0, p_148224_2_ + 0, GuiCreateFlatWorld.this.zLevel).tex((float) (p_148224_3_ + 0) * 0.0078125F, (float) (p_148224_4_ + 0) * 0.0078125F).endVertex();
+            worldrenderer.pos((double)(p_148224_1_ + 0), (double)(p_148224_2_ + 18), (double)GuiCreateFlatWorld.this.zLevel).tex((double)((float)(p_148224_3_ + 0) * 0.0078125F), (double)((float)(p_148224_4_ + 18) * 0.0078125F)).endVertex();
+            worldrenderer.pos((double)(p_148224_1_ + 18), (double)(p_148224_2_ + 18), (double)GuiCreateFlatWorld.this.zLevel).tex((double)((float)(p_148224_3_ + 18) * 0.0078125F), (double)((float)(p_148224_4_ + 18) * 0.0078125F)).endVertex();
+            worldrenderer.pos((double)(p_148224_1_ + 18), (double)(p_148224_2_ + 0), (double)GuiCreateFlatWorld.this.zLevel).tex((double)((float)(p_148224_3_ + 18) * 0.0078125F), (double)((float)(p_148224_4_ + 0) * 0.0078125F)).endVertex();
+            worldrenderer.pos((double)(p_148224_1_ + 0), (double)(p_148224_2_ + 0), (double)GuiCreateFlatWorld.this.zLevel).tex((double)((float)(p_148224_3_ + 0) * 0.0078125F), (double)((float)(p_148224_4_ + 0) * 0.0078125F)).endVertex();
             tessellator.draw();
         }
 
@@ -234,15 +238,15 @@ public class GuiCreateFlatWorld extends GuiScreen {
 
             if (entryID == 0)
             {
-                s1 = I18n.format("createWorld.customize.flat.layer.top", Integer.valueOf(flatlayerinfo.getLayerCount()));
+                s1 = I18n.format("createWorld.customize.flat.layer.top", flatlayerinfo.getLayerCount());
             }
             else if (entryID == GuiCreateFlatWorld.this.theFlatGeneratorInfo.getFlatLayers().size() - 1)
             {
-                s1 = I18n.format("createWorld.customize.flat.layer.bottom", Integer.valueOf(flatlayerinfo.getLayerCount()));
+                s1 = I18n.format("createWorld.customize.flat.layer.bottom", flatlayerinfo.getLayerCount());
             }
             else
             {
-                s1 = I18n.format("createWorld.customize.flat.layer", Integer.valueOf(flatlayerinfo.getLayerCount()));
+                s1 = I18n.format("createWorld.customize.flat.layer", flatlayerinfo.getLayerCount());
             }
 
             GuiCreateFlatWorld.this.fontRendererObj.drawString(s1, p_180791_2_ + 2 + 213 - GuiCreateFlatWorld.this.fontRendererObj.getStringWidth(s1), p_180791_3_ + 3, 16777215);

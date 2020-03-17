@@ -7,7 +7,7 @@ import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.command.Command;
 import me.skidsense.command.commands.*;
-import me.skidsense.hooks.EventBus;
+import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventChat;
 
@@ -41,7 +41,8 @@ implements Manager {
         this.commands.add(new Cheats());
         this.commands.add(new Enchant());
         this.commands.add(new ClientName());
-        EventBus.getInstance().register(this);
+        EventManager.getOtherEventManager().register(this);
+        //EventBus.getInstance().register(this);
     }
 
     public List<Command> getCommands() {

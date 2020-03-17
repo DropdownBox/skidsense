@@ -8,7 +8,7 @@ import me.skidsense.hooks.events.EventCollideWithBlock;
 import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.BlockUtil;
 import me.skidsense.util.TimerUtil;
@@ -28,7 +28,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 
-public class Jesus extends Module {
+public class Jesus extends Mod {
 
 	int stage, water;
 	private TimerUtil timer = new TimerUtil();
@@ -39,7 +39,7 @@ public class Jesus extends Module {
 	public Jesus() {
 		super("Liquid Walk", new String[] { "LiquidWalk", "float" }, ModuleType.Move);
 		this.setColor(new Color(188, 233, 248).getRGB());
-		this.addValues(this.mode);
+		//this.addValues(this.mode);
 		this.removed=true;
 	}
 

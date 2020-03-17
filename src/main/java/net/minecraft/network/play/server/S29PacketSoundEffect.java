@@ -1,5 +1,6 @@
 package net.minecraft.network.play.server;
 
+import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -34,7 +35,8 @@ public class S29PacketSoundEffect implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) {
+    public void readPacketData(PacketBuffer buf) throws IOException
+    {
         this.soundName = buf.readStringFromBuffer(256);
         this.posX = buf.readInt();
         this.posY = buf.readInt();
@@ -46,7 +48,8 @@ public class S29PacketSoundEffect implements Packet<INetHandlerPlayClient>
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) {
+    public void writePacketData(PacketBuffer buf) throws IOException
+    {
         buf.writeString(this.soundName);
         buf.writeInt(this.posX);
         buf.writeInt(this.posY);
@@ -62,17 +65,17 @@ public class S29PacketSoundEffect implements Packet<INetHandlerPlayClient>
 
     public double getX()
     {
-        return (float) this.posX / 8.0F;
+        return (double)((float)this.posX / 8.0F);
     }
 
     public double getY()
     {
-        return (float) this.posY / 8.0F;
+        return (double)((float)this.posY / 8.0F);
     }
 
     public double getZ()
     {
-        return (float) this.posZ / 8.0F;
+        return (double)((float)this.posZ / 8.0F);
     }
 
     public float getVolume()

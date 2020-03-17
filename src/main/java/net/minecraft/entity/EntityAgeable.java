@@ -34,7 +34,7 @@ public abstract class EntityAgeable extends EntityCreature
         {
             if (!this.worldObj.isRemote)
             {
-                Class <? extends Entity > oclass = EntityList.getClassFromID(itemstack.getMetadata());
+                Class<? extends Entity> oclass = EntityList.getClassFromID(itemstack.getMetadata());
 
                 if (oclass != null && this.getClass() == oclass)
                 {
@@ -75,7 +75,7 @@ public abstract class EntityAgeable extends EntityCreature
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(12, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(12, (byte)0);
     }
 
     /**
@@ -91,25 +91,24 @@ public abstract class EntityAgeable extends EntityCreature
     public void func_175501_a(int p_175501_1_, boolean p_175501_2_)
     {
         int i = this.getGrowingAge();
-        int j = i;
         i = i + p_175501_1_ * 20;
 
         if (i > 0)
         {
             i = 0;
 
-            if (j < 0)
+            if (i < 0)
             {
                 this.onGrowingAdult();
             }
         }
 
-        int k = i - j;
+        int j = i - i;
         this.setGrowingAge(i);
 
         if (p_175501_2_)
         {
-            this.field_175502_b += k;
+            this.field_175502_b += j;
 
             if (this.field_175503_c == 0)
             {
@@ -138,7 +137,7 @@ public abstract class EntityAgeable extends EntityCreature
      */
     public void setGrowingAge(int age)
     {
-        this.dataWatcher.updateObject(12, Byte.valueOf((byte)MathHelper.clamp_int(age, -1, 1)));
+        this.dataWatcher.updateObject(12, (byte)MathHelper.clamp_int(age, -1, 1));
         this.growingAge = age;
         this.setScaleForAge(this.isChild());
     }
@@ -177,7 +176,7 @@ public abstract class EntityAgeable extends EntityCreature
             {
                 if (this.field_175503_c % 4 == 0)
                 {
-                    this.worldObj.spawnParticle(EnumParticleTypes.VILLAGER_HAPPY, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 0.0D, 0.0D, 0.0D, new int[0]);
+                    this.worldObj.spawnParticle(EnumParticleTypes.VILLAGER_HAPPY, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, this.posY + 0.5D + (double)(this.rand.nextFloat() * this.height), this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width, 0.0D, 0.0D, 0.0D);
                 }
 
                 --this.field_175503_c;

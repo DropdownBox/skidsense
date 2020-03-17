@@ -57,7 +57,7 @@ public class EntitySheep extends EntityAnimal
 
     public static float[] getDyeRgb(EnumDyeColor dyeColor)
     {
-        return (float[])DYE_TO_RGB.get(dyeColor);
+        return DYE_TO_RGB.get(dyeColor);
     }
 
     public EntitySheep(World worldIn)
@@ -102,7 +102,7 @@ public class EntitySheep extends EntityAnimal
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(8.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.23000000417232513D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.23F);
     }
 
     protected void entityInit()
@@ -159,7 +159,18 @@ public class EntitySheep extends EntityAnimal
 
     public float getHeadRotationPointY(float p_70894_1_)
     {
-        return this.sheepTimer <= 0 ? 0.0F : (this.sheepTimer >= 4 && this.sheepTimer <= 36 ? 1.0F : (this.sheepTimer < 4 ? ((float)this.sheepTimer - p_70894_1_) / 4.0F : -((float)(this.sheepTimer - 40) - p_70894_1_) / 4.0F));
+        if (this.sheepTimer <= 0)
+        {
+            return 0.0F;
+        }
+        else if (this.sheepTimer >= 4 && this.sheepTimer <= 36)
+        {
+            return 1.0F;
+        }
+        else
+        {
+            return this.sheepTimer < 4 ? ((float)this.sheepTimer - p_70894_1_) / 4.0F : -((float)(this.sheepTimer - 40) - p_70894_1_) / 4.0F;
+        }
     }
 
     public float getHeadRotationAngleX(float p_70890_1_)
@@ -268,7 +279,7 @@ public class EntitySheep extends EntityAnimal
     public void setFleeceColor(EnumDyeColor color)
     {
         byte b0 = this.dataWatcher.getWatchableObjectByte(16);
-        this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 & 240 | color.getMetadata() & 15)));
+        this.dataWatcher.updateObject(16, (byte)(b0 & 240 | color.getMetadata() & 15));
     }
 
     /**
@@ -288,11 +299,11 @@ public class EntitySheep extends EntityAnimal
 
         if (sheared)
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 | 16)));
+            this.dataWatcher.updateObject(16, (byte)(b0 | 16));
         }
         else
         {
-            this.dataWatcher.updateObject(16, Byte.valueOf((byte)(b0 & -17)));
+            this.dataWatcher.updateObject(16, (byte)(b0 & -17));
         }
     }
 
@@ -302,7 +313,27 @@ public class EntitySheep extends EntityAnimal
     public static EnumDyeColor getRandomSheepColor(Random random)
     {
         int i = random.nextInt(100);
-        return i < 5 ? EnumDyeColor.BLACK : (i < 10 ? EnumDyeColor.GRAY : (i < 15 ? EnumDyeColor.SILVER : (i < 18 ? EnumDyeColor.BROWN : (random.nextInt(500) == 0 ? EnumDyeColor.PINK : EnumDyeColor.WHITE))));
+
+        if (i < 5)
+        {
+            return EnumDyeColor.BLACK;
+        }
+        else if (i < 10)
+        {
+            return EnumDyeColor.GRAY;
+        }
+        else if (i < 15)
+        {
+            return EnumDyeColor.SILVER;
+        }
+        else if (i < 18)
+        {
+            return EnumDyeColor.BROWN;
+        }
+        else
+        {
+            return random.nextInt(500) == 0 ? EnumDyeColor.PINK : EnumDyeColor.WHITE;
+        }
     }
 
     public EntitySheep createChild(EntityAgeable ageable)

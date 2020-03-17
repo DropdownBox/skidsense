@@ -1,5 +1,6 @@
 package net.minecraft.network.play.server;
 
+import java.io.IOException;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -24,18 +25,20 @@ public class S19PacketEntityStatus implements Packet<INetHandlerPlayClient>
     /**
      * Reads the raw packet data from the data stream.
      */
-    public void readPacketData(PacketBuffer buf) {
-	    this.entityId = buf.readInt();
-	    this.logicOpcode = buf.readByte();
+    public void readPacketData(PacketBuffer buf) throws IOException
+    {
+        this.entityId = buf.readInt();
+        this.logicOpcode = buf.readByte();
     }
 
-	/**
-	 * Writes the raw packet data to the data stream.
-	 */
-	public void writePacketData(PacketBuffer buf) {
-		buf.writeInt(this.entityId);
-		buf.writeByte(this.logicOpcode);
-	}
+    /**
+     * Writes the raw packet data to the data stream.
+     */
+    public void writePacketData(PacketBuffer buf) throws IOException
+    {
+        buf.writeInt(this.entityId);
+        buf.writeByte(this.logicOpcode);
+    }
 
     /**
      * Passes this Packet on to the NetHandler for processing.

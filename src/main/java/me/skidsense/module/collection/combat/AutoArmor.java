@@ -6,7 +6,7 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
@@ -17,7 +17,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 
 public class AutoArmor
-extends Module {
+extends Mod {
     private Numbers<Double> delay = new Numbers<Double>("Delay", "delay", 50.0, 0.0, 1000.0, 10.0);
     private Option<Boolean> openinv = new Option<Boolean>("OpenInv", "OpenInv", true);
     private TimerUtil timer = new TimerUtil();
@@ -28,7 +28,7 @@ extends Module {
 
     public AutoArmor() {
         super("Auto Armor", new String[]{"AutoArmor","armorswap", "autoarmour"}, ModuleType.Fight);
-        this.addValues(this.delay,this.openinv);
+        //this.addValues(this.delay,this.openinv);
         this.setColor(new Color(27, 104, 204).getRGB());
     }
 

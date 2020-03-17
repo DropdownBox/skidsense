@@ -1,17 +1,18 @@
 package net.minecraft.client.gui;
 
+import java.io.IOException;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.input.Keyboard;
 
-import java.io.IOException;
-
-public class GuiScreenServerList extends GuiScreen {
+public class GuiScreenServerList extends GuiScreen
+{
     private final GuiScreen field_146303_a;
     private final ServerData field_146301_f;
     private GuiTextField field_146302_g;
 
-    public GuiScreenServerList(GuiScreen p_i1031_1_, ServerData p_i1031_2_) {
+    public GuiScreenServerList(GuiScreen p_i1031_1_, ServerData p_i1031_2_)
+    {
         this.field_146303_a = p_i1031_1_;
         this.field_146301_f = p_i1031_2_;
     }
@@ -28,7 +29,8 @@ public class GuiScreenServerList extends GuiScreen {
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    public void initGui() {
+    public void initGui()
+    {
         Keyboard.enableRepeatEvents(true);
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 12, I18n.format("selectServer.select")));
@@ -37,7 +39,7 @@ public class GuiScreenServerList extends GuiScreen {
         this.field_146302_g.setMaxStringLength(128);
         this.field_146302_g.setFocused(true);
         this.field_146302_g.setText(this.mc.gameSettings.lastServer);
-        this.buttonList.get(0).enabled = this.field_146302_g.getText().length() > 0 && this.field_146302_g.getText().split(":").length > 0;
+        (this.buttonList.get(0)).enabled = this.field_146302_g.getText().length() > 0 && this.field_146302_g.getText().split(":").length > 0;
     }
 
     /**
@@ -53,11 +55,16 @@ public class GuiScreenServerList extends GuiScreen {
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.enabled) {
-            if (button.id == 1) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.enabled)
+        {
+            if (button.id == 1)
+            {
                 this.field_146303_a.confirmClicked(false, 0);
-            } else if (button.id == 0) {
+            }
+            else if (button.id == 0)
+            {
                 this.field_146301_f.serverIP = this.field_146302_g.getText();
                 this.field_146303_a.confirmClicked(true, 0);
             }
@@ -72,7 +79,7 @@ public class GuiScreenServerList extends GuiScreen {
     {
         if (this.field_146302_g.textboxKeyTyped(typedChar, keyCode))
         {
-            this.buttonList.get(0).enabled = this.field_146302_g.getText().length() > 0 && this.field_146302_g.getText().split(":").length > 0;
+            (this.buttonList.get(0)).enabled = this.field_146302_g.getText().length() > 0 && this.field_146302_g.getText().split(":").length > 0;
         }
         else if (keyCode == 28 || keyCode == 156)
         {
@@ -92,7 +99,8 @@ public class GuiScreenServerList extends GuiScreen {
     /**
      * Draws the screen and all the components in it. Args : mouseX, mouseY, renderPartialTicks
      */
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+    {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRendererObj, I18n.format("selectServer.direct"), this.width / 2, 20, 16777215);
         this.drawString(this.fontRendererObj, I18n.format("addServer.enterIp"), this.width / 2 - 100, 100, 10526880);

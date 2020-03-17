@@ -3,9 +3,6 @@ package net.minecraft.entity.player;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -57,6 +54,7 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
@@ -77,7 +75,6 @@ import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
 
-@SuppressWarnings("incomplete-switch")
 public abstract class EntityPlayer extends EntityLivingBase
 {
     /** Inventory of the player */
@@ -192,16 +189,16 @@ public abstract class EntityPlayer extends EntityLivingBase
     {
         super.applyEntityAttributes();
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(1.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.10000000149011612D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.1F);
     }
 
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(16, Byte.valueOf((byte)0));
-        this.dataWatcher.addObject(17, Float.valueOf(0.0F));
-        this.dataWatcher.addObject(18, Integer.valueOf(0));
-        this.dataWatcher.addObject(10, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(16, (byte)0);
+        this.dataWatcher.addObject(17, 0.0F);
+        this.dataWatcher.addObject(18, 0);
+        this.dataWatcher.addObject(10, (byte)0);
     }
 
     /**
@@ -469,11 +466,11 @@ public abstract class EntityPlayer extends EntityLivingBase
 
                 if (itemStackIn.getHasSubtypes())
                 {
-                    this.worldObj.spawnParticle(EnumParticleTypes.ITEM_CRACK, vec31.xCoord, vec31.yCoord, vec31.zCoord, vec3.xCoord, vec3.yCoord + 0.05D, vec3.zCoord, new int[] {Item.getIdFromItem(itemStackIn.getItem()), itemStackIn.getMetadata()});
+                    this.worldObj.spawnParticle(EnumParticleTypes.ITEM_CRACK, vec31.xCoord, vec31.yCoord, vec31.zCoord, vec3.xCoord, vec3.yCoord + 0.05D, vec3.zCoord, Item.getIdFromItem(itemStackIn.getItem()), itemStackIn.getMetadata());
                 }
                 else
                 {
-                    this.worldObj.spawnParticle(EnumParticleTypes.ITEM_CRACK, vec31.xCoord, vec31.yCoord, vec31.zCoord, vec3.xCoord, vec3.yCoord + 0.05D, vec3.zCoord, new int[] {Item.getIdFromItem(itemStackIn.getItem())});
+                    this.worldObj.spawnParticle(EnumParticleTypes.ITEM_CRACK, vec31.xCoord, vec31.yCoord, vec31.zCoord, vec3.xCoord, vec3.yCoord + 0.05D, vec3.zCoord, Item.getIdFromItem(itemStackIn.getItem()));
                 }
             }
 
@@ -635,7 +632,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         this.setAIMoveSpeed((float)iattributeinstance.getAttributeValue());
         float f = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        float f1 = (float)(Math.atan(-this.motionY * 0.20000000298023224D) * 15.0D);
+        float f1 = (float)(Math.atan(-this.motionY * (double)0.2F) * 15.0D);
 
         if (f > 0.1F)
         {
@@ -672,7 +669,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
             for (int i = 0; i < list.size(); ++i)
             {
-                Entity entity = (Entity)list.get(i);
+                Entity entity = list.get(i);
 
                 if (!entity.isDead)
                 {
@@ -697,7 +694,7 @@ public abstract class EntityPlayer extends EntityLivingBase
      */
     public void setScore(int p_85040_1_)
     {
-        this.dataWatcher.updateObject(18, Integer.valueOf(p_85040_1_));
+        this.dataWatcher.updateObject(18, p_85040_1_);
     }
 
     /**
@@ -706,7 +703,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     public void addScore(int p_85039_1_)
     {
         int i = this.getScore();
-        this.dataWatcher.updateObject(18, Integer.valueOf(i + p_85039_1_));
+        this.dataWatcher.updateObject(18, i + p_85039_1_);
     }
 
     /**
@@ -717,7 +714,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         super.onDeath(cause);
         this.setSize(0.2F, 0.2F);
         this.setPosition(this.posX, this.posY, this.posZ);
-        this.motionY = 0.10000000149011612D;
+        this.motionY = (double)0.1F;
 
         if (this.getName().equals("Notch"))
         {
@@ -816,7 +813,7 @@ public abstract class EntityPlayer extends EntityLivingBase
             }
         }
 
-        return Lists.<ScoreObjective>newArrayList();
+        return Lists.newArrayList();
     }
 
     /**
@@ -847,7 +844,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         }
         else
         {
-            double d0 = this.posY - 0.30000001192092896D + (double)this.getEyeHeight();
+            double d0 = this.posY - (double)0.3F + (double)this.getEyeHeight();
             EntityItem entityitem = new EntityItem(this.worldObj, this.posX, d0, this.posZ, droppedItem);
             entityitem.setPickupDelay(40);
 
@@ -862,7 +859,7 @@ public abstract class EntityPlayer extends EntityLivingBase
                 float f1 = this.rand.nextFloat() * (float)Math.PI * 2.0F;
                 entityitem.motionX = (double)(-MathHelper.sin(f1) * f);
                 entityitem.motionZ = (double)(MathHelper.cos(f1) * f);
-                entityitem.motionY = 0.20000000298023224D;
+                entityitem.motionY = (double)0.2F;
             }
             else
             {
@@ -1116,7 +1113,15 @@ public abstract class EntityPlayer extends EntityLivingBase
     {
         Team team = this.getTeam();
         Team team1 = other.getTeam();
-        return team == null ? true : (!team.isSameTeam(team1) ? true : team.getAllowFriendlyFire());
+
+        if (team == null)
+        {
+            return true;
+        }
+        else
+        {
+            return !team.isSameTeam(team1) ? true : team.getAllowFriendlyFire();
+        }
     }
 
     protected void damageArmor(float p_70675_1_)
@@ -1166,20 +1171,19 @@ public abstract class EntityPlayer extends EntityLivingBase
 
             damageAmount = this.applyArmorCalculations(damageSrc, damageAmount);
             damageAmount = this.applyPotionDamageCalculations(damageSrc, damageAmount);
-            float f = damageAmount;
-            damageAmount = Math.max(damageAmount - this.getAbsorptionAmount(), 0.0F);
-            this.setAbsorptionAmount(this.getAbsorptionAmount() - (f - damageAmount));
+            float f1 = Math.max(damageAmount - this.getAbsorptionAmount(), 0.0F);
+            this.setAbsorptionAmount(this.getAbsorptionAmount() - (damageAmount - f1));
 
-            if (damageAmount != 0.0F)
+            if (f1 != 0.0F)
             {
                 this.addExhaustion(damageSrc.getHungerDamage());
-                float f1 = this.getHealth();
-                this.setHealth(this.getHealth() - damageAmount);
-                this.getCombatTracker().trackDamage(damageSrc, f1, damageAmount);
+                float f = this.getHealth();
+                this.setHealth(this.getHealth() - f1);
+                this.getCombatTracker().trackDamage(damageSrc, f, f1);
 
-                if (damageAmount < 3.4028235E37F)
+                if (f1 < 3.4028235E37F)
                 {
-                    this.addStat(StatList.damageTakenStat, Math.round(damageAmount * 10.0F));
+                    this.addStat(StatList.damageTakenStat, Math.round(f1 * 10.0F));
                 }
             }
         }
@@ -1519,7 +1523,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
             double d0 = 8.0D;
             double d1 = 5.0D;
-            List<EntityMob> list = this.worldObj.<EntityMob>getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB((double)bedLocation.getX() - d0, (double)bedLocation.getY() - d1, (double)bedLocation.getZ() - d0, (double)bedLocation.getX() + d0, (double)bedLocation.getY() + d1, (double)bedLocation.getZ() + d0));
+            List<EntityMob> list = this.worldObj.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB((double)bedLocation.getX() - d0, (double)bedLocation.getY() - d1, (double)bedLocation.getZ() - d0, (double)bedLocation.getX() + d0, (double)bedLocation.getY() + d1, (double)bedLocation.getZ() + d0));
 
             if (!list.isEmpty())
             {
@@ -1536,7 +1540,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         if (this.worldObj.isBlockLoaded(bedLocation))
         {
-            EnumFacing enumfacing = (EnumFacing)this.worldObj.getBlockState(bedLocation).getValue(BlockDirectional.FACING);
+            EnumFacing enumfacing = this.worldObj.getBlockState(bedLocation).getValue(BlockDirectional.FACING);
             float f = 0.5F;
             float f1 = 0.5F;
 
@@ -1613,7 +1617,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         if (this.playerLocation != null && iblockstate.getBlock() == Blocks.bed)
         {
-            this.worldObj.setBlockState(this.playerLocation, iblockstate.withProperty(BlockBed.OCCUPIED, Boolean.valueOf(false)), 4);
+            this.worldObj.setBlockState(this.playerLocation, iblockstate.withProperty(BlockBed.OCCUPIED, false), 4);
             BlockPos blockpos = BlockBed.getSafeExitLocation(this.worldObj, this.playerLocation, 0);
 
             if (blockpos == null)
@@ -1677,7 +1681,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     {
         if (this.playerLocation != null)
         {
-            EnumFacing enumfacing = (EnumFacing)this.worldObj.getBlockState(this.playerLocation).getValue(BlockDirectional.FACING);
+            EnumFacing enumfacing = this.worldObj.getBlockState(this.playerLocation).getValue(BlockDirectional.FACING);
 
             switch (enumfacing)
             {
@@ -1967,7 +1971,7 @@ public abstract class EntityPlayer extends EntityLivingBase
             this.triggerAchievement(AchievementList.killEnemy);
         }
 
-        EntityList.EntityEggInfo entitylist$entityegginfo = (EntityList.EntityEggInfo)EntityList.entityEggs.get(Integer.valueOf(EntityList.getEntityID(entityLivingIn)));
+        EntityList.EntityEggInfo entitylist$entityegginfo = EntityList.entityEggs.get(EntityList.getEntityID(entityLivingIn));
 
         if (entitylist$entityegginfo != null)
         {
@@ -2060,7 +2064,14 @@ public abstract class EntityPlayer extends EntityLivingBase
      */
     public int xpBarCap()
     {
-        return this.experienceLevel >= 30 ? 112 + (this.experienceLevel - 30) * 9 : (this.experienceLevel >= 15 ? 37 + (this.experienceLevel - 15) * 5 : 7 + this.experienceLevel * 2);
+        if (this.experienceLevel >= 30)
+        {
+            return 112 + (this.experienceLevel - 30) * 9;
+        }
+        else
+        {
+            return this.experienceLevel >= 15 ? 37 + (this.experienceLevel - 15) * 5 : 7 + this.experienceLevel * 2;
+        }
     }
 
     /**
@@ -2197,7 +2208,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         this.xpSeed = oldPlayer.xpSeed;
         this.theInventoryEnderChest = oldPlayer.theInventoryEnderChest;
-        this.getDataWatcher().updateObject(10, Byte.valueOf(oldPlayer.getDataWatcher().getWatchableObjectByte(10)));
+        this.getDataWatcher().updateObject(10, oldPlayer.getDataWatcher().getWatchableObjectByte(10));
     }
 
     /**
@@ -2349,7 +2360,7 @@ public abstract class EntityPlayer extends EntityLivingBase
             amount = 0.0F;
         }
 
-        this.getDataWatcher().updateObject(17, Float.valueOf(amount));
+        this.getDataWatcher().updateObject(17, amount);
     }
 
     public float getAbsorptionAmount()

@@ -2,12 +2,12 @@ package net.minecraft.client.renderer.block.model;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.src.Config;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.pipeline.IVertexConsumer;
 import net.minecraftforge.client.model.pipeline.IVertexProducer;
-import optifine.Config;
-import optifine.QuadBounds;
-import optifine.Reflector;
+import net.optifine.model.QuadBounds;
+import net.optifine.reflect.Reflector;
 
 public class BakedQuad implements IVertexProducer
 {
@@ -18,17 +18,26 @@ public class BakedQuad implements IVertexProducer
     protected int[] vertexData;
     protected final int tintIndex;
     protected EnumFacing face;
-    private static final String __OBFID = "CL_00002512";
-    private TextureAtlasSprite sprite = null;
+    protected TextureAtlasSprite sprite;
     private int[] vertexDataSingle = null;
     private QuadBounds quadBounds;
+    private boolean quadEmissiveChecked;
+    private BakedQuad quadEmissive;
 
-    public BakedQuad(int[] p_i11_1_, int p_i11_2_, EnumFacing p_i11_3_, TextureAtlasSprite p_i11_4_)
+    public BakedQuad(int[] p_i3_1_, int p_i3_2_, EnumFacing p_i3_3_, TextureAtlasSprite p_i3_4_)
     {
-        this.vertexData = p_i11_1_;
-        this.tintIndex = p_i11_2_;
-        this.face = p_i11_3_;
-        this.sprite = p_i11_4_;
+        this.vertexData = p_i3_1_;
+        this.tintIndex = p_i3_2_;
+        this.face = p_i3_3_;
+        this.sprite = p_i3_4_;
+        this.fixVertexData();
+    }
+
+    public BakedQuad(int[] vertexDataIn, int tintIndexIn, EnumFacing faceIn)
+    {
+        this.vertexData = vertexDataIn;
+        this.tintIndex = tintIndexIn;
+        this.face = faceIn;
         this.fixVertexData();
     }
 
@@ -40,14 +49,6 @@ public class BakedQuad implements IVertexProducer
         }
 
         return this.sprite;
-    }
-
-    public BakedQuad(int[] vertexDataIn, int tintIndexIn, EnumFacing faceIn)
-    {
-        this.vertexData = vertexDataIn;
-        this.tintIndex = tintIndexIn;
-        this.face = faceIn;
-        this.fixVertexData();
     }
 
     public int[] getVertexData()
@@ -109,7 +110,7 @@ public class BakedQuad implements IVertexProducer
 
     public void pipe(IVertexConsumer p_pipe_1_)
     {
-        Reflector.callVoid(Reflector.LightUtil_putBakedQuad, new Object[] {p_pipe_1_, this});
+        Reflector.callVoid(Reflector.LightUtil_putBakedQuad, p_pipe_1_, this);
     }
 
     private static TextureAtlasSprite getSpriteByUv(int[] p_getSpriteByUv_0_)
@@ -137,7 +138,7 @@ public class BakedQuad implements IVertexProducer
         return textureatlassprite;
     }
 
-    private void fixVertexData()
+    protected void fixVertexData()
     {
         if (Config.isShaders())
         {
@@ -223,6 +224,24 @@ public class BakedQuad implements IVertexProducer
     public boolean isFullFaceQuad()
     {
         return this.isFullQuad() && this.isFaceQuad();
+    }
+
+    public BakedQuad getQuadEmissive()
+    {
+        if (this.quadEmissiveChecked)
+        {
+            return this.quadEmissive;
+        }
+        else
+        {
+            if (this.quadEmissive == null && this.sprite != null && this.sprite.spriteEmissive != null)
+            {
+                this.quadEmissive = new BreakingFour(this, this.sprite.spriteEmissive);
+            }
+
+            this.quadEmissiveChecked = true;
+            return this.quadEmissive;
+        }
     }
 
     public String toString()

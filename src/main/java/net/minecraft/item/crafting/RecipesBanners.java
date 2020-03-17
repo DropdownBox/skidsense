@@ -19,7 +19,7 @@ public class RecipesBanners
     {
         for (EnumDyeColor enumdyecolor : EnumDyeColor.values())
         {
-            p_179534_1_.addRecipe(new ItemStack(Items.banner, 1, enumdyecolor.getDyeDamage()), new Object[] {"###", "###", " | ", '#', new ItemStack(Blocks.wool, 1, enumdyecolor.getMetadata()), '|', Items.stick});
+            p_179534_1_.addRecipe(new ItemStack(Items.banner, 1, enumdyecolor.getDyeDamage()), "###", "###", " | ", '#', new ItemStack(Blocks.wool, 1, enumdyecolor.getMetadata()), '|', Items.stick);
         }
 
         p_179534_1_.addRecipe(new RecipesBanners.RecipeDuplicatePattern());
@@ -219,7 +219,7 @@ public class RecipesBanners
                                     break;
                                 }
 
-                                if (tileentitybanner$enumbannerpattern.getCraftingLayers()[l].charAt(i1) == 32)
+                                if (tileentitybanner$enumbannerpattern.getCraftingLayers()[l].charAt(i1) == ' ')
                                 {
                                     flag = false;
                                     break;
@@ -227,7 +227,7 @@ public class RecipesBanners
 
                                 j = itemstack1.getMetadata();
                             }
-                            else if (tileentitybanner$enumbannerpattern.getCraftingLayers()[l].charAt(i1) != 32)
+                            else if (tileentitybanner$enumbannerpattern.getCraftingLayers()[l].charAt(i1) != ' ')
                             {
                                 flag = false;
                                 break;

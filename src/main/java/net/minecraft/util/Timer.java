@@ -77,7 +77,7 @@ public class Timer
             {
                 long l = k - this.lastSyncHRClock;
                 double d1 = (double)this.counter / (double)l;
-                this.timeSyncAdjustment += (d1 - this.timeSyncAdjustment) * 0.20000000298023224D;
+                this.timeSyncAdjustment += (d1 - this.timeSyncAdjustment) * (double)0.2F;
                 this.lastSyncHRClock = k;
                 this.counter = 0L;
             }
