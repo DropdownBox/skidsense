@@ -68,8 +68,8 @@ public class Critical extends Mod {
                     double[] oldoffsets = new double[]{0.041, 0.002};
                     for (int i = 0; i < oldoffsets.length; ++i) {
                         EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-                        p.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(p.posX,
-                                p.posY + oldoffsets[i] + randomValue.nextDouble() / 10000000, p.posZ, false));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + oldoffsets[i] + randomValue.nextDouble(), mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
                 case "Hypixel":
@@ -77,7 +77,8 @@ public class Critical extends Mod {
                     int l = hypixeloffsets.length;
                     for (int i = 0; i < l; ++i) {
                         double offset = hypixeloffsets[i];
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
                 case "HVH":
@@ -85,7 +86,8 @@ public class Critical extends Mod {
                     int HVHl = offsets.length;
                     for (int i = 0; i < HVHl; ++i) {
                         double offset = offsets[i];
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
                 case "Experimental":
@@ -106,7 +108,6 @@ public class Critical extends Mod {
                     break;
             }
             Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
-            this.timer.reset();
         }
     }
 
