@@ -23,7 +23,7 @@ public class AutoGG extends Module {
         if (e.getPacket() instanceof S45PacketTitle) {
             String text = ((S45PacketTitle) e.getPacket()).getMessage().getUnformattedText();
             Client.sendMessageWithoutPrefix(text);
-            if (text.contains("VICTORY") || text.contains("胜利")) {
+            if (text.contains("VICTORY") || text.contains("胜利") || text.contains("勝利") || text.contains("ПОБЕДА")) {
                 ChatUtil.sendChat_NoFilter("/achat gg");
             }
         }
