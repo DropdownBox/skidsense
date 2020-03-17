@@ -1,10 +1,12 @@
 package net.minecraft.client.entity;
 
+import me.skidsense.Client;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventChat;
 import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.module.collection.move.NoSlow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -820,7 +822,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
 
-        if (this.isUsingItem() && !this.isRiding())
+        if (this.isUsingItem() && !this.isRiding() && !Client.instance.getModuleManager().getModuleByClass(NoSlow.class).isEnabled())
         {
             this.movementInput.moveStrafe *= 0.2F;
             this.movementInput.moveForward *= 0.2F;
