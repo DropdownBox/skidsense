@@ -40,7 +40,7 @@ public class Xray
     public static Option<Boolean> coal = new Option<Boolean> ("Coal", "Coal", true);
     public Xray() {
         super("Xray", new String[]{}, ModuleType.Visual);
-        addValues(blockLimit,range,dia,gold,rs,iron,coal);
+        //addValues(blockLimit,range,dia,gold,rs,iron,coal);
     }
     @Override
     public void onEnable(){
@@ -173,9 +173,9 @@ public class Xray
         return (float) yaw;
     }
     private void renderBlock(BlockPos pos,Color color,float alpha) {
-        double x = (double)pos.getX() - RenderManager.renderPosX;
-        double y = (double)pos.getY() - RenderManager.renderPosY;
-        double z = (double)pos.getZ() - RenderManager.renderPosZ;
+        double x = (double)pos.getX() - mc.getRenderManager().renderPosX;
+        double y = (double)pos.getY() - mc.getRenderManager().renderPosY;
+        double z = (double)pos.getZ() - mc.getRenderManager().renderPosZ;
         RenderUtil.drawSolidBlockESP(x, y, z, color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
 	

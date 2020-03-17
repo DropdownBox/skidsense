@@ -113,8 +113,8 @@ extends GuiScreen {
     		} 
             float y2=this.startY;
      	//button
-        for (Mod c2 : ModManager.getModules()) {
-            if (c2.getType().toString() != category) continue;
+        for (Mod c2 : ModManager.getMods()) {
+            if (!c2.getType().toString().equals(category)) continue;
             this.cheat=c2;
             y2+=27; 
           //TODO 一大堆BUG的滑轮
@@ -256,7 +256,7 @@ extends GuiScreen {
         float valueY=this.startY;
 
 
-        for (Mod c2 : ModManager.getModules()) {
+        for (Mod c2 : ModManager.getMods()) {
             if (c2.getType().toString() != category) continue;
             this.cheat=c2;
             y2+=27; 

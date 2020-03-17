@@ -49,7 +49,7 @@ public class Window {
         this.y = y2;
         this.max = 120;
         int y22 = y2 + 22;
-        for (Mod c2 : ModManager.getModules()) {
+        for (Mod c2 : ModManager.getMods()) {
             if (c2.getType() != category) continue;
             this.buttons.add(new Button(c2, x2 + 5, y22));
             y22 += 15;

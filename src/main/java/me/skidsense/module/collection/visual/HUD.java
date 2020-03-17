@@ -39,7 +39,7 @@ extends Mod {
     public HUD() {
         super("HUD", new String[]{"gui"}, ModuleType.Visual);
         this.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).getRGB());
-        this.addValues(this.info,this.rainbowspeed,this.color);
+        //this.addValues(this.info,this.rainbowspeed,this.color);
 		this.removed=true;
     }
 

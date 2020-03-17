@@ -22,7 +22,7 @@ public class AntiBot extends Mod {
 
 	public AntiBot() {
 		super("Anti Bot", new String[]{"AntiBot"},ModuleType.Fight);
-		this.addValues(this.mode);
+		//this.addValues(this.mode);
 	}
 
 	@Sub

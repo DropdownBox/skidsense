@@ -23,7 +23,7 @@ extends Mod {
     public AutoSword() {
         super("Auto Sword", new String[]{"autosword"}, ModuleType.Fight);
         this.setColor(new Color(208, 30, 142).getRGB());
-        this.addValues(delay);
+        //this.addValues(delay);
     }
 
     @Sub

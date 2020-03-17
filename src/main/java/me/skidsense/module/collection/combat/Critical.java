@@ -33,13 +33,13 @@ public class Critical extends Mod {
     public Critical() {
         super("Critical", new String[]{"criticals"}, ModuleType.Fight);
         this.setColor(new Color(208, 30, 142).getRGB());
-        addValues(mode,delay,ht);
+        //addValues(mode,delay,ht);
     }
 
     @Sub
     public void onAttack(EventAttack ent){
         if(canCrit())
-            doCrit(ent.attacked);
+            doCrit(ent.targetEntity);
     }
 
     @Override

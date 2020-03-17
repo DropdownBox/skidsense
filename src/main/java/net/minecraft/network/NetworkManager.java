@@ -34,6 +34,7 @@ import javax.crypto.SecretKey;
 
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventPacketRecieve;
+import me.skidsense.hooks.events.EventPacketSend;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.CryptManager;
@@ -151,7 +152,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
     protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet p_channelRead0_2_) throws Exception
     {
         EventPacketRecieve packetRecieve = new EventPacketRecieve((Packet)p_channelRead0_2_);
-        EventManager.getInstance().postAll(packetRecieve);
+        EventManager.postAll(packetRecieve);
         if (this.channel.isOpen() && !packetRecieve.isCancelled())
         {
             try
@@ -175,8 +176,12 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
         logger.debug("Set listener of {} to {}", this, handler);
         this.packetListener = handler;
     }
-
-    public void sendPacket(Packet packetIn)
+    public void sendPacket(Packet<?> packet){
+        if(EventManager.postAll(new EventPacketSend(packet)).isCancelled())
+            return;
+        sendPacketNoEvent(packet);
+    }
+    public void sendPacketNoEvent(Packet packetIn)
     {
         if (this.isChannelOpen())
         {

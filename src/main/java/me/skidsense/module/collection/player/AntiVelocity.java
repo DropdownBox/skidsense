@@ -15,7 +15,7 @@ extends Mod {
 
     public AntiVelocity() {
         super("Anti KB", new String[]{"antivelocity", "antiknockback", "antikb"}, ModuleType.Player);
-        this.addValues();
+        //this.addValues();
         this.setColor(new Color(191, 191, 191).getRGB());
     }
 

@@ -28,12 +28,12 @@ extends Mod {
     public Flight() {
         super("Flight", new String[]{"fly", "angel"}, ModuleType.Move);
         this.setColor(new Color(158, 114, 243).getRGB());
-        this.addValues(this.mode,UHC,Stop);
+        //this.addValues(this.mode,UHC,Stop);
     }
 
 	public void damagePlayerNew() {
 		if (mc.thePlayer.onGround) {
-			mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
+			mc.getNetHandler().getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(
 					mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
 			for (int index = 0; index <= (UHC.getValue() ? 9 : 7); ++index) {
                 mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(
@@ -74,7 +74,8 @@ extends Mod {
 		lastDist = 0.0D;
     }
     private boolean canZoom() {
-	    return mc.thePlayer.moving() && mc.thePlayer.onGround;
+    	//FIXME
+	    return /*mc.thePlayer.moving() &&*/ mc.thePlayer.onGround;
     }
     @Sub
     private void onUpdate(EventPreUpdate e) {
@@ -93,13 +94,14 @@ extends Mod {
             }
         } else if (this.mode.getValue() == FlightMode.Motion) {
             mc.thePlayer.motionY = mc.thePlayer.movementInput.jump ? 1.0 : (mc.thePlayer.movementInput.sneak ? -1.0 : 0.0);
-            if (mc.thePlayer.moving()) {
+            // FIXME
+            //if (mc.thePlayer.moving()) {
             	// FIXME
                 //mc.thePlayer.setSpeed(3.0);
-            } else {
+            //} else {
             	// FIXME
                 //mc.thePlayer.setSpeed(0.0);
-            }
+            //}
         } else if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
 
             Minecraft.getMinecraft().thePlayer.motionY = 0.0D;
@@ -231,8 +233,8 @@ extends Mod {
                 }
 
 				moveSpeed = this.mode.getValue() == FlightMode.Damage ? Math.max(moveSpeed, MathUtil.getBaseMovementSpeed()) : MathUtil.getBaseMovementSpeed();
-				mc.thePlayer.setMoveSpeed(e,moveSpeed);
-
+				//mc.thePlayer.setMoveSpeed(e,moveSpeed);
+//FIXME
 			}
 		}
     }

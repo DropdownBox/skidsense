@@ -48,7 +48,7 @@ extends Mod {
     public TargetHUD() {
         super("TargetHUD", new String[]{"gui"}, ModuleType.Fight);
         this.setColor(new Color(244, 255, 149).getRGB());
-        this.addValues(this.mode,black);
+        //this.addValues(this.mode,black);
     }
     Colors hurtcolor;
     String hurtrender;

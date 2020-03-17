@@ -1,8 +1,6 @@
 package me.skidsense.module.collection.player;
 
 
-import java.awt.Color;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -57,7 +55,6 @@ public class Scaffold
    private double olddelay;
    int count, cubeSpoof=-1;
    private BlockPos blockpos;
-   private float Disfall;
    private EnumFacing facing;
    private List<Block> blacklisted = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.flowing_lava, Blocks.enchanting_table, Blocks.ender_chest, Blocks.yellow_flower, Blocks.carpet, Blocks.glass_pane, Blocks.stained_glass_pane, Blocks.iron_bars, Blocks.crafting_table, Blocks.snow_layer, Blocks.packed_ice, Blocks.coal_ore, Blocks.diamond_ore, Blocks.emerald_ore, Blocks.chest, Blocks.torch, Blocks.anvil, Blocks.trapped_chest, Blocks.noteblock, Blocks.gold_ore, Blocks.iron_ore, Blocks.lapis_ore, Blocks.lit_redstone_ore, Blocks.redstone_ore, Blocks.wooden_pressure_plate, Blocks.stone_pressure_plate, Blocks.light_weighted_pressure_plate, Blocks.heavy_weighted_pressure_plate, Blocks.stone_button, Blocks.wooden_button, Blocks.cactus, Blocks.lever, Blocks.activator_rail, Blocks.rail, Blocks.detector_rail, Blocks.golden_rail, Blocks.furnace, Blocks.ladder, Blocks.oak_fence, Blocks.redstone_torch, Blocks.iron_trapdoor, Blocks.trapdoor, Blocks.tripwire_hook, Blocks.hopper, Blocks.acacia_fence_gate, Blocks.birch_fence_gate, Blocks.dark_oak_fence_gate, Blocks.jungle_fence_gate, Blocks.spruce_fence_gate, Blocks.oak_fence_gate, Blocks.dispenser, Blocks.sapling, Blocks.tallgrass, Blocks.deadbush, Blocks.web, Blocks.red_flower, Blocks.red_mushroom, Blocks.brown_mushroom, Blocks.nether_brick_fence, Blocks.vine, Blocks.double_plant, Blocks.flower_pot, Blocks.beacon, Blocks.pumpkin, Blocks.lit_pumpkin);
    public static List<Block> blacklistedBlocks = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.flowing_lava, Blocks.ender_chest, Blocks.enchanting_table, Blocks.stone_button, Blocks.wooden_button, Blocks.crafting_table, Blocks.beacon);
@@ -65,12 +62,10 @@ public class Scaffold
    private boolean should = false;
    int slot;
    private float animationY2;
-   private ItemStack currentlyHolding;
-   static final int[] $SwitchMap$net$minecraft$util$EnumFacing = new int[EnumFacing.values().length];
 
    public Scaffold() {
       super("Scaffold", new String[]{"Scaffold"}, ModuleType.Move);
-      this.addValues(mode,tower, movetower,noSwing);
+      //this.addValues(mode,tower, movetower,noSwing);
    }
    @Sub
    public void onRender2D(EventRender2D event) {
@@ -86,7 +81,7 @@ public class Scaffold
       font.drawStringWithShadow("" + this.getBlockCount(), res.getScaledWidth() / 2 - font.getStringWidth(this.getBlockCount() + "") + 24, res.getScaledHeight() / 2 - 3, color);
       GlStateManager.disableBlend();
    }
-   public static void renderChest(BlockPos blockPos, Color white) {
+   public static void renderChest(BlockPos blockPos) {
       double d0 = (double)blockPos.getX() - Minecraft.getMinecraft().getRenderManager().viewerPosX;
       double d1 = (double)blockPos.getY() - Minecraft.getMinecraft().getRenderManager().viewerPosY;
       double d2 = (double)blockPos.getZ() - Minecraft.getMinecraft().getRenderManager().viewerPosZ;
@@ -114,9 +109,9 @@ public class Scaffold
       Block underBlock = mc.theWorld.getBlockState(underPos).getBlock();
       BlockPos blockBelow = new BlockPos(x, y, z);
       if (Minecraft.getMinecraft().thePlayer != null) {
-         this.blockData = this.getBlockData(blockBelow, blacklistedBlocks);
+         this.blockData = this.getBlockData(blockBelow);
          if (this.blockData == null) {
-            this.blockData = this.getBlockData(blockBelow.offset(EnumFacing.DOWN), blacklistedBlocks);
+            this.blockData = this.getBlockData(blockBelow.offset(EnumFacing.DOWN));
          }
          if (this.mc.theWorld.getBlockState(blockBelow = new BlockPos(x, y, z)).getBlock() == Blocks.air) {
             if (this.blockData != null) {
@@ -246,9 +241,9 @@ public class Scaffold
          int currentItem = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
          Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(i - 36));
          Minecraft.getMinecraft().thePlayer.inventory.currentItem = i - 36;
-         this.currentlyHolding = this.mc.thePlayer.inventory.getStackInSlot(i - 36);
+         ItemStack currentlyHolding = this.mc.thePlayer.inventory.getStackInSlot(i - 36);
          Minecraft.getMinecraft().playerController.updateController();
-         Minecraft.getMinecraft().playerController.onPlayerRightClick(Minecraft.getMinecraft().thePlayer, this.mc.theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem(), BlockData.position, BlockData.face, new Vec3(BlockData.access$2(this.blockData)).addVector(0.5, 0.5, 0.5).add(new Vec3(BlockData.access$3(this.blockData).getDirectionVec()).scale((float) 0.5)));
+         Minecraft.getMinecraft().playerController.onPlayerRightClick(Minecraft.getMinecraft().thePlayer, this.mc.theWorld, Minecraft.getMinecraft().thePlayer.getHeldItem(), BlockData.position, BlockData.face, new Vec3(BlockData.access$2()).addVector(0.5, 0.5, 0.5).add(new Vec3(BlockData.access$3().getDirectionVec()).scale((float) 0.5)));
          if (this.noSwing.getValue().booleanValue()) {
             Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
          } else {
@@ -324,7 +319,7 @@ public class Scaffold
       return ThreadLocalRandom.current().nextDouble(min, max);
    }
 
-   private boolean canPlace(EntityPlayerSP player, WorldClient worldIn, ItemStack heldStack, BlockPos hitPos, EnumFacing side, Vec3 vec3) {
+   private boolean canPlace(EntityPlayerSP player, WorldClient worldIn, ItemStack heldStack, BlockPos hitPos, EnumFacing side) {
       if (heldStack.getItem() instanceof ItemBlock) {
          return ((ItemBlock)heldStack.getItem()).canPlaceBlockOnSide(worldIn, hitPos, side, player, heldStack);
       }
@@ -374,75 +369,75 @@ public class Scaffold
       return -1;
    }
 
-   private BlockData getBlockData(BlockPos pos, List list) {
-      Disfall = Minecraft.getMinecraft().thePlayer.fallDistance;
+   private BlockData getBlockData(BlockPos pos) {
+      float disfall = Minecraft.getMinecraft().thePlayer.fallDistance;
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(0, -1, 0)).getBlock())) {
-         return new BlockData(pos.add(0, -1, 0), EnumFacing.UP, this.blockData);
+         return new BlockData(pos.add(0, -1, 0), EnumFacing.UP);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(-1, 0, 0)).getBlock())) {
 
-         return new BlockData(pos.add(-1, 0, 0), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Minecraft.getMinecraft().thePlayer.onGround && Minecraft.getMinecraft().thePlayer.fallDistance == 0.0f && this.mc.theWorld.getBlockState(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - 1.0, Minecraft.getMinecraft().thePlayer.posZ)).getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.EAST,  this.blockData );
+         return new BlockData(pos.add(-1, 0, 0), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Minecraft.getMinecraft().thePlayer.onGround && Minecraft.getMinecraft().thePlayer.fallDistance == 0.0f && this.mc.theWorld.getBlockState(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - 1.0, Minecraft.getMinecraft().thePlayer.posZ)).getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.EAST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(1, 0, 0)).getBlock())) {
-         return new BlockData(pos.add(1, 0, 0), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Minecraft.getMinecraft().thePlayer.onGround && Minecraft.getMinecraft().thePlayer.fallDistance == 0.0f && this.mc.theWorld.getBlockState(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - 1.0, Minecraft.getMinecraft().thePlayer.posZ)).getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.WEST, this.blockData );
+         return new BlockData(pos.add(1, 0, 0), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Minecraft.getMinecraft().thePlayer.onGround && Minecraft.getMinecraft().thePlayer.fallDistance == 0.0f && this.mc.theWorld.getBlockState(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - 1.0, Minecraft.getMinecraft().thePlayer.posZ)).getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.WEST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(0, 0, -1)).getBlock())) {
-         return new BlockData(pos.add(0, 0, -1), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Minecraft.getMinecraft().thePlayer.onGround && Minecraft.getMinecraft().thePlayer.fallDistance == 0.0f && this.mc.theWorld.getBlockState(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - 1.0, Minecraft.getMinecraft().thePlayer.posZ)).getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.SOUTH, this.blockData);
+         return new BlockData(pos.add(0, 0, -1), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Minecraft.getMinecraft().thePlayer.onGround && Minecraft.getMinecraft().thePlayer.fallDistance == 0.0f && this.mc.theWorld.getBlockState(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - 1.0, Minecraft.getMinecraft().thePlayer.posZ)).getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.SOUTH);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(0, 0, 1)).getBlock())) {
-         return new BlockData(pos.add(0, 0, 1), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Minecraft.getMinecraft().thePlayer.onGround && Minecraft.getMinecraft().thePlayer.fallDistance == 0.0f && this.mc.theWorld.getBlockState(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - 1.0, Minecraft.getMinecraft().thePlayer.posZ)).getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.NORTH, this.blockData);
+         return new BlockData(pos.add(0, 0, 1), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Minecraft.getMinecraft().thePlayer.onGround && Minecraft.getMinecraft().thePlayer.fallDistance == 0.0f && this.mc.theWorld.getBlockState(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, Minecraft.getMinecraft().thePlayer.posY - 1.0, Minecraft.getMinecraft().thePlayer.posZ)).getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.NORTH);
       }
       BlockPos add = pos.add(-1, 0, 0);
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add.add(-1, 0, 0)).getBlock())) {
-         return new BlockData(add.add(-1, 0, 0), EnumFacing.EAST, this.blockData);
+         return new BlockData(add.add(-1, 0, 0), EnumFacing.EAST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add.add(1, 0, 0)).getBlock())) {
-         return new BlockData(add.add(1, 0, 0), EnumFacing.WEST, this.blockData);
+         return new BlockData(add.add(1, 0, 0), EnumFacing.WEST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add.add(0, 0, -1)).getBlock())) {
-         return new BlockData(add.add(0, 0, -1), EnumFacing.SOUTH, this.blockData);
+         return new BlockData(add.add(0, 0, -1), EnumFacing.SOUTH);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add.add(0, 0, 1)).getBlock())) {
-         return new BlockData(add.add(0, 0, 1), EnumFacing.NORTH, this.blockData);
+         return new BlockData(add.add(0, 0, 1), EnumFacing.NORTH);
       }
       BlockPos add2 = pos.add(1, 0, 0);
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add2.add(-1, 0, 0)).getBlock())) {
-         return new BlockData(add2.add(-1, 0, 0), EnumFacing.EAST, this.blockData);
+         return new BlockData(add2.add(-1, 0, 0), EnumFacing.EAST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add2.add(1, 0, 0)).getBlock())) {
-         return new BlockData(add2.add(1, 0, 0), EnumFacing.WEST, this.blockData);
+         return new BlockData(add2.add(1, 0, 0), EnumFacing.WEST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add2.add(0, 0, -1)).getBlock())) {
-         return new BlockData(add2.add(0, 0, -1), EnumFacing.SOUTH, this.blockData);
+         return new BlockData(add2.add(0, 0, -1), EnumFacing.SOUTH);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add2.add(0, 0, 1)).getBlock())) {
-         return new BlockData(add2.add(0, 0, 1), EnumFacing.NORTH, this.blockData);
+         return new BlockData(add2.add(0, 0, 1), EnumFacing.NORTH);
       }
       BlockPos add3 = pos.add(0, 0, -1);
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add3.add(-1, 0, 0)).getBlock())) {
-         return new BlockData(add3.add(-1, 0, 0), EnumFacing.EAST, this.blockData);
+         return new BlockData(add3.add(-1, 0, 0), EnumFacing.EAST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add3.add(1, 0, 0)).getBlock())) {
-         return new BlockData(add3.add(1, 0, 0), EnumFacing.WEST, this.blockData);
+         return new BlockData(add3.add(1, 0, 0), EnumFacing.WEST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add3.add(0, 0, -1)).getBlock())) {
-         return new BlockData(add3.add(0, 0, -1), EnumFacing.SOUTH, this.blockData);
+         return new BlockData(add3.add(0, 0, -1), EnumFacing.SOUTH);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add3.add(0, 0, 1)).getBlock())) {
-         return new BlockData(add3.add(0, 0, 1), EnumFacing.NORTH, this.blockData);
+         return new BlockData(add3.add(0, 0, 1), EnumFacing.NORTH);
       }
       BlockPos add4 = pos.add(0, 0, 1);
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add4.add(-1, 0, 0)).getBlock())) {
-         return new BlockData(add4.add(-1, 0, 0), EnumFacing.EAST, this.blockData);
+         return new BlockData(add4.add(-1, 0, 0), EnumFacing.EAST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add4.add(1, 0, 0)).getBlock())) {
-         return new BlockData(add4.add(1, 0, 0), EnumFacing.WEST, this.blockData);
+         return new BlockData(add4.add(1, 0, 0), EnumFacing.WEST);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add4.add(0, 0, -1)).getBlock())) {
-         return new BlockData(add4.add(0, 0, -1), EnumFacing.SOUTH, this.blockData);
+         return new BlockData(add4.add(0, 0, -1), EnumFacing.SOUTH);
       }
       if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add4.add(0, 0, 1)).getBlock())) {
-         return new BlockData(add4.add(0, 0, 1), EnumFacing.NORTH, this.blockData);
+         return new BlockData(add4.add(0, 0, 1), EnumFacing.NORTH);
       }
       return null;
    }
@@ -509,7 +504,7 @@ public class Scaffold
       public static BlockPos position;
       public static EnumFacing face;
 
-      public BlockData(BlockPos position, EnumFacing face, BlockData blockData) {
+      public BlockData(BlockPos position, EnumFacing face) {
          BlockData.position = position;
          BlockData.face = face;
       }
@@ -530,11 +525,11 @@ public class Scaffold
          return var0.getFacing();
       }
 
-      static BlockPos access$2(BlockData var0) {
+      static BlockPos access$2() {
          return position;
       }
 
-      static EnumFacing access$3(BlockData var0) {
+      static EnumFacing access$3() {
          return face;
       }
    }

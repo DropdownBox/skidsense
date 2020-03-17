@@ -9,7 +9,7 @@ public class Fullbright extends Mod {
 	public int alphag = 1;
 	public Fullbright() {
 		super("Full Bright", new String[]{"FullBright"}, ModuleType.Visual);
-        this.addValues();
+        //this.addValues();
 	}
 
 	@Override

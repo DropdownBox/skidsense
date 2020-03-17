@@ -4,7 +4,8 @@ import java.util.function.ToDoubleFunction;
 
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
-import me.skidsense.hooks.EventBus;
+//import me.skidsense.hooks.EventBus;
+import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.events.EventPreUpdate;
@@ -25,7 +26,6 @@ import java.util.Comparator;
 import java.util.ArrayList;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.util.*;
 import net.minecraft.client.Minecraft;
@@ -95,8 +95,8 @@ public class KillAura extends Mod {
 
 	public KillAura() {
 		super("Kill Aura", new String[] { "Aura","KillAura" }, ModuleType.Fight);
-		this.addValues(this.priority, this.mode,this.range, this.cps, this.blockrange, this.hitswitch, this.players, this.mobs, this.animals, this.invis,
-				this.autoBlock, this.targetinfo, this.walls, this.autodisable);
+		//this.addValues(this.priority, this.mode,this.range, this.cps, this.blockrange, this.hitswitch, this.players, this.mobs, this.animals, this.invis,
+		//		this.autoBlock, this.targetinfo, this.walls, this.autodisable);
 	}
 
 	@Override
@@ -261,11 +261,11 @@ public class KillAura extends Mod {
 			double var31 = this.target.posX - this.target.prevPosX;
 			double var32 = this.target.posZ - this.target.prevPosZ;
 			attackDelay = this.target.posX + var31;
-			double var33 = attackDelay - RenderManager.renderPosX;
+			double var33 = attackDelay - mc.getRenderManager().renderPosX;
 			double var34 = this.target.posY + 1.0D;
-			double y = var34 - RenderManager.renderPosY;
+			double y = var34 - mc.getRenderManager().renderPosY;
 			double var39 = this.target.posZ + var32;
-			double var42 = var39 - RenderManager.renderPosZ;
+			double var42 = var39 - mc.getRenderManager().renderPosZ;
 			double sin = Math.sin((double)System.currentTimeMillis() / 500.0D) * 50.0D;
 			double xA = sin / 100.0D;
 			double zA = sin / 100.0D;
@@ -332,9 +332,9 @@ public class KillAura extends Mod {
 		 this.attackSpeed = 0;
 		 }**/
 		++this.attackSpeed;
-		EventAttack ent = new EventAttack(target,false);
-		EventBus.getInstance().call(ent);
-		if(ent.cancelled)
+		EventAttack ent = new EventAttack(target);
+		EventManager.postAll(ent);
+		if(ent.isCancelled())
 			return;
 		this.mc.thePlayer.swingItem();
 		this.mc.thePlayer.sendQueue

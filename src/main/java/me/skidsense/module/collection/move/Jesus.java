@@ -39,7 +39,7 @@ public class Jesus extends Mod {
 	public Jesus() {
 		super("Liquid Walk", new String[] { "LiquidWalk", "float" }, ModuleType.Move);
 		this.setColor(new Color(188, 233, 248).getRGB());
-		this.addValues(this.mode);
+		//this.addValues(this.mode);
 		this.removed=true;
 	}
 

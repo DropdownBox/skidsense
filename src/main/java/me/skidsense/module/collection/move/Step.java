@@ -20,7 +20,7 @@ extends Mod {
     public Step() {
         super("Step", new String[]{"step"}, ModuleType.Move);
         this.setColor(new Color(165, 238, 65).getRGB());
-        this.addValues(height,ncp);
+        //this.addValues(height,ncp);
     }
 
     @Override

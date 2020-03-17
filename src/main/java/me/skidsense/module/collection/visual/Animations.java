@@ -11,7 +11,7 @@ public class Animations extends Mod {
     public static Option<Boolean> Eliminates = new Option<Boolean>("Eliminates", "Eliminates", false);
 	public Animations() {
 		super("Animations", new String[] {"BlockHitanimations"}, ModuleType.Visual);
-		this.addValues(this.mode,this.smooth,Eliminates);
+		//this.addValues(this.mode,this.smooth,Eliminates);
 		this.setEnabled(true);
 		this.setRemoved(true);
 	}

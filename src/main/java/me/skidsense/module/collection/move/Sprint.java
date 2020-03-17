@@ -18,14 +18,15 @@ extends Mod {
     public Sprint() {
         super("Auto Sprint", new String[]{"run","sprint","autosprint"}, ModuleType.Move);
         this.setColor(new Color(158, 205, 125).getRGB());
-        this.addValues(this.omni,keepsprint);
+        //this.addValues(this.omni,keepsprint);
     }
 
     @Sub
     private void onUpdate(EventPreUpdate event) {
-        if (this.mc.thePlayer.getFoodStats().getFoodLevel() > 6 && this.omni.getValue() != false ? this.mc.thePlayer.moving() : this.mc.thePlayer.moveForward > 0.0f) {
-            this.mc.thePlayer.setSprinting(true);
-        }
+        //if (this.mc.thePlayer.getFoodStats().getFoodLevel() > 6 && this.omni.getValue() != false ? this.mc.thePlayer.moving() : this.mc.thePlayer.moveForward > 0.0f) {
+        //    this.mc.thePlayer.setSprinting(true);
+        //}
+        //FIXME
     }
     
     @Sub

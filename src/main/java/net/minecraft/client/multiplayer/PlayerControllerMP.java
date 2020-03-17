@@ -1,5 +1,7 @@
 package net.minecraft.client.multiplayer;
 
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventAttack;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -494,9 +496,9 @@ public class PlayerControllerMP
      */
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity)
     {
-        EventAttack ent = new EventAttack(targetEntity,false);
-        EventBus.getInstance().call(ent);
-        if(ent.cancelled)
+        EventAttack ent = new EventAttack(targetEntity);
+        EventManager.postAll(ent);
+        if(ent.isCancelled())
             return;
         this.syncCurrentPlayItem();
         this.netClientHandler.addToSendQueue(new C02PacketUseEntity(targetEntity, C02PacketUseEntity.Action.ATTACK));

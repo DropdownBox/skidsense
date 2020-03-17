@@ -28,7 +28,7 @@ public class AutoStrafe extends Mod
 
 	public AutoStrafe() {
 		super("Auto Strafe", new String[] { "AutoStrafe" }, ModuleType.Move);
-		this.addValues(new Value[] { (Value)AutoStrafe.MaxDistance, (Value)AutoStrafe.keep, (Value)AutoStrafe.Esp, (Value)AutoStrafe.OnlySpeed, (Value)AutoStrafe.Auto });
+		//this.addValues(new Value[] { (Value)AutoStrafe.MaxDistance, (Value)AutoStrafe.keep, (Value)AutoStrafe.Esp, (Value)AutoStrafe.OnlySpeed, (Value)AutoStrafe.Auto });
 	}
 
 	public void onDisable() {

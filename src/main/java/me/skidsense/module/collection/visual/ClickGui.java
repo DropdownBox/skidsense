@@ -12,7 +12,7 @@ public class ClickGui extends Mod {
 
 	public ClickGui() {
 		super("Click GUI", new String[] { "ClickGUI","ClickHUD" }, ModuleType.Visual);
-	this.addValues(mode);
+	//this.addValues(mode);
 		
 	}
 

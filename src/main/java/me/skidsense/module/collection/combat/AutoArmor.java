@@ -28,7 +28,7 @@ extends Mod {
 
     public AutoArmor() {
         super("Auto Armor", new String[]{"AutoArmor","armorswap", "autoarmour"}, ModuleType.Fight);
-        this.addValues(this.delay,this.openinv);
+        //this.addValues(this.delay,this.openinv);
         this.setColor(new Color(27, 104, 204).getRGB());
     }
 
