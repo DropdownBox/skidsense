@@ -37,9 +37,9 @@ public class Critical extends Module {
     }
 
     @Sub
-    public void onAttack(EventAttack ea){
+    public void onAttack(EventAttack ent){
         if(canCrit())
-            doCrit(ea.attacked);
+            doCrit(ent.attacked);
     }
 
     @Override
