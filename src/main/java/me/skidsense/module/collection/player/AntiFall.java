@@ -20,7 +20,6 @@ public class AntiFall extends Mod {
     @Sub
     private void onUpdate(EventPreUpdate e) {
         //variable to hold if a block is underneath us
-
         boolean blockUnderneath = false;
         //for the players posy
         for (int i = 0; i < mc.thePlayer.posY + 2; i++) {
