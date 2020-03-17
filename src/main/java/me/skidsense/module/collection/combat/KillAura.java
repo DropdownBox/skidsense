@@ -332,9 +332,9 @@ public class KillAura extends Module {
 		 this.attackSpeed = 0;
 		 }**/
 		++this.attackSpeed;
-		EventAttack e = new EventAttack(target,false);
-		EventBus.getInstance().call(e);
-		if(e.cancelled)
+		EventAttack ent = new EventAttack(target,false);
+		EventBus.getInstance().call(ent);
+		if(ent.cancelled)
 			return;
 		this.mc.thePlayer.swingItem();
 		this.mc.thePlayer.sendQueue

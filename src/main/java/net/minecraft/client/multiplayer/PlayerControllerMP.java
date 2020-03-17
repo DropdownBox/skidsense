@@ -529,9 +529,9 @@ public class PlayerControllerMP
      */
     public void attackEntity(EntityPlayer playerIn, Entity targetEntity)
     {
-        EventAttack e = new EventAttack(targetEntity,false);
-        EventBus.getInstance().call(e);
-        if(e.cancelled)
+        EventAttack ent = new EventAttack(targetEntity,false);
+        EventBus.getInstance().call(ent);
+        if(ent.cancelled)
             return;
         this.syncCurrentPlayItem();
         this.netClientHandler.addToSendQueue(new C02PacketUseEntity(targetEntity, C02PacketUseEntity.Action.ATTACK));
