@@ -3,6 +3,8 @@ package net.minecraft.client.gui;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonParseException;
 import io.netty.buffer.Unpooled;
+import java.io.IOException;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -16,21 +18,21 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.C17PacketCustomPayload;
-import net.minecraft.util.*;
+import net.minecraft.util.ChatAllowedCharacters;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
-import java.io.IOException;
-import java.util.List;
-
-public class GuiScreenBook extends GuiScreen {
+public class GuiScreenBook extends GuiScreen
+{
     private static final Logger logger = LogManager.getLogger();
     private static final ResourceLocation bookGuiTextures = new ResourceLocation("textures/gui/book.png");
 
-    /**
-     * The player editing the book
-     */
+    /** The player editing the book */
     private final EntityPlayer editingPlayer;
     private final ItemStack bookObj;
 
@@ -113,7 +115,8 @@ public class GuiScreenBook extends GuiScreen {
         this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
 
-        if (this.bookIsUnsigned) {
+        if (this.bookIsUnsigned)
+        {
             this.buttonList.add(this.buttonSign = new GuiButton(3, this.width / 2 - 100, 4 + this.bookImageHeight, 98, 20, I18n.format("book.signButton")));
             this.buttonList.add(this.buttonDone = new GuiButton(0, this.width / 2 + 2, 4 + this.bookImageHeight, 98, 20, I18n.format("gui.done")));
             this.buttonList.add(this.buttonFinalize = new GuiButton(5, this.width / 2 - 100, 4 + this.bookImageHeight, 98, 20, I18n.format("book.finalizeButton")));
@@ -154,13 +157,18 @@ public class GuiScreenBook extends GuiScreen {
         }
     }
 
-    private void sendBookToServer(boolean publish) {
-        if (this.bookIsUnsigned && this.bookIsModified) {
-            if (this.bookPages != null) {
-                while (this.bookPages.tagCount() > 1) {
+    private void sendBookToServer(boolean publish) throws IOException
+    {
+        if (this.bookIsUnsigned && this.bookIsModified)
+        {
+            if (this.bookPages != null)
+            {
+                while (this.bookPages.tagCount() > 1)
+                {
                     String s = this.bookPages.getStringTagAt(this.bookPages.tagCount() - 1);
 
-                    if (s.length() != 0) {
+                    if (s.length() != 0)
+                    {
                         break;
                     }
 
@@ -212,7 +220,7 @@ public class GuiScreenBook extends GuiScreen {
         {
             if (button.id == 0)
             {
-                this.mc.displayGuiScreen(null);
+                this.mc.displayGuiScreen((GuiScreen)null);
                 this.sendBookToServer(false);
             }
             else if (button.id == 3 && this.bookIsUnsigned)
@@ -245,7 +253,7 @@ public class GuiScreenBook extends GuiScreen {
             else if (button.id == 5 && this.bookGettingSigned)
             {
                 this.sendBookToServer(true);
-                this.mc.displayGuiScreen(null);
+                this.mc.displayGuiScreen((GuiScreen)null);
             }
             else if (button.id == 4 && this.bookGettingSigned)
             {
@@ -345,7 +353,7 @@ public class GuiScreenBook extends GuiScreen {
                 if (!this.bookTitle.isEmpty())
                 {
                     this.sendBookToServer(true);
-                    this.mc.displayGuiScreen(null);
+                    this.mc.displayGuiScreen((GuiScreen)null);
                 }
 
                 return;
@@ -353,7 +361,7 @@ public class GuiScreenBook extends GuiScreen {
             default:
                 if (this.bookTitle.length() < 16 && ChatAllowedCharacters.isAllowedCharacter(p_146460_1_))
                 {
-                    this.bookTitle = this.bookTitle + p_146460_1_;
+                    this.bookTitle = this.bookTitle + Character.toString(p_146460_1_);
                     this.updateButtons();
                     this.bookIsModified = true;
                 }
@@ -435,7 +443,7 @@ public class GuiScreenBook extends GuiScreen {
         }
         else
         {
-            String s4 = I18n.format("book.pageIndicator", Integer.valueOf(this.currPage + 1), Integer.valueOf(this.bookTotalPages));
+            String s4 = I18n.format("book.pageIndicator", this.currPage + 1, this.bookTotalPages);
             String s5 = "";
 
             if (this.bookPages != null && this.currPage >= 0 && this.currPage < this.bookPages.tagCount())
@@ -558,6 +566,7 @@ public class GuiScreenBook extends GuiScreen {
             }
             catch (Throwable var5)
             {
+                ;
             }
 
             return false;
@@ -568,7 +577,7 @@ public class GuiScreenBook extends GuiScreen {
 
             if (flag && clickevent.getAction() == ClickEvent.Action.RUN_COMMAND)
             {
-                this.mc.displayGuiScreen(null);
+                this.mc.displayGuiScreen((GuiScreen)null);
             }
 
             return flag;

@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.inventory;
 
+import java.io.IOException;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -14,22 +15,15 @@ import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ChatComponentText;
 import org.lwjgl.input.Keyboard;
 
-import java.io.IOException;
-
-public class GuiEditSign extends GuiScreen {
-    /**
-     * Reference to the sign object.
-     */
+public class GuiEditSign extends GuiScreen
+{
+    /** Reference to the sign object. */
     private TileEntitySign tileSign;
 
-    /**
-     * Counts the number of screen updates.
-     */
+    /** Counts the number of screen updates. */
     private int updateCounter;
 
-    /**
-     * The index of the line that is being edited.
-     */
+    /** The index of the line that is being edited. */
     private int editLine;
 
     /** "Done" button for the GUI. */
@@ -79,11 +73,14 @@ public class GuiEditSign extends GuiScreen {
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.enabled) {
-            if (button.id == 0) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.enabled)
+        {
+            if (button.id == 0)
+            {
                 this.tileSign.markDirty();
-                this.mc.displayGuiScreen(null);
+                this.mc.displayGuiScreen((GuiScreen)null);
             }
         }
     }
@@ -127,7 +124,8 @@ public class GuiEditSign extends GuiScreen {
     /**
      * Draws the screen and all the components in it. Args : mouseX, mouseY, renderPartialTicks
      */
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+    {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRendererObj, I18n.format("sign.edit"), this.width / 2, 40, 16777215);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

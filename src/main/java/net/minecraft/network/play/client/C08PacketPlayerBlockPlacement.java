@@ -1,14 +1,14 @@
 package net.minecraft.network.play.client;
 
+import java.io.IOException;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.util.BlockPos;
 
-import java.io.IOException;
-
-public class C08PacketPlayerBlockPlacement implements Packet<INetHandlerPlayServer> {
+public class C08PacketPlayerBlockPlacement implements Packet<INetHandlerPlayServer>
+{
     private static final BlockPos field_179726_a = new BlockPos(-1, -1, -1);
     private BlockPos position;
     private int placedBlockDirection;
@@ -52,13 +52,14 @@ public class C08PacketPlayerBlockPlacement implements Packet<INetHandlerPlayServ
     /**
      * Writes the raw packet data to the data stream.
      */
-    public void writePacketData(PacketBuffer buf) {
+    public void writePacketData(PacketBuffer buf) throws IOException
+    {
         buf.writeBlockPos(this.position);
         buf.writeByte(this.placedBlockDirection);
         buf.writeItemStackToBuffer(this.stack);
-        buf.writeByte((int) (this.facingX * 16.0F));
-        buf.writeByte((int) (this.facingY * 16.0F));
-        buf.writeByte((int) (this.facingZ * 16.0F));
+        buf.writeByte((int)(this.facingX * 16.0F));
+        buf.writeByte((int)(this.facingY * 16.0F));
+        buf.writeByte((int)(this.facingZ * 16.0F));
     }
 
     /**

@@ -42,8 +42,8 @@ import net.minecraft.world.World;
 public class EntityEnderman extends EntityMob
 {
     private static final UUID attackingSpeedBoostModifierUUID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
-    private static final AttributeModifier attackingSpeedBoostModifier = (new AttributeModifier(attackingSpeedBoostModifierUUID, "Attacking speed boost", 0.15000000596046448D, 0)).setSaved(false);
-    private static final Set<Block> carriableBlocks = Sets.<Block>newIdentityHashSet();
+    private static final AttributeModifier attackingSpeedBoostModifier = (new AttributeModifier(attackingSpeedBoostModifierUUID, "Attacking speed boost", (double)0.15F, 0)).setSaved(false);
+    private static final Set<Block> carriableBlocks = Sets.newIdentityHashSet();
     private boolean isAggressive;
 
     public EntityEnderman(World worldIn)
@@ -58,9 +58,9 @@ public class EntityEnderman extends EntityMob
         this.tasks.addTask(8, new EntityAILookIdle(this));
         this.tasks.addTask(10, new EntityEnderman.AIPlaceBlock(this));
         this.tasks.addTask(11, new EntityEnderman.AITakeBlock(this));
-        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
+        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
         this.targetTasks.addTask(2, new EntityEnderman.AIFindPlayer(this));
-        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityEndermite.class, 10, true, false, new Predicate<EntityEndermite>()
+        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<>(this, EntityEndermite.class, 10, true, false, new Predicate<EntityEndermite>()
         {
             public boolean apply(EntityEndermite p_apply_1_)
             {
@@ -73,7 +73,7 @@ public class EntityEnderman extends EntityMob
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(40.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.30000001192092896D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.3F);
         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(7.0D);
         this.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(64.0D);
     }
@@ -154,7 +154,7 @@ public class EntityEnderman extends EntityMob
         {
             for (int i = 0; i < 2; ++i)
             {
-                this.worldObj.spawnParticle(EnumParticleTypes.PORTAL, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height - 0.25D, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D, new int[0]);
+                this.worldObj.spawnParticle(EnumParticleTypes.PORTAL, this.posX + (this.rand.nextDouble() - 0.5D) * (double)this.width, this.posY + this.rand.nextDouble() * (double)this.height - 0.25D, this.posZ + (this.rand.nextDouble() - 0.5D) * (double)this.width, (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
             }
         }
 
@@ -278,7 +278,7 @@ public class EntityEnderman extends EntityMob
                 double d3 = d0 + (this.posX - d0) * d6 + (this.rand.nextDouble() - 0.5D) * (double)this.width * 2.0D;
                 double d4 = d1 + (this.posY - d1) * d6 + this.rand.nextDouble() * (double)this.height;
                 double d5 = d2 + (this.posZ - d2) * d6 + (this.rand.nextDouble() - 0.5D) * (double)this.width * 2.0D;
-                this.worldObj.spawnParticle(EnumParticleTypes.PORTAL, d3, d4, d5, (double)f, (double)f1, (double)f2, new int[0]);
+                this.worldObj.spawnParticle(EnumParticleTypes.PORTAL, d3, d4, d5, (double)f, (double)f1, (double)f2);
             }
 
             this.worldObj.playSoundEffect(d0, d1, d2, "mob.endermen.portal", 1.0F, 1.0F);
@@ -343,7 +343,7 @@ public class EntityEnderman extends EntityMob
      */
     public void setHeldBlockState(IBlockState state)
     {
-        this.dataWatcher.updateObject(16, Short.valueOf((short)(Block.getStateId(state) & 65535)));
+        this.dataWatcher.updateObject(16, (short)(Block.getStateId(state) & 65535));
     }
 
     /**
@@ -418,7 +418,7 @@ public class EntityEnderman extends EntityMob
 
     public void setScreaming(boolean screaming)
     {
-        this.dataWatcher.updateObject(18, Byte.valueOf((byte)(screaming ? 1 : 0)));
+        this.dataWatcher.updateObject(18, (byte)(screaming ? 1 : 0));
     }
 
     static
@@ -455,7 +455,7 @@ public class EntityEnderman extends EntityMob
         public boolean shouldExecute()
         {
             double d0 = this.getTargetDistance();
-            List<EntityPlayer> list = this.taskOwner.worldObj.<EntityPlayer>getEntitiesWithinAABB(EntityPlayer.class, this.taskOwner.getEntityBoundingBox().expand(d0, 4.0D, d0), this.targetEntitySelector);
+            List<EntityPlayer> list = this.taskOwner.worldObj.getEntitiesWithinAABB(EntityPlayer.class, this.taskOwner.getEntityBoundingBox().expand(d0, 4.0D, d0), this.targetEntitySelector);
             Collections.sort(list, this.theNearestAttackableTargetSorter);
 
             if (list.isEmpty())
@@ -464,7 +464,7 @@ public class EntityEnderman extends EntityMob
             }
             else
             {
-                this.player = (EntityPlayer)list.get(0);
+                this.player = list.get(0);
                 return true;
             }
         }
@@ -555,7 +555,18 @@ public class EntityEnderman extends EntityMob
 
         public boolean shouldExecute()
         {
-            return !this.enderman.worldObj.getGameRules().getBoolean("mobGriefing") ? false : (this.enderman.getHeldBlockState().getBlock().getMaterial() == Material.air ? false : this.enderman.getRNG().nextInt(2000) == 0);
+            if (!this.enderman.worldObj.getGameRules().getBoolean("mobGriefing"))
+            {
+                return false;
+            }
+            else if (this.enderman.getHeldBlockState().getBlock().getMaterial() == Material.air)
+            {
+                return false;
+            }
+            else
+            {
+                return this.enderman.getRNG().nextInt(2000) == 0;
+            }
         }
 
         public void updateTask()
@@ -578,7 +589,22 @@ public class EntityEnderman extends EntityMob
 
         private boolean func_179474_a(World worldIn, BlockPos p_179474_2_, Block p_179474_3_, Block p_179474_4_, Block p_179474_5_)
         {
-            return !p_179474_3_.canPlaceBlockAt(worldIn, p_179474_2_) ? false : (p_179474_4_.getMaterial() != Material.air ? false : (p_179474_5_.getMaterial() == Material.air ? false : p_179474_5_.isFullCube()));
+            if (!p_179474_3_.canPlaceBlockAt(worldIn, p_179474_2_))
+            {
+                return false;
+            }
+            else if (p_179474_4_.getMaterial() != Material.air)
+            {
+                return false;
+            }
+            else if (p_179474_5_.getMaterial() == Material.air)
+            {
+                return false;
+            }
+            else
+            {
+                return p_179474_5_.isFullCube();
+            }
         }
     }
 
@@ -593,7 +619,18 @@ public class EntityEnderman extends EntityMob
 
         public boolean shouldExecute()
         {
-            return !this.enderman.worldObj.getGameRules().getBoolean("mobGriefing") ? false : (this.enderman.getHeldBlockState().getBlock().getMaterial() != Material.air ? false : this.enderman.getRNG().nextInt(20) == 0);
+            if (!this.enderman.worldObj.getGameRules().getBoolean("mobGriefing"))
+            {
+                return false;
+            }
+            else if (this.enderman.getHeldBlockState().getBlock().getMaterial() != Material.air)
+            {
+                return false;
+            }
+            else
+            {
+                return this.enderman.getRNG().nextInt(20) == 0;
+            }
         }
 
         public void updateTask()

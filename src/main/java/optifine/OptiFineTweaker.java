@@ -13,7 +13,7 @@ public class OptiFineTweaker implements ITweaker
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile)
     {
         dbg("OptiFineTweaker: acceptOptions");
-        this.args = new ArrayList(args);
+        this.args = new ArrayList<>(args);
         this.args.add("--gameDir");
         this.args.add(gameDir.getAbsolutePath());
         this.args.add("--assetsDir");
@@ -37,7 +37,7 @@ public class OptiFineTweaker implements ITweaker
     public String[] getLaunchArguments()
     {
         dbg("OptiFineTweaker: getLaunchArguments");
-        return (String[])this.args.toArray(new String[this.args.size()]);
+        return this.args.toArray(new String[this.args.size()]);
     }
 
     private static void dbg(String str)

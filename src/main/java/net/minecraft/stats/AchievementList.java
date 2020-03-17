@@ -20,7 +20,7 @@ public class AchievementList
 
     /** Is the biggest row used to display a achievement on the GUI. */
     public static int maxDisplayRow;
-    public static List<Achievement> achievementList = Lists.<Achievement>newArrayList();
+    public static List<Achievement> achievementList = Lists.newArrayList();
 
     /** Is the 'open inventory' achievement. */
     public static Achievement openInventory = (new Achievement("achievement.openInventory", "openInventory", 0, 0, Items.book, (Achievement)null)).initIndependentStat().registerStat();

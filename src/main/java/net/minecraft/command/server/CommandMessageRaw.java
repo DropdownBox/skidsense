@@ -1,9 +1,6 @@
 package net.minecraft.command.server;
 
 import com.google.gson.JsonParseException;
-
-import net.minecraft.MinecraftServer;
-
 import java.util.List;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -11,6 +8,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.SyntaxErrorException;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentProcessor;
 import net.minecraft.util.IChatComponent;
@@ -49,7 +47,7 @@ public class CommandMessageRaw extends CommandBase
     {
         if (args.length < 2)
         {
-            throw new WrongUsageException("commands.tellraw.usage", new Object[0]);
+            throw new WrongUsageException("commands.tellraw.usage");
         }
         else
         {
@@ -64,7 +62,7 @@ public class CommandMessageRaw extends CommandBase
             catch (JsonParseException jsonparseexception)
             {
                 Throwable throwable = ExceptionUtils.getRootCause(jsonparseexception);
-                throw new SyntaxErrorException("commands.tellraw.jsonException", new Object[] {throwable == null ? "" : throwable.getMessage()});
+                throw new SyntaxErrorException("commands.tellraw.jsonException", throwable == null ? "" : throwable.getMessage());
             }
         }
     }

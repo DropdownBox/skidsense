@@ -31,11 +31,11 @@ public class ItemArmor extends Item
             int j = blockpos.getY();
             int k = blockpos.getZ();
             AxisAlignedBB axisalignedbb = new AxisAlignedBB((double)i, (double)j, (double)k, (double)(i + 1), (double)(j + 1), (double)(k + 1));
-            List<EntityLivingBase> list = source.getWorld().<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb, Predicates.<EntityLivingBase> and (EntitySelectors.NOT_SPECTATING, new EntitySelectors.ArmoredMob(stack)));
+            List<EntityLivingBase> list = source.getWorld().getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb, Predicates.and(EntitySelectors.NOT_SPECTATING, new EntitySelectors.ArmoredMob(stack)));
 
             if (list.size() > 0)
             {
-                EntityLivingBase entitylivingbase = (EntityLivingBase)list.get(0);
+                EntityLivingBase entitylivingbase = list.get(0);
                 int l = entitylivingbase instanceof EntityPlayer ? 1 : 0;
                 int i1 = EntityLiving.getArmorPosition(stack);
                 ItemStack itemstack = stack.copy();
@@ -126,7 +126,22 @@ public class ItemArmor extends Item
      */
     public boolean hasColor(ItemStack stack)
     {
-        return this.material != ItemArmor.ArmorMaterial.LEATHER ? false : (!stack.hasTagCompound() ? false : (!stack.getTagCompound().hasKey("display", 10) ? false : stack.getTagCompound().getCompoundTag("display").hasKey("color", 3)));
+        if (this.material != ItemArmor.ArmorMaterial.LEATHER)
+        {
+            return false;
+        }
+        else if (!stack.hasTagCompound())
+        {
+            return false;
+        }
+        else if (!stack.getTagCompound().hasKey("display", 10))
+        {
+            return false;
+        }
+        else
+        {
+            return stack.getTagCompound().getCompoundTag("display").hasKey("color", 3);
+        }
     }
 
     /**
@@ -184,7 +199,7 @@ public class ItemArmor extends Item
     {
         if (this.material != ItemArmor.ArmorMaterial.LEATHER)
         {
-            throw new UnsupportedOperationException("Can\'t dye non-leather!");
+            throw new UnsupportedOperationException("Can't dye non-leather!");
         }
         else
         {
@@ -270,7 +285,26 @@ public class ItemArmor extends Item
 
         public Item getRepairItem()
         {
-            return this == LEATHER ? Items.leather : (this == CHAIN ? Items.iron_ingot : (this == GOLD ? Items.gold_ingot : (this == IRON ? Items.iron_ingot : (this == DIAMOND ? Items.diamond : null))));
+            if (this == LEATHER)
+            {
+                return Items.leather;
+            }
+            else if (this == CHAIN)
+            {
+                return Items.iron_ingot;
+            }
+            else if (this == GOLD)
+            {
+                return Items.gold_ingot;
+            }
+            else if (this == IRON)
+            {
+                return Items.iron_ingot;
+            }
+            else
+            {
+                return this == DIAMOND ? Items.diamond : null;
+            }
         }
 
         public String getName()

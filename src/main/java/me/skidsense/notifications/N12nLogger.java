@@ -21,7 +21,7 @@ public class N12nLogger extends AbstractLogger {
 
 	@Override
 	protected boolean isEnabled(Level level, Marker marker, String s) {
-		return false;
+		return true;
 	}
 
 	@Override

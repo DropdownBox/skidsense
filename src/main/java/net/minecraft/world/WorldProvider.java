@@ -98,7 +98,18 @@ public abstract class WorldProvider
      */
     public IChunkProvider createChunkGenerator()
     {
-        return (IChunkProvider)(this.terrainType == WorldType.FLAT ? new ChunkProviderFlat(this.worldObj, this.worldObj.getSeed(), this.worldObj.getWorldInfo().isMapFeaturesEnabled(), this.generatorSettings) : (this.terrainType == WorldType.DEBUG_WORLD ? new ChunkProviderDebug(this.worldObj) : (this.terrainType == WorldType.CUSTOMIZED ? new ChunkProviderGenerate(this.worldObj, this.worldObj.getSeed(), this.worldObj.getWorldInfo().isMapFeaturesEnabled(), this.generatorSettings) : new ChunkProviderGenerate(this.worldObj, this.worldObj.getSeed(), this.worldObj.getWorldInfo().isMapFeaturesEnabled(), this.generatorSettings))));
+        if (this.terrainType == WorldType.FLAT)
+        {
+            return new ChunkProviderFlat(this.worldObj, this.worldObj.getSeed(), this.worldObj.getWorldInfo().isMapFeaturesEnabled(), this.generatorSettings);
+        }
+        else if (this.terrainType == WorldType.DEBUG_WORLD)
+        {
+            return new ChunkProviderDebug(this.worldObj);
+        }
+        else
+        {
+            return this.terrainType == WorldType.CUSTOMIZED ? new ChunkProviderGenerate(this.worldObj, this.worldObj.getSeed(), this.worldObj.getWorldInfo().isMapFeaturesEnabled(), this.generatorSettings) : new ChunkProviderGenerate(this.worldObj, this.worldObj.getSeed(), this.worldObj.getWorldInfo().isMapFeaturesEnabled(), this.generatorSettings);
+        }
     }
 
     /**
@@ -127,8 +138,8 @@ public abstract class WorldProvider
             --f;
         }
 
-        f = 1.0F - (float)((Math.cos((double)f * Math.PI) + 1.0D) / 2.0D);
-        f = f + (f - f) / 3.0F;
+        float f1 = 1.0F - (float)((Math.cos((double)f * Math.PI) + 1.0D) / 2.0D);
+        f = f + (f1 - f) / 3.0F;
         return f;
     }
 
@@ -197,7 +208,18 @@ public abstract class WorldProvider
 
     public static WorldProvider getProviderForDimension(int dimension)
     {
-        return (WorldProvider)(dimension == -1 ? new WorldProviderHell() : (dimension == 0 ? new WorldProviderSurface() : (dimension == 1 ? new WorldProviderEnd() : null)));
+        if (dimension == -1)
+        {
+            return new WorldProviderHell();
+        }
+        else if (dimension == 0)
+        {
+            return new WorldProviderSurface();
+        }
+        else
+        {
+            return dimension == 1 ? new WorldProviderEnd() : null;
+        }
     }
 
     /**

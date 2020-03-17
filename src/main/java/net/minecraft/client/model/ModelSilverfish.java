@@ -6,7 +6,7 @@ import net.minecraft.util.MathHelper;
 public class ModelSilverfish extends ModelBase
 {
     /** The body parts of the silverfish's model. */
-    private ModelRenderer[] silverfishBodyParts = new ModelRenderer[7];
+    private ModelRenderer[] silverfishBodyParts;
 
     /** The wings (dust-looking sprites) on the silverfish's model. */
     private ModelRenderer[] silverfishWings;
@@ -20,6 +20,7 @@ public class ModelSilverfish extends ModelBase
 
     public ModelSilverfish()
     {
+        this.silverfishBodyParts = new ModelRenderer[7];
         float f = -3.5F;
 
         for (int i = 0; i < this.silverfishBodyParts.length; ++i)

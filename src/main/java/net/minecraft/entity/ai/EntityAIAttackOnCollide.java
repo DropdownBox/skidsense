@@ -27,13 +27,13 @@ public class EntityAIAttackOnCollide extends EntityAIBase
 
     /** The PathEntity of our entity. */
     PathEntity entityPathEntity;
-    Class <? extends Entity > classTarget;
+    Class<? extends Entity> classTarget;
     private int delayCounter;
     private double targetX;
     private double targetY;
     private double targetZ;
 
-    public EntityAIAttackOnCollide(EntityCreature creature, Class <? extends Entity > targetClass, double speedIn, boolean useLongMemory)
+    public EntityAIAttackOnCollide(EntityCreature creature, Class<? extends Entity> targetClass, double speedIn, boolean useLongMemory)
     {
         this(creature, speedIn, useLongMemory);
         this.classTarget = targetClass;
@@ -80,7 +80,23 @@ public class EntityAIAttackOnCollide extends EntityAIBase
     public boolean continueExecuting()
     {
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
-        return entitylivingbase == null ? false : (!entitylivingbase.isEntityAlive() ? false : (!this.longMemory ? !this.attacker.getNavigator().noPath() : this.attacker.isWithinHomeDistanceFromPosition(new BlockPos(entitylivingbase))));
+
+        if (entitylivingbase == null)
+        {
+            return false;
+        }
+        else if (!entitylivingbase.isEntityAlive())
+        {
+            return false;
+        }
+        else if (!this.longMemory)
+        {
+            return !this.attacker.getNavigator().noPath();
+        }
+        else
+        {
+            return this.attacker.isWithinHomeDistanceFromPosition(new BlockPos(entitylivingbase));
+        }
     }
 
     /**

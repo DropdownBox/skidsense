@@ -8,7 +8,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -21,7 +25,7 @@ import optifine.xdelta.GDiffWriter;
 
 public class Differ
 {
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
         if (args.length < 3)
         {
@@ -33,25 +37,29 @@ public class Differ
             File file2 = new File(args[1]);
             File file3 = new File(args[2]);
 
-            if (file1.getName().equals("AUTO"))
+            try
             {
-                file1 = detectBaseFile(file2);
-            }
-
-            if (file1.exists() && file1.isFile())
-            {
-                if (file2.exists() && file2.isFile())
+                if (file1.getName().equals("AUTO"))
                 {
-                    process(file1, file2, file3);
+                    file1 = detectBaseFile(file2);
                 }
-                else
+
+                if (!file1.exists() || !file1.isFile())
+                {
+                    throw new IOException("Base file not found: " + file1);
+                }
+
+                if (!file2.exists() || !file2.isFile())
                 {
                     throw new IOException("Mod file not found: " + file2);
                 }
+
+                process(file1, file2, file3);
             }
-            else
+            catch (Exception exception)
             {
-                throw new IOException("Base file not found: " + file1);
+                exception.printStackTrace();
+                System.exit(1);
             }
         }
     }
@@ -64,41 +72,104 @@ public class Differ
         ZipOutputStream zipoutputstream = new ZipOutputStream(new FileOutputStream(diffFile));
         ZipFile zipfile1 = new ZipFile(baseFile);
         Enumeration enumeration = zipfile.entries();
+        Map<String, Map<String, Integer>> map1 = new HashMap<>();
 
         while (enumeration.hasMoreElements())
         {
             ZipEntry zipentry = (ZipEntry)enumeration.nextElement();
-            InputStream inputstream = zipfile.getInputStream(zipentry);
-            byte[] abyte = Utils.readAll(inputstream);
-            String s = zipentry.getName();
-            byte[] abyte1 = makeDiff(s, abyte, apattern, map, zipfile1);
 
-            if (abyte1 != abyte)
+            if (!zipentry.isDirectory())
             {
-                ZipEntry zipentry1 = new ZipEntry("patch/" + s + ".xdelta");
-                zipoutputstream.putNextEntry(zipentry1);
-                zipoutputstream.write(abyte1);
-                zipoutputstream.closeEntry();
-                Utils.dbg("Delta: " + zipentry1.getName());
-                byte[] abyte2 = HashUtils.getHashMd5(abyte);
-                String s1 = HashUtils.toHexString(abyte2);
-                byte[] abyte3 = s1.getBytes("ASCII");
-                ZipEntry zipentry2 = new ZipEntry("patch/" + s + ".md5");
-                zipoutputstream.putNextEntry(zipentry2);
-                zipoutputstream.write(abyte3);
-                zipoutputstream.closeEntry();
-            }
-            else
-            {
-                ZipEntry zipentry3 = new ZipEntry(s);
-                zipoutputstream.putNextEntry(zipentry3);
-                zipoutputstream.write(abyte);
-                zipoutputstream.closeEntry();
-                Utils.dbg("Same: " + zipentry3.getName());
+                InputStream inputstream = zipfile.getInputStream(zipentry);
+                byte[] abyte = Utils.readAll(inputstream);
+                String s = zipentry.getName();
+                byte[] abyte1 = makeDiff(s, abyte, apattern, map, zipfile1);
+
+                if (abyte1 != abyte)
+                {
+                    ZipEntry zipentry1 = new ZipEntry("patch/" + s + ".xdelta");
+                    zipoutputstream.putNextEntry(zipentry1);
+                    zipoutputstream.write(abyte1);
+                    zipoutputstream.closeEntry();
+                    addStat(map1, s, "delta");
+                    byte[] abyte2 = HashUtils.getHashMd5(abyte);
+                    String s1 = HashUtils.toHexString(abyte2);
+                    byte[] abyte3 = s1.getBytes("ASCII");
+                    ZipEntry zipentry2 = new ZipEntry("patch/" + s + ".md5");
+                    zipoutputstream.putNextEntry(zipentry2);
+                    zipoutputstream.write(abyte3);
+                    zipoutputstream.closeEntry();
+                }
+                else
+                {
+                    ZipEntry zipentry3 = new ZipEntry(s);
+                    zipoutputstream.putNextEntry(zipentry3);
+                    zipoutputstream.write(abyte);
+                    zipoutputstream.closeEntry();
+                    addStat(map1, s, "same");
+                }
             }
         }
 
         zipoutputstream.close();
+        printStats(map1);
+    }
+
+    private static void printStats(Map<String, Map<String, Integer>> mapStats)
+    {
+        List<String> list = new ArrayList<>(mapStats.keySet());
+        Collections.sort(list);
+
+        for (String s : list)
+        {
+            Map<String, Integer> map = mapStats.get(s);
+            List<String> list1 = new ArrayList<>(map.keySet());
+            Collections.sort(list1);
+            String s1 = "";
+
+            for (String s2 : list1)
+            {
+                Integer integer = map.get(s2);
+
+                if (s1.length() > 0)
+                {
+                    s1 = s1 + ", ";
+                }
+
+                s1 = s1 + s2 + " " + integer;
+            }
+
+            Utils.dbg(s + " = " + s1);
+        }
+    }
+
+    private static void addStat(Map<String, Map<String, Integer>> mapStats, String name, String type)
+    {
+        int i = name.lastIndexOf(47);
+        String s = "";
+
+        if (i >= 0)
+        {
+            s = name.substring(0, i);
+        }
+
+        Map<String, Integer> map = mapStats.get(s);
+
+        if (map == null)
+        {
+            map = new HashMap<>();
+            mapStats.put(s, map);
+        }
+
+        Integer integer = map.get(type);
+
+        if (integer == null)
+        {
+            integer = new Integer(0);
+        }
+
+        integer = new Integer(integer + 1);
+        map.put(type, integer);
     }
 
     public static byte[] makeDiff(String name, byte[] bytesMod, Pattern[] patterns, Map<String, String> cfgMap, ZipFile zipBase) throws IOException, DeltaException
@@ -124,7 +195,7 @@ public class Differ
                 ByteArrayInputStream bytearrayinputstream = new ByteArrayInputStream(bytesMod);
                 ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
                 DiffWriter diffwriter = new GDiffWriter(new DataOutputStream(bytearrayoutputstream));
-                Delta.computeDelta((byte[])abyte, bytearrayinputstream, bytesMod.length, diffwriter);
+                Delta.computeDelta(abyte, bytearrayinputstream, bytesMod.length, diffwriter);
                 diffwriter.close();
                 return bytearrayoutputstream.toByteArray();
             }
@@ -153,6 +224,7 @@ public class Differ
             {
                 File file1 = Utils.getWorkingDirectory();
                 File file2 = new File(file1, "versions/" + s1 + "/" + s1 + ".jar");
+                Utils.dbg("BaseFile: " + file2);
                 return file2;
             }
         }

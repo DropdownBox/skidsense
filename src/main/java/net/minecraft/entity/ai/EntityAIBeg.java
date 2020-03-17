@@ -36,7 +36,18 @@ public class EntityAIBeg extends EntityAIBase
      */
     public boolean continueExecuting()
     {
-        return !this.thePlayer.isEntityAlive() ? false : (this.theWolf.getDistanceSqToEntity(this.thePlayer) > (double)(this.minPlayerDistance * this.minPlayerDistance) ? false : this.timeoutCounter > 0 && this.hasPlayerGotBoneInHand(this.thePlayer));
+        if (!this.thePlayer.isEntityAlive())
+        {
+            return false;
+        }
+        else if (this.theWolf.getDistanceSqToEntity(this.thePlayer) > (double)(this.minPlayerDistance * this.minPlayerDistance))
+        {
+            return false;
+        }
+        else
+        {
+            return this.timeoutCounter > 0 && this.hasPlayerGotBoneInHand(this.thePlayer);
+        }
     }
 
     /**
@@ -72,6 +83,14 @@ public class EntityAIBeg extends EntityAIBase
     private boolean hasPlayerGotBoneInHand(EntityPlayer player)
     {
         ItemStack itemstack = player.inventory.getCurrentItem();
-        return itemstack == null ? false : (!this.theWolf.isTamed() && itemstack.getItem() == Items.bone ? true : this.theWolf.isBreedingItem(itemstack));
+
+        if (itemstack == null)
+        {
+            return false;
+        }
+        else
+        {
+            return !this.theWolf.isTamed() && itemstack.getItem() == Items.bone ? true : this.theWolf.isBreedingItem(itemstack);
+        }
     }
 }

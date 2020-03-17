@@ -1,7 +1,9 @@
 package net.minecraft.client.resources.model;
 
-import com.google.common.collect.Lists;
 import java.util.List;
+
+import com.google.common.collect.Lists;
+
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BreakingFour;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -11,12 +13,12 @@ import net.minecraft.util.EnumFacing;
 
 public class SimpleBakedModel implements IBakedModel
 {
-    protected final List<BakedQuad> generalQuads;
-    protected final List<List<BakedQuad>> faceQuads;
-    protected final boolean ambientOcclusion;
-    protected final boolean gui3d;
-    protected final TextureAtlasSprite texture;
-    protected final ItemCameraTransforms cameraTransforms;
+    protected List<BakedQuad> generalQuads;
+    protected List<List<BakedQuad>> faceQuads;
+    protected boolean ambientOcclusion;
+    protected boolean gui3d;
+    protected TextureAtlasSprite texture;
+    protected ItemCameraTransforms cameraTransforms;
 
     public SimpleBakedModel(List<BakedQuad> generalQuadsIn, List<List<BakedQuad>> faceQuadsIn, boolean ambientOcclusionIn, boolean gui3dIn, TextureAtlasSprite textureIn, ItemCameraTransforms cameraTransformsIn)
     {
@@ -30,7 +32,7 @@ public class SimpleBakedModel implements IBakedModel
 
     public List<BakedQuad> getFaceQuads(EnumFacing facing)
     {
-        return (List)this.faceQuads.get(facing.ordinal());
+        return this.faceQuads.get(facing.ordinal());
     }
 
     public List<BakedQuad> getGeneralQuads()
@@ -65,9 +67,9 @@ public class SimpleBakedModel implements IBakedModel
 
     public static class Builder
     {
-        private final List<BakedQuad> builderGeneralQuads;
-        private final List<List<BakedQuad>> builderFaceQuads;
-        private final boolean builderAmbientOcclusion;
+        private List<BakedQuad> builderGeneralQuads;
+        private List<List<BakedQuad>> builderFaceQuads;
+        private boolean builderAmbientOcclusion;
         private TextureAtlasSprite builderTexture;
         private boolean builderGui3d;
         private ItemCameraTransforms builderCameraTransforms;
@@ -123,7 +125,7 @@ public class SimpleBakedModel implements IBakedModel
 
         public SimpleBakedModel.Builder addFaceQuad(EnumFacing facing, BakedQuad quad)
         {
-            ((List)this.builderFaceQuads.get(facing.ordinal())).add(quad);
+            this.builderFaceQuads.get(facing.ordinal()).add(quad);
             return this;
         }
 

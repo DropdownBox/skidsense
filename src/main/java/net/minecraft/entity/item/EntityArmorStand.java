@@ -31,7 +31,7 @@ public class EntityArmorStand extends EntityLivingBase
     private static final Rotations DEFAULT_RIGHTARM_ROTATION = new Rotations(-15.0F, 0.0F, 10.0F);
     private static final Rotations DEFAULT_LEFTLEG_ROTATION = new Rotations(-1.0F, 0.0F, -1.0F);
     private static final Rotations DEFAULT_RIGHTLEG_ROTATION = new Rotations(1.0F, 0.0F, 1.0F);
-    private final ItemStack[] contents;
+    private final ItemStack[] contents = new ItemStack[5];
     private boolean canInteract;
 
     /**
@@ -40,23 +40,16 @@ public class EntityArmorStand extends EntityLivingBase
     private long punchCooldown;
     private int disabledSlots;
     private boolean field_181028_bj;
-    private Rotations headRotation;
-    private Rotations bodyRotation;
-    private Rotations leftArmRotation;
-    private Rotations rightArmRotation;
-    private Rotations leftLegRotation;
-    private Rotations rightLegRotation;
+    private Rotations headRotation = DEFAULT_HEAD_ROTATION;
+    private Rotations bodyRotation = DEFAULT_BODY_ROTATION;
+    private Rotations leftArmRotation = DEFAULT_LEFTARM_ROTATION;
+    private Rotations rightArmRotation = DEFAULT_RIGHTARM_ROTATION;
+    private Rotations leftLegRotation = DEFAULT_LEFTLEG_ROTATION;
+    private Rotations rightLegRotation = DEFAULT_RIGHTLEG_ROTATION;
 
     public EntityArmorStand(World worldIn)
     {
         super(worldIn);
-        this.contents = new ItemStack[5];
-        this.headRotation = DEFAULT_HEAD_ROTATION;
-        this.bodyRotation = DEFAULT_BODY_ROTATION;
-        this.leftArmRotation = DEFAULT_LEFTARM_ROTATION;
-        this.rightArmRotation = DEFAULT_RIGHTARM_ROTATION;
-        this.leftLegRotation = DEFAULT_LEFTLEG_ROTATION;
-        this.rightLegRotation = DEFAULT_RIGHTLEG_ROTATION;
         this.setSilent(true);
         this.noClip = this.hasNoGravity();
         this.setSize(0.5F, 1.975F);
@@ -79,7 +72,7 @@ public class EntityArmorStand extends EntityLivingBase
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.addObject(10, Byte.valueOf((byte)0));
+        this.dataWatcher.addObject(10, (byte)0);
         this.dataWatcher.addObject(11, DEFAULT_HEAD_ROTATION);
         this.dataWatcher.addObject(12, DEFAULT_BODY_ROTATION);
         this.dataWatcher.addObject(13, DEFAULT_LEFTARM_ROTATION);
@@ -355,7 +348,7 @@ public class EntityArmorStand extends EntityLivingBase
         {
             for (int i = 0; i < list.size(); ++i)
             {
-                Entity entity = (Entity)list.get(i);
+                Entity entity = list.get(i);
 
                 if (entity instanceof EntityMinecart && ((EntityMinecart)entity).getMinecartType() == EntityMinecart.EnumMinecartType.RIDEABLE && this.getDistanceSqToEntity(entity) <= 0.2D)
                 {
@@ -622,7 +615,7 @@ public class EntityArmorStand extends EntityLivingBase
     {
         if (this.worldObj instanceof WorldServer)
         {
-            ((WorldServer)this.worldObj).spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX, this.posY + (double)this.height / 1.5D, this.posZ, 10, (double)(this.width / 4.0F), (double)(this.height / 4.0F), (double)(this.width / 4.0F), 0.05D, new int[] {Block.getStateId(Blocks.planks.getDefaultState())});
+            ((WorldServer)this.worldObj).spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX, this.posY + (double)this.height / 1.5D, this.posZ, 10, (double)(this.width / 4.0F), (double)(this.height / 4.0F), (double)(this.width / 4.0F), 0.05D, Block.getStateId(Blocks.planks.getDefaultState()));
         }
     }
 
@@ -821,7 +814,7 @@ public class EntityArmorStand extends EntityLivingBase
             b0 = (byte)(b0 & -2);
         }
 
-        this.dataWatcher.updateObject(10, Byte.valueOf(b0));
+        this.dataWatcher.updateObject(10, b0);
     }
 
     public boolean isSmall()
@@ -842,7 +835,7 @@ public class EntityArmorStand extends EntityLivingBase
             b0 = (byte)(b0 & -3);
         }
 
-        this.dataWatcher.updateObject(10, Byte.valueOf(b0));
+        this.dataWatcher.updateObject(10, b0);
     }
 
     public boolean hasNoGravity()
@@ -863,7 +856,7 @@ public class EntityArmorStand extends EntityLivingBase
             b0 = (byte)(b0 & -5);
         }
 
-        this.dataWatcher.updateObject(10, Byte.valueOf(b0));
+        this.dataWatcher.updateObject(10, b0);
     }
 
     public boolean getShowArms()
@@ -884,7 +877,7 @@ public class EntityArmorStand extends EntityLivingBase
             b0 = (byte)(b0 & -9);
         }
 
-        this.dataWatcher.updateObject(10, Byte.valueOf(b0));
+        this.dataWatcher.updateObject(10, b0);
     }
 
     public boolean hasNoBasePlate()
@@ -908,7 +901,7 @@ public class EntityArmorStand extends EntityLivingBase
             b0 = (byte)(b0 & -17);
         }
 
-        this.dataWatcher.updateObject(10, Byte.valueOf(b0));
+        this.dataWatcher.updateObject(10, b0);
     }
 
     /**

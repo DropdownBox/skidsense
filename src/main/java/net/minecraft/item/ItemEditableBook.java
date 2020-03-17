@@ -37,7 +37,15 @@ public class ItemEditableBook extends Item
         else
         {
             String s = nbt.getString("title");
-            return s != null && s.length() <= 32 ? nbt.hasKey("author", 8) : false;
+
+            if (s != null && s.length() <= 32)
+            {
+                return nbt.hasKey("author", 8);
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -77,7 +85,7 @@ public class ItemEditableBook extends Item
 
             if (!StringUtils.isNullOrEmpty(s))
             {
-                tooltip.add(EnumChatFormatting.GRAY + StatCollector.translateToLocalFormatted("book.byAuthor", new Object[] {s}));
+                tooltip.add(EnumChatFormatting.GRAY + StatCollector.translateToLocalFormatted("book.byAuthor", s));
             }
 
             tooltip.add(EnumChatFormatting.GRAY + StatCollector.translateToLocal("book.generation." + nbttagcompound.getInteger("generation")));

@@ -3,7 +3,6 @@ package net.minecraft.client.renderer;
 import java.util.BitSet;
 import java.util.List;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -12,37 +11,34 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.src.Config;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumWorldBlockLayer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.Vec3i;
 import net.minecraft.world.IBlockAccess;
-import optifine.BetterGrass;
-import optifine.BetterSnow;
-import optifine.Config;
-import optifine.ConnectedTextures;
-import optifine.CustomColors;
-import optifine.NaturalTextures;
-import optifine.Reflector;
-import optifine.RenderEnv;
-import optifine.SmartLeaves;
+import net.optifine.BetterSnow;
+import net.optifine.CustomColors;
+import net.optifine.model.BlockModelCustomizer;
+import net.optifine.model.ListQuadsOverlay;
+import net.optifine.reflect.Reflector;
+import net.optifine.render.RenderEnv;
+import net.optifine.shaders.SVertexBuilder;
+import net.optifine.shaders.Shaders;
 
 public class BlockModelRenderer
 {
-    private static final String __OBFID = "CL_00002518";
     private static float aoLightValueOpaque = 0.2F;
-
-    public static void updateAoLightValue()
-    {
-        aoLightValueOpaque = 1.0F - Config.getAmbientOcclusionLevel() * 0.8F;
-    }
+    private static boolean separateAoLightValue = false;
+    private static final EnumWorldBlockLayer[] OVERLAY_LAYERS = new EnumWorldBlockLayer[] {EnumWorldBlockLayer.CUTOUT, EnumWorldBlockLayer.CUTOUT_MIPPED, EnumWorldBlockLayer.TRANSLUCENT};
 
     public BlockModelRenderer()
     {
         if (Reflector.ForgeModContainer_forgeLightPipelineEnabled.exists())
         {
-            Reflector.setFieldValue(Reflector.ForgeModContainer_forgeLightPipelineEnabled, Boolean.valueOf(false));
+            Reflector.setFieldValue(Reflector.ForgeModContainer_forgeLightPipelineEnabled, false);
         }
     }
 
@@ -59,79 +55,74 @@ public class BlockModelRenderer
 
         try
         {
-            Block block = blockStateIn.getBlock();
-
-            if (Config.isTreesSmart() && blockStateIn.getBlock() instanceof BlockLeavesBase)
+            if (Config.isShaders())
             {
-                modelIn = SmartLeaves.getLeavesModel(modelIn);
+                SVertexBuilder.pushEntity(blockStateIn, blockPosIn, blockAccessIn, worldRendererIn);
             }
 
-            return flag ? this.renderModelAmbientOcclusion(blockAccessIn, modelIn, block, blockStateIn, blockPosIn, worldRendererIn, checkSides) : this.renderModelStandard(blockAccessIn, modelIn, block, blockStateIn, blockPosIn, worldRendererIn, checkSides);
+            RenderEnv renderenv = worldRendererIn.getRenderEnv(blockStateIn, blockPosIn);
+            modelIn = BlockModelCustomizer.getRenderModel(modelIn, blockStateIn, renderenv);
+            boolean flag1 = flag ? this.renderModelSmooth(blockAccessIn, modelIn, blockStateIn, blockPosIn, worldRendererIn, checkSides) : this.renderModelFlat(blockAccessIn, modelIn, blockStateIn, blockPosIn, worldRendererIn, checkSides);
+
+            if (flag1)
+            {
+                this.renderOverlayModels(blockAccessIn, modelIn, blockStateIn, blockPosIn, worldRendererIn, checkSides, 0L, renderenv, flag);
+            }
+
+            if (Config.isShaders())
+            {
+                SVertexBuilder.popEntity(worldRendererIn);
+            }
+
+            return flag1;
         }
         catch (Throwable throwable)
         {
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Tesselating block model");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Block model being tesselated");
             CrashReportCategory.addBlockInfo(crashreportcategory, blockPosIn, blockStateIn);
-            crashreportcategory.addCrashSection("Using AO", Boolean.valueOf(flag));
+            crashreportcategory.addCrashSection("Using AO", flag);
             throw new ReportedException(crashreport);
         }
     }
 
     public boolean renderModelAmbientOcclusion(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides)
     {
-        return this.renderModelAmbientOcclusion(blockAccessIn, modelIn, blockIn, blockAccessIn.getBlockState(blockPosIn), blockPosIn, worldRendererIn, checkSides);
+        IBlockState iblockstate = blockAccessIn.getBlockState(blockPosIn);
+        return this.renderModelSmooth(blockAccessIn, modelIn, iblockstate, blockPosIn, worldRendererIn, checkSides);
     }
 
-    public boolean renderModelAmbientOcclusion(IBlockAccess p_renderModelAmbientOcclusion_1_, IBakedModel p_renderModelAmbientOcclusion_2_, Block p_renderModelAmbientOcclusion_3_, IBlockState p_renderModelAmbientOcclusion_4_, BlockPos p_renderModelAmbientOcclusion_5_, WorldRenderer p_renderModelAmbientOcclusion_6_, boolean p_renderModelAmbientOcclusion_7_)
+    private boolean renderModelSmooth(IBlockAccess p_renderModelSmooth_1_, IBakedModel p_renderModelSmooth_2_, IBlockState p_renderModelSmooth_3_, BlockPos p_renderModelSmooth_4_, WorldRenderer p_renderModelSmooth_5_, boolean p_renderModelSmooth_6_)
     {
         boolean flag = false;
-        RenderEnv renderenv = null;
+        Block block = p_renderModelSmooth_3_.getBlock();
+        RenderEnv renderenv = p_renderModelSmooth_5_.getRenderEnv(p_renderModelSmooth_3_, p_renderModelSmooth_4_);
+        EnumWorldBlockLayer enumworldblocklayer = p_renderModelSmooth_5_.getBlockLayer();
 
         for (EnumFacing enumfacing : EnumFacing.VALUES)
         {
-            List list = p_renderModelAmbientOcclusion_2_.getFaceQuads(enumfacing);
+            List<BakedQuad> list = p_renderModelSmooth_2_.getFaceQuads(enumfacing);
 
             if (!list.isEmpty())
             {
-                BlockPos blockpos = p_renderModelAmbientOcclusion_5_.offset(enumfacing);
+                BlockPos blockpos = p_renderModelSmooth_4_.offset(enumfacing);
 
-                if (!p_renderModelAmbientOcclusion_7_ || p_renderModelAmbientOcclusion_3_.shouldSideBeRendered(p_renderModelAmbientOcclusion_1_, blockpos, enumfacing))
+                if (!p_renderModelSmooth_6_ || block.shouldSideBeRendered(p_renderModelSmooth_1_, blockpos, enumfacing))
                 {
-                    if (renderenv == null)
-                    {
-                        renderenv = RenderEnv.getInstance(p_renderModelAmbientOcclusion_1_, p_renderModelAmbientOcclusion_4_, p_renderModelAmbientOcclusion_5_);
-                    }
-
-                    if (!renderenv.isBreakingAnimation(list) && Config.isBetterGrass())
-                    {
-                        list = BetterGrass.getFaceQuads(p_renderModelAmbientOcclusion_1_, p_renderModelAmbientOcclusion_4_, p_renderModelAmbientOcclusion_5_, enumfacing, list);
-                    }
-
-                    this.renderModelAmbientOcclusionQuads(p_renderModelAmbientOcclusion_1_, p_renderModelAmbientOcclusion_3_, p_renderModelAmbientOcclusion_5_, p_renderModelAmbientOcclusion_6_, list, renderenv);
+                    list = BlockModelCustomizer.getRenderQuads(list, p_renderModelSmooth_1_, p_renderModelSmooth_3_, p_renderModelSmooth_4_, enumfacing, enumworldblocklayer, 0L, renderenv);
+                    this.renderQuadsSmooth(p_renderModelSmooth_1_, p_renderModelSmooth_3_, p_renderModelSmooth_4_, p_renderModelSmooth_5_, list, renderenv);
                     flag = true;
                 }
             }
         }
 
-        List list1 = p_renderModelAmbientOcclusion_2_.getGeneralQuads();
+        List<BakedQuad> list1 = p_renderModelSmooth_2_.getGeneralQuads();
 
         if (list1.size() > 0)
         {
-            if (renderenv == null)
-            {
-                renderenv = RenderEnv.getInstance(p_renderModelAmbientOcclusion_1_, p_renderModelAmbientOcclusion_4_, p_renderModelAmbientOcclusion_5_);
-            }
-
-            this.renderModelAmbientOcclusionQuads(p_renderModelAmbientOcclusion_1_, p_renderModelAmbientOcclusion_3_, p_renderModelAmbientOcclusion_5_, p_renderModelAmbientOcclusion_6_, list1, renderenv);
+            list1 = BlockModelCustomizer.getRenderQuads(list1, p_renderModelSmooth_1_, p_renderModelSmooth_3_, p_renderModelSmooth_4_, (EnumFacing)null, enumworldblocklayer, 0L, renderenv);
+            this.renderQuadsSmooth(p_renderModelSmooth_1_, p_renderModelSmooth_3_, p_renderModelSmooth_4_, p_renderModelSmooth_5_, list1, renderenv);
             flag = true;
-        }
-
-        if (renderenv != null && Config.isBetterSnow() && !renderenv.isBreakingAnimation() && BetterSnow.shouldRender(p_renderModelAmbientOcclusion_1_, p_renderModelAmbientOcclusion_3_, p_renderModelAmbientOcclusion_4_, p_renderModelAmbientOcclusion_5_))
-        {
-            IBakedModel ibakedmodel = BetterSnow.getModelSnowLayer();
-            IBlockState iblockstate = BetterSnow.getStateSnowLayer();
-            this.renderModelAmbientOcclusion(p_renderModelAmbientOcclusion_1_, ibakedmodel, iblockstate.getBlock(), iblockstate, p_renderModelAmbientOcclusion_5_, p_renderModelAmbientOcclusion_6_, true);
         }
 
         return flag;
@@ -139,78 +130,61 @@ public class BlockModelRenderer
 
     public boolean renderModelStandard(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides)
     {
-        return this.renderModelStandard(blockAccessIn, modelIn, blockIn, blockAccessIn.getBlockState(blockPosIn), blockPosIn, worldRendererIn, checkSides);
+        IBlockState iblockstate = blockAccessIn.getBlockState(blockPosIn);
+        return this.renderModelFlat(blockAccessIn, modelIn, iblockstate, blockPosIn, worldRendererIn, checkSides);
     }
 
-    public boolean renderModelStandard(IBlockAccess p_renderModelStandard_1_, IBakedModel p_renderModelStandard_2_, Block p_renderModelStandard_3_, IBlockState p_renderModelStandard_4_, BlockPos p_renderModelStandard_5_, WorldRenderer p_renderModelStandard_6_, boolean p_renderModelStandard_7_)
+    public boolean renderModelFlat(IBlockAccess p_renderModelFlat_1_, IBakedModel p_renderModelFlat_2_, IBlockState p_renderModelFlat_3_, BlockPos p_renderModelFlat_4_, WorldRenderer p_renderModelFlat_5_, boolean p_renderModelFlat_6_)
     {
         boolean flag = false;
-        RenderEnv renderenv = null;
+        Block block = p_renderModelFlat_3_.getBlock();
+        RenderEnv renderenv = p_renderModelFlat_5_.getRenderEnv(p_renderModelFlat_3_, p_renderModelFlat_4_);
+        EnumWorldBlockLayer enumworldblocklayer = p_renderModelFlat_5_.getBlockLayer();
 
         for (EnumFacing enumfacing : EnumFacing.VALUES)
         {
-            List list = p_renderModelStandard_2_.getFaceQuads(enumfacing);
+            List<BakedQuad> list = p_renderModelFlat_2_.getFaceQuads(enumfacing);
 
             if (!list.isEmpty())
             {
-                BlockPos blockpos = p_renderModelStandard_5_.offset(enumfacing);
+                BlockPos blockpos = p_renderModelFlat_4_.offset(enumfacing);
 
-                if (!p_renderModelStandard_7_ || p_renderModelStandard_3_.shouldSideBeRendered(p_renderModelStandard_1_, blockpos, enumfacing))
+                if (!p_renderModelFlat_6_ || block.shouldSideBeRendered(p_renderModelFlat_1_, blockpos, enumfacing))
                 {
-                    if (renderenv == null)
-                    {
-                        renderenv = RenderEnv.getInstance(p_renderModelStandard_1_, p_renderModelStandard_4_, p_renderModelStandard_5_);
-                    }
-
-                    if (!renderenv.isBreakingAnimation(list) && Config.isBetterGrass())
-                    {
-                        list = BetterGrass.getFaceQuads(p_renderModelStandard_1_, p_renderModelStandard_4_, p_renderModelStandard_5_, enumfacing, list);
-                    }
-
-                    int i = p_renderModelStandard_3_.getMixedBrightnessForBlock(p_renderModelStandard_1_, blockpos);
-                    this.renderModelStandardQuads(p_renderModelStandard_1_, p_renderModelStandard_3_, p_renderModelStandard_5_, enumfacing, i, false, p_renderModelStandard_6_, list, renderenv);
+                    int i = block.getMixedBrightnessForBlock(p_renderModelFlat_1_, blockpos);
+                    list = BlockModelCustomizer.getRenderQuads(list, p_renderModelFlat_1_, p_renderModelFlat_3_, p_renderModelFlat_4_, enumfacing, enumworldblocklayer, 0L, renderenv);
+                    this.renderQuadsFlat(p_renderModelFlat_1_, p_renderModelFlat_3_, p_renderModelFlat_4_, enumfacing, i, false, p_renderModelFlat_5_, list, renderenv);
                     flag = true;
                 }
             }
         }
 
-        List list1 = p_renderModelStandard_2_.getGeneralQuads();
+        List<BakedQuad> list1 = p_renderModelFlat_2_.getGeneralQuads();
 
         if (list1.size() > 0)
         {
-            if (renderenv == null)
-            {
-                renderenv = RenderEnv.getInstance(p_renderModelStandard_1_, p_renderModelStandard_4_, p_renderModelStandard_5_);
-            }
-
-            this.renderModelStandardQuads(p_renderModelStandard_1_, p_renderModelStandard_3_, p_renderModelStandard_5_, (EnumFacing)null, -1, true, p_renderModelStandard_6_, list1, renderenv);
+            list1 = BlockModelCustomizer.getRenderQuads(list1, p_renderModelFlat_1_, p_renderModelFlat_3_, p_renderModelFlat_4_, (EnumFacing)null, enumworldblocklayer, 0L, renderenv);
+            this.renderQuadsFlat(p_renderModelFlat_1_, p_renderModelFlat_3_, p_renderModelFlat_4_, (EnumFacing)null, -1, true, p_renderModelFlat_5_, list1, renderenv);
             flag = true;
-        }
-
-        if (renderenv != null && Config.isBetterSnow() && !renderenv.isBreakingAnimation() && BetterSnow.shouldRender(p_renderModelStandard_1_, p_renderModelStandard_3_, p_renderModelStandard_4_, p_renderModelStandard_5_) && BetterSnow.shouldRender(p_renderModelStandard_1_, p_renderModelStandard_3_, p_renderModelStandard_4_, p_renderModelStandard_5_))
-        {
-            IBakedModel ibakedmodel = BetterSnow.getModelSnowLayer();
-            IBlockState iblockstate = BetterSnow.getStateSnowLayer();
-            this.renderModelStandard(p_renderModelStandard_1_, ibakedmodel, iblockstate.getBlock(), iblockstate, p_renderModelStandard_5_, p_renderModelStandard_6_, true);
         }
 
         return flag;
     }
 
-    private void renderModelAmbientOcclusionQuads(IBlockAccess p_renderModelAmbientOcclusionQuads_1_, Block p_renderModelAmbientOcclusionQuads_2_, BlockPos p_renderModelAmbientOcclusionQuads_3_, WorldRenderer p_renderModelAmbientOcclusionQuads_4_, List<BakedQuad> p_renderModelAmbientOcclusionQuads_5_, RenderEnv p_renderModelAmbientOcclusionQuads_6_)
+    private void renderQuadsSmooth(IBlockAccess p_renderQuadsSmooth_1_, IBlockState p_renderQuadsSmooth_2_, BlockPos p_renderQuadsSmooth_3_, WorldRenderer p_renderQuadsSmooth_4_, List<BakedQuad> p_renderQuadsSmooth_5_, RenderEnv p_renderQuadsSmooth_6_)
     {
-        float[] afloat = p_renderModelAmbientOcclusionQuads_6_.getQuadBounds();
-        BitSet bitset = p_renderModelAmbientOcclusionQuads_6_.getBoundsFlags();
-        BlockModelRenderer.AmbientOcclusionFace blockmodelrenderer$ambientocclusionface = p_renderModelAmbientOcclusionQuads_6_.getAoFace();
-        IBlockState iblockstate = p_renderModelAmbientOcclusionQuads_6_.getBlockState();
-        double d0 = (double)p_renderModelAmbientOcclusionQuads_3_.getX();
-        double d1 = (double)p_renderModelAmbientOcclusionQuads_3_.getY();
-        double d2 = (double)p_renderModelAmbientOcclusionQuads_3_.getZ();
-        Block.EnumOffsetType block$enumoffsettype = p_renderModelAmbientOcclusionQuads_2_.getOffsetType();
+        Block block = p_renderQuadsSmooth_2_.getBlock();
+        float[] afloat = p_renderQuadsSmooth_6_.getQuadBounds();
+        BitSet bitset = p_renderQuadsSmooth_6_.getBoundsFlags();
+        BlockModelRenderer.AmbientOcclusionFace blockmodelrenderer$ambientocclusionface = p_renderQuadsSmooth_6_.getAoFace();
+        double d0 = (double)p_renderQuadsSmooth_3_.getX();
+        double d1 = (double)p_renderQuadsSmooth_3_.getY();
+        double d2 = (double)p_renderQuadsSmooth_3_.getZ();
+        Block.EnumOffsetType block$enumoffsettype = block.getOffsetType();
 
         if (block$enumoffsettype != Block.EnumOffsetType.NONE)
         {
-            long i = MathHelper.getPositionRandom(p_renderModelAmbientOcclusionQuads_3_);
+            long i = MathHelper.getPositionRandom(p_renderQuadsSmooth_3_);
             d0 += ((double)((float)(i >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
             d2 += ((double)((float)(i >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
 
@@ -220,74 +194,85 @@ public class BlockModelRenderer
             }
         }
 
-        for (BakedQuad bakedquad : p_renderModelAmbientOcclusionQuads_5_)
+        for (BakedQuad bakedquad : p_renderQuadsSmooth_5_)
         {
-            if (!p_renderModelAmbientOcclusionQuads_6_.isBreakingAnimation(bakedquad))
+            this.fillQuadBounds(block, bakedquad.getVertexData(), bakedquad.getFace(), afloat, bitset);
+            blockmodelrenderer$ambientocclusionface.updateVertexBrightness(p_renderQuadsSmooth_1_, block, p_renderQuadsSmooth_3_, bakedquad.getFace(), afloat, bitset);
+
+            if (bakedquad.getSprite().isEmissive)
             {
-                BakedQuad bakedquad1 = bakedquad;
-
-                if (Config.isConnectedTextures())
-                {
-                    bakedquad = ConnectedTextures.getConnectedTexture(p_renderModelAmbientOcclusionQuads_1_, iblockstate, p_renderModelAmbientOcclusionQuads_3_, bakedquad, p_renderModelAmbientOcclusionQuads_6_);
-                }
-
-                if (bakedquad == bakedquad1 && Config.isNaturalTextures())
-                {
-                    bakedquad = NaturalTextures.getNaturalTexture(p_renderModelAmbientOcclusionQuads_3_, bakedquad);
-                }
+                blockmodelrenderer$ambientocclusionface.setMaxBlockLight();
             }
 
-            this.fillQuadBounds(p_renderModelAmbientOcclusionQuads_2_, bakedquad.getVertexData(), bakedquad.getFace(), afloat, bitset);
-            blockmodelrenderer$ambientocclusionface.updateVertexBrightness(p_renderModelAmbientOcclusionQuads_1_, p_renderModelAmbientOcclusionQuads_2_, p_renderModelAmbientOcclusionQuads_3_, bakedquad.getFace(), afloat, bitset);
-
-            if (p_renderModelAmbientOcclusionQuads_4_.isMultiTexture())
+            if (p_renderQuadsSmooth_4_.isMultiTexture())
             {
-                p_renderModelAmbientOcclusionQuads_4_.addVertexData(bakedquad.getVertexDataSingle());
-                p_renderModelAmbientOcclusionQuads_4_.putSprite(bakedquad.getSprite());
+                p_renderQuadsSmooth_4_.addVertexData(bakedquad.getVertexDataSingle());
             }
             else
             {
-                p_renderModelAmbientOcclusionQuads_4_.addVertexData(bakedquad.getVertexData());
+                p_renderQuadsSmooth_4_.addVertexData(bakedquad.getVertexData());
             }
 
-            p_renderModelAmbientOcclusionQuads_4_.putBrightness4(blockmodelrenderer$ambientocclusionface.vertexBrightness[0], blockmodelrenderer$ambientocclusionface.vertexBrightness[1], blockmodelrenderer$ambientocclusionface.vertexBrightness[2], blockmodelrenderer$ambientocclusionface.vertexBrightness[3]);
-            int k = CustomColors.getColorMultiplier(bakedquad, p_renderModelAmbientOcclusionQuads_2_, p_renderModelAmbientOcclusionQuads_1_, p_renderModelAmbientOcclusionQuads_3_, p_renderModelAmbientOcclusionQuads_6_);
+            p_renderQuadsSmooth_4_.putSprite(bakedquad.getSprite());
+            p_renderQuadsSmooth_4_.putBrightness4(blockmodelrenderer$ambientocclusionface.vertexBrightness[0], blockmodelrenderer$ambientocclusionface.vertexBrightness[1], blockmodelrenderer$ambientocclusionface.vertexBrightness[2], blockmodelrenderer$ambientocclusionface.vertexBrightness[3]);
+            int j = CustomColors.getColorMultiplier(bakedquad, p_renderQuadsSmooth_2_, p_renderQuadsSmooth_1_, p_renderQuadsSmooth_3_, p_renderQuadsSmooth_6_);
 
-            if (!bakedquad.hasTintIndex() && k == -1)
+            if (!bakedquad.hasTintIndex() && j == -1)
             {
-                p_renderModelAmbientOcclusionQuads_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0], 4);
-                p_renderModelAmbientOcclusionQuads_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1], 3);
-                p_renderModelAmbientOcclusionQuads_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2], 2);
-                p_renderModelAmbientOcclusionQuads_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3], 1);
-            }
-            else
-            {
-                int j;
-
-                if (k != -1)
+                if (separateAoLightValue)
                 {
-                    j = k;
+                    p_renderQuadsSmooth_4_.putColorMultiplierRgba(1.0F, 1.0F, 1.0F, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0], 4);
+                    p_renderQuadsSmooth_4_.putColorMultiplierRgba(1.0F, 1.0F, 1.0F, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1], 3);
+                    p_renderQuadsSmooth_4_.putColorMultiplierRgba(1.0F, 1.0F, 1.0F, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2], 2);
+                    p_renderQuadsSmooth_4_.putColorMultiplierRgba(1.0F, 1.0F, 1.0F, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3], 1);
                 }
                 else
                 {
-                    j = p_renderModelAmbientOcclusionQuads_2_.colorMultiplier(p_renderModelAmbientOcclusionQuads_1_, p_renderModelAmbientOcclusionQuads_3_, bakedquad.getTintIndex());
+                    p_renderQuadsSmooth_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0], 4);
+                    p_renderQuadsSmooth_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1], 3);
+                    p_renderQuadsSmooth_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2], 2);
+                    p_renderQuadsSmooth_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3], blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3], 1);
+                }
+            }
+            else
+            {
+                int k;
+
+                if (j != -1)
+                {
+                    k = j;
+                }
+                else
+                {
+                    k = block.colorMultiplier(p_renderQuadsSmooth_1_, p_renderQuadsSmooth_3_, bakedquad.getTintIndex());
                 }
 
                 if (EntityRenderer.anaglyphEnable)
                 {
-                    j = TextureUtil.anaglyphColor(j);
+                    k = TextureUtil.anaglyphColor(k);
                 }
 
-                float f = (float)(j >> 16 & 255) / 255.0F;
-                float f1 = (float)(j >> 8 & 255) / 255.0F;
-                float f2 = (float)(j & 255) / 255.0F;
-                p_renderModelAmbientOcclusionQuads_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0] * f, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0] * f1, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0] * f2, 4);
-                p_renderModelAmbientOcclusionQuads_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1] * f, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1] * f1, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1] * f2, 3);
-                p_renderModelAmbientOcclusionQuads_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2] * f, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2] * f1, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2] * f2, 2);
-                p_renderModelAmbientOcclusionQuads_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3] * f, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3] * f1, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3] * f2, 1);
+                float f = (float)(k >> 16 & 255) / 255.0F;
+                float f1 = (float)(k >> 8 & 255) / 255.0F;
+                float f2 = (float)(k & 255) / 255.0F;
+
+                if (separateAoLightValue)
+                {
+                    p_renderQuadsSmooth_4_.putColorMultiplierRgba(f, f1, f2, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0], 4);
+                    p_renderQuadsSmooth_4_.putColorMultiplierRgba(f, f1, f2, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1], 3);
+                    p_renderQuadsSmooth_4_.putColorMultiplierRgba(f, f1, f2, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2], 2);
+                    p_renderQuadsSmooth_4_.putColorMultiplierRgba(f, f1, f2, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3], 1);
+                }
+                else
+                {
+                    p_renderQuadsSmooth_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0] * f, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0] * f1, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[0] * f2, 4);
+                    p_renderQuadsSmooth_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1] * f, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1] * f1, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[1] * f2, 3);
+                    p_renderQuadsSmooth_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2] * f, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2] * f1, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[2] * f2, 2);
+                    p_renderQuadsSmooth_4_.putColorMultiplier(blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3] * f, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3] * f1, blockmodelrenderer$ambientocclusionface.vertexColorMultiplier[3] * f2, 1);
+                }
             }
 
-            p_renderModelAmbientOcclusionQuads_4_.putPosition(d0, d1, d2);
+            p_renderQuadsSmooth_4_.putPosition(d0, d1, d2);
         }
     }
 
@@ -322,63 +307,64 @@ public class BlockModelRenderer
             quadBounds[EnumFacing.UP.getIndex()] = f4;
             quadBounds[EnumFacing.NORTH.getIndex()] = f2;
             quadBounds[EnumFacing.SOUTH.getIndex()] = f5;
-            quadBounds[EnumFacing.WEST.getIndex() + EnumFacing.VALUES.length] = 1.0F - f;
-            quadBounds[EnumFacing.EAST.getIndex() + EnumFacing.VALUES.length] = 1.0F - f3;
-            quadBounds[EnumFacing.DOWN.getIndex() + EnumFacing.VALUES.length] = 1.0F - f1;
-            quadBounds[EnumFacing.UP.getIndex() + EnumFacing.VALUES.length] = 1.0F - f4;
-            quadBounds[EnumFacing.NORTH.getIndex() + EnumFacing.VALUES.length] = 1.0F - f2;
-            quadBounds[EnumFacing.SOUTH.getIndex() + EnumFacing.VALUES.length] = 1.0F - f5;
+            int k = EnumFacing.VALUES.length;
+            quadBounds[EnumFacing.WEST.getIndex() + k] = 1.0F - f;
+            quadBounds[EnumFacing.EAST.getIndex() + k] = 1.0F - f3;
+            quadBounds[EnumFacing.DOWN.getIndex() + k] = 1.0F - f1;
+            quadBounds[EnumFacing.UP.getIndex() + k] = 1.0F - f4;
+            quadBounds[EnumFacing.NORTH.getIndex() + k] = 1.0F - f2;
+            quadBounds[EnumFacing.SOUTH.getIndex() + k] = 1.0F - f5;
         }
 
-        float f10 = 1.0E-4F;
-        float f9 = 0.9999F;
+        float f9 = 1.0E-4F;
+        float f10 = 0.9999F;
 
-        switch (BlockModelRenderer.BlockModelRenderer$1.field_178290_a[facingIn.ordinal()])
+        switch (facingIn)
         {
-            case 1:
+            case DOWN:
                 boundsFlags.set(1, f >= 1.0E-4F || f2 >= 1.0E-4F || f3 <= 0.9999F || f5 <= 0.9999F);
                 boundsFlags.set(0, (f1 < 1.0E-4F || blockIn.isFullCube()) && f1 == f4);
                 break;
 
-            case 2:
+            case UP:
                 boundsFlags.set(1, f >= 1.0E-4F || f2 >= 1.0E-4F || f3 <= 0.9999F || f5 <= 0.9999F);
                 boundsFlags.set(0, (f4 > 0.9999F || blockIn.isFullCube()) && f1 == f4);
                 break;
 
-            case 3:
+            case NORTH:
                 boundsFlags.set(1, f >= 1.0E-4F || f1 >= 1.0E-4F || f3 <= 0.9999F || f4 <= 0.9999F);
                 boundsFlags.set(0, (f2 < 1.0E-4F || blockIn.isFullCube()) && f2 == f5);
                 break;
 
-            case 4:
+            case SOUTH:
                 boundsFlags.set(1, f >= 1.0E-4F || f1 >= 1.0E-4F || f3 <= 0.9999F || f4 <= 0.9999F);
                 boundsFlags.set(0, (f5 > 0.9999F || blockIn.isFullCube()) && f2 == f5);
                 break;
 
-            case 5:
+            case WEST:
                 boundsFlags.set(1, f1 >= 1.0E-4F || f2 >= 1.0E-4F || f4 <= 0.9999F || f5 <= 0.9999F);
                 boundsFlags.set(0, (f < 1.0E-4F || blockIn.isFullCube()) && f == f3);
                 break;
 
-            case 6:
+            case EAST:
                 boundsFlags.set(1, f1 >= 1.0E-4F || f2 >= 1.0E-4F || f4 <= 0.9999F || f5 <= 0.9999F);
                 boundsFlags.set(0, (f3 > 0.9999F || blockIn.isFullCube()) && f == f3);
         }
     }
 
-    private void renderModelStandardQuads(IBlockAccess p_renderModelStandardQuads_1_, Block p_renderModelStandardQuads_2_, BlockPos p_renderModelStandardQuads_3_, EnumFacing p_renderModelStandardQuads_4_, int p_renderModelStandardQuads_5_, boolean p_renderModelStandardQuads_6_, WorldRenderer p_renderModelStandardQuads_7_, List<BakedQuad> p_renderModelStandardQuads_8_, RenderEnv p_renderModelStandardQuads_9_)
+    private void renderQuadsFlat(IBlockAccess p_renderQuadsFlat_1_, IBlockState p_renderQuadsFlat_2_, BlockPos p_renderQuadsFlat_3_, EnumFacing p_renderQuadsFlat_4_, int p_renderQuadsFlat_5_, boolean p_renderQuadsFlat_6_, WorldRenderer p_renderQuadsFlat_7_, List<BakedQuad> p_renderQuadsFlat_8_, RenderEnv p_renderQuadsFlat_9_)
     {
-        BitSet bitset = p_renderModelStandardQuads_9_.getBoundsFlags();
-        IBlockState iblockstate = p_renderModelStandardQuads_9_.getBlockState();
-        double d0 = (double)p_renderModelStandardQuads_3_.getX();
-        double d1 = (double)p_renderModelStandardQuads_3_.getY();
-        double d2 = (double)p_renderModelStandardQuads_3_.getZ();
-        Block.EnumOffsetType block$enumoffsettype = p_renderModelStandardQuads_2_.getOffsetType();
+        Block block = p_renderQuadsFlat_2_.getBlock();
+        BitSet bitset = p_renderQuadsFlat_9_.getBoundsFlags();
+        double d0 = (double)p_renderQuadsFlat_3_.getX();
+        double d1 = (double)p_renderQuadsFlat_3_.getY();
+        double d2 = (double)p_renderQuadsFlat_3_.getZ();
+        Block.EnumOffsetType block$enumoffsettype = block.getOffsetType();
 
         if (block$enumoffsettype != Block.EnumOffsetType.NONE)
         {
-            int i = p_renderModelStandardQuads_3_.getX();
-            int j = p_renderModelStandardQuads_3_.getZ();
+            int i = p_renderQuadsFlat_3_.getX();
+            int j = p_renderQuadsFlat_3_.getZ();
             long k = (long)(i * 3129871) ^ (long)j * 116129781L;
             k = k * k * 42317861L + k * 11L;
             d0 += ((double)((float)(k >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
@@ -390,41 +376,31 @@ public class BlockModelRenderer
             }
         }
 
-        for (BakedQuad bakedquad : p_renderModelStandardQuads_8_)
+        for (BakedQuad bakedquad : p_renderQuadsFlat_8_)
         {
-            if (!p_renderModelStandardQuads_9_.isBreakingAnimation(bakedquad))
+            if (p_renderQuadsFlat_6_)
             {
-                BakedQuad bakedquad1 = bakedquad;
-
-                if (Config.isConnectedTextures())
-                {
-                    bakedquad = ConnectedTextures.getConnectedTexture(p_renderModelStandardQuads_1_, iblockstate, p_renderModelStandardQuads_3_, bakedquad, p_renderModelStandardQuads_9_);
-                }
-
-                if (bakedquad == bakedquad1 && Config.isNaturalTextures())
-                {
-                    bakedquad = NaturalTextures.getNaturalTexture(p_renderModelStandardQuads_3_, bakedquad);
-                }
+                this.fillQuadBounds(block, bakedquad.getVertexData(), bakedquad.getFace(), (float[])null, bitset);
+                p_renderQuadsFlat_5_ = bitset.get(0) ? block.getMixedBrightnessForBlock(p_renderQuadsFlat_1_, p_renderQuadsFlat_3_.offset(bakedquad.getFace())) : block.getMixedBrightnessForBlock(p_renderQuadsFlat_1_, p_renderQuadsFlat_3_);
             }
 
-            if (p_renderModelStandardQuads_6_)
+            if (bakedquad.getSprite().isEmissive)
             {
-                this.fillQuadBounds(p_renderModelStandardQuads_2_, bakedquad.getVertexData(), bakedquad.getFace(), (float[])null, bitset);
-                p_renderModelStandardQuads_5_ = bitset.get(0) ? p_renderModelStandardQuads_2_.getMixedBrightnessForBlock(p_renderModelStandardQuads_1_, p_renderModelStandardQuads_3_.offset(bakedquad.getFace())) : p_renderModelStandardQuads_2_.getMixedBrightnessForBlock(p_renderModelStandardQuads_1_, p_renderModelStandardQuads_3_);
+                p_renderQuadsFlat_5_ |= 240;
             }
 
-            if (p_renderModelStandardQuads_7_.isMultiTexture())
+            if (p_renderQuadsFlat_7_.isMultiTexture())
             {
-                p_renderModelStandardQuads_7_.addVertexData(bakedquad.getVertexDataSingle());
-                p_renderModelStandardQuads_7_.putSprite(bakedquad.getSprite());
+                p_renderQuadsFlat_7_.addVertexData(bakedquad.getVertexDataSingle());
             }
             else
             {
-                p_renderModelStandardQuads_7_.addVertexData(bakedquad.getVertexData());
+                p_renderQuadsFlat_7_.addVertexData(bakedquad.getVertexData());
             }
 
-            p_renderModelStandardQuads_7_.putBrightness4(p_renderModelStandardQuads_5_, p_renderModelStandardQuads_5_, p_renderModelStandardQuads_5_, p_renderModelStandardQuads_5_);
-            int i1 = CustomColors.getColorMultiplier(bakedquad, p_renderModelStandardQuads_2_, p_renderModelStandardQuads_1_, p_renderModelStandardQuads_3_, p_renderModelStandardQuads_9_);
+            p_renderQuadsFlat_7_.putSprite(bakedquad.getSprite());
+            p_renderQuadsFlat_7_.putBrightness4(p_renderQuadsFlat_5_, p_renderQuadsFlat_5_, p_renderQuadsFlat_5_, p_renderQuadsFlat_5_);
+            int i1 = CustomColors.getColorMultiplier(bakedquad, p_renderQuadsFlat_2_, p_renderQuadsFlat_1_, p_renderQuadsFlat_3_, p_renderQuadsFlat_9_);
 
             if (bakedquad.hasTintIndex() || i1 != -1)
             {
@@ -436,7 +412,7 @@ public class BlockModelRenderer
                 }
                 else
                 {
-                    l = p_renderModelStandardQuads_2_.colorMultiplier(p_renderModelStandardQuads_1_, p_renderModelStandardQuads_3_, bakedquad.getTintIndex());
+                    l = block.colorMultiplier(p_renderQuadsFlat_1_, p_renderQuadsFlat_3_, bakedquad.getTintIndex());
                 }
 
                 if (EntityRenderer.anaglyphEnable)
@@ -447,13 +423,13 @@ public class BlockModelRenderer
                 float f = (float)(l >> 16 & 255) / 255.0F;
                 float f1 = (float)(l >> 8 & 255) / 255.0F;
                 float f2 = (float)(l & 255) / 255.0F;
-                p_renderModelStandardQuads_7_.putColorMultiplier(f, f1, f2, 4);
-                p_renderModelStandardQuads_7_.putColorMultiplier(f, f1, f2, 3);
-                p_renderModelStandardQuads_7_.putColorMultiplier(f, f1, f2, 2);
-                p_renderModelStandardQuads_7_.putColorMultiplier(f, f1, f2, 1);
+                p_renderQuadsFlat_7_.putColorMultiplier(f, f1, f2, 4);
+                p_renderQuadsFlat_7_.putColorMultiplier(f, f1, f2, 3);
+                p_renderQuadsFlat_7_.putColorMultiplier(f, f1, f2, 2);
+                p_renderQuadsFlat_7_.putColorMultiplier(f, f1, f2, 1);
             }
 
-            p_renderModelStandardQuads_7_.putPosition(d0, d1, d2);
+            p_renderQuadsFlat_7_.putPosition(d0, d1, d2);
         }
     }
 
@@ -500,6 +476,7 @@ public class BlockModelRenderer
         {
             worldrenderer.begin(7, DefaultVertexFormats.ITEM);
             worldrenderer.addVertexData(bakedquad.getVertexData());
+            worldrenderer.putSprite(bakedquad.getSprite());
 
             if (bakedquad.hasTintIndex())
             {
@@ -521,66 +498,70 @@ public class BlockModelRenderer
         return p_fixAoLightValue_0_ == 0.2F ? aoLightValueOpaque : p_fixAoLightValue_0_;
     }
 
-    static final class BlockModelRenderer$1
+    public static void updateAoLightValue()
     {
-        static final int[] field_178290_a = new int[EnumFacing.values().length];
-        private static final String __OBFID = "CL_00002517";
+        aoLightValueOpaque = 1.0F - Config.getAmbientOcclusionLevel() * 0.8F;
+        separateAoLightValue = Config.isShaders() && Shaders.isSeparateAo();
+    }
 
-        static
+    private void renderOverlayModels(IBlockAccess p_renderOverlayModels_1_, IBakedModel p_renderOverlayModels_2_, IBlockState p_renderOverlayModels_3_, BlockPos p_renderOverlayModels_4_, WorldRenderer p_renderOverlayModels_5_, boolean p_renderOverlayModels_6_, long p_renderOverlayModels_7_, RenderEnv p_renderOverlayModels_9_, boolean p_renderOverlayModels_10_)
+    {
+        if (p_renderOverlayModels_9_.isOverlaysRendered())
         {
-            try
+            for (int i = 0; i < OVERLAY_LAYERS.length; ++i)
             {
-                field_178290_a[EnumFacing.DOWN.ordinal()] = 1;
-            }
-            catch (NoSuchFieldError var6)
-            {
-                ;
-            }
+                EnumWorldBlockLayer enumworldblocklayer = OVERLAY_LAYERS[i];
+                ListQuadsOverlay listquadsoverlay = p_renderOverlayModels_9_.getListQuadsOverlay(enumworldblocklayer);
 
-            try
-            {
-                field_178290_a[EnumFacing.UP.ordinal()] = 2;
-            }
-            catch (NoSuchFieldError var5)
-            {
-                ;
-            }
+                if (listquadsoverlay.size() > 0)
+                {
+                    RegionRenderCacheBuilder regionrendercachebuilder = p_renderOverlayModels_9_.getRegionRenderCacheBuilder();
 
-            try
-            {
-                field_178290_a[EnumFacing.NORTH.ordinal()] = 3;
-            }
-            catch (NoSuchFieldError var4)
-            {
-                ;
-            }
+                    if (regionrendercachebuilder != null)
+                    {
+                        WorldRenderer worldrenderer = regionrendercachebuilder.getWorldRendererByLayer(enumworldblocklayer);
 
-            try
-            {
-                field_178290_a[EnumFacing.SOUTH.ordinal()] = 4;
-            }
-            catch (NoSuchFieldError var3)
-            {
-                ;
-            }
+                        if (!worldrenderer.isDrawing())
+                        {
+                            worldrenderer.begin(7, DefaultVertexFormats.BLOCK);
+                            worldrenderer.setTranslation(p_renderOverlayModels_5_.getXOffset(), p_renderOverlayModels_5_.getYOffset(), p_renderOverlayModels_5_.getZOffset());
+                        }
 
-            try
-            {
-                field_178290_a[EnumFacing.WEST.ordinal()] = 5;
-            }
-            catch (NoSuchFieldError var2)
-            {
-                ;
-            }
+                        for (int j = 0; j < listquadsoverlay.size(); ++j)
+                        {
+                            BakedQuad bakedquad = listquadsoverlay.getQuad(j);
+                            List<BakedQuad> list = listquadsoverlay.getListQuadsSingle(bakedquad);
+                            IBlockState iblockstate = listquadsoverlay.getBlockState(j);
 
-            try
-            {
-                field_178290_a[EnumFacing.EAST.ordinal()] = 6;
+                            if (bakedquad.getQuadEmissive() != null)
+                            {
+                                listquadsoverlay.addQuad(bakedquad.getQuadEmissive(), iblockstate);
+                            }
+
+                            p_renderOverlayModels_9_.reset(iblockstate, p_renderOverlayModels_4_);
+
+                            if (p_renderOverlayModels_10_)
+                            {
+                                this.renderQuadsSmooth(p_renderOverlayModels_1_, iblockstate, p_renderOverlayModels_4_, worldrenderer, list, p_renderOverlayModels_9_);
+                            }
+                            else
+                            {
+                                int k = iblockstate.getBlock().getMixedBrightnessForBlock(p_renderOverlayModels_1_, p_renderOverlayModels_4_.offset(bakedquad.getFace()));
+                                this.renderQuadsFlat(p_renderOverlayModels_1_, iblockstate, p_renderOverlayModels_4_, bakedquad.getFace(), k, false, worldrenderer, list, p_renderOverlayModels_9_);
+                            }
+                        }
+                    }
+
+                    listquadsoverlay.clear();
+                }
             }
-            catch (NoSuchFieldError var1)
-            {
-                ;
-            }
+        }
+
+        if (Config.isBetterSnow() && !p_renderOverlayModels_9_.isBreakingAnimation() && BetterSnow.shouldRender(p_renderOverlayModels_1_, p_renderOverlayModels_3_, p_renderOverlayModels_4_))
+        {
+            IBakedModel ibakedmodel = BetterSnow.getModelSnowLayer();
+            IBlockState iblockstate1 = BetterSnow.getStateSnowLayer();
+            this.renderModel(p_renderOverlayModels_1_, ibakedmodel, iblockstate1, p_renderOverlayModels_4_, p_renderOverlayModels_5_, p_renderOverlayModels_6_);
         }
     }
 
@@ -588,14 +569,27 @@ public class BlockModelRenderer
     {
         private final float[] vertexColorMultiplier = new float[4];
         private final int[] vertexBrightness = new int[4];
-        private static final String __OBFID = "CL_00002515";
+
+        public AmbientOcclusionFace()
+        {
+            this((BlockModelRenderer)null);
+        }
 
         public AmbientOcclusionFace(BlockModelRenderer p_i46235_1_)
         {
         }
 
-        public AmbientOcclusionFace()
+        public void setMaxBlockLight()
         {
+            int i = 240;
+            this.vertexBrightness[0] |= i;
+            this.vertexBrightness[1] |= i;
+            this.vertexBrightness[2] |= i;
+            this.vertexBrightness[3] |= i;
+            this.vertexColorMultiplier[0] = 1.0F;
+            this.vertexColorMultiplier[1] = 1.0F;
+            this.vertexColorMultiplier[2] = 1.0F;
+            this.vertexColorMultiplier[3] = 1.0F;
         }
 
         public void updateVertexBrightness(IBlockAccess blockAccessIn, Block blockIn, BlockPos blockPosIn, EnumFacing facingIn, float[] quadBounds, BitSet boundsFlags)
@@ -633,111 +627,111 @@ public class BlockModelRenderer
                 i1 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos5);
             }
 
-            float f5;
             int j1;
+            float f26;
 
             if (!flag3 && !flag)
             {
-                f5 = f;
+                f26 = f;
                 j1 = i;
             }
             else
             {
                 BlockPos blockpos6 = blockpos1.offset(blockmodelrenderer$enumneighborinfo.field_178276_g[3]);
-                f5 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos6).getBlock().getAmbientOcclusionLightValue());
+                f26 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos6).getBlock().getAmbientOcclusionLightValue());
                 j1 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos6);
             }
 
-            float f6;
             int k1;
+            float f27;
 
             if (!flag2 && !flag1)
             {
-                f6 = f1;
+                f27 = f1;
                 k1 = j;
             }
             else
             {
                 BlockPos blockpos7 = blockpos2.offset(blockmodelrenderer$enumneighborinfo.field_178276_g[2]);
-                f6 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos7).getBlock().getAmbientOcclusionLightValue());
+                f27 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos7).getBlock().getAmbientOcclusionLightValue());
                 k1 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos7);
             }
 
-            float f7;
             int l1;
+            float f28;
 
             if (!flag3 && !flag1)
             {
-                f7 = f1;
+                f28 = f1;
                 l1 = j;
             }
             else
             {
                 BlockPos blockpos8 = blockpos2.offset(blockmodelrenderer$enumneighborinfo.field_178276_g[3]);
-                f7 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos8).getBlock().getAmbientOcclusionLightValue());
+                f28 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos8).getBlock().getAmbientOcclusionLightValue());
                 l1 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos8);
             }
 
-            int i2 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockPosIn);
+            int i3 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockPosIn);
 
             if (boundsFlags.get(0) || !blockAccessIn.getBlockState(blockPosIn.offset(facingIn)).getBlock().isOpaqueCube())
             {
-                i2 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockPosIn.offset(facingIn));
+                i3 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockPosIn.offset(facingIn));
             }
 
-            float f8 = boundsFlags.get(0) ? blockAccessIn.getBlockState(blockpos).getBlock().getAmbientOcclusionLightValue() : blockAccessIn.getBlockState(blockPosIn).getBlock().getAmbientOcclusionLightValue();
-            f8 = BlockModelRenderer.fixAoLightValue(f8);
+            float f5 = boundsFlags.get(0) ? blockAccessIn.getBlockState(blockpos).getBlock().getAmbientOcclusionLightValue() : blockAccessIn.getBlockState(blockPosIn).getBlock().getAmbientOcclusionLightValue();
+            f5 = BlockModelRenderer.fixAoLightValue(f5);
             BlockModelRenderer.VertexTranslations blockmodelrenderer$vertextranslations = BlockModelRenderer.VertexTranslations.getVertexTranslations(facingIn);
 
             if (boundsFlags.get(1) && blockmodelrenderer$enumneighborinfo.field_178289_i)
             {
-                float f29 = (f3 + f + f5 + f8) * 0.25F;
-                float f30 = (f2 + f + f4 + f8) * 0.25F;
-                float f31 = (f2 + f1 + f6 + f8) * 0.25F;
-                float f32 = (f3 + f1 + f7 + f8) * 0.25F;
-                float f13 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[0].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[1].field_178229_m];
-                float f14 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[2].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[3].field_178229_m];
-                float f15 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[4].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[5].field_178229_m];
-                float f16 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[6].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[7].field_178229_m];
-                float f17 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[0].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[1].field_178229_m];
-                float f18 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[2].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[3].field_178229_m];
-                float f19 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[4].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[5].field_178229_m];
-                float f20 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[6].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[7].field_178229_m];
-                float f21 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[0].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[1].field_178229_m];
-                float f22 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[2].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[3].field_178229_m];
-                float f23 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[4].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[5].field_178229_m];
-                float f24 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[6].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[7].field_178229_m];
-                float f25 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[0].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[1].field_178229_m];
-                float f26 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[2].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[3].field_178229_m];
-                float f27 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[4].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[5].field_178229_m];
-                float f28 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[6].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[7].field_178229_m];
-                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178191_g] = f29 * f13 + f30 * f14 + f31 * f15 + f32 * f16;
-                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178200_h] = f29 * f17 + f30 * f18 + f31 * f19 + f32 * f20;
-                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178201_i] = f29 * f21 + f30 * f22 + f31 * f23 + f32 * f24;
-                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178198_j] = f29 * f25 + f30 * f26 + f31 * f27 + f32 * f28;
-                int j2 = this.getAoBrightness(l, i, j1, i2);
-                int k2 = this.getAoBrightness(k, i, i1, i2);
-                int l2 = this.getAoBrightness(k, j, k1, i2);
-                int i3 = this.getAoBrightness(l, j, l1, i2);
-                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178191_g] = this.getVertexBrightness(j2, k2, l2, i3, f13, f14, f15, f16);
-                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178200_h] = this.getVertexBrightness(j2, k2, l2, i3, f17, f18, f19, f20);
-                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178201_i] = this.getVertexBrightness(j2, k2, l2, i3, f21, f22, f23, f24);
-                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178198_j] = this.getVertexBrightness(j2, k2, l2, i3, f25, f26, f27, f28);
+                float f29 = (f3 + f + f26 + f5) * 0.25F;
+                float f30 = (f2 + f + f4 + f5) * 0.25F;
+                float f31 = (f2 + f1 + f27 + f5) * 0.25F;
+                float f32 = (f3 + f1 + f28 + f5) * 0.25F;
+                float f10 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[0].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[1].field_178229_m];
+                float f11 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[2].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[3].field_178229_m];
+                float f12 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[4].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[5].field_178229_m];
+                float f13 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[6].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178286_j[7].field_178229_m];
+                float f14 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[0].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[1].field_178229_m];
+                float f15 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[2].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[3].field_178229_m];
+                float f16 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[4].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[5].field_178229_m];
+                float f17 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[6].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178287_k[7].field_178229_m];
+                float f18 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[0].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[1].field_178229_m];
+                float f19 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[2].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[3].field_178229_m];
+                float f20 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[4].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[5].field_178229_m];
+                float f21 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[6].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178284_l[7].field_178229_m];
+                float f22 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[0].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[1].field_178229_m];
+                float f23 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[2].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[3].field_178229_m];
+                float f24 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[4].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[5].field_178229_m];
+                float f25 = quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[6].field_178229_m] * quadBounds[blockmodelrenderer$enumneighborinfo.field_178285_m[7].field_178229_m];
+                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178191_g] = f29 * f10 + f30 * f11 + f31 * f12 + f32 * f13;
+                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178200_h] = f29 * f14 + f30 * f15 + f31 * f16 + f32 * f17;
+                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178201_i] = f29 * f18 + f30 * f19 + f31 * f20 + f32 * f21;
+                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178198_j] = f29 * f22 + f30 * f23 + f31 * f24 + f32 * f25;
+                int i2 = this.getAoBrightness(l, i, j1, i3);
+                int j2 = this.getAoBrightness(k, i, i1, i3);
+                int k2 = this.getAoBrightness(k, j, k1, i3);
+                int l2 = this.getAoBrightness(l, j, l1, i3);
+                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178191_g] = this.getVertexBrightness(i2, j2, k2, l2, f10, f11, f12, f13);
+                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178200_h] = this.getVertexBrightness(i2, j2, k2, l2, f14, f15, f16, f17);
+                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178201_i] = this.getVertexBrightness(i2, j2, k2, l2, f18, f19, f20, f21);
+                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178198_j] = this.getVertexBrightness(i2, j2, k2, l2, f22, f23, f24, f25);
             }
             else
             {
-                float f9 = (f3 + f + f5 + f8) * 0.25F;
-                float f10 = (f2 + f + f4 + f8) * 0.25F;
-                float f11 = (f2 + f1 + f6 + f8) * 0.25F;
-                float f12 = (f3 + f1 + f7 + f8) * 0.25F;
-                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178191_g] = this.getAoBrightness(l, i, j1, i2);
-                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178200_h] = this.getAoBrightness(k, i, i1, i2);
-                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178201_i] = this.getAoBrightness(k, j, k1, i2);
-                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178198_j] = this.getAoBrightness(l, j, l1, i2);
-                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178191_g] = f9;
-                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178200_h] = f10;
-                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178201_i] = f11;
-                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178198_j] = f12;
+                float f6 = (f3 + f + f26 + f5) * 0.25F;
+                float f7 = (f2 + f + f4 + f5) * 0.25F;
+                float f8 = (f2 + f1 + f27 + f5) * 0.25F;
+                float f9 = (f3 + f1 + f28 + f5) * 0.25F;
+                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178191_g] = this.getAoBrightness(l, i, j1, i3);
+                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178200_h] = this.getAoBrightness(k, i, i1, i3);
+                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178201_i] = this.getAoBrightness(k, j, k1, i3);
+                this.vertexBrightness[blockmodelrenderer$vertextranslations.field_178198_j] = this.getAoBrightness(l, j, l1, i3);
+                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178191_g] = f6;
+                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178200_h] = f7;
+                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178201_i] = f8;
+                this.vertexColorMultiplier[blockmodelrenderer$vertextranslations.field_178198_j] = f9;
             }
         }
 
@@ -771,12 +765,12 @@ public class BlockModelRenderer
 
     public static enum EnumNeighborInfo
     {
-        DOWN("DOWN", 0, new EnumFacing[]{EnumFacing.WEST, EnumFacing.EAST, EnumFacing.NORTH, EnumFacing.SOUTH}, 0.5F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.SOUTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.SOUTH}),
-        UP("UP", 1, new EnumFacing[]{EnumFacing.EAST, EnumFacing.WEST, EnumFacing.NORTH, EnumFacing.SOUTH}, 1.0F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.SOUTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.SOUTH}),
-        NORTH("NORTH", 2, new EnumFacing[]{EnumFacing.UP, EnumFacing.DOWN, EnumFacing.EAST, EnumFacing.WEST}, 0.8F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_WEST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_EAST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_EAST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_WEST}),
-        SOUTH("SOUTH", 3, new EnumFacing[]{EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP}, 0.8F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.WEST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.WEST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.EAST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.EAST}),
-        WEST("WEST", 4, new EnumFacing[]{EnumFacing.UP, EnumFacing.DOWN, EnumFacing.NORTH, EnumFacing.SOUTH}, 0.6F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.SOUTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.SOUTH}),
-        EAST("EAST", 5, new EnumFacing[]{EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH}, 0.6F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.SOUTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.SOUTH});
+        DOWN(new EnumFacing[]{EnumFacing.WEST, EnumFacing.EAST, EnumFacing.NORTH, EnumFacing.SOUTH}, 0.5F, false, new BlockModelRenderer.Orientation[0], new BlockModelRenderer.Orientation[0], new BlockModelRenderer.Orientation[0], new BlockModelRenderer.Orientation[0]),
+        UP(new EnumFacing[]{EnumFacing.EAST, EnumFacing.WEST, EnumFacing.NORTH, EnumFacing.SOUTH}, 1.0F, false, new BlockModelRenderer.Orientation[0], new BlockModelRenderer.Orientation[0], new BlockModelRenderer.Orientation[0], new BlockModelRenderer.Orientation[0]),
+        NORTH(new EnumFacing[]{EnumFacing.UP, EnumFacing.DOWN, EnumFacing.EAST, EnumFacing.WEST}, 0.8F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_WEST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_EAST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_EAST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_WEST}),
+        SOUTH(new EnumFacing[]{EnumFacing.WEST, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.UP}, 0.8F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.WEST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_WEST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.WEST, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.WEST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.EAST}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_EAST, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.EAST, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.EAST}),
+        WEST(new EnumFacing[]{EnumFacing.UP, EnumFacing.DOWN, EnumFacing.NORTH, EnumFacing.SOUTH}, 0.6F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.SOUTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.SOUTH}),
+        EAST(new EnumFacing[]{EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH}, 0.6F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.SOUTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.SOUTH});
 
         protected final EnumFacing[] field_178276_g;
         protected final float field_178288_h;
@@ -786,18 +780,16 @@ public class BlockModelRenderer
         protected final BlockModelRenderer.Orientation[] field_178284_l;
         protected final BlockModelRenderer.Orientation[] field_178285_m;
         private static final BlockModelRenderer.EnumNeighborInfo[] VALUES = new BlockModelRenderer.EnumNeighborInfo[6];
-        private static final BlockModelRenderer.EnumNeighborInfo[] $VALUES = new BlockModelRenderer.EnumNeighborInfo[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
-        private static final String __OBFID = "CL_00002516";
 
-        private EnumNeighborInfo(String p_i8_3_, int p_i8_4_, EnumFacing[] p_i8_5_, float p_i8_6_, boolean p_i8_7_, BlockModelRenderer.Orientation[] p_i8_8_, BlockModelRenderer.Orientation[] p_i8_9_, BlockModelRenderer.Orientation[] p_i8_10_, BlockModelRenderer.Orientation[] p_i8_11_)
+        private EnumNeighborInfo(EnumFacing[] p_i46236_3_, float p_i46236_4_, boolean p_i46236_5_, BlockModelRenderer.Orientation[] p_i46236_6_, BlockModelRenderer.Orientation[] p_i46236_7_, BlockModelRenderer.Orientation[] p_i46236_8_, BlockModelRenderer.Orientation[] p_i46236_9_)
         {
-            this.field_178276_g = p_i8_5_;
-            this.field_178288_h = p_i8_6_;
-            this.field_178289_i = p_i8_7_;
-            this.field_178286_j = p_i8_8_;
-            this.field_178287_k = p_i8_9_;
-            this.field_178284_l = p_i8_10_;
-            this.field_178285_m = p_i8_11_;
+            this.field_178276_g = p_i46236_3_;
+            this.field_178288_h = p_i46236_4_;
+            this.field_178289_i = p_i46236_5_;
+            this.field_178286_j = p_i46236_6_;
+            this.field_178287_k = p_i46236_7_;
+            this.field_178284_l = p_i46236_8_;
+            this.field_178285_m = p_i46236_9_;
         }
 
         public static BlockModelRenderer.EnumNeighborInfo getNeighbourInfo(EnumFacing p_178273_0_)
@@ -817,52 +809,48 @@ public class BlockModelRenderer
 
     public static enum Orientation
     {
-        DOWN("DOWN", 0, EnumFacing.DOWN, false),
-        UP("UP", 1, EnumFacing.UP, false),
-        NORTH("NORTH", 2, EnumFacing.NORTH, false),
-        SOUTH("SOUTH", 3, EnumFacing.SOUTH, false),
-        WEST("WEST", 4, EnumFacing.WEST, false),
-        EAST("EAST", 5, EnumFacing.EAST, false),
-        FLIP_DOWN("FLIP_DOWN", 6, EnumFacing.DOWN, true),
-        FLIP_UP("FLIP_UP", 7, EnumFacing.UP, true),
-        FLIP_NORTH("FLIP_NORTH", 8, EnumFacing.NORTH, true),
-        FLIP_SOUTH("FLIP_SOUTH", 9, EnumFacing.SOUTH, true),
-        FLIP_WEST("FLIP_WEST", 10, EnumFacing.WEST, true),
-        FLIP_EAST("FLIP_EAST", 11, EnumFacing.EAST, true);
+        DOWN(EnumFacing.DOWN, false),
+        UP(EnumFacing.UP, false),
+        NORTH(EnumFacing.NORTH, false),
+        SOUTH(EnumFacing.SOUTH, false),
+        WEST(EnumFacing.WEST, false),
+        EAST(EnumFacing.EAST, false),
+        FLIP_DOWN(EnumFacing.DOWN, true),
+        FLIP_UP(EnumFacing.UP, true),
+        FLIP_NORTH(EnumFacing.NORTH, true),
+        FLIP_SOUTH(EnumFacing.SOUTH, true),
+        FLIP_WEST(EnumFacing.WEST, true),
+        FLIP_EAST(EnumFacing.EAST, true);
 
         protected final int field_178229_m;
-        private static final BlockModelRenderer.Orientation[] $VALUES = new BlockModelRenderer.Orientation[]{DOWN, UP, NORTH, SOUTH, WEST, EAST, FLIP_DOWN, FLIP_UP, FLIP_NORTH, FLIP_SOUTH, FLIP_WEST, FLIP_EAST};
-        private static final String __OBFID = "CL_00002513";
 
-        private Orientation(String p_i10_3_, int p_i10_4_, EnumFacing p_i10_5_, boolean p_i10_6_)
+        private Orientation(EnumFacing p_i46233_3_, boolean p_i46233_4_)
         {
-            this.field_178229_m = p_i10_5_.getIndex() + (p_i10_6_ ? EnumFacing.values().length : 0);
+            this.field_178229_m = p_i46233_3_.getIndex() + (p_i46233_4_ ? EnumFacing.values().length : 0);
         }
     }
 
     static enum VertexTranslations
     {
-        DOWN("DOWN", 0, 0, 1, 2, 3),
-        UP("UP", 1, 2, 3, 0, 1),
-        NORTH("NORTH", 2, 3, 0, 1, 2),
-        SOUTH("SOUTH", 3, 0, 1, 2, 3),
-        WEST("WEST", 4, 3, 0, 1, 2),
-        EAST("EAST", 5, 1, 2, 3, 0);
+        DOWN(0, 1, 2, 3),
+        UP(2, 3, 0, 1),
+        NORTH(3, 0, 1, 2),
+        SOUTH(0, 1, 2, 3),
+        WEST(3, 0, 1, 2),
+        EAST(1, 2, 3, 0);
 
         private final int field_178191_g;
         private final int field_178200_h;
         private final int field_178201_i;
         private final int field_178198_j;
         private static final BlockModelRenderer.VertexTranslations[] VALUES = new BlockModelRenderer.VertexTranslations[6];
-        private static final BlockModelRenderer.VertexTranslations[] $VALUES = new BlockModelRenderer.VertexTranslations[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
-        private static final String __OBFID = "CL_00002514";
 
-        private VertexTranslations(String p_i9_3_, int p_i9_4_, int p_i9_5_, int p_i9_6_, int p_i9_7_, int p_i9_8_)
+        private VertexTranslations(int p_i46234_3_, int p_i46234_4_, int p_i46234_5_, int p_i46234_6_)
         {
-            this.field_178191_g = p_i9_5_;
-            this.field_178200_h = p_i9_6_;
-            this.field_178201_i = p_i9_7_;
-            this.field_178198_j = p_i9_8_;
+            this.field_178191_g = p_i46234_3_;
+            this.field_178200_h = p_i46234_4_;
+            this.field_178201_i = p_i46234_5_;
+            this.field_178198_j = p_i46234_6_;
         }
 
         public static BlockModelRenderer.VertexTranslations getVertexTranslations(EnumFacing p_178184_0_)

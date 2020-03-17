@@ -1,6 +1,10 @@
 package net.minecraft.client.gui.inventory;
 
 import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.achievement.GuiAchievements;
@@ -28,21 +32,13 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-public class GuiContainerCreative extends InventoryEffectRenderer {
-    /**
-     * The location of the creative inventory tabs texture
-     */
+public class GuiContainerCreative extends InventoryEffectRenderer
+{
+    /** The location of the creative inventory tabs texture */
     private static final ResourceLocation creativeInventoryTabs = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
     private static InventoryBasic field_147060_v = new InventoryBasic("tmp", true, 45);
 
-    /**
-     * Currently selected creative inventory tab index.
-     */
+    /** Currently selected creative inventory tab index. */
     private static int selectedTabIndex = CreativeTabs.tabBlock.getTabIndex();
 
     /** Amount scrolled in Creative mode inventory (0 = top, 1 = bottom) */
@@ -102,7 +98,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
                 {
                     this.mc.thePlayer.dropPlayerItemWithRandomChoice(inventoryplayer1.getItemStack(), true);
                     this.mc.playerController.sendPacketDropItem(inventoryplayer1.getItemStack());
-                    inventoryplayer1.setItemStack(null);
+                    inventoryplayer1.setItemStack((ItemStack)null);
                 }
 
                 if (clickedButton == 1)
@@ -113,21 +109,23 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
                     if (inventoryplayer1.getItemStack().stackSize == 0)
                     {
-                        inventoryplayer1.setItemStack(null);
+                        inventoryplayer1.setItemStack((ItemStack)null);
                     }
                 }
             }
         }
         else if (slotIn == this.field_147064_C && flag)
         {
-            for (int j = 0; j < this.mc.thePlayer.inventoryContainer.getInventory().size(); ++j) {
-                this.mc.playerController.sendSlotPacket(null, j);
+            for (int j = 0; j < this.mc.thePlayer.inventoryContainer.getInventory().size(); ++j)
+            {
+                this.mc.playerController.sendSlotPacket((ItemStack)null, j);
             }
         }
         else if (selectedTabIndex == CreativeTabs.tabInventory.getTabIndex())
         {
-            if (slotIn == this.field_147064_C) {
-                this.mc.thePlayer.inventory.setItemStack(null);
+            if (slotIn == this.field_147064_C)
+            {
+                this.mc.thePlayer.inventory.setItemStack((ItemStack)null);
             }
             else if (clickType == 4 && slotIn != null && slotIn.getHasStack())
             {
@@ -139,7 +137,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
             {
                 this.mc.thePlayer.dropPlayerItemWithRandomChoice(this.mc.thePlayer.inventory.getItemStack(), true);
                 this.mc.playerController.sendPacketDropItem(this.mc.thePlayer.inventory.getItemStack());
-                this.mc.thePlayer.inventory.setItemStack(null);
+                this.mc.thePlayer.inventory.setItemStack((ItemStack)null);
             }
             else
             {
@@ -204,8 +202,9 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
                         ++itemstack1.stackSize;
                     }
                 }
-                else if (itemstack1.stackSize <= 1) {
-                    inventoryplayer.setItemStack(null);
+                else if (itemstack1.stackSize <= 1)
+                {
+                    inventoryplayer.setItemStack((ItemStack)null);
                 }
                 else
                 {
@@ -222,8 +221,9 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
                     itemstack1.stackSize = itemstack1.getMaxStackSize();
                 }
             }
-            else {
-                inventoryplayer.setItemStack(null);
+            else
+            {
+                inventoryplayer.setItemStack((ItemStack)null);
             }
         }
         else
@@ -345,8 +345,9 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
         for (Item item : Item.itemRegistry)
         {
-            if (item != null && item.getCreativeTab() != null) {
-                item.getSubItems(item, null, guicontainercreative$containercreative.itemList);
+            if (item != null && item.getCreativeTab() != null)
+            {
+                item.getSubItems(item, (CreativeTabs)null, guicontainercreative$containercreative.itemList);
             }
         }
 
@@ -361,7 +362,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         Iterator<ItemStack> iterator = guicontainercreative$containercreative.itemList.iterator();
         String s1 = this.searchField.getText().toLowerCase();
 
-        while (iterator.hasNext()) {
+        while (iterator.hasNext())
+        {
             ItemStack itemstack = iterator.next();
             boolean flag = false;
 
@@ -391,7 +393,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
     {
         CreativeTabs creativetabs = CreativeTabs.creativeTabArray[selectedTabIndex];
 
-        if (creativetabs.drawInForegroundOfTab()) {
+        if (creativetabs.drawInForegroundOfTab())
+        {
             GlStateManager.disableBlend();
             this.fontRendererObj.drawString(I18n.format(creativetabs.getTranslatedTabLabel()), 8, 6, 4210752);
         }
@@ -470,7 +473,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
             guicontainercreative$containercreative.inventorySlots = Lists.newArrayList();
 
-            for (int j = 0; j < container.inventorySlots.size(); ++j) {
+            for (int j = 0; j < container.inventorySlots.size(); ++j)
+            {
                 Slot slot = new GuiContainerCreative.CreativeSlot(container.inventorySlots.get(j), j);
                 guicontainercreative$containercreative.inventorySlots.add(slot);
 
@@ -606,7 +610,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
             }
         }
 
-        if (this.field_147064_C != null && selectedTabIndex == CreativeTabs.tabInventory.getTabIndex() && this.isPointInRegion(this.field_147064_C.xDisplayPosition, this.field_147064_C.yDisplayPosition, 16, 16, mouseX, mouseY)) {
+        if (this.field_147064_C != null && selectedTabIndex == CreativeTabs.tabInventory.getTabIndex() && this.isPointInRegion(this.field_147064_C.xDisplayPosition, this.field_147064_C.yDisplayPosition, 16, 16, mouseX, mouseY))
+        {
             this.drawCreativeTabHoveringText(I18n.format("inventory.binSlot"), mouseX, mouseY);
         }
 
@@ -625,8 +630,9 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
             {
                 Map<Integer, Integer> map = EnchantmentHelper.getEnchantments(stack);
 
-                if (map.size() == 1) {
-                    Enchantment enchantment = Enchantment.getEnchantmentById(map.keySet().iterator().next().intValue());
+                if (map.size() == 1)
+                {
+                    Enchantment enchantment = Enchantment.getEnchantmentById(map.keySet().iterator().next());
 
                     for (CreativeTabs creativetabs1 : CreativeTabs.creativeTabArray)
                     {
@@ -639,17 +645,20 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
                 }
             }
 
-            if (creativetabs != null) {
+            if (creativetabs != null)
+            {
                 list.add(1, "" + EnumChatFormatting.BOLD + EnumChatFormatting.BLUE + I18n.format(creativetabs.getTranslatedTabLabel()));
             }
 
             for (int i = 0; i < list.size(); ++i)
             {
-                if (i == 0) {
-                    list.set(i, stack.getRarity().rarityColor + list.get(i));
+                if (i == 0)
+                {
+                    list.set(i, stack.getRarity().rarityColor + (String)list.get(i));
                 }
-                else {
-                    list.set(i, EnumChatFormatting.GRAY + list.get(i));
+                else
+                {
+                    list.set(i, EnumChatFormatting.GRAY + (String)list.get(i));
                 }
             }
 
@@ -757,7 +766,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
             k = k + this.ySize;
         }
 
-        if (this.isPointInRegion(j + 3, k + 3, 23, 27, p_147052_2_, p_147052_3_)) {
+        if (this.isPointInRegion(j + 3, k + 3, 23, 27, p_147052_2_, p_147052_3_))
+        {
             this.drawCreativeTabHoveringText(I18n.format(p_147052_1_.getTranslatedTabLabel()), p_147052_2_, p_147052_3_);
             return true;
         }
@@ -821,12 +831,15 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.id == 0) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.id == 0)
+        {
             this.mc.displayGuiScreen(new GuiAchievements(this, this.mc.thePlayer.getStatFileWriter()));
         }
 
-        if (button.id == 1) {
+        if (button.id == 1)
+        {
             this.mc.displayGuiScreen(new GuiStats(this, this.mc.thePlayer.getStatFileWriter()));
         }
     }
@@ -836,7 +849,8 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
         return selectedTabIndex;
     }
 
-    static class ContainerCreative extends Container {
+    static class ContainerCreative extends Container
+    {
         public List<ItemStack> itemList = Lists.newArrayList();
 
         public ContainerCreative(EntityPlayer p_i1086_1_)
@@ -886,7 +900,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
                     }
                     else
                     {
-                        GuiContainerCreative.field_147060_v.setInventorySlotContents(l + k * 9, null);
+                        GuiContainerCreative.field_147060_v.setInventorySlotContents(l + k * 9, (ItemStack)null);
                     }
                 }
             }
@@ -903,11 +917,13 @@ public class GuiContainerCreative extends InventoryEffectRenderer {
 
         public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
         {
-            if (index >= this.inventorySlots.size() - 9 && index < this.inventorySlots.size()) {
+            if (index >= this.inventorySlots.size() - 9 && index < this.inventorySlots.size())
+            {
                 Slot slot = this.inventorySlots.get(index);
 
-                if (slot != null && slot.getHasStack()) {
-                    slot.putStack(null);
+                if (slot != null && slot.getHasStack())
+                {
+                    slot.putStack((ItemStack)null);
                 }
             }
 

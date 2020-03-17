@@ -1,6 +1,6 @@
 package net.minecraft.command;
 
-import net.minecraft.MinecraftServer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.storage.WorldInfo;
 
 public class CommandToggleDownfall extends CommandBase
@@ -32,9 +32,10 @@ public class CommandToggleDownfall extends CommandBase
     /**
      * Callback when the command is invoked
      */
-    public void processCommand(ICommandSender sender, String[] args) {
+    public void processCommand(ICommandSender sender, String[] args) throws CommandException
+    {
         this.toggleDownfall();
-        notifyOperators(sender, this, "commands.downfall.success");
+        notifyOperators(sender, this, "commands.downfall.success", new Object[0]);
     }
 
     /**

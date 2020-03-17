@@ -224,7 +224,7 @@ public class ModelDragon extends ModelBase
         for (int k = 0; k < 12; ++k)
         {
             adouble2 = entitydragon.getMovementOffsets(12 + k, this.partialTicks);
-            f10 = (float)((double)f10 + Math.sin((double)((float)k * 0.45F + f8)) * 0.05000000074505806D);
+            f10 = (float)((double)f10 + Math.sin((double)((float)k * 0.45F + f8)) * (double)0.05F);
             this.spine.rotateAngleY = (this.updateRotations(adouble2[0] - adouble[0]) * f5 + 180.0F) * (float)Math.PI / 180.0F;
             this.spine.rotateAngleX = f10 + (float)(adouble2[1] - adouble[1]) * (float)Math.PI / 180.0F * f5 * 5.0F;
             this.spine.rotateAngleZ = this.updateRotations(adouble2[0] - (double)f7) * (float)Math.PI / 180.0F * f5;

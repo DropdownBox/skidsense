@@ -21,7 +21,6 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
 
     public EntityOtherPlayerMP(World worldIn, GameProfile gameProfileIn)
     {
-    	
         super(worldIn, gameProfileIn);
         this.stepHeight = 0.0F;
         this.noClip = true;
@@ -113,7 +112,7 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
         this.prevCameraYaw = this.cameraYaw;
         this.updateArmSwingProgress();
         float f1 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionZ * this.motionZ);
-        float f = (float)Math.atan(-this.motionY * 0.20000000298023224D) * 15.0F;
+        float f = (float)Math.atan(-this.motionY * (double)0.2F) * 15.0F;
 
         if (f1 > 0.1F)
         {

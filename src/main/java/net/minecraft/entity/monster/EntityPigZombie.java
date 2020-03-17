@@ -57,7 +57,7 @@ public class EntityPigZombie extends EntityZombie
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(reinforcementChance).setBaseValue(0.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.23000000417232513D);
+        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue((double)0.23F);
         this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(5.0D);
     }
 
@@ -288,7 +288,7 @@ public class EntityPigZombie extends EntityZombie
     {
         public AIHurtByAggressor(EntityPigZombie p_i45828_1_)
         {
-            super(p_i45828_1_, true, new Class[0]);
+            super(p_i45828_1_, true);
         }
 
         protected void setEntityAttackTarget(EntityCreature creatureIn, EntityLivingBase entityLivingBaseIn)

@@ -1,9 +1,8 @@
 package net.minecraft.command;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandXP extends CommandBase
@@ -39,7 +38,7 @@ public class CommandXP extends CommandBase
     {
         if (args.length <= 0)
         {
-            throw new WrongUsageException("commands.xp.usage", new Object[0]);
+            throw new WrongUsageException("commands.xp.usage");
         }
         else
         {
@@ -68,12 +67,12 @@ public class CommandXP extends CommandBase
                 if (flag1)
                 {
                     entityplayer.addExperienceLevel(-i);
-                    notifyOperators(sender, this, "commands.xp.success.negative.levels", new Object[] {Integer.valueOf(i), entityplayer.getName()});
+                    notifyOperators(sender, this, "commands.xp.success.negative.levels", new Object[] {i, entityplayer.getName()});
                 }
                 else
                 {
                     entityplayer.addExperienceLevel(i);
-                    notifyOperators(sender, this, "commands.xp.success.levels", new Object[] {Integer.valueOf(i), entityplayer.getName()});
+                    notifyOperators(sender, this, "commands.xp.success.levels", new Object[] {i, entityplayer.getName()});
                 }
             }
             else
@@ -82,11 +81,11 @@ public class CommandXP extends CommandBase
 
                 if (flag1)
                 {
-                    throw new CommandException("commands.xp.failure.widthdrawXp", new Object[0]);
+                    throw new CommandException("commands.xp.failure.widthdrawXp");
                 }
 
                 entityplayer.addExperience(i);
-                notifyOperators(sender, this, "commands.xp.success", new Object[] {Integer.valueOf(i), entityplayer.getName()});
+                notifyOperators(sender, this, "commands.xp.success", new Object[] {i, entityplayer.getName()});
             }
         }
     }

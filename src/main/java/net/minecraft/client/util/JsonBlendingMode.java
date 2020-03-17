@@ -85,7 +85,35 @@ public class JsonBlendingMode
         else
         {
             JsonBlendingMode jsonblendingmode = (JsonBlendingMode)p_equals_1_;
-            return this.field_148112_f != jsonblendingmode.field_148112_f ? false : (this.field_148115_e != jsonblendingmode.field_148115_e ? false : (this.field_148114_d != jsonblendingmode.field_148114_d ? false : (this.field_148119_h != jsonblendingmode.field_148119_h ? false : (this.field_148113_g != jsonblendingmode.field_148113_g ? false : (this.field_148117_c != jsonblendingmode.field_148117_c ? false : this.field_148116_b == jsonblendingmode.field_148116_b)))));
+
+            if (this.field_148112_f != jsonblendingmode.field_148112_f)
+            {
+                return false;
+            }
+            else if (this.field_148115_e != jsonblendingmode.field_148115_e)
+            {
+                return false;
+            }
+            else if (this.field_148114_d != jsonblendingmode.field_148114_d)
+            {
+                return false;
+            }
+            else if (this.field_148119_h != jsonblendingmode.field_148119_h)
+            {
+                return false;
+            }
+            else if (this.field_148113_g != jsonblendingmode.field_148113_g)
+            {
+                return false;
+            }
+            else if (this.field_148117_c != jsonblendingmode.field_148117_c)
+            {
+                return false;
+            }
+            else
+            {
+                return this.field_148116_b == jsonblendingmode.field_148116_b;
+            }
         }
     }
 
@@ -176,14 +204,45 @@ public class JsonBlendingMode
                 flag1 = true;
             }
 
-            return flag ? new JsonBlendingMode() : (flag1 ? new JsonBlendingMode(j, k, l, i1, i) : new JsonBlendingMode(j, k, i));
+            if (flag)
+            {
+                return new JsonBlendingMode();
+            }
+            else
+            {
+                return flag1 ? new JsonBlendingMode(j, k, l, i1, i) : new JsonBlendingMode(j, k, i);
+            }
         }
     }
 
     private static int func_148108_a(String p_148108_0_)
     {
         String s = p_148108_0_.trim().toLowerCase();
-        return s.equals("add") ? 32774 : (s.equals("subtract") ? 32778 : (s.equals("reversesubtract") ? 32779 : (s.equals("reverse_subtract") ? 32779 : (s.equals("min") ? 32775 : (s.equals("max") ? 32776 : 32774)))));
+
+        if (s.equals("add"))
+        {
+            return 32774;
+        }
+        else if (s.equals("subtract"))
+        {
+            return 32778;
+        }
+        else if (s.equals("reversesubtract"))
+        {
+            return 32779;
+        }
+        else if (s.equals("reverse_subtract"))
+        {
+            return 32779;
+        }
+        else if (s.equals("min"))
+        {
+            return 32775;
+        }
+        else
+        {
+            return s.equals("max") ? 32776 : 32774;
+        }
     }
 
     private static int func_148107_b(String p_148107_0_)
@@ -193,6 +252,46 @@ public class JsonBlendingMode
         s = s.replaceAll("one", "1");
         s = s.replaceAll("zero", "0");
         s = s.replaceAll("minus", "-");
-        return s.equals("0") ? 0 : (s.equals("1") ? 1 : (s.equals("srccolor") ? 768 : (s.equals("1-srccolor") ? 769 : (s.equals("dstcolor") ? 774 : (s.equals("1-dstcolor") ? 775 : (s.equals("srcalpha") ? 770 : (s.equals("1-srcalpha") ? 771 : (s.equals("dstalpha") ? 772 : (s.equals("1-dstalpha") ? 773 : -1)))))))));
+
+        if (s.equals("0"))
+        {
+            return 0;
+        }
+        else if (s.equals("1"))
+        {
+            return 1;
+        }
+        else if (s.equals("srccolor"))
+        {
+            return 768;
+        }
+        else if (s.equals("1-srccolor"))
+        {
+            return 769;
+        }
+        else if (s.equals("dstcolor"))
+        {
+            return 774;
+        }
+        else if (s.equals("1-dstcolor"))
+        {
+            return 775;
+        }
+        else if (s.equals("srcalpha"))
+        {
+            return 770;
+        }
+        else if (s.equals("1-srcalpha"))
+        {
+            return 771;
+        }
+        else if (s.equals("dstalpha"))
+        {
+            return 772;
+        }
+        else
+        {
+            return s.equals("1-dstalpha") ? 773 : -1;
+        }
     }
 }

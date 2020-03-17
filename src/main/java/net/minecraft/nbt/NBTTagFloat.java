@@ -38,7 +38,7 @@ public class NBTTagFloat extends NBTBase.NBTPrimitive
      */
     public byte getId()
     {
-        return (byte)5;
+        return 5;
     }
 
     public String toString()

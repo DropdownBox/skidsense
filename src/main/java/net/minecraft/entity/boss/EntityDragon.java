@@ -150,7 +150,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
             float f11 = (this.rand.nextFloat() - 0.5F) * 8.0F;
             float f13 = (this.rand.nextFloat() - 0.5F) * 4.0F;
             float f14 = (this.rand.nextFloat() - 0.5F) * 8.0F;
-            this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.posX + (double)f11, this.posY + 2.0D + (double)f13, this.posZ + (double)f14, 0.0D, 0.0D, 0.0D, new int[0]);
+            this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.posX + (double)f11, this.posY + 2.0D + (double)f13, this.posZ + (double)f14, 0.0D, 0.0D, 0.0D);
         }
         else
         {
@@ -221,7 +221,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
                         double d3 = this.targetX - this.posX;
                         double d5 = this.targetZ - this.posZ;
                         double d7 = Math.sqrt(d3 * d3 + d5 * d5);
-                        double d8 = 0.4000000059604645D + d7 / 80.0D - 1.0D;
+                        double d8 = (double)0.4F + d7 / 80.0D - 1.0D;
 
                         if (d8 > 10.0D)
                         {
@@ -244,9 +244,9 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
                     d12 = d12 / (double)MathHelper.sqrt_double(d11 * d11 + d13 * d13);
                     float f17 = 0.6F;
                     d12 = MathHelper.clamp_double(d12, (double)(-f17), (double)f17);
-                    this.motionY += d12 * 0.10000000149011612D;
+                    this.motionY += d12 * (double)0.1F;
                     this.rotationYaw = MathHelper.wrapAngleTo180_float(this.rotationYaw);
-                    double d4 = 180.0D - MathHelper.atan2(d11, d13) * 180.0D / Math.PI;
+                    double d4 = 180.0D - MathHelper.atan2(d11, d13) * 180.0D / (double)(float)Math.PI;
                     double d6 = MathHelper.wrapAngleTo180_double(d4 - (double)this.rotationYaw);
 
                     if (d6 > 50.0D)
@@ -278,7 +278,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
                         d9 = 40.0D;
                     }
 
-                    this.randomYawVelocity = (float)((double)this.randomYawVelocity + d6 * (0.699999988079071D / d9 / (double)f6));
+                    this.randomYawVelocity = (float)((double)this.randomYawVelocity + d6 * ((double)0.7F / d9 / (double)f6));
                     this.rotationYaw += this.randomYawVelocity * 0.1F;
                     float f7 = (float)(2.0D / (d9 + 1.0D));
                     float f8 = 0.06F;
@@ -286,7 +286,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
 
                     if (this.slowed)
                     {
-                        this.moveEntity(this.motionX * 0.800000011920929D, this.motionY * 0.800000011920929D, this.motionZ * 0.800000011920929D);
+                        this.moveEntity(this.motionX * (double)0.8F, this.motionY * (double)0.8F, this.motionZ * (double)0.8F);
                     }
                     else
                     {
@@ -298,7 +298,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
                     f9 = 0.8F + 0.15F * f9;
                     this.motionX *= (double)f9;
                     this.motionZ *= (double)f9;
-                    this.motionY *= 0.9100000262260437D;
+                    this.motionY *= (double)0.91F;
                 }
 
                 this.renderYawOffset = this.rotationYaw;
@@ -401,7 +401,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
         if (this.rand.nextInt(10) == 0)
         {
             float f = 32.0F;
-            List<EntityEnderCrystal> list = this.worldObj.<EntityEnderCrystal>getEntitiesWithinAABB(EntityEnderCrystal.class, this.getEntityBoundingBox().expand((double)f, (double)f, (double)f));
+            List<EntityEnderCrystal> list = this.worldObj.getEntitiesWithinAABB(EntityEnderCrystal.class, this.getEntityBoundingBox().expand((double)f, (double)f, (double)f));
             EntityEnderCrystal entityendercrystal = null;
             double d0 = Double.MAX_VALUE;
 
@@ -435,7 +435,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
                 double d2 = entity.posX - d0;
                 double d3 = entity.posZ - d1;
                 double d4 = d2 * d2 + d3 * d3;
-                entity.addVelocity(d2 / d4 * 4.0D, 0.20000000298023224D, d3 / d4 * 4.0D);
+                entity.addVelocity(d2 / d4 * 4.0D, (double)0.2F, d3 / d4 * 4.0D);
             }
         }
     }
@@ -447,7 +447,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
     {
         for (int i = 0; i < p_70971_1_.size(); ++i)
         {
-            Entity entity = (Entity)p_70971_1_.get(i);
+            Entity entity = p_70971_1_.get(i);
 
             if (entity instanceof EntityLivingBase)
             {
@@ -468,7 +468,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
 
         while (iterator.hasNext())
         {
-            if (((EntityPlayer)iterator.next()).isSpectator())
+            if (iterator.next().isSpectator())
             {
                 iterator.remove();
             }
@@ -476,7 +476,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
 
         if (this.rand.nextInt(2) == 0 && !list.isEmpty())
         {
-            this.target = (Entity)list.get(this.rand.nextInt(list.size()));
+            this.target = list.get(this.rand.nextInt(list.size()));
         }
         else
         {
@@ -553,7 +553,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
             double d0 = p_70972_1_.minX + (p_70972_1_.maxX - p_70972_1_.minX) * (double)this.rand.nextFloat();
             double d1 = p_70972_1_.minY + (p_70972_1_.maxY - p_70972_1_.minY) * (double)this.rand.nextFloat();
             double d2 = p_70972_1_.minZ + (p_70972_1_.maxZ - p_70972_1_.minZ) * (double)this.rand.nextFloat();
-            this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
+            this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, d0, d1, d2, 0.0D, 0.0D, 0.0D);
         }
 
         return flag;
@@ -623,7 +623,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
             float f = (this.rand.nextFloat() - 0.5F) * 8.0F;
             float f1 = (this.rand.nextFloat() - 0.5F) * 4.0F;
             float f2 = (this.rand.nextFloat() - 0.5F) * 8.0F;
-            this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX + (double)f, this.posY + 2.0D + (double)f1, this.posZ + (double)f2, 0.0D, 0.0D, 0.0D, new int[0]);
+            this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX + (double)f, this.posY + 2.0D + (double)f1, this.posZ + (double)f2, 0.0D, 0.0D, 0.0D);
         }
 
         boolean flag = this.worldObj.getGameRules().getBoolean("doMobLoot");
@@ -648,7 +648,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
             }
         }
 
-        this.moveEntity(0.0D, 0.10000000149011612D, 0.0D);
+        this.moveEntity(0.0D, (double)0.1F, 0.0D);
         this.renderYawOffset = this.rotationYaw += 20.0F;
 
         if (this.deathTicks == 200 && !this.worldObj.isRemote)
@@ -687,7 +687,7 @@ public class EntityDragon extends EntityLiving implements IBossDisplayData, IEnt
                 {
                     double d2 = (double)(k * k + l * l);
 
-                    if (d2 <= 12.25D)
+                    if (!(d2 > 12.25D))
                     {
                         BlockPos blockpos = pos.add(k, j, l);
 

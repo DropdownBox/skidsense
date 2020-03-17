@@ -1,6 +1,9 @@
 package net.minecraft.client.gui.stream;
 
 import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
@@ -13,10 +16,8 @@ import tv.twitch.chat.ChatUserInfo;
 import tv.twitch.chat.ChatUserMode;
 import tv.twitch.chat.ChatUserSubscription;
 
-import java.util.List;
-import java.util.Set;
-
-public class GuiTwitchUserMode extends GuiScreen {
+public class GuiTwitchUserMode extends GuiScreen
+{
     private static final EnumChatFormatting field_152331_a = EnumChatFormatting.DARK_GREEN;
     private static final EnumChatFormatting field_152335_f = EnumChatFormatting.RED;
     private static final EnumChatFormatting field_152336_g = EnumChatFormatting.DARK_PURPLE;
@@ -170,7 +171,8 @@ public class GuiTwitchUserMode extends GuiScreen {
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
      * window resizes, the buttonList is cleared beforehand.
      */
-    public void initGui() {
+    public void initGui()
+    {
         int i = this.width / 3;
         int j = i - 130;
         this.buttonList.add(new GuiButton(1, i * 0 + j / 2, this.height - 70, 130, 20, I18n.format("stream.userinfo.timeout")));
@@ -181,7 +183,8 @@ public class GuiTwitchUserMode extends GuiScreen {
         this.buttonList.add(new GuiButton(4, i * 2 + j / 2, this.height - 45, 130, 20, I18n.format("stream.userinfo.unmod")));
         int k = 0;
 
-        for (IChatComponent ichatcomponent : this.field_152332_r) {
+        for (IChatComponent ichatcomponent : this.field_152332_r)
+        {
             k = Math.max(k, this.fontRendererObj.getStringWidth(ichatcomponent.getFormattedText()));
         }
 
@@ -191,11 +194,16 @@ public class GuiTwitchUserMode extends GuiScreen {
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button) {
-        if (button.enabled) {
-            if (button.id == 0) {
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        if (button.enabled)
+        {
+            if (button.id == 0)
+            {
                 this.stream.func_152917_b("/ban " + this.field_152337_h.displayName);
-            } else if (button.id == 3) {
+            }
+            else if (button.id == 3)
+            {
                 this.stream.func_152917_b("/unban " + this.field_152337_h.displayName);
             }
             else if (button.id == 2)
@@ -211,7 +219,7 @@ public class GuiTwitchUserMode extends GuiScreen {
                 this.stream.func_152917_b("/timeout " + this.field_152337_h.displayName);
             }
 
-            this.mc.displayGuiScreen(null);
+            this.mc.displayGuiScreen((GuiScreen)null);
         }
     }
 

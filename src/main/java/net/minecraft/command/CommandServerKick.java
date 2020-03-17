@@ -1,9 +1,8 @@
 package net.minecraft.command;
 
 import java.util.List;
-
-import net.minecraft.MinecraftServer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.BlockPos;
 
 public class CommandServerKick extends CommandBase
@@ -69,7 +68,7 @@ public class CommandServerKick extends CommandBase
         }
         else
         {
-            throw new WrongUsageException("commands.kick.usage", new Object[0]);
+            throw new WrongUsageException("commands.kick.usage");
         }
     }
 

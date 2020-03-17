@@ -83,7 +83,7 @@ public class MapGenCavesHell extends MapGenBase
                     return;
                 }
 
-                if (p_180704_6_ >= d0 - 16.0D - d2 * 2.0D && p_180704_10_ >= d1 - 16.0D - d2 * 2.0D && p_180704_6_ <= d0 + 16.0D + d2 * 2.0D && p_180704_10_ <= d1 + 16.0D + d2 * 2.0D)
+                if (!(p_180704_6_ < d0 - 16.0D - d2 * 2.0D) && !(p_180704_10_ < d1 - 16.0D - d2 * 2.0D) && !(p_180704_6_ > d0 + 16.0D + d2 * 2.0D) && !(p_180704_10_ > d1 + 16.0D + d2 * 2.0D))
                 {
                     int j2 = MathHelper.floor_double(p_180704_6_ - d2) - p_180704_3_ * 16 - 1;
                     int k = MathHelper.floor_double(p_180704_6_ + d2) - p_180704_3_ * 16 + 1;

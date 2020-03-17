@@ -28,7 +28,7 @@ public class EntityAIFollowParent extends EntityAIBase
         }
         else
         {
-            List<EntityAnimal> list = this.childAnimal.worldObj.<EntityAnimal>getEntitiesWithinAABB(this.childAnimal.getClass(), this.childAnimal.getEntityBoundingBox().expand(8.0D, 4.0D, 8.0D));
+            List<EntityAnimal> list = this.childAnimal.worldObj.getEntitiesWithinAABB(this.childAnimal.getClass(), this.childAnimal.getEntityBoundingBox().expand(8.0D, 4.0D, 8.0D));
             EntityAnimal entityanimal = null;
             double d0 = Double.MAX_VALUE;
 
@@ -38,7 +38,7 @@ public class EntityAIFollowParent extends EntityAIBase
                 {
                     double d1 = this.childAnimal.getDistanceSqToEntity(entityanimal1);
 
-                    if (d1 <= d0)
+                    if (!(d1 > d0))
                     {
                         d0 = d1;
                         entityanimal = entityanimal1;
@@ -78,7 +78,7 @@ public class EntityAIFollowParent extends EntityAIBase
         else
         {
             double d0 = this.childAnimal.getDistanceSqToEntity(this.parentAnimal);
-            return d0 >= 9.0D && d0 <= 256.0D;
+            return !(d0 < 9.0D) && !(d0 > 256.0D);
         }
     }
 

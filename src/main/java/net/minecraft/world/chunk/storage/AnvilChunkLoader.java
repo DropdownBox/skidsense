@@ -1,5 +1,14 @@
 package net.minecraft.world.chunk.storage;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -20,24 +29,13 @@ import net.minecraft.world.storage.ThreadedFileIOBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
+public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
+{
     private static final Logger logger = LogManager.getLogger();
-    private Map<ChunkCoordIntPair, NBTTagCompound> chunksToRemove = new ConcurrentHashMap();
-    private Set<ChunkCoordIntPair> pendingAnvilChunksCoordinates = Collections.<ChunkCoordIntPair>newSetFromMap(new ConcurrentHashMap());
+    private Map<ChunkCoordIntPair, NBTTagCompound> chunksToRemove = new ConcurrentHashMap<>();
+    private Set<ChunkCoordIntPair> pendingAnvilChunksCoordinates = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    /**
-     * Save directory for chunks using the Anvil format
-     */
+    /** Save directory for chunks using the Anvil format */
     private final File chunkSaveLocation;
     private boolean field_183014_e = false;
 
@@ -49,7 +47,8 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
     /**
      * Loads the specified(XZ) chunk into the specified world.
      */
-    public Chunk loadChunk(World worldIn, int x, int z) throws IOException {
+    public Chunk loadChunk(World worldIn, int x, int z) throws IOException
+    {
         ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(x, z);
         NBTTagCompound nbttagcompound = this.chunksToRemove.get(chunkcoordintpair);
 
@@ -104,10 +103,12 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
         }
     }
 
-    public void saveChunk(World worldIn, Chunk chunkIn) throws MinecraftException {
+    public void saveChunk(World worldIn, Chunk chunkIn) throws MinecraftException, IOException
+    {
         worldIn.checkSessionLock();
 
-        try {
+        try
+        {
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
             nbttagcompound.setTag("Level", nbttagcompound1);
@@ -116,7 +117,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
         }
         catch (Exception exception)
         {
-            logger.error("Failed to save chunk", exception);
+            logger.error("Failed to save chunk", (Throwable)exception);
         }
     }
 
@@ -162,7 +163,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
                     }
                     catch (Exception exception)
                     {
-                        logger.error("Failed to save chunk", exception);
+                        logger.error("Failed to save chunk", (Throwable)exception);
                     }
                 }
 
@@ -188,7 +189,8 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
      * Save extra data associated with this Chunk not normally saved during autosave, only during chunk unload.
      * Currently unused.
      */
-    public void saveExtraChunkData(World worldIn, Chunk chunkIn) {
+    public void saveExtraChunkData(World worldIn, Chunk chunkIn) throws IOException
+    {
     }
 
     /**
@@ -208,12 +210,9 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
         {
             this.field_183014_e = true;
 
-            while (true)
+            while (this.writeNextIO())
             {
-                if (this.writeNextIO())
-                {
-                    continue;
-                }
+                ;
             }
         }
         finally

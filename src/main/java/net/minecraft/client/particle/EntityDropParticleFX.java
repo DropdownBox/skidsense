@@ -93,9 +93,9 @@ public class EntityDropParticleFX extends EntityFX
         }
 
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
-        this.motionX *= 0.9800000190734863D;
-        this.motionY *= 0.9800000190734863D;
-        this.motionZ *= 0.9800000190734863D;
+        this.motionX *= (double)0.98F;
+        this.motionY *= (double)0.98F;
+        this.motionZ *= (double)0.98F;
 
         if (this.particleMaxAge-- <= 0)
         {
@@ -107,15 +107,15 @@ public class EntityDropParticleFX extends EntityFX
             if (this.materialType == Material.water)
             {
                 this.setDead();
-                this.worldObj.spawnParticle(EnumParticleTypes.WATER_SPLASH, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
+                this.worldObj.spawnParticle(EnumParticleTypes.WATER_SPLASH, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
             }
             else
             {
                 this.setParticleTextureIndex(114);
             }
 
-            this.motionX *= 0.699999988079071D;
-            this.motionZ *= 0.699999988079071D;
+            this.motionX *= (double)0.7F;
+            this.motionZ *= (double)0.7F;
         }
 
         BlockPos blockpos = new BlockPos(this);
@@ -128,7 +128,7 @@ public class EntityDropParticleFX extends EntityFX
 
             if (iblockstate.getBlock() instanceof BlockLiquid)
             {
-                d0 = (double)BlockLiquid.getLiquidHeightPercent(((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue());
+                d0 = (double)BlockLiquid.getLiquidHeightPercent(iblockstate.getValue(BlockLiquid.LEVEL));
             }
 
             double d1 = (double)(MathHelper.floor_double(this.posY) + 1) - d0;

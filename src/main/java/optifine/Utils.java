@@ -17,6 +17,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
@@ -25,60 +27,22 @@ public class Utils
 {
     public static final String MAC_OS_HOME_PREFIX = "Library/Application Support";
     private static final char[] hexTable = new char[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-    public static int[] $SWITCH_TABLE$optifine$Utils$OS;
-    
+
+    private Utils()
+    {
+    }
+
     public static File getWorkingDirectory()
     {
         return getWorkingDirectory("minecraft");
     }
-    
-    public static int[] $SWITCH_TABLE$optifine$Utils$OS() {
-        if($SWITCH_TABLE$optifine$Utils$OS != null) {
-           return $SWITCH_TABLE$optifine$Utils$OS;
-        } else {
-           int[] var0 = new int[Utils.OS.values().length];
-
-           try {
-              var0[Utils.OS.LINUX.ordinal()] = 1;
-           } catch (NoSuchFieldError var5) {
-              ;
-           }
-
-           try {
-              var0[Utils.OS.MACOS.ordinal()] = 4;
-           } catch (NoSuchFieldError var4) {
-              ;
-           }
-
-           try {
-              var0[Utils.OS.SOLARIS.ordinal()] = 2;
-           } catch (NoSuchFieldError var3) {
-              ;
-           }
-
-           try {
-              var0[Utils.OS.UNKNOWN.ordinal()] = 5;
-           } catch (NoSuchFieldError var2) {
-              ;
-           }
-
-           try {
-              var0[Utils.OS.WINDOWS.ordinal()] = 3;
-           } catch (NoSuchFieldError var1) {
-              ;
-           }
-
-           $SWITCH_TABLE$optifine$Utils$OS = var0;
-           return var0;
-        }
-     }
 
     public static File getWorkingDirectory(String applicationName)
     {
         String s = System.getProperty("user.home", ".");
         File file1 = null;
 
-        switch ($SWITCH_TABLE$optifine$Utils$OS()[getPlatform().ordinal()])
+        switch (getPlatform().ordinal())
         {
             case 1:
             case 2:
@@ -120,7 +84,31 @@ public class Utils
     public static Utils.OS getPlatform()
     {
         String s = System.getProperty("os.name").toLowerCase();
-        return s.contains("win") ? Utils.OS.WINDOWS : (s.contains("mac") ? Utils.OS.MACOS : (s.contains("solaris") ? Utils.OS.SOLARIS : (s.contains("sunos") ? Utils.OS.SOLARIS : (s.contains("linux") ? Utils.OS.LINUX : (s.contains("unix") ? Utils.OS.LINUX : Utils.OS.UNKNOWN)))));
+
+        if (s.contains("win"))
+        {
+            return Utils.OS.WINDOWS;
+        }
+        else if (s.contains("mac"))
+        {
+            return Utils.OS.MACOS;
+        }
+        else if (s.contains("solaris"))
+        {
+            return Utils.OS.SOLARIS;
+        }
+        else if (s.contains("sunos"))
+        {
+            return Utils.OS.SOLARIS;
+        }
+        else if (s.contains("linux"))
+        {
+            return Utils.OS.LINUX;
+        }
+        else
+        {
+            return s.contains("unix") ? Utils.OS.LINUX : Utils.OS.UNKNOWN;
+        }
     }
 
     public static int find(byte[] buf, byte[] pattern)
@@ -188,7 +176,7 @@ public class Utils
             list.add(s);
         }
 
-        String[] astring = (String[])list.toArray(new String[list.size()]);
+        String[] astring = (String[]) list.toArray(new String[list.size()]);
         return astring;
     }
 
@@ -380,7 +368,7 @@ public class Utils
 
                     if (object instanceof Object[])
                     {
-                        Object[] aobject = (Object[])object;
+                        Object[] aobject = (Object[]) object;
                         stringbuffer.append(arrayToCommaSeparatedString(aobject));
                     }
                     else
@@ -421,6 +409,73 @@ public class Utils
         }
     }
 
+    public static String removePrefix(String str, String[] prefixes)
+    {
+        if (str != null && prefixes != null)
+        {
+            int i = str.length();
+
+            for (int j = 0; j < prefixes.length; ++j)
+            {
+                String s = prefixes[j];
+                str = removePrefix(str, s);
+
+                if (str.length() != i)
+                {
+                    break;
+                }
+            }
+
+            return str;
+        }
+        else
+        {
+            return str;
+        }
+    }
+
+    public static String removeSuffix(String str, String suffix)
+    {
+        if (str != null && suffix != null)
+        {
+            if (str.endsWith(suffix))
+            {
+                str = str.substring(0, str.length() - suffix.length());
+            }
+
+            return str;
+        }
+        else
+        {
+            return str;
+        }
+    }
+
+    public static String removeSuffix(String str, String[] suffixes)
+    {
+        if (str != null && suffixes != null)
+        {
+            int i = str.length();
+
+            for (int j = 0; j < suffixes.length; ++j)
+            {
+                String s = suffixes[j];
+                str = removeSuffix(str, s);
+
+                if (str.length() != i)
+                {
+                    break;
+                }
+            }
+
+            return str;
+        }
+        else
+        {
+            return str;
+        }
+    }
+
     public static String ensurePrefix(String str, String prefix)
     {
         if (str != null && prefix != null)
@@ -440,7 +495,185 @@ public class Utils
 
     public static boolean equals(Object o1, Object o2)
     {
-        return o1 == o2 ? true : (o1 == null ? false : o1.equals(o2));
+        if (o1 == o2)
+        {
+            return true;
+        }
+        else
+        {
+            return o1 == null ? false : o1.equals(o2);
+        }
+    }
+
+    public static int parseInt(String str, int defVal)
+    {
+        try
+        {
+            if (str == null)
+            {
+                return defVal;
+            }
+            else
+            {
+                str = str.trim();
+                return Integer.parseInt(str);
+            }
+        }
+        catch (NumberFormatException var3)
+        {
+            return defVal;
+        }
+    }
+
+    public static boolean equalsMask(String str, String mask, char wildChar)
+    {
+        if (mask != null && str != null)
+        {
+            if (mask.indexOf(wildChar) < 0)
+            {
+                return mask.equals(str);
+            }
+            else
+            {
+                List list = new ArrayList();
+                String s = "" + wildChar;
+
+                if (mask.startsWith(s))
+                {
+                    list.add("");
+                }
+
+                StringTokenizer stringtokenizer = new StringTokenizer(mask, s);
+
+                while (stringtokenizer.hasMoreElements())
+                {
+                    list.add(stringtokenizer.nextToken());
+                }
+
+                if (mask.endsWith(s))
+                {
+                    list.add("");
+                }
+
+                String s1 = (String)list.get(0);
+
+                if (!str.startsWith(s1))
+                {
+                    return false;
+                }
+                else
+                {
+                    String s2 = (String)list.get(list.size() - 1);
+
+                    if (!str.endsWith(s2))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        int i = 0;
+
+                        for (int j = 0; j < list.size(); ++j)
+                        {
+                            String s3 = (String)list.get(j);
+
+                            if (s3.length() > 0)
+                            {
+                                int k = str.indexOf(s3, i);
+
+                                if (k < 0)
+                                {
+                                    return false;
+                                }
+
+                                i = k + s3.length();
+                            }
+                        }
+
+                        return true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            return mask == str;
+        }
+    }
+
+    public static Object[] addObjectToArray(Object[] arr, Object obj)
+    {
+        if (arr == null)
+        {
+            throw new NullPointerException("The given array is NULL");
+        }
+        else
+        {
+            int i = arr.length;
+            int j = i + 1;
+            Object[] aobject = (Object[]) Array.newInstance(arr.getClass().getComponentType(), j);
+            System.arraycopy(arr, 0, aobject, 0, i);
+            aobject[i] = obj;
+            return aobject;
+        }
+    }
+
+    public static Object[] addObjectToArray(Object[] arr, Object obj, int index)
+    {
+        List list = new ArrayList<>(Arrays.asList(arr));
+        list.add(index, obj);
+        Object[] aobject = (Object[]) Array.newInstance(arr.getClass().getComponentType(), list.size());
+        return list.toArray(aobject);
+    }
+
+    public static Object[] addObjectsToArray(Object[] arr, Object[] objs)
+    {
+        if (arr == null)
+        {
+            throw new NullPointerException("The given array is NULL");
+        }
+        else if (objs.length == 0)
+        {
+            return arr;
+        }
+        else
+        {
+            int i = arr.length;
+            int j = i + objs.length;
+            Object[] aobject = (Object[]) Array.newInstance(arr.getClass().getComponentType(), j);
+            System.arraycopy(arr, 0, aobject, 0, i);
+            System.arraycopy(objs, 0, aobject, i, objs.length);
+            return aobject;
+        }
+    }
+
+    public static Object[] removeObjectFromArray(Object[] arr, Object obj)
+    {
+        List list = new ArrayList<>(Arrays.asList(arr));
+        list.remove(obj);
+        Object[] aobject = collectionToArray(list, arr.getClass().getComponentType());
+        return aobject;
+    }
+
+    public static Object[] collectionToArray(Collection coll, Class elementClass)
+    {
+        if (coll == null)
+        {
+            return null;
+        }
+        else if (elementClass == null)
+        {
+            return null;
+        }
+        else if (elementClass.isPrimitive())
+        {
+            throw new IllegalArgumentException("Can not make arrays with primitive elements (int, double), element class: " + elementClass);
+        }
+        else
+        {
+            Object[] aobject = (Object[]) Array.newInstance(elementClass, coll.size());
+            return coll.toArray(aobject);
+        }
     }
 
     public static enum OS

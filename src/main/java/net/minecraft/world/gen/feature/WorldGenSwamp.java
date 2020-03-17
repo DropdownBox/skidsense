@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 public class WorldGenSwamp extends WorldGenAbstractTree
 {
     private static final IBlockState field_181648_a = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.OAK);
-    private static final IBlockState field_181649_b = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockOldLeaf.CHECK_DECAY, Boolean.valueOf(false));
+    private static final IBlockState field_181649_b = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockOldLeaf.CHECK_DECAY, false);
 
     public WorldGenSwamp()
     {
@@ -187,14 +187,14 @@ public class WorldGenSwamp extends WorldGenAbstractTree
 
     private void func_181647_a(World p_181647_1_, BlockPos p_181647_2_, PropertyBool p_181647_3_)
     {
-        IBlockState iblockstate = Blocks.vine.getDefaultState().withProperty(p_181647_3_, Boolean.valueOf(true));
+        IBlockState iblockstate = Blocks.vine.getDefaultState().withProperty(p_181647_3_, true);
         this.setBlockAndNotifyAdequately(p_181647_1_, p_181647_2_, iblockstate);
         int i = 4;
 
-        for (p_181647_2_ = p_181647_2_.down(); p_181647_1_.getBlockState(p_181647_2_).getBlock().getMaterial() == Material.air && i > 0; --i)
+        for (BlockPos blockpos = p_181647_2_.down(); p_181647_1_.getBlockState(blockpos).getBlock().getMaterial() == Material.air && i > 0; --i)
         {
-            this.setBlockAndNotifyAdequately(p_181647_1_, p_181647_2_, iblockstate);
-            p_181647_2_ = p_181647_2_.down();
+            this.setBlockAndNotifyAdequately(p_181647_1_, blockpos, iblockstate);
+            blockpos = blockpos.down();
         }
     }
 }

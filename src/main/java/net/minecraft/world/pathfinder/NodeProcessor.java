@@ -9,7 +9,7 @@ import net.minecraft.world.IBlockAccess;
 public abstract class NodeProcessor
 {
     protected IBlockAccess blockaccess;
-    protected IntHashMap<PathPoint> pointMap = new IntHashMap();
+    protected IntHashMap<PathPoint> pointMap = new IntHashMap<>();
     protected int entitySizeX;
     protected int entitySizeY;
     protected int entitySizeZ;
@@ -38,7 +38,7 @@ public abstract class NodeProcessor
     protected PathPoint openPoint(int x, int y, int z)
     {
         int i = PathPoint.makeHash(x, y, z);
-        PathPoint pathpoint = (PathPoint)this.pointMap.lookup(i);
+        PathPoint pathpoint = this.pointMap.lookup(i);
 
         if (pathpoint == null)
         {

@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityGuardian;
 import net.minecraft.util.AxisAlignedBB;
@@ -20,12 +19,11 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
     private static final ResourceLocation GUARDIAN_TEXTURE = new ResourceLocation("textures/entity/guardian.png");
     private static final ResourceLocation GUARDIAN_ELDER_TEXTURE = new ResourceLocation("textures/entity/guardian_elder.png");
     private static final ResourceLocation GUARDIAN_BEAM_TEXTURE = new ResourceLocation("textures/entity/guardian_beam.png");
-    int field_177115_a;
+    int field_177115_a = ((ModelGuardian)this.mainModel).func_178706_a();
 
     public RenderGuardian(RenderManager renderManagerIn)
     {
         super(renderManagerIn, new ModelGuardian(), 0.5F);
-        this.field_177115_a = ((ModelGuardian)this.mainModel).func_178706_a();
     }
 
     public boolean shouldRender(EntityGuardian livingEntity, ICamera camera, double camX, double camY, double camZ)
@@ -130,8 +128,8 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
             double d15 = 0.0D + Math.sin(d1 + 0.0D) * d2;
             double d16 = 0.0D + Math.cos(d1 + (Math.PI / 2D)) * d2;
             double d17 = 0.0D + Math.sin(d1 + (Math.PI / 2D)) * d2;
-            double d18 = 0.0D + Math.cos(d1 + (Math.PI * 3D / 2D)) * d2;
-            double d19 = 0.0D + Math.sin(d1 + (Math.PI * 3D / 2D)) * d2;
+            double d18 = 0.0D + Math.cos(d1 + (Math.PI * 1.5D)) * d2;
+            double d19 = 0.0D + Math.sin(d1 + (Math.PI * 1.5D)) * d2;
             double d20 = 0.0D;
             double d21 = 0.4999D;
             double d22 = (double)(-1.0F + f3);

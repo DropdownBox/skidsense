@@ -43,7 +43,15 @@ public class EntityAIEatGrass extends EntityAIBase
         else
         {
             BlockPos blockpos = new BlockPos(this.grassEaterEntity.posX, this.grassEaterEntity.posY, this.grassEaterEntity.posZ);
-            return field_179505_b.apply(this.entityWorld.getBlockState(blockpos)) ? true : this.entityWorld.getBlockState(blockpos.down()).getBlock() == Blocks.grass;
+
+            if (field_179505_b.apply(this.entityWorld.getBlockState(blockpos)))
+            {
+                return true;
+            }
+            else
+            {
+                return this.entityWorld.getBlockState(blockpos.down()).getBlock() == Blocks.grass;
+            }
         }
     }
 

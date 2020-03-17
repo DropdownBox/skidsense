@@ -7,9 +7,9 @@ import me.skidsense.management.AltManager;
 import me.skidsense.management.CommandManager;
 import me.skidsense.management.FileManager;
 import me.skidsense.management.FriendManager;
-import me.skidsense.management.ModuleManager;
+import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.FontManager;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.collection.visual.TabGUI;
 import me.skidsense.util.ChatUtil;
 import me.theresa.music.MusicMgr;
@@ -29,7 +29,7 @@ public class Client {
 	public static Minecraft mc = Minecraft.getMinecraft();
 	public static String clientName = "Exusiai";
 	public static Client instance = new Client();
-	private static ModuleManager modulemanager;
+	private static ModManager modulemanager;
 	private CommandManager commandmanager;
 	private AltManager altmanager;
 	private FriendManager friendmanager;
@@ -51,16 +51,16 @@ public class Client {
 		this.friendmanager.init();
 		this.tabui = new TabGUI();
 		this.tabui.init();
-		this.modulemanager = new ModuleManager();
+		modulemanager = new ModManager();
 		this.musicmgr = new MusicMgr();
-		this.modulemanager.init();
+		modulemanager.init();
 		this.altmanager = new AltManager();
 		AltManager.init();
 		AltManager.setupAlts();
 		FileManager.init();
 	}
 
-	public static ModuleManager getModuleManager() {
+	public static ModManager getModuleManager() {
 		return modulemanager;
 	}
 
@@ -75,7 +75,7 @@ public class Client {
 	public void shutDown() {
 		String values = "";
 		instance.getModuleManager();
-		for (Module m : ModuleManager.getModules()) {
+		for (Mod m : ModManager.getModules()) {
 			for (Value v : m.getValues()) {
 				values = String.valueOf(values) + String.format("%s:%s:%s%s", m.getName(), v.getName(), v.getValue(), System.lineSeparator());
 			}
@@ -83,7 +83,7 @@ public class Client {
 		FileManager.save("Values.txt", values, false);
 		String enabled = "";
 		instance.getModuleManager();
-		for (Module m : ModuleManager.getModules()) {
+		for (Mod m : ModManager.getModules()) {
 			if (!m.isEnabled()) continue;
 			enabled = String.valueOf(enabled) + String.format("%s%s", m.getName(), System.lineSeparator());
 		}

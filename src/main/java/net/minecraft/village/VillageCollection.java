@@ -17,9 +17,9 @@ import net.minecraft.world.WorldSavedData;
 public class VillageCollection extends WorldSavedData
 {
     private World worldObj;
-    private final List<BlockPos> villagerPositionsList = Lists.<BlockPos>newArrayList();
-    private final List<VillageDoorInfo> newDoors = Lists.<VillageDoorInfo>newArrayList();
-    private final List<Village> villageList = Lists.<Village>newArrayList();
+    private final List<BlockPos> villagerPositionsList = Lists.newArrayList();
+    private final List<VillageDoorInfo> newDoors = Lists.newArrayList();
+    private final List<Village> villageList = Lists.newArrayList();
     private int tickCounter;
 
     public VillageCollection(String name)
@@ -83,7 +83,7 @@ public class VillageCollection extends WorldSavedData
 
         while (iterator.hasNext())
         {
-            Village village = (Village)iterator.next();
+            Village village = iterator.next();
 
             if (village.isAnnihilated())
             {
@@ -101,17 +101,17 @@ public class VillageCollection extends WorldSavedData
     public Village getNearestVillage(BlockPos doorBlock, int radius)
     {
         Village village = null;
-        double d0 = 3.4028234663852886E38D;
+        double d0 = (double)Float.MAX_VALUE;
 
         for (Village village1 : this.villageList)
         {
             double d1 = village1.getCenter().distanceSq(doorBlock);
 
-            if (d1 < d0)
+            if (!(d1 >= d0))
             {
                 float f = (float)(radius + village1.getVillageRadius());
 
-                if (d1 <= (double)(f * f))
+                if (!(d1 > (double)(f * f)))
                 {
                     village = village1;
                     d0 = d1;
@@ -126,7 +126,7 @@ public class VillageCollection extends WorldSavedData
     {
         if (!this.villagerPositionsList.isEmpty())
         {
-            this.addDoorsAround((BlockPos)this.villagerPositionsList.remove(0));
+            this.addDoorsAround(this.villagerPositionsList.remove(0));
         }
     }
 
@@ -134,7 +134,7 @@ public class VillageCollection extends WorldSavedData
     {
         for (int i = 0; i < this.newDoors.size(); ++i)
         {
-            VillageDoorInfo villagedoorinfo = (VillageDoorInfo)this.newDoors.get(i);
+            VillageDoorInfo villagedoorinfo = this.newDoors.get(i);
             Village village = this.getNearestVillage(villagedoorinfo.getDoorBlockPos(), 32);
 
             if (village == null)
@@ -260,7 +260,15 @@ public class VillageCollection extends WorldSavedData
     private boolean isWoodDoor(BlockPos doorPos)
     {
         Block block = this.worldObj.getBlockState(doorPos).getBlock();
-        return block instanceof BlockDoor ? block.getMaterial() == Material.wood : false;
+
+        if (block instanceof BlockDoor)
+        {
+            return block.getMaterial() == Material.wood;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**

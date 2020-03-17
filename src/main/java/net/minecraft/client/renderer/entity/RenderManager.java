@@ -101,25 +101,21 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import optifine.PlayerItemsLayer;
-import optifine.Reflector;
+import net.optifine.entity.model.CustomEntityModels;
+import net.optifine.player.PlayerItemsLayer;
+import net.optifine.reflect.Reflector;
 
 public class RenderManager
 {
-    /** A map of entity classes and the associated renderer. */
-	private Map < Class <? extends Entity > , Render <? extends Entity >> entityRenderMap = Maps. < Class <? extends Entity > , Render <? extends Entity >> newHashMap();
-    
-    /**
-     * lists the various player skin types with their associated Renderer class instances.
-     */
-	private Map<String, RenderPlayer> skinMap = Maps.<String, RenderPlayer>newHashMap();
+    private Map<Class, Render> entityRenderMap = Maps.newHashMap();
+    private Map<String, RenderPlayer> skinMap = Maps.newHashMap();
     private RenderPlayer playerRenderer;
 
     /** Renders fonts */
     private FontRenderer textRenderer;
-    public static double renderPosX;
-    public static double renderPosY;
-    public static double renderPosZ;
+    public double renderPosX;
+    public double renderPosY;
+    public double renderPosZ;
     public TextureManager renderEngine;
 
     /** Reference to the World object. */
@@ -128,7 +124,7 @@ public class RenderManager
     /** Rendermanager's variable for the player */
     public Entity livingPlayer;
     public Entity pointedEntity;
-    public static float playerViewY;
+    public float playerViewY;
     public float playerViewX;
 
     /** Reference to the GameSettings object. */
@@ -141,7 +137,7 @@ public class RenderManager
 
     /** whether bounding box should be rendered or not */
     private boolean debugBoundingBox = false;
-    private static final String __OBFID = "CL_00000991";
+    public Render renderRender = null;
 
     public RenderManager(TextureManager renderEngineIn, RenderItem itemRendererIn)
     {
@@ -183,13 +179,13 @@ public class RenderManager
         this.entityRenderMap.put(EntityItemFrame.class, new RenderItemFrame(this, itemRendererIn));
         this.entityRenderMap.put(EntityLeashKnot.class, new RenderLeashKnot(this));
         this.entityRenderMap.put(EntityArrow.class, new RenderArrow(this));
-        this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball(this, Items.snowball, itemRendererIn));
-        this.entityRenderMap.put(EntityEnderPearl.class, new RenderSnowball(this, Items.ender_pearl, itemRendererIn));
-        this.entityRenderMap.put(EntityEnderEye.class, new RenderSnowball(this, Items.ender_eye, itemRendererIn));
-        this.entityRenderMap.put(EntityEgg.class, new RenderSnowball(this, Items.egg, itemRendererIn));
+        this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball<>(this, Items.snowball, itemRendererIn));
+        this.entityRenderMap.put(EntityEnderPearl.class, new RenderSnowball<>(this, Items.ender_pearl, itemRendererIn));
+        this.entityRenderMap.put(EntityEnderEye.class, new RenderSnowball<>(this, Items.ender_eye, itemRendererIn));
+        this.entityRenderMap.put(EntityEgg.class, new RenderSnowball<>(this, Items.egg, itemRendererIn));
         this.entityRenderMap.put(EntityPotion.class, new RenderPotion(this, itemRendererIn));
-        this.entityRenderMap.put(EntityExpBottle.class, new RenderSnowball(this, Items.experience_bottle, itemRendererIn));
-        this.entityRenderMap.put(EntityFireworkRocket.class, new RenderSnowball(this, Items.fireworks, itemRendererIn));
+        this.entityRenderMap.put(EntityExpBottle.class, new RenderSnowball<>(this, Items.experience_bottle, itemRendererIn));
+        this.entityRenderMap.put(EntityFireworkRocket.class, new RenderSnowball<>(this, Items.fireworks, itemRendererIn));
         this.entityRenderMap.put(EntityLargeFireball.class, new RenderFireball(this, 2.0F));
         this.entityRenderMap.put(EntitySmallFireball.class, new RenderFireball(this, 0.5F));
         this.entityRenderMap.put(EntityWitherSkull.class, new RenderWitherSkull(this));
@@ -212,7 +208,7 @@ public class RenderManager
 
         if (Reflector.RenderingRegistry_loadEntityRenderers.exists())
         {
-            Reflector.call(Reflector.RenderingRegistry_loadEntityRenderers, new Object[] {this, this.entityRenderMap});
+            Reflector.call(Reflector.RenderingRegistry_loadEntityRenderers, this, this.entityRenderMap);
         }
     }
 
@@ -223,17 +219,17 @@ public class RenderManager
         this.renderPosZ = renderPosZIn;
     }
 
-    public <T extends Entity> Render<T> getEntityClassRenderObject(Class <? extends Entity > entityClass)
+    public <T extends Entity> Render<T> getEntityClassRenderObject(Class<? extends Entity> entityClass)
     {
-        Render <? extends Entity > render = (Render)this.entityRenderMap.get(entityClass);
+        Render<? extends Entity> render = this.entityRenderMap.get(entityClass);
 
         if (render == null && entityClass != Entity.class)
         {
-            render = this.<Entity>getEntityClassRenderObject((Class <? extends Entity >)entityClass.getSuperclass());
+            render = this.getEntityClassRenderObject((Class<? extends Entity>) entityClass.getSuperclass());
             this.entityRenderMap.put(entityClass, render);
         }
 
-        return (Render<T>)render;
+        return (Render<T>) render;
     }
 
     public <T extends Entity> Render<T> getEntityRenderObject(Entity entityIn)
@@ -241,12 +237,12 @@ public class RenderManager
         if (entityIn instanceof AbstractClientPlayer)
         {
             String s = ((AbstractClientPlayer)entityIn).getSkinType();
-            RenderPlayer renderplayer = (RenderPlayer)this.skinMap.get(s);
-            return (Render<T>)(renderplayer != null ? renderplayer : this.playerRenderer);
+            RenderPlayer renderplayer = this.skinMap.get(s);
+            return renderplayer != null ? (Render<T>)renderplayer : (Render<T>)this.playerRenderer;
         }
         else
         {
-            return this.<T>getEntityClassRenderObject(entityIn.getClass());
+            return this.getEntityClassRenderObject(entityIn.getClass());
         }
     }
 
@@ -263,16 +259,16 @@ public class RenderManager
             IBlockState iblockstate = worldIn.getBlockState(new BlockPos(livingPlayerIn));
             Block block = iblockstate.getBlock();
 
-            if (Reflector.callBoolean(Reflector.ForgeBlock_isBed, new Object[] {worldIn, new BlockPos(livingPlayerIn), (EntityLivingBase)livingPlayerIn}))
+            if (Reflector.callBoolean(block, Reflector.ForgeBlock_isBed, iblockstate, worldIn, new BlockPos(livingPlayerIn), (EntityLivingBase)livingPlayerIn))
             {
-                EnumFacing enumfacing = (EnumFacing)Reflector.call(block, Reflector.ForgeBlock_getBedDirection, new Object[] {worldIn, new BlockPos(livingPlayerIn)});
+                EnumFacing enumfacing = (EnumFacing)Reflector.call(block, Reflector.ForgeBlock_getBedDirection, iblockstate, worldIn, new BlockPos(livingPlayerIn));
                 int i = enumfacing.getHorizontalIndex();
                 this.playerViewY = (float)(i * 90 + 180);
                 this.playerViewX = 0.0F;
             }
             else if (block == Blocks.bed)
             {
-                int j = ((EnumFacing)iblockstate.getValue(BlockBed.FACING)).getHorizontalIndex();
+                int j = iblockstate.getValue(BlockBed.FACING).getHorizontalIndex();
                 this.playerViewY = (float)(j * 90 + 180);
                 this.playerViewX = 0.0F;
             }
@@ -325,7 +321,7 @@ public class RenderManager
 
     public boolean shouldRender(Entity entityIn, ICamera camera, double camX, double camY, double camZ)
     {
-        Render<Entity> render = this.<Entity>getEntityRenderObject(entityIn);
+        Render<Entity> render = this.getEntityRenderObject(entityIn);
         return render != null && render.shouldRender(entityIn, camera, camX, camY, camZ);
     }
 
@@ -393,7 +389,12 @@ public class RenderManager
                 {
                     if (render instanceof RendererLivingEntity)
                     {
-                        ((RendererLivingEntity<?>)render).setRenderOutlines(this.renderOutlines);
+                        ((RendererLivingEntity)render).setRenderOutlines(this.renderOutlines);
+                    }
+
+                    if (CustomEntityModels.isActive())
+                    {
+                        this.renderRender = render;
                     }
 
                     render.doRender(entity, x, y, z, entityYaw, partialTicks);
@@ -442,8 +443,8 @@ public class RenderManager
             CrashReportCategory crashreportcategory1 = crashreport.makeCategory("Renderer details");
             crashreportcategory1.addCrashSection("Assigned renderer", render);
             crashreportcategory1.addCrashSection("Location", CrashReportCategory.getCoordinateInfo(x, y, z));
-            crashreportcategory1.addCrashSection("Rotation", Float.valueOf(entityYaw));
-            crashreportcategory1.addCrashSection("Delta", Float.valueOf(partialTicks));
+            crashreportcategory1.addCrashSection("Rotation", entityYaw);
+            crashreportcategory1.addCrashSection("Delta", partialTicks);
             throw new ReportedException(crashreport);
         }
     }
@@ -472,7 +473,7 @@ public class RenderManager
         if (entityIn instanceof EntityLivingBase)
         {
             float f1 = 0.01F;
-            RenderGlobal.drawOutlinedBoundingBox(new AxisAlignedBB(x - (double)f, y + (double)entityIn.getEyeHeight() - 0.009999999776482582D, z - (double)f, x + (double)f, y + (double)entityIn.getEyeHeight() + 0.009999999776482582D, z + (double)f), 255, 0, 0, 255);
+            RenderGlobal.drawOutlinedBoundingBox(new AxisAlignedBB(x - (double)f, y + (double)entityIn.getEyeHeight() - (double)0.01F, z - (double)f, x + (double)f, y + (double)entityIn.getEyeHeight() + (double)0.01F, z + (double)f), 255, 0, 0, 255);
         }
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -518,18 +519,18 @@ public class RenderManager
         this.renderOutlines = renderOutlinesIn;
     }
 
-    public Map<Class<? extends Entity>, Render<? extends Entity>> getEntityRenderMap()
+    public Map<Class, Render> getEntityRenderMap()
     {
         return this.entityRenderMap;
     }
 
-    public void setEntityRenderMap(Map<Class<? extends Entity>, Render<? extends Entity>> p_setEntityRenderMap_1_)
+    public void setEntityRenderMap(Map p_setEntityRenderMap_1_)
     {
         this.entityRenderMap = p_setEntityRenderMap_1_;
     }
 
     public Map<String, RenderPlayer> getSkinMap()
     {
-        return Collections.<String, RenderPlayer>unmodifiableMap(this.skinMap);
+        return Collections.unmodifiableMap(this.skinMap);
     }
 }

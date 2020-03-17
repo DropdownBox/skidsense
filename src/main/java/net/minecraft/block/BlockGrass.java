@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -23,7 +22,7 @@ public class BlockGrass extends Block implements IGrowable
     protected BlockGrass()
     {
         super(Material.grass);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(SNOWY, Boolean.valueOf(false)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(SNOWY, false));
         this.setTickRandomly(true);
         this.setCreativeTab(CreativeTabs.tabBlock);
     }
@@ -35,7 +34,7 @@ public class BlockGrass extends Block implements IGrowable
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
         Block block = worldIn.getBlockState(pos.up()).getBlock();
-        return state.withProperty(SNOWY, Boolean.valueOf(block == Blocks.snow || block == Blocks.snow_layer));
+        return state.withProperty(SNOWY, block == Blocks.snow || block == Blocks.snow_layer);
     }
 
     public int getBlockColor()
@@ -169,6 +168,6 @@ public class BlockGrass extends Block implements IGrowable
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {SNOWY});
+        return new BlockState(this, SNOWY);
     }
 }

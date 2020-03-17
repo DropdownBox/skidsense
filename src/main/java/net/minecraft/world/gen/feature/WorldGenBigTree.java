@@ -59,14 +59,14 @@ public class WorldGenBigTree extends WorldGenAbstractTree
 
         int j = this.basePos.getY() + this.height;
         int k = this.heightLimit - this.leafDistanceLimit;
-        this.field_175948_j = Lists.<WorldGenBigTree.FoliageCoordinates>newArrayList();
+        this.field_175948_j = Lists.newArrayList();
         this.field_175948_j.add(new WorldGenBigTree.FoliageCoordinates(this.basePos.up(k), j));
 
         for (; k >= 0; --k)
         {
             float f = this.layerSize(k);
 
-            if (f >= 0.0F)
+            if (!(f < 0.0F))
             {
                 for (int l = 0; l < i; ++l)
                 {
@@ -147,7 +147,14 @@ public class WorldGenBigTree extends WorldGenAbstractTree
 
     float leafSize(int p_76495_1_)
     {
-        return p_76495_1_ >= 0 && p_76495_1_ < this.leafDistanceLimit ? (p_76495_1_ != 0 && p_76495_1_ != this.leafDistanceLimit - 1 ? 3.0F : 2.0F) : -1.0F;
+        if (p_76495_1_ >= 0 && p_76495_1_ < this.leafDistanceLimit)
+        {
+            return p_76495_1_ != 0 && p_76495_1_ != this.leafDistanceLimit - 1 ? 3.0F : 2.0F;
+        }
+        else
+        {
+            return -1.0F;
+        }
     }
 
     /**
@@ -157,7 +164,7 @@ public class WorldGenBigTree extends WorldGenAbstractTree
     {
         for (int i = 0; i < this.leafDistanceLimit; ++i)
         {
-            this.func_181631_a(pos.up(i), this.leafSize(i), Blocks.leaves.getDefaultState().withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false)));
+            this.func_181631_a(pos.up(i), this.leafSize(i), Blocks.leaves.getDefaultState().withProperty(BlockLeaves.CHECK_DECAY, false));
         }
     }
 
@@ -185,7 +192,15 @@ public class WorldGenBigTree extends WorldGenAbstractTree
         int i = MathHelper.abs_int(posIn.getX());
         int j = MathHelper.abs_int(posIn.getY());
         int k = MathHelper.abs_int(posIn.getZ());
-        return k > i && k > j ? k : (j > i ? j : i);
+
+        if (k > i && k > j)
+        {
+            return k;
+        }
+        else
+        {
+            return j > i ? j : i;
+        }
     }
 
     private BlockLog.EnumAxis func_175938_b(BlockPos p_175938_1_, BlockPos p_175938_2_)

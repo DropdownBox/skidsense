@@ -40,7 +40,7 @@ public class RenderMinecart<T extends EntityMinecart> extends Render<T>
         double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
         double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
         double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks;
-        double d3 = 0.30000001192092896D;
+        double d3 = (double)0.3F;
         Vec3 vec3 = entity.func_70489_a(d0, d1, d2);
         float f3 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 

@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -30,7 +29,7 @@ public class BlockDaylightDetector extends BlockContainer
     {
         super(Material.wood);
         this.inverted = inverted;
-        this.setDefaultState(this.blockState.getBaseState().withProperty(POWER, Integer.valueOf(0)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(POWER, 0));
         this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.375F, 1.0F);
         this.setCreativeTab(CreativeTabs.tabRedstone);
         this.setHardness(0.2F);
@@ -45,7 +44,7 @@ public class BlockDaylightDetector extends BlockContainer
 
     public int getWeakPower(IBlockAccess worldIn, BlockPos pos, IBlockState state, EnumFacing side)
     {
-        return ((Integer)state.getValue(POWER)).intValue();
+        return state.getValue(POWER);
     }
 
     public void updatePower(World worldIn, BlockPos pos)
@@ -65,9 +64,9 @@ public class BlockDaylightDetector extends BlockContainer
                 i = 15 - i;
             }
 
-            if (((Integer)iblockstate.getValue(POWER)).intValue() != i)
+            if (iblockstate.getValue(POWER) != i)
             {
-                worldIn.setBlockState(pos, iblockstate.withProperty(POWER, Integer.valueOf(i)), 3);
+                worldIn.setBlockState(pos, iblockstate.withProperty(POWER, i), 3);
             }
         }
     }
@@ -157,7 +156,7 @@ public class BlockDaylightDetector extends BlockContainer
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(POWER, Integer.valueOf(meta));
+        return this.getDefaultState().withProperty(POWER, meta);
     }
 
     /**
@@ -165,12 +164,12 @@ public class BlockDaylightDetector extends BlockContainer
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((Integer)state.getValue(POWER)).intValue();
+        return state.getValue(POWER);
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {POWER});
+        return new BlockState(this, POWER);
     }
 
     /**

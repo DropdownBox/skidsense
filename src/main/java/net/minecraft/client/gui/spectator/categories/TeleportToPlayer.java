@@ -27,17 +27,15 @@ public class TeleportToPlayer implements ISpectatorMenuView, ISpectatorMenuObjec
             return ComparisonChain.start().compare(p_compare_1_.getGameProfile().getId(), p_compare_2_.getGameProfile().getId()).result();
         }
     });
-    private final List<ISpectatorMenuObject> field_178673_b;
+    private final List<ISpectatorMenuObject> field_178673_b = Lists.newArrayList();
 
     public TeleportToPlayer()
     {
-        this(field_178674_a.<NetworkPlayerInfo>sortedCopy(Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap()));
+        this(field_178674_a.sortedCopy(Minecraft.getMinecraft().getNetHandler().getPlayerInfoMap()));
     }
 
     public TeleportToPlayer(Collection<NetworkPlayerInfo> p_i45493_1_)
     {
-        this.field_178673_b = Lists.<ISpectatorMenuObject>newArrayList();
-
         for (NetworkPlayerInfo networkplayerinfo : field_178674_a.sortedCopy(p_i45493_1_))
         {
             if (networkplayerinfo.getGameType() != WorldSettings.GameType.SPECTATOR)

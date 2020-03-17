@@ -21,10 +21,10 @@ public class Potion
 {
     /** The array of potion types. */
     public static final Potion[] potionTypes = new Potion[32];
-    private static final Map<ResourceLocation, Potion> field_180150_I = Maps.<ResourceLocation, Potion>newHashMap();
+    private static final Map<ResourceLocation, Potion> field_180150_I = Maps.newHashMap();
     public static final Potion field_180151_b = null;
-    public static final Potion moveSpeed = (new Potion(1, new ResourceLocation("speed"), false, 8171462)).setPotionName("potion.moveSpeed").setIconIndex(0, 0).registerPotionAttributeModifier(SharedMonsterAttributes.movementSpeed, "91AEAA56-376B-4498-935B-2F7F68070635", 0.20000000298023224D, 2);
-    public static final Potion moveSlowdown = (new Potion(2, new ResourceLocation("slowness"), true, 5926017)).setPotionName("potion.moveSlowdown").setIconIndex(1, 0).registerPotionAttributeModifier(SharedMonsterAttributes.movementSpeed, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15000000596046448D, 2);
+    public static final Potion moveSpeed = (new Potion(1, new ResourceLocation("speed"), false, 8171462)).setPotionName("potion.moveSpeed").setIconIndex(0, 0).registerPotionAttributeModifier(SharedMonsterAttributes.movementSpeed, "91AEAA56-376B-4498-935B-2F7F68070635", (double)0.2F, 2);
+    public static final Potion moveSlowdown = (new Potion(2, new ResourceLocation("slowness"), true, 5926017)).setPotionName("potion.moveSlowdown").setIconIndex(1, 0).registerPotionAttributeModifier(SharedMonsterAttributes.movementSpeed, "7107DE5E-7CE8-4030-940E-514C1F160890", (double) -0.15F, 2);
     public static final Potion digSpeed = (new Potion(3, new ResourceLocation("haste"), false, 14270531)).setPotionName("potion.digSpeed").setIconIndex(2, 0).setEffectiveness(1.5D);
     public static final Potion digSlowdown = (new Potion(4, new ResourceLocation("mining_fatigue"), true, 4866583)).setPotionName("potion.digSlowDown").setIconIndex(3, 0);
     public static final Potion damageBoost = (new PotionAttackDamage(5, new ResourceLocation("strength"), false, 9643043)).setPotionName("potion.damageBoost").setIconIndex(4, 0).registerPotionAttributeModifier(SharedMonsterAttributes.attackDamage, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 2.5D, 2);
@@ -83,7 +83,7 @@ public class Potion
 
     /** The Id of a Potion object. */
     public final int id;
-    private final Map<IAttribute, AttributeModifier> attributeModifierMap = Maps.<IAttribute, AttributeModifier>newHashMap();
+    private final Map<IAttribute, AttributeModifier> attributeModifierMap = Maps.newHashMap();
 
     /**
      * This field indicated if the effect is 'bad' - negative - for the entity.
@@ -122,7 +122,7 @@ public class Potion
 
     public static Potion getPotionFromResourceLocation(String location)
     {
-        return (Potion)field_180150_I.get(new ResourceLocation(location));
+        return field_180150_I.get(new ResourceLocation(location));
     }
 
     public static Set<ResourceLocation> getPotionLocations()
@@ -232,17 +232,41 @@ public class Potion
         if (this.id == regeneration.id)
         {
             int k = 50 >> p_76397_2_;
-            return k > 0 ? p_76397_1_ % k == 0 : true;
+
+            if (k > 0)
+            {
+                return p_76397_1_ % k == 0;
+            }
+            else
+            {
+                return true;
+            }
         }
         else if (this.id == poison.id)
         {
             int j = 25 >> p_76397_2_;
-            return j > 0 ? p_76397_1_ % j == 0 : true;
+
+            if (j > 0)
+            {
+                return p_76397_1_ % j == 0;
+            }
+            else
+            {
+                return true;
+            }
         }
         else if (this.id == wither.id)
         {
             int i = 40 >> p_76397_2_;
-            return i > 0 ? p_76397_1_ % i == 0 : true;
+
+            if (i > 0)
+            {
+                return p_76397_1_ % i == 0;
+            }
+            else
+            {
+                return true;
+            }
         }
         else
         {
@@ -347,11 +371,11 @@ public class Potion
     {
         for (Entry<IAttribute, AttributeModifier> entry : this.attributeModifierMap.entrySet())
         {
-            IAttributeInstance iattributeinstance = p_111187_2_.getAttributeInstance((IAttribute)entry.getKey());
+            IAttributeInstance iattributeinstance = p_111187_2_.getAttributeInstance(entry.getKey());
 
             if (iattributeinstance != null)
             {
-                iattributeinstance.removeModifier((AttributeModifier)entry.getValue());
+                iattributeinstance.removeModifier(entry.getValue());
             }
         }
     }
@@ -360,11 +384,11 @@ public class Potion
     {
         for (Entry<IAttribute, AttributeModifier> entry : this.attributeModifierMap.entrySet())
         {
-            IAttributeInstance iattributeinstance = p_111185_2_.getAttributeInstance((IAttribute)entry.getKey());
+            IAttributeInstance iattributeinstance = p_111185_2_.getAttributeInstance(entry.getKey());
 
             if (iattributeinstance != null)
             {
-                AttributeModifier attributemodifier = (AttributeModifier)entry.getValue();
+                AttributeModifier attributemodifier = entry.getValue();
                 iattributeinstance.removeModifier(attributemodifier);
                 iattributeinstance.applyModifier(new AttributeModifier(attributemodifier.getID(), this.getName() + " " + amplifier, this.getAttributeModifierAmount(amplifier, attributemodifier), attributemodifier.getOperation()));
             }

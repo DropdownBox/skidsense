@@ -268,7 +268,7 @@ public class ChunkProviderSettings
             {
                 try
                 {
-                    return (ChunkProviderSettings.Factory)JSON_ADAPTER.fromJson(p_177865_0_, ChunkProviderSettings.Factory.class);
+                    return JSON_ADAPTER.fromJson(p_177865_0_, ChunkProviderSettings.Factory.class);
                 }
                 catch (Exception var2)
                 {
@@ -279,7 +279,7 @@ public class ChunkProviderSettings
 
         public String toString()
         {
-            return JSON_ADAPTER.toJson((Object)this);
+            return JSON_ADAPTER.toJson(this);
         }
 
         public Factory()
@@ -378,7 +378,319 @@ public class ChunkProviderSettings
             else if (p_equals_1_ != null && this.getClass() == p_equals_1_.getClass())
             {
                 ChunkProviderSettings.Factory chunkprovidersettings$factory = (ChunkProviderSettings.Factory)p_equals_1_;
-                return this.andesiteCount != chunkprovidersettings$factory.andesiteCount ? false : (this.andesiteMaxHeight != chunkprovidersettings$factory.andesiteMaxHeight ? false : (this.andesiteMinHeight != chunkprovidersettings$factory.andesiteMinHeight ? false : (this.andesiteSize != chunkprovidersettings$factory.andesiteSize ? false : (Float.compare(chunkprovidersettings$factory.baseSize, this.baseSize) != 0 ? false : (Float.compare(chunkprovidersettings$factory.biomeDepthOffset, this.biomeDepthOffset) != 0 ? false : (Float.compare(chunkprovidersettings$factory.biomeDepthWeight, this.biomeDepthWeight) != 0 ? false : (Float.compare(chunkprovidersettings$factory.biomeScaleOffset, this.biomeScaleOffset) != 0 ? false : (Float.compare(chunkprovidersettings$factory.biomeScaleWeight, this.biomeScaleWeight) != 0 ? false : (this.biomeSize != chunkprovidersettings$factory.biomeSize ? false : (this.coalCount != chunkprovidersettings$factory.coalCount ? false : (this.coalMaxHeight != chunkprovidersettings$factory.coalMaxHeight ? false : (this.coalMinHeight != chunkprovidersettings$factory.coalMinHeight ? false : (this.coalSize != chunkprovidersettings$factory.coalSize ? false : (Float.compare(chunkprovidersettings$factory.coordinateScale, this.coordinateScale) != 0 ? false : (Float.compare(chunkprovidersettings$factory.depthNoiseScaleExponent, this.depthNoiseScaleExponent) != 0 ? false : (Float.compare(chunkprovidersettings$factory.depthNoiseScaleX, this.depthNoiseScaleX) != 0 ? false : (Float.compare(chunkprovidersettings$factory.depthNoiseScaleZ, this.depthNoiseScaleZ) != 0 ? false : (this.diamondCount != chunkprovidersettings$factory.diamondCount ? false : (this.diamondMaxHeight != chunkprovidersettings$factory.diamondMaxHeight ? false : (this.diamondMinHeight != chunkprovidersettings$factory.diamondMinHeight ? false : (this.diamondSize != chunkprovidersettings$factory.diamondSize ? false : (this.dioriteCount != chunkprovidersettings$factory.dioriteCount ? false : (this.dioriteMaxHeight != chunkprovidersettings$factory.dioriteMaxHeight ? false : (this.dioriteMinHeight != chunkprovidersettings$factory.dioriteMinHeight ? false : (this.dioriteSize != chunkprovidersettings$factory.dioriteSize ? false : (this.dirtCount != chunkprovidersettings$factory.dirtCount ? false : (this.dirtMaxHeight != chunkprovidersettings$factory.dirtMaxHeight ? false : (this.dirtMinHeight != chunkprovidersettings$factory.dirtMinHeight ? false : (this.dirtSize != chunkprovidersettings$factory.dirtSize ? false : (this.dungeonChance != chunkprovidersettings$factory.dungeonChance ? false : (this.fixedBiome != chunkprovidersettings$factory.fixedBiome ? false : (this.goldCount != chunkprovidersettings$factory.goldCount ? false : (this.goldMaxHeight != chunkprovidersettings$factory.goldMaxHeight ? false : (this.goldMinHeight != chunkprovidersettings$factory.goldMinHeight ? false : (this.goldSize != chunkprovidersettings$factory.goldSize ? false : (this.graniteCount != chunkprovidersettings$factory.graniteCount ? false : (this.graniteMaxHeight != chunkprovidersettings$factory.graniteMaxHeight ? false : (this.graniteMinHeight != chunkprovidersettings$factory.graniteMinHeight ? false : (this.graniteSize != chunkprovidersettings$factory.graniteSize ? false : (this.gravelCount != chunkprovidersettings$factory.gravelCount ? false : (this.gravelMaxHeight != chunkprovidersettings$factory.gravelMaxHeight ? false : (this.gravelMinHeight != chunkprovidersettings$factory.gravelMinHeight ? false : (this.gravelSize != chunkprovidersettings$factory.gravelSize ? false : (Float.compare(chunkprovidersettings$factory.heightScale, this.heightScale) != 0 ? false : (this.ironCount != chunkprovidersettings$factory.ironCount ? false : (this.ironMaxHeight != chunkprovidersettings$factory.ironMaxHeight ? false : (this.ironMinHeight != chunkprovidersettings$factory.ironMinHeight ? false : (this.ironSize != chunkprovidersettings$factory.ironSize ? false : (this.lapisCenterHeight != chunkprovidersettings$factory.lapisCenterHeight ? false : (this.lapisCount != chunkprovidersettings$factory.lapisCount ? false : (this.lapisSize != chunkprovidersettings$factory.lapisSize ? false : (this.lapisSpread != chunkprovidersettings$factory.lapisSpread ? false : (this.lavaLakeChance != chunkprovidersettings$factory.lavaLakeChance ? false : (Float.compare(chunkprovidersettings$factory.lowerLimitScale, this.lowerLimitScale) != 0 ? false : (Float.compare(chunkprovidersettings$factory.mainNoiseScaleX, this.mainNoiseScaleX) != 0 ? false : (Float.compare(chunkprovidersettings$factory.mainNoiseScaleY, this.mainNoiseScaleY) != 0 ? false : (Float.compare(chunkprovidersettings$factory.mainNoiseScaleZ, this.mainNoiseScaleZ) != 0 ? false : (this.redstoneCount != chunkprovidersettings$factory.redstoneCount ? false : (this.redstoneMaxHeight != chunkprovidersettings$factory.redstoneMaxHeight ? false : (this.redstoneMinHeight != chunkprovidersettings$factory.redstoneMinHeight ? false : (this.redstoneSize != chunkprovidersettings$factory.redstoneSize ? false : (this.riverSize != chunkprovidersettings$factory.riverSize ? false : (this.seaLevel != chunkprovidersettings$factory.seaLevel ? false : (Float.compare(chunkprovidersettings$factory.stretchY, this.stretchY) != 0 ? false : (Float.compare(chunkprovidersettings$factory.upperLimitScale, this.upperLimitScale) != 0 ? false : (this.useCaves != chunkprovidersettings$factory.useCaves ? false : (this.useDungeons != chunkprovidersettings$factory.useDungeons ? false : (this.useLavaLakes != chunkprovidersettings$factory.useLavaLakes ? false : (this.useLavaOceans != chunkprovidersettings$factory.useLavaOceans ? false : (this.useMineShafts != chunkprovidersettings$factory.useMineShafts ? false : (this.useRavines != chunkprovidersettings$factory.useRavines ? false : (this.useStrongholds != chunkprovidersettings$factory.useStrongholds ? false : (this.useTemples != chunkprovidersettings$factory.useTemples ? false : (this.useMonuments != chunkprovidersettings$factory.useMonuments ? false : (this.useVillages != chunkprovidersettings$factory.useVillages ? false : (this.useWaterLakes != chunkprovidersettings$factory.useWaterLakes ? false : this.waterLakeChance == chunkprovidersettings$factory.waterLakeChance))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))));
+
+                if (this.andesiteCount != chunkprovidersettings$factory.andesiteCount)
+                {
+                    return false;
+                }
+                else if (this.andesiteMaxHeight != chunkprovidersettings$factory.andesiteMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.andesiteMinHeight != chunkprovidersettings$factory.andesiteMinHeight)
+                {
+                    return false;
+                }
+                else if (this.andesiteSize != chunkprovidersettings$factory.andesiteSize)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.baseSize, this.baseSize) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.biomeDepthOffset, this.biomeDepthOffset) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.biomeDepthWeight, this.biomeDepthWeight) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.biomeScaleOffset, this.biomeScaleOffset) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.biomeScaleWeight, this.biomeScaleWeight) != 0)
+                {
+                    return false;
+                }
+                else if (this.biomeSize != chunkprovidersettings$factory.biomeSize)
+                {
+                    return false;
+                }
+                else if (this.coalCount != chunkprovidersettings$factory.coalCount)
+                {
+                    return false;
+                }
+                else if (this.coalMaxHeight != chunkprovidersettings$factory.coalMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.coalMinHeight != chunkprovidersettings$factory.coalMinHeight)
+                {
+                    return false;
+                }
+                else if (this.coalSize != chunkprovidersettings$factory.coalSize)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.coordinateScale, this.coordinateScale) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.depthNoiseScaleExponent, this.depthNoiseScaleExponent) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.depthNoiseScaleX, this.depthNoiseScaleX) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.depthNoiseScaleZ, this.depthNoiseScaleZ) != 0)
+                {
+                    return false;
+                }
+                else if (this.diamondCount != chunkprovidersettings$factory.diamondCount)
+                {
+                    return false;
+                }
+                else if (this.diamondMaxHeight != chunkprovidersettings$factory.diamondMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.diamondMinHeight != chunkprovidersettings$factory.diamondMinHeight)
+                {
+                    return false;
+                }
+                else if (this.diamondSize != chunkprovidersettings$factory.diamondSize)
+                {
+                    return false;
+                }
+                else if (this.dioriteCount != chunkprovidersettings$factory.dioriteCount)
+                {
+                    return false;
+                }
+                else if (this.dioriteMaxHeight != chunkprovidersettings$factory.dioriteMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.dioriteMinHeight != chunkprovidersettings$factory.dioriteMinHeight)
+                {
+                    return false;
+                }
+                else if (this.dioriteSize != chunkprovidersettings$factory.dioriteSize)
+                {
+                    return false;
+                }
+                else if (this.dirtCount != chunkprovidersettings$factory.dirtCount)
+                {
+                    return false;
+                }
+                else if (this.dirtMaxHeight != chunkprovidersettings$factory.dirtMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.dirtMinHeight != chunkprovidersettings$factory.dirtMinHeight)
+                {
+                    return false;
+                }
+                else if (this.dirtSize != chunkprovidersettings$factory.dirtSize)
+                {
+                    return false;
+                }
+                else if (this.dungeonChance != chunkprovidersettings$factory.dungeonChance)
+                {
+                    return false;
+                }
+                else if (this.fixedBiome != chunkprovidersettings$factory.fixedBiome)
+                {
+                    return false;
+                }
+                else if (this.goldCount != chunkprovidersettings$factory.goldCount)
+                {
+                    return false;
+                }
+                else if (this.goldMaxHeight != chunkprovidersettings$factory.goldMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.goldMinHeight != chunkprovidersettings$factory.goldMinHeight)
+                {
+                    return false;
+                }
+                else if (this.goldSize != chunkprovidersettings$factory.goldSize)
+                {
+                    return false;
+                }
+                else if (this.graniteCount != chunkprovidersettings$factory.graniteCount)
+                {
+                    return false;
+                }
+                else if (this.graniteMaxHeight != chunkprovidersettings$factory.graniteMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.graniteMinHeight != chunkprovidersettings$factory.graniteMinHeight)
+                {
+                    return false;
+                }
+                else if (this.graniteSize != chunkprovidersettings$factory.graniteSize)
+                {
+                    return false;
+                }
+                else if (this.gravelCount != chunkprovidersettings$factory.gravelCount)
+                {
+                    return false;
+                }
+                else if (this.gravelMaxHeight != chunkprovidersettings$factory.gravelMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.gravelMinHeight != chunkprovidersettings$factory.gravelMinHeight)
+                {
+                    return false;
+                }
+                else if (this.gravelSize != chunkprovidersettings$factory.gravelSize)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.heightScale, this.heightScale) != 0)
+                {
+                    return false;
+                }
+                else if (this.ironCount != chunkprovidersettings$factory.ironCount)
+                {
+                    return false;
+                }
+                else if (this.ironMaxHeight != chunkprovidersettings$factory.ironMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.ironMinHeight != chunkprovidersettings$factory.ironMinHeight)
+                {
+                    return false;
+                }
+                else if (this.ironSize != chunkprovidersettings$factory.ironSize)
+                {
+                    return false;
+                }
+                else if (this.lapisCenterHeight != chunkprovidersettings$factory.lapisCenterHeight)
+                {
+                    return false;
+                }
+                else if (this.lapisCount != chunkprovidersettings$factory.lapisCount)
+                {
+                    return false;
+                }
+                else if (this.lapisSize != chunkprovidersettings$factory.lapisSize)
+                {
+                    return false;
+                }
+                else if (this.lapisSpread != chunkprovidersettings$factory.lapisSpread)
+                {
+                    return false;
+                }
+                else if (this.lavaLakeChance != chunkprovidersettings$factory.lavaLakeChance)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.lowerLimitScale, this.lowerLimitScale) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.mainNoiseScaleX, this.mainNoiseScaleX) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.mainNoiseScaleY, this.mainNoiseScaleY) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.mainNoiseScaleZ, this.mainNoiseScaleZ) != 0)
+                {
+                    return false;
+                }
+                else if (this.redstoneCount != chunkprovidersettings$factory.redstoneCount)
+                {
+                    return false;
+                }
+                else if (this.redstoneMaxHeight != chunkprovidersettings$factory.redstoneMaxHeight)
+                {
+                    return false;
+                }
+                else if (this.redstoneMinHeight != chunkprovidersettings$factory.redstoneMinHeight)
+                {
+                    return false;
+                }
+                else if (this.redstoneSize != chunkprovidersettings$factory.redstoneSize)
+                {
+                    return false;
+                }
+                else if (this.riverSize != chunkprovidersettings$factory.riverSize)
+                {
+                    return false;
+                }
+                else if (this.seaLevel != chunkprovidersettings$factory.seaLevel)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.stretchY, this.stretchY) != 0)
+                {
+                    return false;
+                }
+                else if (Float.compare(chunkprovidersettings$factory.upperLimitScale, this.upperLimitScale) != 0)
+                {
+                    return false;
+                }
+                else if (this.useCaves != chunkprovidersettings$factory.useCaves)
+                {
+                    return false;
+                }
+                else if (this.useDungeons != chunkprovidersettings$factory.useDungeons)
+                {
+                    return false;
+                }
+                else if (this.useLavaLakes != chunkprovidersettings$factory.useLavaLakes)
+                {
+                    return false;
+                }
+                else if (this.useLavaOceans != chunkprovidersettings$factory.useLavaOceans)
+                {
+                    return false;
+                }
+                else if (this.useMineShafts != chunkprovidersettings$factory.useMineShafts)
+                {
+                    return false;
+                }
+                else if (this.useRavines != chunkprovidersettings$factory.useRavines)
+                {
+                    return false;
+                }
+                else if (this.useStrongholds != chunkprovidersettings$factory.useStrongholds)
+                {
+                    return false;
+                }
+                else if (this.useTemples != chunkprovidersettings$factory.useTemples)
+                {
+                    return false;
+                }
+                else if (this.useMonuments != chunkprovidersettings$factory.useMonuments)
+                {
+                    return false;
+                }
+                else if (this.useVillages != chunkprovidersettings$factory.useVillages)
+                {
+                    return false;
+                }
+                else if (this.useWaterLakes != chunkprovidersettings$factory.useWaterLakes)
+                {
+                    return false;
+                }
+                else
+                {
+                    return this.waterLakeChance == chunkprovidersettings$factory.waterLakeChance;
+                }
             }
             else
             {
@@ -587,84 +899,84 @@ public class ChunkProviderSettings
         public JsonElement serialize(ChunkProviderSettings.Factory p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
         {
             JsonObject jsonobject = new JsonObject();
-            jsonobject.addProperty("coordinateScale", (Number)Float.valueOf(p_serialize_1_.coordinateScale));
-            jsonobject.addProperty("heightScale", (Number)Float.valueOf(p_serialize_1_.heightScale));
-            jsonobject.addProperty("lowerLimitScale", (Number)Float.valueOf(p_serialize_1_.lowerLimitScale));
-            jsonobject.addProperty("upperLimitScale", (Number)Float.valueOf(p_serialize_1_.upperLimitScale));
-            jsonobject.addProperty("depthNoiseScaleX", (Number)Float.valueOf(p_serialize_1_.depthNoiseScaleX));
-            jsonobject.addProperty("depthNoiseScaleZ", (Number)Float.valueOf(p_serialize_1_.depthNoiseScaleZ));
-            jsonobject.addProperty("depthNoiseScaleExponent", (Number)Float.valueOf(p_serialize_1_.depthNoiseScaleExponent));
-            jsonobject.addProperty("mainNoiseScaleX", (Number)Float.valueOf(p_serialize_1_.mainNoiseScaleX));
-            jsonobject.addProperty("mainNoiseScaleY", (Number)Float.valueOf(p_serialize_1_.mainNoiseScaleY));
-            jsonobject.addProperty("mainNoiseScaleZ", (Number)Float.valueOf(p_serialize_1_.mainNoiseScaleZ));
-            jsonobject.addProperty("baseSize", (Number)Float.valueOf(p_serialize_1_.baseSize));
-            jsonobject.addProperty("stretchY", (Number)Float.valueOf(p_serialize_1_.stretchY));
-            jsonobject.addProperty("biomeDepthWeight", (Number)Float.valueOf(p_serialize_1_.biomeDepthWeight));
-            jsonobject.addProperty("biomeDepthOffset", (Number)Float.valueOf(p_serialize_1_.biomeDepthOffset));
-            jsonobject.addProperty("biomeScaleWeight", (Number)Float.valueOf(p_serialize_1_.biomeScaleWeight));
-            jsonobject.addProperty("biomeScaleOffset", (Number)Float.valueOf(p_serialize_1_.biomeScaleOffset));
-            jsonobject.addProperty("seaLevel", (Number)Integer.valueOf(p_serialize_1_.seaLevel));
-            jsonobject.addProperty("useCaves", Boolean.valueOf(p_serialize_1_.useCaves));
-            jsonobject.addProperty("useDungeons", Boolean.valueOf(p_serialize_1_.useDungeons));
-            jsonobject.addProperty("dungeonChance", (Number)Integer.valueOf(p_serialize_1_.dungeonChance));
-            jsonobject.addProperty("useStrongholds", Boolean.valueOf(p_serialize_1_.useStrongholds));
-            jsonobject.addProperty("useVillages", Boolean.valueOf(p_serialize_1_.useVillages));
-            jsonobject.addProperty("useMineShafts", Boolean.valueOf(p_serialize_1_.useMineShafts));
-            jsonobject.addProperty("useTemples", Boolean.valueOf(p_serialize_1_.useTemples));
-            jsonobject.addProperty("useMonuments", Boolean.valueOf(p_serialize_1_.useMonuments));
-            jsonobject.addProperty("useRavines", Boolean.valueOf(p_serialize_1_.useRavines));
-            jsonobject.addProperty("useWaterLakes", Boolean.valueOf(p_serialize_1_.useWaterLakes));
-            jsonobject.addProperty("waterLakeChance", (Number)Integer.valueOf(p_serialize_1_.waterLakeChance));
-            jsonobject.addProperty("useLavaLakes", Boolean.valueOf(p_serialize_1_.useLavaLakes));
-            jsonobject.addProperty("lavaLakeChance", (Number)Integer.valueOf(p_serialize_1_.lavaLakeChance));
-            jsonobject.addProperty("useLavaOceans", Boolean.valueOf(p_serialize_1_.useLavaOceans));
-            jsonobject.addProperty("fixedBiome", (Number)Integer.valueOf(p_serialize_1_.fixedBiome));
-            jsonobject.addProperty("biomeSize", (Number)Integer.valueOf(p_serialize_1_.biomeSize));
-            jsonobject.addProperty("riverSize", (Number)Integer.valueOf(p_serialize_1_.riverSize));
-            jsonobject.addProperty("dirtSize", (Number)Integer.valueOf(p_serialize_1_.dirtSize));
-            jsonobject.addProperty("dirtCount", (Number)Integer.valueOf(p_serialize_1_.dirtCount));
-            jsonobject.addProperty("dirtMinHeight", (Number)Integer.valueOf(p_serialize_1_.dirtMinHeight));
-            jsonobject.addProperty("dirtMaxHeight", (Number)Integer.valueOf(p_serialize_1_.dirtMaxHeight));
-            jsonobject.addProperty("gravelSize", (Number)Integer.valueOf(p_serialize_1_.gravelSize));
-            jsonobject.addProperty("gravelCount", (Number)Integer.valueOf(p_serialize_1_.gravelCount));
-            jsonobject.addProperty("gravelMinHeight", (Number)Integer.valueOf(p_serialize_1_.gravelMinHeight));
-            jsonobject.addProperty("gravelMaxHeight", (Number)Integer.valueOf(p_serialize_1_.gravelMaxHeight));
-            jsonobject.addProperty("graniteSize", (Number)Integer.valueOf(p_serialize_1_.graniteSize));
-            jsonobject.addProperty("graniteCount", (Number)Integer.valueOf(p_serialize_1_.graniteCount));
-            jsonobject.addProperty("graniteMinHeight", (Number)Integer.valueOf(p_serialize_1_.graniteMinHeight));
-            jsonobject.addProperty("graniteMaxHeight", (Number)Integer.valueOf(p_serialize_1_.graniteMaxHeight));
-            jsonobject.addProperty("dioriteSize", (Number)Integer.valueOf(p_serialize_1_.dioriteSize));
-            jsonobject.addProperty("dioriteCount", (Number)Integer.valueOf(p_serialize_1_.dioriteCount));
-            jsonobject.addProperty("dioriteMinHeight", (Number)Integer.valueOf(p_serialize_1_.dioriteMinHeight));
-            jsonobject.addProperty("dioriteMaxHeight", (Number)Integer.valueOf(p_serialize_1_.dioriteMaxHeight));
-            jsonobject.addProperty("andesiteSize", (Number)Integer.valueOf(p_serialize_1_.andesiteSize));
-            jsonobject.addProperty("andesiteCount", (Number)Integer.valueOf(p_serialize_1_.andesiteCount));
-            jsonobject.addProperty("andesiteMinHeight", (Number)Integer.valueOf(p_serialize_1_.andesiteMinHeight));
-            jsonobject.addProperty("andesiteMaxHeight", (Number)Integer.valueOf(p_serialize_1_.andesiteMaxHeight));
-            jsonobject.addProperty("coalSize", (Number)Integer.valueOf(p_serialize_1_.coalSize));
-            jsonobject.addProperty("coalCount", (Number)Integer.valueOf(p_serialize_1_.coalCount));
-            jsonobject.addProperty("coalMinHeight", (Number)Integer.valueOf(p_serialize_1_.coalMinHeight));
-            jsonobject.addProperty("coalMaxHeight", (Number)Integer.valueOf(p_serialize_1_.coalMaxHeight));
-            jsonobject.addProperty("ironSize", (Number)Integer.valueOf(p_serialize_1_.ironSize));
-            jsonobject.addProperty("ironCount", (Number)Integer.valueOf(p_serialize_1_.ironCount));
-            jsonobject.addProperty("ironMinHeight", (Number)Integer.valueOf(p_serialize_1_.ironMinHeight));
-            jsonobject.addProperty("ironMaxHeight", (Number)Integer.valueOf(p_serialize_1_.ironMaxHeight));
-            jsonobject.addProperty("goldSize", (Number)Integer.valueOf(p_serialize_1_.goldSize));
-            jsonobject.addProperty("goldCount", (Number)Integer.valueOf(p_serialize_1_.goldCount));
-            jsonobject.addProperty("goldMinHeight", (Number)Integer.valueOf(p_serialize_1_.goldMinHeight));
-            jsonobject.addProperty("goldMaxHeight", (Number)Integer.valueOf(p_serialize_1_.goldMaxHeight));
-            jsonobject.addProperty("redstoneSize", (Number)Integer.valueOf(p_serialize_1_.redstoneSize));
-            jsonobject.addProperty("redstoneCount", (Number)Integer.valueOf(p_serialize_1_.redstoneCount));
-            jsonobject.addProperty("redstoneMinHeight", (Number)Integer.valueOf(p_serialize_1_.redstoneMinHeight));
-            jsonobject.addProperty("redstoneMaxHeight", (Number)Integer.valueOf(p_serialize_1_.redstoneMaxHeight));
-            jsonobject.addProperty("diamondSize", (Number)Integer.valueOf(p_serialize_1_.diamondSize));
-            jsonobject.addProperty("diamondCount", (Number)Integer.valueOf(p_serialize_1_.diamondCount));
-            jsonobject.addProperty("diamondMinHeight", (Number)Integer.valueOf(p_serialize_1_.diamondMinHeight));
-            jsonobject.addProperty("diamondMaxHeight", (Number)Integer.valueOf(p_serialize_1_.diamondMaxHeight));
-            jsonobject.addProperty("lapisSize", (Number)Integer.valueOf(p_serialize_1_.lapisSize));
-            jsonobject.addProperty("lapisCount", (Number)Integer.valueOf(p_serialize_1_.lapisCount));
-            jsonobject.addProperty("lapisCenterHeight", (Number)Integer.valueOf(p_serialize_1_.lapisCenterHeight));
-            jsonobject.addProperty("lapisSpread", (Number)Integer.valueOf(p_serialize_1_.lapisSpread));
+            jsonobject.addProperty("coordinateScale", p_serialize_1_.coordinateScale);
+            jsonobject.addProperty("heightScale", p_serialize_1_.heightScale);
+            jsonobject.addProperty("lowerLimitScale", p_serialize_1_.lowerLimitScale);
+            jsonobject.addProperty("upperLimitScale", p_serialize_1_.upperLimitScale);
+            jsonobject.addProperty("depthNoiseScaleX", p_serialize_1_.depthNoiseScaleX);
+            jsonobject.addProperty("depthNoiseScaleZ", p_serialize_1_.depthNoiseScaleZ);
+            jsonobject.addProperty("depthNoiseScaleExponent", p_serialize_1_.depthNoiseScaleExponent);
+            jsonobject.addProperty("mainNoiseScaleX", p_serialize_1_.mainNoiseScaleX);
+            jsonobject.addProperty("mainNoiseScaleY", p_serialize_1_.mainNoiseScaleY);
+            jsonobject.addProperty("mainNoiseScaleZ", p_serialize_1_.mainNoiseScaleZ);
+            jsonobject.addProperty("baseSize", p_serialize_1_.baseSize);
+            jsonobject.addProperty("stretchY", p_serialize_1_.stretchY);
+            jsonobject.addProperty("biomeDepthWeight", p_serialize_1_.biomeDepthWeight);
+            jsonobject.addProperty("biomeDepthOffset", p_serialize_1_.biomeDepthOffset);
+            jsonobject.addProperty("biomeScaleWeight", p_serialize_1_.biomeScaleWeight);
+            jsonobject.addProperty("biomeScaleOffset", p_serialize_1_.biomeScaleOffset);
+            jsonobject.addProperty("seaLevel", p_serialize_1_.seaLevel);
+            jsonobject.addProperty("useCaves", p_serialize_1_.useCaves);
+            jsonobject.addProperty("useDungeons", p_serialize_1_.useDungeons);
+            jsonobject.addProperty("dungeonChance", p_serialize_1_.dungeonChance);
+            jsonobject.addProperty("useStrongholds", p_serialize_1_.useStrongholds);
+            jsonobject.addProperty("useVillages", p_serialize_1_.useVillages);
+            jsonobject.addProperty("useMineShafts", p_serialize_1_.useMineShafts);
+            jsonobject.addProperty("useTemples", p_serialize_1_.useTemples);
+            jsonobject.addProperty("useMonuments", p_serialize_1_.useMonuments);
+            jsonobject.addProperty("useRavines", p_serialize_1_.useRavines);
+            jsonobject.addProperty("useWaterLakes", p_serialize_1_.useWaterLakes);
+            jsonobject.addProperty("waterLakeChance", p_serialize_1_.waterLakeChance);
+            jsonobject.addProperty("useLavaLakes", p_serialize_1_.useLavaLakes);
+            jsonobject.addProperty("lavaLakeChance", p_serialize_1_.lavaLakeChance);
+            jsonobject.addProperty("useLavaOceans", p_serialize_1_.useLavaOceans);
+            jsonobject.addProperty("fixedBiome", p_serialize_1_.fixedBiome);
+            jsonobject.addProperty("biomeSize", p_serialize_1_.biomeSize);
+            jsonobject.addProperty("riverSize", p_serialize_1_.riverSize);
+            jsonobject.addProperty("dirtSize", p_serialize_1_.dirtSize);
+            jsonobject.addProperty("dirtCount", p_serialize_1_.dirtCount);
+            jsonobject.addProperty("dirtMinHeight", p_serialize_1_.dirtMinHeight);
+            jsonobject.addProperty("dirtMaxHeight", p_serialize_1_.dirtMaxHeight);
+            jsonobject.addProperty("gravelSize", p_serialize_1_.gravelSize);
+            jsonobject.addProperty("gravelCount", p_serialize_1_.gravelCount);
+            jsonobject.addProperty("gravelMinHeight", p_serialize_1_.gravelMinHeight);
+            jsonobject.addProperty("gravelMaxHeight", p_serialize_1_.gravelMaxHeight);
+            jsonobject.addProperty("graniteSize", p_serialize_1_.graniteSize);
+            jsonobject.addProperty("graniteCount", p_serialize_1_.graniteCount);
+            jsonobject.addProperty("graniteMinHeight", p_serialize_1_.graniteMinHeight);
+            jsonobject.addProperty("graniteMaxHeight", p_serialize_1_.graniteMaxHeight);
+            jsonobject.addProperty("dioriteSize", p_serialize_1_.dioriteSize);
+            jsonobject.addProperty("dioriteCount", p_serialize_1_.dioriteCount);
+            jsonobject.addProperty("dioriteMinHeight", p_serialize_1_.dioriteMinHeight);
+            jsonobject.addProperty("dioriteMaxHeight", p_serialize_1_.dioriteMaxHeight);
+            jsonobject.addProperty("andesiteSize", p_serialize_1_.andesiteSize);
+            jsonobject.addProperty("andesiteCount", p_serialize_1_.andesiteCount);
+            jsonobject.addProperty("andesiteMinHeight", p_serialize_1_.andesiteMinHeight);
+            jsonobject.addProperty("andesiteMaxHeight", p_serialize_1_.andesiteMaxHeight);
+            jsonobject.addProperty("coalSize", p_serialize_1_.coalSize);
+            jsonobject.addProperty("coalCount", p_serialize_1_.coalCount);
+            jsonobject.addProperty("coalMinHeight", p_serialize_1_.coalMinHeight);
+            jsonobject.addProperty("coalMaxHeight", p_serialize_1_.coalMaxHeight);
+            jsonobject.addProperty("ironSize", p_serialize_1_.ironSize);
+            jsonobject.addProperty("ironCount", p_serialize_1_.ironCount);
+            jsonobject.addProperty("ironMinHeight", p_serialize_1_.ironMinHeight);
+            jsonobject.addProperty("ironMaxHeight", p_serialize_1_.ironMaxHeight);
+            jsonobject.addProperty("goldSize", p_serialize_1_.goldSize);
+            jsonobject.addProperty("goldCount", p_serialize_1_.goldCount);
+            jsonobject.addProperty("goldMinHeight", p_serialize_1_.goldMinHeight);
+            jsonobject.addProperty("goldMaxHeight", p_serialize_1_.goldMaxHeight);
+            jsonobject.addProperty("redstoneSize", p_serialize_1_.redstoneSize);
+            jsonobject.addProperty("redstoneCount", p_serialize_1_.redstoneCount);
+            jsonobject.addProperty("redstoneMinHeight", p_serialize_1_.redstoneMinHeight);
+            jsonobject.addProperty("redstoneMaxHeight", p_serialize_1_.redstoneMaxHeight);
+            jsonobject.addProperty("diamondSize", p_serialize_1_.diamondSize);
+            jsonobject.addProperty("diamondCount", p_serialize_1_.diamondCount);
+            jsonobject.addProperty("diamondMinHeight", p_serialize_1_.diamondMinHeight);
+            jsonobject.addProperty("diamondMaxHeight", p_serialize_1_.diamondMaxHeight);
+            jsonobject.addProperty("lapisSize", p_serialize_1_.lapisSize);
+            jsonobject.addProperty("lapisCount", p_serialize_1_.lapisCount);
+            jsonobject.addProperty("lapisCenterHeight", p_serialize_1_.lapisCenterHeight);
+            jsonobject.addProperty("lapisSpread", p_serialize_1_.lapisSpread);
             return jsonobject;
         }
     }

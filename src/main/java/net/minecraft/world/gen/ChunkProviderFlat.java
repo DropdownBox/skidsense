@@ -30,7 +30,7 @@ public class ChunkProviderFlat implements IChunkProvider
     private Random random;
     private final IBlockState[] cachedBlockIDs = new IBlockState[256];
     private final FlatGeneratorInfo flatWorldGenInfo;
-    private final List<MapGenStructure> structureGenerators = Lists.<MapGenStructure>newArrayList();
+    private final List<MapGenStructure> structureGenerators = Lists.newArrayList();
     private final boolean hasDecoration;
     private final boolean hasDungeons;
     private WorldGenLakes waterLakeGenerator;
@@ -48,7 +48,7 @@ public class ChunkProviderFlat implements IChunkProvider
 
             if (map.containsKey("village"))
             {
-                Map<String, String> map1 = (Map)map.get("village");
+                Map<String, String> map1 = map.get("village");
 
                 if (!map1.containsKey("size"))
                 {
@@ -60,22 +60,22 @@ public class ChunkProviderFlat implements IChunkProvider
 
             if (map.containsKey("biome_1"))
             {
-                this.structureGenerators.add(new MapGenScatteredFeature((Map)map.get("biome_1")));
+                this.structureGenerators.add(new MapGenScatteredFeature(map.get("biome_1")));
             }
 
             if (map.containsKey("mineshaft"))
             {
-                this.structureGenerators.add(new MapGenMineshaft((Map)map.get("mineshaft")));
+                this.structureGenerators.add(new MapGenMineshaft(map.get("mineshaft")));
             }
 
             if (map.containsKey("stronghold"))
             {
-                this.structureGenerators.add(new MapGenStronghold((Map)map.get("stronghold")));
+                this.structureGenerators.add(new MapGenStronghold(map.get("stronghold")));
             }
 
             if (map.containsKey("oceanmonument"))
             {
-                this.structureGenerators.add(new StructureOceanMonument((Map)map.get("oceanmonument")));
+                this.structureGenerators.add(new StructureOceanMonument(map.get("oceanmonument")));
             }
         }
 

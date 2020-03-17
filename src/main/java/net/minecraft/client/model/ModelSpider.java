@@ -115,7 +115,7 @@ public class ModelSpider extends ModelBase
         this.spiderLeg7.rotateAngleZ = -f;
         this.spiderLeg8.rotateAngleZ = f;
         float f1 = -0.0F;
-        float f2 = 0.3926991F;
+        float f2 = ((float)Math.PI / 8F);
         this.spiderLeg1.rotateAngleY = f2 * 2.0F + f1;
         this.spiderLeg2.rotateAngleY = -f2 * 2.0F - f1;
         this.spiderLeg3.rotateAngleY = f2 * 1.0F + f1;
@@ -127,11 +127,11 @@ public class ModelSpider extends ModelBase
         float f3 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + 0.0F) * 0.4F) * limbSwingAmount;
         float f4 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + (float)Math.PI) * 0.4F) * limbSwingAmount;
         float f5 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + ((float)Math.PI / 2F)) * 0.4F) * limbSwingAmount;
-        float f6 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + ((float)Math.PI * 3F / 2F)) * 0.4F) * limbSwingAmount;
+        float f6 = -(MathHelper.cos(limbSwing * 0.6662F * 2.0F + ((float)Math.PI * 1.5F)) * 0.4F) * limbSwingAmount;
         float f7 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + 0.0F) * 0.4F) * limbSwingAmount;
         float f8 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + (float)Math.PI) * 0.4F) * limbSwingAmount;
         float f9 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + ((float)Math.PI / 2F)) * 0.4F) * limbSwingAmount;
-        float f10 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + ((float)Math.PI * 3F / 2F)) * 0.4F) * limbSwingAmount;
+        float f10 = Math.abs(MathHelper.sin(limbSwing * 0.6662F + ((float)Math.PI * 1.5F)) * 0.4F) * limbSwingAmount;
         this.spiderLeg1.rotateAngleY += f3;
         this.spiderLeg2.rotateAngleY += -f3;
         this.spiderLeg3.rotateAngleY += f4;

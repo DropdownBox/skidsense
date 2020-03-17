@@ -37,8 +37,8 @@ public class BlockPart
     {
         for (Entry<EnumFacing, BlockPartFace> entry : this.mapFaces.entrySet())
         {
-            float[] afloat = this.getFaceUvs((EnumFacing)entry.getKey());
-            ((BlockPartFace)entry.getValue()).blockFaceUV.setUvs(afloat);
+            float[] afloat = this.getFaceUvs(entry.getKey());
+            (entry.getValue()).blockFaceUV.setUvs(afloat);
         }
     }
 
@@ -156,8 +156,8 @@ public class BlockPart
 
             for (Entry<String, JsonElement> entry : jsonobject.entrySet())
             {
-                EnumFacing enumfacing = this.parseEnumFacing((String)entry.getKey());
-                map.put(enumfacing, (BlockPartFace)p_178253_1_.deserialize((JsonElement)entry.getValue(), BlockPartFace.class));
+                EnumFacing enumfacing = this.parseEnumFacing(entry.getKey());
+                map.put(enumfacing, p_178253_1_.deserialize(entry.getValue(), BlockPartFace.class));
             }
 
             return map;
@@ -181,13 +181,13 @@ public class BlockPart
         {
             Vector3f vector3f = this.parsePosition(p_178247_1_, "to");
 
-            if (vector3f.x >= -16.0F && vector3f.y >= -16.0F && vector3f.z >= -16.0F && vector3f.x <= 32.0F && vector3f.y <= 32.0F && vector3f.z <= 32.0F)
+            if (!(vector3f.x < -16.0F) && !(vector3f.y < -16.0F) && !(vector3f.z < -16.0F) && !(vector3f.x > 32.0F) && !(vector3f.y > 32.0F) && !(vector3f.z > 32.0F))
             {
                 return vector3f;
             }
             else
             {
-                throw new JsonParseException("\'to\' specifier exceeds the allowed boundaries: " + vector3f);
+                throw new JsonParseException("'to' specifier exceeds the allowed boundaries: " + vector3f);
             }
         }
 
@@ -195,13 +195,13 @@ public class BlockPart
         {
             Vector3f vector3f = this.parsePosition(p_178249_1_, "from");
 
-            if (vector3f.x >= -16.0F && vector3f.y >= -16.0F && vector3f.z >= -16.0F && vector3f.x <= 32.0F && vector3f.y <= 32.0F && vector3f.z <= 32.0F)
+            if (!(vector3f.x < -16.0F) && !(vector3f.y < -16.0F) && !(vector3f.z < -16.0F) && !(vector3f.x > 32.0F) && !(vector3f.y > 32.0F) && !(vector3f.z > 32.0F))
             {
                 return vector3f;
             }
             else
             {
-                throw new JsonParseException("\'from\' specifier exceeds the allowed boundaries: " + vector3f);
+                throw new JsonParseException("'from' specifier exceeds the allowed boundaries: " + vector3f);
             }
         }
 

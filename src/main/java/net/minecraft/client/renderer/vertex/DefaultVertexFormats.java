@@ -1,8 +1,10 @@
 package net.minecraft.client.renderer.vertex;
 
-import optifine.Config;
-import optifine.Reflector;
-import shadersmod.client.SVertexFormat;
+import java.lang.reflect.Field;
+import net.minecraft.src.Config;
+import net.optifine.reflect.ReflectorClass;
+import net.optifine.reflect.ReflectorField;
+import net.optifine.shaders.SVertexFormat;
 
 public class DefaultVertexFormats
 {
@@ -10,6 +12,9 @@ public class DefaultVertexFormats
     public static VertexFormat ITEM = new VertexFormat();
     private static final VertexFormat BLOCK_VANILLA = BLOCK;
     private static final VertexFormat ITEM_VANILLA = ITEM;
+    public static ReflectorClass Attributes = new ReflectorClass("net.minecraftforge.client.model.Attributes");
+    public static ReflectorField Attributes_DEFAULT_BAKED_FORMAT = new ReflectorField(Attributes, "DEFAULT_BAKED_FORMAT");
+    private static final VertexFormat FORGE_BAKED = SVertexFormat.duplicate((VertexFormat)getFieldValue(Attributes_DEFAULT_BAKED_FORMAT));
     public static final VertexFormat OLDMODEL_POSITION_TEX_NORMAL = new VertexFormat();
     public static final VertexFormat PARTICLE_POSITION_TEX_COLOR_LMAP = new VertexFormat();
     public static final VertexFormat POSITION = new VertexFormat();
@@ -26,7 +31,6 @@ public class DefaultVertexFormats
     public static final VertexFormatElement TEX_2S = new VertexFormatElement(1, VertexFormatElement.EnumType.SHORT, VertexFormatElement.EnumUsage.UV, 2);
     public static final VertexFormatElement NORMAL_3B = new VertexFormatElement(0, VertexFormatElement.EnumType.BYTE, VertexFormatElement.EnumUsage.NORMAL, 3);
     public static final VertexFormatElement PADDING_1B = new VertexFormatElement(0, VertexFormatElement.EnumType.BYTE, VertexFormatElement.EnumUsage.PADDING, 1);
-    private static final String __OBFID = "CL_00002403";
 
     public static void updateVertexFormats()
     {
@@ -34,23 +38,44 @@ public class DefaultVertexFormats
         {
             BLOCK = SVertexFormat.makeDefVertexFormatBlock();
             ITEM = SVertexFormat.makeDefVertexFormatItem();
+
+            if (Attributes_DEFAULT_BAKED_FORMAT.exists())
+            {
+                SVertexFormat.setDefBakedFormat((VertexFormat)Attributes_DEFAULT_BAKED_FORMAT.getValue());
+            }
         }
         else
         {
             BLOCK = BLOCK_VANILLA;
             ITEM = ITEM_VANILLA;
-        }
 
-        if (Reflector.Attributes_DEFAULT_BAKED_FORMAT.exists())
-        {
-            VertexFormat vertexformat = ITEM;
-            VertexFormat vertexformat1 = (VertexFormat)Reflector.getFieldValue(Reflector.Attributes_DEFAULT_BAKED_FORMAT);
-            vertexformat1.clear();
-
-            for (int i = 0; i < vertexformat.getElementCount(); ++i)
+            if (Attributes_DEFAULT_BAKED_FORMAT.exists())
             {
-                vertexformat1.addElement(vertexformat.getElement(i));
+                SVertexFormat.copy(FORGE_BAKED, (VertexFormat)Attributes_DEFAULT_BAKED_FORMAT.getValue());
             }
+        }
+    }
+
+    public static Object getFieldValue(ReflectorField p_getFieldValue_0_)
+    {
+        try
+        {
+            Field field = p_getFieldValue_0_.getTargetField();
+
+            if (field == null)
+            {
+                return null;
+            }
+            else
+            {
+                Object object = field.get((Object)null);
+                return object;
+            }
+        }
+        catch (Throwable throwable)
+        {
+            throwable.printStackTrace();
+            return null;
         }
     }
 

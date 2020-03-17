@@ -50,7 +50,7 @@ public class NBTTagIntArray extends NBTBase
      */
     public byte getId()
     {
-        return (byte)11;
+        return 11;
     }
 
     public String toString()

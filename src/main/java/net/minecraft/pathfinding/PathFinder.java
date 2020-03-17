@@ -102,14 +102,7 @@ public class PathFinder
             }
         }
 
-        if (pathpoint == pathpointStart)
-        {
-            return null;
-        }
-        else
-        {
-            return this.createEntityPath(pathpointStart, pathpoint);
-        }
+        return pathpoint == pathpointStart ? null : this.createEntityPath(pathpointStart, pathpoint);
     }
 
     /**

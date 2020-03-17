@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.List;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -13,7 +12,7 @@ import net.minecraft.util.IStringSerializable;
 
 public class BlockRedSandstone extends Block
 {
-    public static final PropertyEnum<BlockRedSandstone.EnumType> TYPE = PropertyEnum.<BlockRedSandstone.EnumType>create("type", BlockRedSandstone.EnumType.class);
+    public static final PropertyEnum<BlockRedSandstone.EnumType> TYPE = PropertyEnum.create("type", BlockRedSandstone.EnumType.class);
 
     public BlockRedSandstone()
     {
@@ -28,7 +27,7 @@ public class BlockRedSandstone extends Block
      */
     public int damageDropped(IBlockState state)
     {
-        return ((BlockRedSandstone.EnumType)state.getValue(TYPE)).getMetadata();
+        return state.getValue(TYPE).getMetadata();
     }
 
     /**
@@ -55,12 +54,12 @@ public class BlockRedSandstone extends Block
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((BlockRedSandstone.EnumType)state.getValue(TYPE)).getMetadata();
+        return state.getValue(TYPE).getMetadata();
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {TYPE});
+        return new BlockState(this, TYPE);
     }
 
     public static enum EnumType implements IStringSerializable

@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -23,7 +22,7 @@ public class BlockCactus extends Block
     protected BlockCactus()
     {
         super(Material.cactus);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, 0));
         this.setTickRandomly(true);
         this.setCreativeTab(CreativeTabs.tabDecorations);
     }
@@ -43,18 +42,18 @@ public class BlockCactus extends Block
 
             if (i < 3)
             {
-                int j = ((Integer)state.getValue(AGE)).intValue();
+                int j = state.getValue(AGE);
 
                 if (j == 15)
                 {
                     worldIn.setBlockState(blockpos, this.getDefaultState());
-                    IBlockState iblockstate = state.withProperty(AGE, Integer.valueOf(0));
+                    IBlockState iblockstate = state.withProperty(AGE, 0);
                     worldIn.setBlockState(pos, iblockstate, 4);
                     this.onNeighborBlockChange(worldIn, blockpos, iblockstate, this);
                 }
                 else
                 {
-                    worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
+                    worldIn.setBlockState(pos, state.withProperty(AGE, j + 1), 4);
                 }
             }
         }
@@ -133,7 +132,7 @@ public class BlockCactus extends Block
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(AGE, Integer.valueOf(meta));
+        return this.getDefaultState().withProperty(AGE, meta);
     }
 
     /**
@@ -141,11 +140,11 @@ public class BlockCactus extends Block
      */
     public int getMetaFromState(IBlockState state)
     {
-        return ((Integer)state.getValue(AGE)).intValue();
+        return state.getValue(AGE);
     }
 
     protected BlockState createBlockState()
     {
-        return new BlockState(this, new IProperty[] {AGE});
+        return new BlockState(this, AGE);
     }
 }

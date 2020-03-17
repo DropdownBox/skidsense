@@ -1,8 +1,7 @@
 package me.skidsense.hooks.events;
 
 import me.skidsense.hooks.value.Event;
-import shadersmod.client.Shaders;
-
+import net.optifine.shaders.Shaders;
 public class EventRender3D
 extends Event {
     public float ticks;

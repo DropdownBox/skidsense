@@ -18,7 +18,6 @@
 package me.skidsense;
 
 import me.skidsense.util.HyperiumFontRenderer;
-import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -108,10 +107,7 @@ public class SplashProgress {
         if (splash == null) splash = new ResourceLocation("skidsense/SplashProgress.jpg");
 
         // Bind the texture
-        GlStateManager.disableAlpha();
-        RenderUtil.drawImage(splash, 0, 0, scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), -1);
-        GlStateManager.enableAlpha();
-        //tm.bindTexture(splash);
+        tm.bindTexture(splash);
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
