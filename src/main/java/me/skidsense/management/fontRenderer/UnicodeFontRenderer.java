@@ -2,6 +2,8 @@ package me.skidsense.management.fontRenderer;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.SlickException;
@@ -12,16 +14,21 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import org.newdawn.slick.font.effects.Effect;
+import org.newdawn.slick.font.effects.GradientEffect;
 
 public class UnicodeFontRenderer extends FontRenderer {
 	private final UnicodeFont font;
-
+    private final Font wasFont;
     public UnicodeFontRenderer(Font awtFont) {
+
         super(Minecraft.getMinecraft().gameSettings, new ResourceLocation("textures/font/ascii.png"), Minecraft.getMinecraft().getTextureManager(), false);
+        wasFont = awtFont;
         this.font = new UnicodeFont(awtFont);
         this.font.addAsciiGlyphs();
         //this.font.addGlyphs(0x4E00,0x9ffff);
         this.font.getEffects().add(new ColorEffect(Color.WHITE));
+
         try {
             this.font.loadGlyphs();
         }
@@ -43,7 +50,18 @@ public class UnicodeFontRenderer extends FontRenderer {
 	public void drawTotalCenteredString(String text, double x, double y, int color) {
 		drawString(text, x - getStringWidth(text) / 2, y - FONT_HEIGHT / 2, color);
 	}
+    public void test_gradientDraw(String text, float x, float y, Color colorFrom, Color colorTo, float scaleGradient){
+        UnicodeFont font2 = new UnicodeFont(wasFont);
+        font2.addAsciiGlyphs();
+        font2.getEffects().add(new GradientEffect(colorFrom,colorTo,scaleGradient));
+        try {
+            font2.loadGlyphs();
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
+        this.drawString(text,x,y,font2);
 
+    }
     public int drawString(String string, float x, float y, int color) {
         if (string == null) {
             return 0;
@@ -63,6 +81,39 @@ public class UnicodeFontRenderer extends FontRenderer {
             GL11.glDisable((int)3553);
         }
         this.font.drawString(x *= 2.0f, y *= 2.0f, string, new org.newdawn.slick.Color(color));
+        if (texture) {
+            GL11.glEnable((int)3553);
+        }
+        if (lighting) {
+            GL11.glEnable((int)2896);
+        }
+        if (!blend) {
+            GL11.glDisable((int)3042);
+        }
+        GlStateManager.color(0.0f, 0.0f, 0.0f);
+        GL11.glPopMatrix();
+        GlStateManager.bindTexture(0);
+        return (int)x;
+    }
+    public int drawString(String string, float x, float y,UnicodeFont font2) {
+        if (string == null) {
+            return 0;
+        }
+        GL11.glPushMatrix();
+        GL11.glScaled((double)0.5, (double)0.5, (double)0.5);
+        boolean blend = GL11.glIsEnabled((int)3042);
+        boolean lighting = GL11.glIsEnabled((int)2896);
+        boolean texture = GL11.glIsEnabled((int)3553);
+        if (!blend) {
+            GL11.glEnable((int)3042);
+        }
+        if (lighting) {
+            GL11.glDisable((int)2896);
+        }
+        if (texture) {
+            GL11.glDisable((int)3553);
+        }
+        font2.drawString(x *= 2.0f, y *= 2.0f, string);
         if (texture) {
             GL11.glEnable((int)3553);
         }

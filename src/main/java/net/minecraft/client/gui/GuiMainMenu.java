@@ -2,6 +2,8 @@ package net.minecraft.client.gui;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,6 +13,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import me.skidsense.Client;
+import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -582,6 +587,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         GlStateManager.disableAlpha();
         this.renderSkybox(mouseX, mouseY, partialTicks);
         GlStateManager.enableAlpha();
+
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         int i = 274;
@@ -689,6 +695,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         {
             this.modUpdateNotification.drawScreen(mouseX, mouseY, partialTicks);
         }
+
     }
 
     /**
