@@ -4,7 +4,7 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.management.notifications.Notifications;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 
@@ -14,7 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class AntiBot extends Module {
+public class AntiBot extends Mod {
 	public Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) AntiMode.values(), (Enum) AntiMode.WatchDog);
 	public static ArrayList<EntityPlayer> nigbot = new ArrayList<>();
 	public static ArrayList<EntityPlayer> whitepig = new ArrayList<>();

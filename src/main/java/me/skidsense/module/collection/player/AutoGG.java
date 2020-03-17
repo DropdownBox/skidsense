@@ -4,14 +4,14 @@ package me.skidsense.module.collection.player;
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketRecieve;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
 
 import me.skidsense.util.ChatUtil;
 import net.minecraft.network.play.server.S45PacketTitle;
 
-public class AutoGG extends Module {
+public class AutoGG extends Mod {
 
     public AutoGG() {
         super("Auto GG", new String[]{"AutoGG"}, ModuleType.Player);

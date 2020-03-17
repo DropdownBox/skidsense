@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import net.minecraft.network.Packet;
@@ -14,7 +14,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
 public class NoSlow
-extends Module {
+extends Mod {
     public NoSlow() {
         super("No Slow", new String[]{"noslow","noslowdown"}, ModuleType.Move);
         this.setColor(new Color(216, 253, 100).getRGB());

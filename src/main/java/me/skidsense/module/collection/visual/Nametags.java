@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
@@ -27,7 +27,7 @@ import net.minecraft.item.ItemTool;
 import org.lwjgl.opengl.GL11;
 
 public class Nametags
-extends Module {
+extends Mod {
 	private boolean armor = true;
 	public boolean formatting = true;
     public Nametags() {

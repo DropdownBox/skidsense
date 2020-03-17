@@ -2,12 +2,12 @@ package me.skidsense.module.collection.player;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventTick;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.BlockUtil;
 import net.minecraft.util.BlockPos;
 
-public class AutoTool extends Module {
+public class AutoTool extends Mod {
 	public AutoTool() {
 		super("Auto Tool", new String[] {"AutoTool"},ModuleType.Player);
     }

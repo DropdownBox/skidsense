@@ -3,7 +3,7 @@ package me.skidsense.module.collection.player;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketRecieve;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
 
@@ -11,7 +11,7 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.play.server.S27PacketExplosion;
 
 public class AntiVelocity
-extends Module {
+extends Mod {
 
     public AntiVelocity() {
         super("Anti KB", new String[]{"antivelocity", "antiknockback", "antikb"}, ModuleType.Player);

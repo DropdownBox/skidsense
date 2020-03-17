@@ -4,7 +4,7 @@ package me.skidsense.module.collection.combat;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Numbers;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.TimerUtil;
 
@@ -17,7 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 
 public class AutoSword
-extends Module {
+extends Mod {
     public TimerUtil timer = new TimerUtil();
 	public static Numbers<Double> delay = new Numbers<Double>("Delay", "Delay", 100.0, 1.0, 2000.0, 1.0);
     public AutoSword() {

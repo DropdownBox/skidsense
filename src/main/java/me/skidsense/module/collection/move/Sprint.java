@@ -4,14 +4,14 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketRecieve;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
 
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 public class Sprint
-extends Module {
+extends Mod {
     private Option<Boolean> omni = new Option<Boolean>("Omni", "omni", true);
     private Option<Boolean> keepsprint = new Option<Boolean>("KeepSprint", "keepsprint", true);
 

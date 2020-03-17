@@ -1,12 +1,12 @@
 package me.skidsense.module.collection.player;
 
 import me.skidsense.Client;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 
-public class Teams extends Module{
+public class Teams extends Mod {
 	
 	public Teams() {
 		super("Teams", new String[] {}, ModuleType.Player);

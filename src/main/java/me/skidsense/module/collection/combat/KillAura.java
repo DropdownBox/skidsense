@@ -14,7 +14,7 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.player.Teams;
 import me.skidsense.util.RenderUtil;
@@ -58,7 +58,7 @@ import java.awt.Color;
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class KillAura extends Module {
+public class KillAura extends Mod {
 	public static float anima;
 	public Mode<Enum> priority = new Mode<Enum>("TargetPriority", "TargetPriority", AuraPriority.values(), AuraPriority.Angle);
 	public Mode<Enum> mode = new Mode<Enum>("Mode", "Mode", AuraMode.values(), AuraMode.Switch);

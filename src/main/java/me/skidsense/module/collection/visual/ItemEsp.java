@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL11;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
 
-public class ItemEsp extends Module {
+public class ItemEsp extends Mod {
 	
 	public Option outlinedboundingBox = new Option("Outlined", "Outlined", true);
 	

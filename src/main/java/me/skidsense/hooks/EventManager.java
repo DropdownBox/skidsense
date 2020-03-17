@@ -54,7 +54,7 @@ public class EventManager<T,O> {
 		}
 	}
 
-	public static EventManager<Event,Mod> getInstance() {
+	public static EventManager<Event, Mod> getInstance() {
 		return instance;
 	}
 

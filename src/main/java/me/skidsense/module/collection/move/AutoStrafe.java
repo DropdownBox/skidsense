@@ -7,7 +7,7 @@ import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.RotationUtil;
@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.*;
 import org.lwjgl.util.glu.*;
 
 
-public class AutoStrafe extends Module
+public class AutoStrafe extends Mod
 {
 	public static Numbers<Double> MaxDistance = (Numbers<Double>)new Numbers("Distance", "Distance", (Number)3.0, (Number)1.0, (Number)5.0, (Number)0.1);;
 	public static Option<Boolean> keep = (Option<Boolean>)new Option("KeepDistance", "KeepDistance", (Object)true);;

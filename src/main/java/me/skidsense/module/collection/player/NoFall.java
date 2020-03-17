@@ -3,13 +3,13 @@ package me.skidsense.module.collection.player;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.management.notifications.Notifications;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
 import java.awt.*;
 
-public class NoFall extends Module {
+public class NoFall extends Mod {
 
     public NoFall() {
         super("No Fall", new String[] { "Nofalldamage","nofall" }, ModuleType.Player);

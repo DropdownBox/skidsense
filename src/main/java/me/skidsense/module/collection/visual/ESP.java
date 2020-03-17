@@ -34,7 +34,7 @@ import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.AntiBot;
 import me.skidsense.module.collection.combat.KillAura;
@@ -43,7 +43,7 @@ import me.skidsense.util.RenderUtil;
 import me.skidsense.util.Vec3f;
 
 public class ESP
-extends Module {
+extends Mod {
     private ArrayList<Vec3f> points = new ArrayList();
     private Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[])ESPMode.values(), (Enum)ESPMode.Box);
     private Option<Boolean> HEALTH = new Option<Boolean>("Health", "Health", true);

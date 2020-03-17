@@ -147,7 +147,7 @@ public class Mod {
 		String content = "";
 
 		Mod m;
-		for (Iterator var4 = ModManager.getModules().iterator(); var4.hasNext(); content = content + String.format("%s:%s%s", m.getName(), Keyboard.getKeyName(m.getKey()), System.lineSeparator())) {
+		for (Iterator var4 = ModManager.getMods().iterator(); var4.hasNext(); content = content + String.format("%s:%s%s", m.getName(), Keyboard.getKeyName(m.getKey()), System.lineSeparator())) {
 			m = (Mod) var4.next();
 		}
 

@@ -19,9 +19,9 @@ extends Command {
     public String execute(String[] args) {
         if (args.length == 0) {
             Client.instance.getModuleManager();
-            StringBuilder list = new StringBuilder(String.valueOf(ModManager.getModules().size()) + " Cheats - ");
+            StringBuilder list = new StringBuilder(String.valueOf(ModManager.getMods().size()) + " Cheats - ");
             Client.instance.getModuleManager();
-            for (Mod cheat : ModManager.getModules()) {
+            for (Mod cheat : ModManager.getMods()) {
                 list.append((Object)(cheat.isEnabled() ? EnumChatFormatting.GREEN : EnumChatFormatting.RED)).append(cheat.getName()).append(", ");
             }
             Client.sendMessage("> " + list.toString().substring(0, list.toString().length() - 2));

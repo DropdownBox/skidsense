@@ -75,7 +75,7 @@ public class Client {
 	public void shutDown() {
 		String values = "";
 		instance.getModuleManager();
-		for (Mod m : ModManager.getModules()) {
+		for (Mod m : ModManager.getMods()) {
 			for (Value v : m.getValues()) {
 				values = String.valueOf(values) + String.format("%s:%s:%s%s", m.getName(), v.getName(), v.getValue(), System.lineSeparator());
 			}
@@ -83,7 +83,7 @@ public class Client {
 		FileManager.save("Values.txt", values, false);
 		String enabled = "";
 		instance.getModuleManager();
-		for (Mod m : ModManager.getModules()) {
+		for (Mod m : ModManager.getMods()) {
 			if (!m.isEnabled()) continue;
 			enabled = String.valueOf(enabled) + String.format("%s%s", m.getName(), System.lineSeparator());
 		}

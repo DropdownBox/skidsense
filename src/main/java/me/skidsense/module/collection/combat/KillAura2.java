@@ -19,7 +19,7 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MathUtil;
 import me.skidsense.util.RenderUtil;
@@ -41,7 +41,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 
 public class KillAura2
-extends Module {
+extends Mod {
 	protected ModelBase mainModel;
 	TimerUtil kms = new TimerUtil();
 	public static float rotationPitch;

@@ -37,27 +37,27 @@ import org.lwjgl.input.Keyboard;
 @SuppressWarnings("unchecked")
 public class ModManager
 implements Manager {
-    public static List<Mod> modules = new ArrayList<Mod>();
+    public static List<Mod> mods = new ArrayList<Mod>();
     public static ArrayList<Mod> sortedModList = new ArrayList<Mod>();
     private boolean enabledNeededMod = true;
 
-    public void addMod(Mod module){
-        for (Field field : module.getClass().getDeclaredFields()) {
+    public void addMod(Mod mod){
+        for (Field field : mod.getClass().getDeclaredFields()) {
             if(!field.isAccessible()){
                 field.setAccessible(true);
             }
             Object obj;
             try {
-                if((obj = field.get(module)) instanceof Value){
+                if((obj = field.get(mod)) instanceof Value){
 
-                        module.addValue((Value<?>) obj);
+                        mod.addValue((Value<?>) obj);
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-        EventManager.getInstance().register(module);
-        modules.add(module);
+        EventManager.getInstance().register(mod);
+        mods.add(mod);
     }
     @Override
     public void init() {
@@ -107,19 +107,19 @@ implements Manager {
         addMod(new SpeedMine());
         
         this.readSettings();
-        for (Mod m : modules) {
+        for (Mod m : mods) {
             m.makeCommand();
         }
         EventManager.getOtherEventManager().register(this);
         //EventBus.getInstance().register(this);
     }
 
-    public static List<Mod> getModules() {
-        return modules;
+    public static List<Mod> getMods() {
+        return mods;
     }
 
     public Mod getModuleByClass(Class<? extends Mod> cls) {
-        for (Mod m : modules) {
+        for (Mod m : mods) {
             if (m.getClass() != cls) continue;
             return m;
         }
@@ -127,7 +127,7 @@ implements Manager {
     }
 
     public Mod getModuleByName(String name) {
-        for (Mod m : modules) {
+        for (Mod m : mods) {
             if (!m.getName().equalsIgnoreCase(name)) continue;
             return m;
         }
@@ -135,7 +135,7 @@ implements Manager {
     }
 
     public Mod getAlias(String name) {
-        for (Mod f : modules) {
+        for (Mod f : mods) {
             if (f.getName().equalsIgnoreCase(name)) {
                 return f;
             }
@@ -155,7 +155,7 @@ implements Manager {
 
     public List<Mod> getModulesInType(ModuleType t) {
         ArrayList<Mod> output = new ArrayList<>();
-        for (Mod m : modules) {
+        for (Mod m : mods) {
             if (m.getType() != t) continue;
             output.add(m);
         }
@@ -164,7 +164,7 @@ implements Manager {
 
     @Sub
     private void onKeyPress(EventKey e) {
-        for (Mod m : modules) {
+        for (Mod m : mods) {
             if (m.getKey() != e.getKey()) continue;
             m.setEnabled(!m.isEnabled());
         }
@@ -181,7 +181,7 @@ implements Manager {
     private void on2DRender(EventRender2D e) {
         if (this.enabledNeededMod) {
             this.enabledNeededMod = false;
-            for (Mod m : modules) {
+            for (Mod m : mods) {
                 if (!m.enabledOnStartup) continue;
                 m.setEnabled(true);
             }

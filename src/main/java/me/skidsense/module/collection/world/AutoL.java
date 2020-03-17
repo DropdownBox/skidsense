@@ -3,7 +3,7 @@ package me.skidsense.module.collection.world;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventChat;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
 import java.util.Random;
@@ -12,7 +12,7 @@ import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.ChatUtil;
 import net.minecraft.client.Minecraft;
 
-public class AutoL extends Module {
+public class AutoL extends Mod {
 	private StringBuilder SBL = new StringBuilder();
 	private Random RD =new Random(System.currentTimeMillis());
 	private String[] knm = {"qwq","poi","QAQ","QWQ","qaq","awa","(๑>؂<๑）","(⑉• •⑉)‥♡","ヾ(●´∇｀●)ﾉ","POI~","(｡•́︿•̀｡)","poi~","-3-"};

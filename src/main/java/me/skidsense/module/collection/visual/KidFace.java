@@ -12,17 +12,17 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 
 public class KidFace
-extends Module {
+extends Mod {
     public Mode<Enum> mode = new Mode("Mode","Mode",(Enum[])EmojiMode.values(),(Enum)EmojiMode.SunZheng);
 
     public KidFace() {
         super("Kid Face", new String[] {"KidFace"}, ModuleType.Visual);
-        this.addValues(mode);
+        //this.addValues(mode);
         //this.setRemoved(true);
     }
 

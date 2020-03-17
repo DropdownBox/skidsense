@@ -2,10 +2,10 @@ package me.skidsense.module.collection.visual;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 
-public class Fullbright extends Module {
+public class Fullbright extends Mod {
 	public int alphag = 1;
 	public Fullbright() {
 		super("Full Bright", new String[]{"FullBright"}, ModuleType.Visual);

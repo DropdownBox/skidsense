@@ -6,14 +6,14 @@ import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventStep;
 import me.skidsense.hooks.value.Numbers;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
 
 import net.minecraft.network.play.client.C03PacketPlayer;
 
 public class Step
-extends Module {
+extends Mod {
     private Numbers<Double> height = new Numbers<Double>("Height", "height", 1.0, 0.0, 10.0, 0.5);
     private Option<Boolean> ncp = new Option<Boolean>("Hypixel", "Hypixel", false);
     boolean reset;

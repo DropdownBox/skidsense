@@ -4,13 +4,13 @@ import org.lwjgl.input.Keyboard;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.module.Module;
+import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.KeyBinding;
 
-public class InvMove extends Module{
+public class InvMove extends Mod {
 
 	public InvMove() {
 		super("Gui Move", new String[] {"GuiMove"}, ModuleType.Move);
