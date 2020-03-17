@@ -30,6 +30,7 @@ public class Critical extends Mod {
     private static TimerUtil timer = new TimerUtil();
 
 
+
     public Critical() {
         super("Critical", new String[]{"criticals"}, ModuleType.Fight);
         this.setColor(new Color(208, 30, 142).getRGB());
@@ -87,14 +88,31 @@ public class Critical extends Mod {
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
                     }
                     break;
+                case "Experimental":
+                    int a1 = 1;
+                    while (a1 <= 4) {
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(true));
+                        ++a1;
+                    }
+                    final double[] array = {0.0312622959183674, 0.0, 0.0312622959183674, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+                    final int length = array.length;
+                    int v0 = 0;
+                    while (v0 < length) {
+                        final double v2 = array[v0];
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + v2, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                        ++v0;
+                    }
             }
-            Notifications.getManager().post("Do criticals. HurtTime:" +e.hurtResistantTime);
+            Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
             this.timer.reset();
         }
     }
-    enum CritMode{
+
+    enum CritMode {
         Hypixel,
         HVH,
+        Experimental,
         Old;
     }
 }
