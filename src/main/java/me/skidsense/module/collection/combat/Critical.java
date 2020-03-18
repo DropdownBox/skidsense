@@ -5,6 +5,7 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
+import me.skidsense.hooks.value.Option;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
@@ -24,10 +25,12 @@ import java.util.Random;
 
 
 public class Critical extends Mod {
-    static Mode <Enum> mode =new Mode<>("Mode","Mode",CritMode.values(),CritMode.Hypixel);
-    static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
-    static Numbers<Double> ht = new Numbers<>("Hurttime", "Hurttime", 15.0, 0.0, 20.0, 1.0);
+    private static Mode <Enum> mode =new Mode<>("Mode","Mode",CritMode.values(),CritMode.Hypixel);
+    private static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
+    private static Numbers<Double> ht = new Numbers<>("Hurttime", "Hurttime", 15.0, 0.0, 20.0, 1.0);
+    private static Option<Boolean> nodeelay = new Option("Nodelay", "Nodelay", false);
     private static TimerUtil timer = new TimerUtil();
+
 
 
     public Critical() {
@@ -67,8 +70,9 @@ public class Critical extends Mod {
                     double[] oldoffsets = new double[]{0.041, 0.002};
                     for (int i = 0; i < oldoffsets.length; ++i) {
                         EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-                        p.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(p.posX,
-                                p.posY + oldoffsets[i] + randomValue.nextDouble() / 10000000, p.posZ, false));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + oldoffsets[i] + randomValue.nextDouble(), mc.thePlayer.posZ,
+                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
                 case "Hypixel":
@@ -76,7 +80,9 @@ public class Critical extends Mod {
                     int l = hypixeloffsets.length;
                     for (int i = 0; i < l; ++i) {
                         double offset = hypixeloffsets[i];
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ,
+                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
                 case "HVH":
@@ -84,16 +90,50 @@ public class Critical extends Mod {
                     int HVHl = offsets.length;
                     for (int i = 0; i < HVHl; ++i) {
                         double offset = offsets[i];
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
+                case "Experimental":
+                    int a1 = 1;
+                    while (a1 <= 4) {
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(true));
+                        ++a1;
+                    }
+                    final double[] array = {0.0312622959183674, 0.0, 0.0312622959183674, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+                    final int length = array.length;
+                    int v0 = 0;
+                    while (v0 < length) {
+                        final double v2 = array[v0];
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + v2, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                        ++v0;
+                    }
+                    break;
+                case "HypixelHalf":
+                    double[] hypixel2 = new double[]{0.0625, 0.00110000000000099};
+                    int hypixel2i = hypixel2.length;
+                    for (int i = 0; i < hypixel2i; ++i) {
+                        double offset = hypixel2[i];
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ,
+                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                    }
+                    break;
+
             }
-            Notifications.getManager().post("Do criticals. HurtTime:" +e.hurtResistantTime);
-            this.timer.reset();
+            if (!this.nodeelay.getValue()) {
+                this.timer.reset();
+            }
+
+            Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
         }
     }
-    enum CritMode{
+
+    enum CritMode {
+        Packet,
         Hypixel,
+        HypixelHalf,
         HVH,
         Old;
     }
