@@ -284,7 +284,7 @@ public class MoveUtil {
 		return Minecraft.getMinecraft().thePlayer.isInWater();
 	}
 
-    public boolean isMoving() {
+    public static boolean isMoving() {
         return Minecraft.getMinecraft().thePlayer.moveForward != 0.0f || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0f;
     }
 

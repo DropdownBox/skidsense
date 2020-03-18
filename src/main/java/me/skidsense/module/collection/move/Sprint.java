@@ -6,6 +6,7 @@ import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.util.MoveUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
@@ -28,28 +29,8 @@ public class Sprint
     }
 
     private boolean canSprint() {
-        if (!mc.thePlayer.isCollidedHorizontally) {
-            if (!mc.thePlayer.isSneaking()) {
-                if (mc.thePlayer.getFoodStats().getFoodLevel() > 6) {
-                    if (((Boolean) this.omni.getValue()).booleanValue()) {
-                        if (isMoving2()) {
-                            return true;
-                        }
-                    } else {
-                        if (mc.thePlayer.moveForward > 0.0F) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        return !mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isSneaking() && mc.thePlayer.getFoodStats().getFoodLevel() > 6 && (omni.getValue() ? MoveUtil.isMoving() : mc.thePlayer.moveForward > 0);
     }
-
-    public boolean isMoving2() {
-        return Minecraft.getMinecraft().thePlayer.moveForward != 0.0f || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0f;
-    }
-
 
     @Sub
     public void onEvent(EventPacketRecieve e) {
