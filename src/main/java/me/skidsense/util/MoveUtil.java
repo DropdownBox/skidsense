@@ -284,14 +284,9 @@ public class MoveUtil {
 		return Minecraft.getMinecraft().thePlayer.isInWater();
 	}
 
-	public static boolean isMoving() {
-		if(Minecraft.getMinecraft().thePlayer.moveForward == 0.0F) {
-			if(Minecraft.getMinecraft().thePlayer.moveStrafing == 0.0F) {
-	            return false;
-	         }
-	      }
-		return true;
-	}
+    public boolean isMoving() {
+        return Minecraft.getMinecraft().thePlayer.moveForward != 0.0f || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0f;
+    }
 
 	public static void setMoveSpeed(final EventMove event, final double speed) {
         double forward = MovementInput.moveForward;
