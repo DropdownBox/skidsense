@@ -131,10 +131,10 @@ public class Critical extends Mod {
     }
 
     enum CritMode {
+        Packet,
         Hypixel,
         HypixelHalf,
         HVH,
-        Experimental,
         Old;
     }
 }
