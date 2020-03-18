@@ -25,10 +25,10 @@ import java.util.Random;
 
 
 public class Critical extends Mod {
-    static Mode <Enum> mode =new Mode<>("Mode","Mode",CritMode.values(),CritMode.Hypixel);
-    static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
-    static Numbers<Double> ht = new Numbers<>("Hurttime", "Hurttime", 15.0, 0.0, 20.0, 1.0);
-    static Option<Boolean> nodeelay = new Option("Nodelay", "Nodelay", false);
+    private static Mode <Enum> mode =new Mode<>("Mode","Mode",CritMode.values(),CritMode.Hypixel);
+    private static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
+    private static Numbers<Double> ht = new Numbers<>("Hurttime", "Hurttime", 15.0, 0.0, 20.0, 1.0);
+    private static Option<Boolean> nodeelay = new Option("Nodelay", "Nodelay", false);
     private static TimerUtil timer = new TimerUtil();
 
 
@@ -110,7 +110,7 @@ public class Critical extends Mod {
                         ++v0;
                     }
                     break;
-                case "Hypixel2":
+                case "HypixelHalf":
                     double[] hypixel2 = new double[]{0.0625, 0.00110000000000099};
                     int hypixel2i = hypixel2.length;
                     for (int i = 0; i < hypixel2i; ++i) {
@@ -120,17 +120,19 @@ public class Critical extends Mod {
                                 KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
+
             }
             if (!this.nodeelay.getValue()) {
                 this.timer.reset();
             }
+
             Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
         }
     }
 
     enum CritMode {
         Hypixel,
-        Hypixel2,
+        HypixelHalf,
         HVH,
         Experimental,
         Old;
