@@ -5,6 +5,7 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
+import me.skidsense.hooks.value.Option;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
@@ -27,6 +28,7 @@ public class Critical extends Mod {
     static Mode <Enum> mode =new Mode<>("Mode","Mode",CritMode.values(),CritMode.Hypixel);
     static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
     static Numbers<Double> ht = new Numbers<>("Hurttime", "Hurttime", 15.0, 0.0, 20.0, 1.0);
+    static Option<Boolean> nodeelay = new Option("Nodelay", "Nodelay", false);
     private static TimerUtil timer = new TimerUtil();
 
 
@@ -108,14 +110,27 @@ public class Critical extends Mod {
                         ++v0;
                     }
                     break;
+                case "Hypixel2":
+                    double[] hypixel2 = new double[]{0.0625, 0.00110000000000099};
+                    int hypixel2i = hypixel2.length;
+                    for (int i = 0; i < hypixel2i; ++i) {
+                        double offset = hypixel2[i];
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ,
+                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                    }
+                    break;
             }
-            this.timer.reset();
+            if (!this.nodeelay.getValue()) {
+                this.timer.reset();
+            }
             Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
         }
     }
 
     enum CritMode {
         Hypixel,
+        Hypixel2,
         HVH,
         Experimental,
         Old;
