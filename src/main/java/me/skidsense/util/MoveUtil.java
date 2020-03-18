@@ -286,9 +286,7 @@ public class MoveUtil {
 
 	public static boolean isMoving() {
 		if(Minecraft.getMinecraft().thePlayer.moveForward == 0.0F) {
-			if(Minecraft.getMinecraft().thePlayer.moveStrafing == 0.0F) {
-	            return false;
-	         }
+			return Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0F;
 	      }
 		return true;
 	}

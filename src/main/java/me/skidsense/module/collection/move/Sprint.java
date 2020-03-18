@@ -24,8 +24,8 @@ extends Mod {
 
     @Sub
     private void onUpdate(EventPreUpdate event) {
-        if (this.mc.thePlayer.getFoodStats().getFoodLevel() > 6 && this.omni.getValue() != false ? MoveUtil.isMoving() : this.mc.thePlayer.moveForward > 0.0f) {
-            this.mc.thePlayer.setSprinting(true);
+        if (mc.thePlayer.getFoodStats().getFoodLevel() > 6 && this.omni.getValue() ? MoveUtil.isMoving() : mc.thePlayer.moveForward > 0.0f) {
+            mc.thePlayer.setSprinting(true);
         }
     }
     
@@ -39,7 +39,7 @@ extends Mod {
                         e.setCancelled(true);
                     }
                 }
-            } catch (ClassCastException exception) {
+            } catch (ClassCastException ignored) {
             }
     	}
 
