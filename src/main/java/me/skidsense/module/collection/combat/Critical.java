@@ -109,7 +109,7 @@ public class Critical extends Mod {
                     }
                     break;
             }
-            this.timer.reset();
+            timer.reset();
             Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
         }
     }
