@@ -193,10 +193,10 @@ public class Speed
                 ++this.stage;
             }
 
-            double gay2 = 0.41001279995D;
+            double gay2 = 0.399999987334013;
             if (this.mc.thePlayer.isPotionActive(Potion.jump)) {
-                gay2 += (double) ((float) (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1)
-                        * 0.1F);
+                gay2 += (float) (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1)
+                        * 0.1F;
             }
 
             if (em.getY() < 0.0D) {
