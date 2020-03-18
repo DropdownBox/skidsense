@@ -69,7 +69,8 @@ public class Critical extends Mod {
                     for (int i = 0; i < oldoffsets.length; ++i) {
                         EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + oldoffsets[i] + randomValue.nextDouble(), mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                                mc.thePlayer.posY + oldoffsets[i] + randomValue.nextDouble(), mc.thePlayer.posZ,
+                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
                 case "Hypixel":
@@ -78,7 +79,8 @@ public class Critical extends Mod {
                     for (int i = 0; i < l; ++i) {
                         double offset = hypixeloffsets[i];
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.target != null ? KillAura.rotateNCP(KillAura.target)[0] : mc.thePlayer.rotationYaw, KillAura.target != null ? KillAura.rotateNCP(KillAura.target)[1] : mc.thePlayer.rotationPitch, false));
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ,
+                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
                 case "HVH":
@@ -87,7 +89,7 @@ public class Critical extends Mod {
                     for (int i = 0; i < HVHl; ++i) {
                         double offset = offsets[i];
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.target != null ?  KillAura.rotateNCP(KillAura.target)[0] : mc.thePlayer.rotationYaw, KillAura.target != null ? KillAura.rotateNCP(KillAura.target)[1] : mc.thePlayer.rotationPitch, false));
+                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
                 case "Experimental":
@@ -107,6 +109,7 @@ public class Critical extends Mod {
                     }
                     break;
             }
+            this.timer.reset();
             Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
         }
     }
