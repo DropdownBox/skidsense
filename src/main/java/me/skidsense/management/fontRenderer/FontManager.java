@@ -22,6 +22,7 @@ public class FontManager {
 	public FontRenderer comfortaa14;
 	public FontRenderer comfortaa20;
 	public FontRenderer comfortaa34;
+	public FontRenderer roboto17;
 	public FontRenderer roboto19;
 	public FontRenderer roboto20;
 	public FontRenderer tahomabold13;
@@ -49,6 +50,7 @@ public class FontManager {
 		comfortaa14 = this.getFont("comfortaa", 14f);
 		comfortaa20 = this.getFont("comfortaa", 20f);
 		comfortaa34 = this.getFont("comfortaa", 34f);
+		roboto17 = this.getFont("roboto", 17f);
 		roboto19 = this.getFont("roboto", 19f);
 		roboto20 = this.getFont("roboto", 20f);
 		tahomabold13 = this.getFont("tahomabold", 13f);
