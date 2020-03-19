@@ -28,7 +28,6 @@ public class AutoStrafe extends Mod
 
 	public AutoStrafe() {
 		super("Auto Strafe", new String[] { "AutoStrafe" }, ModuleType.Move);
-		//this.addValues(new Value[] { (Value)AutoStrafe.MaxDistance, (Value)AutoStrafe.keep, (Value)AutoStrafe.Esp, (Value)AutoStrafe.OnlySpeed, (Value)AutoStrafe.Auto });
 	}
 
 	public void onDisable() {
@@ -48,7 +47,7 @@ public class AutoStrafe extends Mod
 	}
 
 	public static void onStrafe(final EventMove eventMove) {
-		if (KillAura.target != null) {
+		if (KillAura.target != null && mc.thePlayer.getDistanceSqToEntity(KillAura.target) <= MaxDistance.getValue()) {
 			if (!RotationUtil.canEntityBeSeen((Entity)KillAura.target)) {
 				return;
 			}
@@ -58,7 +57,7 @@ public class AutoStrafe extends Mod
 	}
 
 	public static void onStrafe(final EventMove eventMove, final double speed) {
-		if (KillAura.target != null) {
+		if (KillAura.target != null && mc.thePlayer.getDistanceSqToEntity(KillAura.target) <= MaxDistance.getValue()) {
 			if (!RotationUtil.canEntityBeSeen((Entity)KillAura.target)) {
 				return;
 			}

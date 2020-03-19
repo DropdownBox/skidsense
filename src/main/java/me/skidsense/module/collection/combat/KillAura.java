@@ -179,6 +179,7 @@ public class KillAura extends Mod {
 			}
 		}
 	}
+
 	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
 		if (!this.mc.thePlayer.isEntityAlive() && this.autodisable.getValue()) {
@@ -230,6 +231,7 @@ public class KillAura extends Mod {
 			this.attack();
 			timer.reset();
 		}
+
 		if (!this.getTargets(blockrange.getValue()).isEmpty() && this.canBlock() && !this.isBlocking  && autoBlock.getValue()) {
 			mc.thePlayer.sendQueue.addToSendQueue(
 					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
@@ -278,20 +280,6 @@ public class KillAura extends Mod {
 			GL11.glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 			RenderUtil.post3D();
 		}
-	}
-
-	public static float getYawChangeGiven(double n, double n2, float n3) {
-		double n4 = n - Minecraft.getMinecraft().thePlayer.posX;
-		double n5 = n2 - Minecraft.getMinecraft().thePlayer.posZ;
-		double degrees;
-		if (n5 < 0.0 && n4 < 0.0) {
-			degrees = 90.0 + Math.toDegrees(Math.atan(n5 / n4));
-		} else if (n5 < 0.0 && n4 > 0.0) {
-			degrees = -90.0 + Math.toDegrees(Math.atan(n5 / n4));
-		} else {
-			degrees = Math.toDegrees(-Math.atan(n4 / n5));
-		}
-		return MathHelper.wrapAngleTo180_float(-(n3 - (float) degrees));
 	}
 
 	private boolean shouldAttack() {

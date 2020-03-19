@@ -11,6 +11,7 @@ import me.skidsense.module.ModuleType;
 import java.awt.Color;
 
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.util.ResourceLocation;
 
 public class Step
 extends Mod {
@@ -19,8 +20,6 @@ extends Mod {
     boolean reset;
     public Step() {
         super("Step", new String[]{"step"}, ModuleType.Move);
-        this.setColor(new Color(165, 238, 65).getRGB());
-        //this.addValues(height,ncp);
     }
 
     @Override

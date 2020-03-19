@@ -79,6 +79,7 @@ public class Critical extends Mod {
                     }
                     break;
                 case "HVH":
+
                     double[] offsets = new double[]{0.41888898688697815, 0.33320000767707825, 0.00120000005699695};
                     int HVHl = offsets.length;
                     for (int i = 0; i < HVHl; ++i) {

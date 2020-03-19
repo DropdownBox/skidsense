@@ -26,7 +26,7 @@ public class ClickGui extends Mod {
 				this.mc.displayGuiScreen(new ClickUI());
 				break;
 			case "test":
-				this.mc.displayGuiScreen(new CustomUI());
+				this.mc.displayGuiScreen(new MusicWindow());
 				break;
 		}
 		

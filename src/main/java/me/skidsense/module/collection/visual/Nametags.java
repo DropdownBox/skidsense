@@ -27,35 +27,35 @@ import net.minecraft.item.ItemTool;
 import org.lwjgl.opengl.GL11;
 
 public class Nametags
-extends Mod {
+		extends Mod {
 	private boolean armor = true;
 	public boolean formatting = true;
-    public Nametags() {
-        super("Name Tag", new String[]{"NameTag"}, ModuleType.Visual);
-        this.setColor(new Color(29, 187, 102).getRGB());
-    }
+	public Nametags() {
+		super("Name Tag", new String[]{"NameTag"}, ModuleType.Visual);
+		this.setColor(new Color(29, 187, 102).getRGB());
+	}
 
-    @Sub
-    private void onRender(EventRender3D render) {
-    	 if (Minecraft.getMinecraft().theWorld != null) {
-             boolean wasBobbing = Minecraft.getMinecraft().gameSettings.viewBobbing;
-             Iterator var4 = Minecraft.getMinecraft().theWorld.loadedEntityList.iterator();
+	@Sub
+	private void onRender(EventRender3D render) {
+		if (Minecraft.getMinecraft().theWorld != null) {
+			boolean wasBobbing = Minecraft.getMinecraft().gameSettings.viewBobbing;
+			Iterator var4 = Minecraft.getMinecraft().theWorld.loadedEntityList.iterator();
 
-             while(var4.hasNext()) {
-                Object o = var4.next();
-                Entity ent = (Entity)o;
-                if (ent != Minecraft.getMinecraft().thePlayer && !ent.isInvisible() && ent instanceof EntityPlayer) {
-                   double posX = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosX;
-                   double posY = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosY;
-                   double posZ = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosZ;
-   				renderNameTag((EntityPlayer) ent, String.valueOf(ent.getDisplayName()) , posX, posY, posZ);
-                }
-             }
+			while(var4.hasNext()) {
+				Object o = var4.next();
+				Entity ent = (Entity)o;
+				if (ent != Minecraft.getMinecraft().thePlayer && !ent.isInvisible() && ent instanceof EntityPlayer) {
+					double posX = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosX;
+					double posY = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosY;
+					double posZ = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosZ;
+					renderNameTag((EntityPlayer) ent, String.valueOf(ent.getDisplayName()) , posX, posY, posZ);
+				}
+			}
 
-             Minecraft.getMinecraft().gameSettings.viewBobbing = wasBobbing;
-          }
-    }
-    public void renderNameTag(EntityPlayer entity, String tag, double pX, double pY, double pZ) {
+			Minecraft.getMinecraft().gameSettings.viewBobbing = wasBobbing;
+		}
+	}
+	public void renderNameTag(EntityPlayer entity, String tag, double pX, double pY, double pZ) {
 		FontRenderer var12 = this.mc.fontRendererObj;
 		pY += (entity.isSneaking() ? 0.5D : 0.7D);
 		float var13 = this.mc.thePlayer.getDistanceToEntity(entity) / 6.0F;
@@ -71,7 +71,7 @@ extends Mod {
 		if (!this.formatting == true) {
 			tag = ChatColor.stripColor(tag);
 		}
-			tag = entity.getDisplayName().getFormattedText();
+		tag = entity.getDisplayName().getFormattedText();
 		double health = Math.ceil(entity.getHealth() + entity.getAbsorptionAmount());
 		ChatColor healthCol;
 		if (health < 10D) {
@@ -98,7 +98,7 @@ extends Mod {
 		} else if(this.getPing(entity) > 250) {
 			ping = "\247c\247l" + (int)this.getPing(entity) + "ms\247r";
 		}
-		
+
 		String linehealth = null;
 		if(health >= 20) {
 			linehealth = ChatColor.GREEN + " ||||||||||";
@@ -123,7 +123,7 @@ extends Mod {
 		} else if(health > 0) {
 			linehealth =  ChatColor.RED + " ||||||||||";
 		}
-		
+
 		if (Math.floor(health) == health) {
 			StringBuilder allstring = new StringBuilder();
 			allstring.append(ping);
@@ -133,7 +133,7 @@ extends Mod {
 			allstring.append(linehealth);
 			tag = allstring.toString();
 		}
-		
+
 		RenderManager renderManager = this.mc.getRenderManager();
 		int color = 16776960;
 		float scale = var13 * 2.0F;
@@ -167,7 +167,7 @@ extends Mod {
 				renderStack = entity.getHeldItem().copy();
 				if ((((ItemStack) renderStack).hasEffect())
 						&& (((((ItemStack) renderStack).getItem() instanceof ItemTool))
-								|| ((((ItemStack) renderStack).getItem() instanceof ItemArmor))))
+						|| ((((ItemStack) renderStack).getItem() instanceof ItemArmor))))
 					((ItemStack) renderStack).stackSize = 1;
 				renderItemStack((ItemStack) renderStack, xOffset, -30);
 				xOffset += 16;
@@ -188,59 +188,59 @@ extends Mod {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glPopMatrix();
 	}
-	
+
 	public static void drawBorderedRect(float x, float y, float x2, float y2, float l1, int col1, int col2) {
-	      drawRect(x, y, x2, y2, col2);
-	      float f = (float)(col1 >> 24 & 255) / 255.0F;
-	      float f1 = (float)(col1 >> 16 & 255) / 255.0F;
-	      float f2 = (float)(col1 >> 8 & 255) / 255.0F;
-	      float f3 = (float)(col1 & 255) / 255.0F;
-	      GL11.glEnable(3042);
-	      GL11.glDisable(3553);
-	      GL11.glBlendFunc(770, 771);
-	      GL11.glEnable(2848);
-	      GL11.glPushMatrix();
-	      GL11.glColor4f(f1, f2, f3, f);
-	      GL11.glLineWidth(l1);
-	      GL11.glBegin(1);
-	      GL11.glVertex2d((double)x, (double)y);
-	      GL11.glVertex2d((double)x, (double)y2);
-	      GL11.glVertex2d((double)x2, (double)y2);
-	      GL11.glVertex2d((double)x2, (double)y);
-	      GL11.glVertex2d((double)x, (double)y);
-	      GL11.glVertex2d((double)x2, (double)y);
-	      GL11.glVertex2d((double)x, (double)y2);
-	      GL11.glVertex2d((double)x2, (double)y2);
-	      GL11.glEnd();
-	      GL11.glPopMatrix();
-	      GL11.glEnable(3553);
-	      GL11.glDisable(3042);
-	      GL11.glDisable(2848);
+		drawRect(x, y, x2, y2, col2);
+		float f = (float)(col1 >> 24 & 255) / 255.0F;
+		float f1 = (float)(col1 >> 16 & 255) / 255.0F;
+		float f2 = (float)(col1 >> 8 & 255) / 255.0F;
+		float f3 = (float)(col1 & 255) / 255.0F;
+		GL11.glEnable(3042);
+		GL11.glDisable(3553);
+		GL11.glBlendFunc(770, 771);
+		GL11.glEnable(2848);
+		GL11.glPushMatrix();
+		GL11.glColor4f(f1, f2, f3, f);
+		GL11.glLineWidth(l1);
+		GL11.glBegin(1);
+		GL11.glVertex2d((double)x, (double)y);
+		GL11.glVertex2d((double)x, (double)y2);
+		GL11.glVertex2d((double)x2, (double)y2);
+		GL11.glVertex2d((double)x2, (double)y);
+		GL11.glVertex2d((double)x, (double)y);
+		GL11.glVertex2d((double)x2, (double)y);
+		GL11.glVertex2d((double)x, (double)y2);
+		GL11.glVertex2d((double)x2, (double)y2);
+		GL11.glEnd();
+		GL11.glPopMatrix();
+		GL11.glEnable(3553);
+		GL11.glDisable(3042);
+		GL11.glDisable(2848);
 	}
-	
+
 	public static void drawRect(float g, float h, float i, float j, int col1) {
-	      float f = (float)(col1 >> 24 & 255) / 255.0F;
-	      float f1 = (float)(col1 >> 16 & 255) / 255.0F;
-	      float f2 = (float)(col1 >> 8 & 255) / 255.0F;
-	      float f3 = (float)(col1 & 255) / 255.0F;
-	      GL11.glEnable(3042);
-	      GL11.glDisable(3553);
-	      GL11.glBlendFunc(770, 771);
-	      GL11.glEnable(2848);
-	      GL11.glPushMatrix();
-	      GL11.glColor4f(f1, f2, f3, f);
-	      GL11.glBegin(7);
-	      GL11.glVertex2d((double)i, (double)h);
-	      GL11.glVertex2d((double)g, (double)h);
-	      GL11.glVertex2d((double)g, (double)j);
-	      GL11.glVertex2d((double)i, (double)j);
-	      GL11.glEnd();
-	      GL11.glPopMatrix();
-	      GL11.glEnable(3553);
-	      GL11.glDisable(3042);
-	      GL11.glDisable(2848);
-}
-	
+		float f = (float)(col1 >> 24 & 255) / 255.0F;
+		float f1 = (float)(col1 >> 16 & 255) / 255.0F;
+		float f2 = (float)(col1 >> 8 & 255) / 255.0F;
+		float f3 = (float)(col1 & 255) / 255.0F;
+		GL11.glEnable(3042);
+		GL11.glDisable(3553);
+		GL11.glBlendFunc(770, 771);
+		GL11.glEnable(2848);
+		GL11.glPushMatrix();
+		GL11.glColor4f(f1, f2, f3, f);
+		GL11.glBegin(7);
+		GL11.glVertex2d((double)i, (double)h);
+		GL11.glVertex2d((double)g, (double)h);
+		GL11.glVertex2d((double)g, (double)j);
+		GL11.glVertex2d((double)i, (double)j);
+		GL11.glEnd();
+		GL11.glPopMatrix();
+		GL11.glEnable(3553);
+		GL11.glDisable(3042);
+		GL11.glDisable(2848);
+	}
+
 	public void renderItemStack(ItemStack stack, int x, int y) {
 		GL11.glPushMatrix();
 		GL11.glDepthMask(true);
@@ -263,7 +263,7 @@ extends Mod {
 		GlStateManager.scale(2.0F, 2.0F, 2.0F);
 		GL11.glPopMatrix();
 	}
-	
+
 	public void renderEnchantText(ItemStack stack, int x, int y) {
 		int encY = y - 24;
 		if ((stack.getItem() instanceof ItemArmor)) {
@@ -327,7 +327,7 @@ extends Mod {
 			}
 		}
 	}
-	
+
 	public void whatTheFuckOpenGLThisFixesItemGlint() {
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepth();
@@ -345,139 +345,139 @@ extends Mod {
 		GlStateManager.enableLighting();
 		GlStateManager.enableDepth();
 	}
-	
+
 	TimerUtil time = new TimerUtil();
-	
+
 	public static double getPing(EntityPlayer player) {
 		NetworkPlayerInfo playerInfo = Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfo(player.getName());
 		int playerPing = playerInfo != null ? playerInfo.getResponseTime() : -1;
 		return playerPing;
 	}
-	
-	
+
+
 	//GLUtils start
 	public static void setGLCap(int cap, boolean flag)
-	  {
-	    glCapMap.put(Integer.valueOf(cap), Boolean.valueOf(GL11.glGetBoolean(cap)));
-	    if (flag) {
-	      GL11.glEnable(cap);
-	    } else {
-	      GL11.glDisable(cap);
-	    }
-	  }
-	  
-	  public static void revertGLCap(int cap)
-	  {
-	    Boolean origCap = (Boolean)glCapMap.get(Integer.valueOf(cap));
-	    if (origCap != null) {
-	      if (origCap.booleanValue()) {
-	        GL11.glEnable(cap);
-	      } else {
-	        GL11.glDisable(cap);
-	      }
-	    }
-	  }
-	  
-	  public static void glEnable(int cap)
-	  {
-	    setGLCap(cap, true);
-	  }
-	  
-	  public static void glDisable(int cap)
-	  {
-	    setGLCap(cap, false);
-	  }
-	  
-	  public static void revertAllCaps()
-	  {
-	    for (Iterator localIterator = glCapMap.keySet().iterator(); localIterator.hasNext();)
-	    {
-	      int cap = ((Integer)localIterator.next()).intValue();
-	      revertGLCap(cap);
-	    }
-	  }
-	  
-	  private static Map<Integer, Boolean> glCapMap = new HashMap();
-	  //GLUtils end
-	  
-	  
-	  
-	  
-	  //ChatColor start
-	  public enum ChatColor {
-	      BLACK("BLACK", 0, '0', "black"), 
-	      DARK_BLUE("DARK_BLUE", 1, '1', "dark_blue"), 
-	      DARK_GREEN("DARK_GREEN", 2, '2', "dark_green"), 
-	      DARK_AQUA("DARK_AQUA", 3, '3', "dark_aqua"), 
-	      DARK_RED("DARK_RED", 4, '4', "dark_red"), 
-	      DARK_PURPLE("DARK_PURPLE", 5, '5', "dark_purple"), 
-	      GOLD("GOLD", 6, '6', "gold"), 
-	      GRAY("GRAY", 7, '7', "gray"), 
-	      DARK_GRAY("DARK_GRAY", 8, '8', "dark_gray"), 
-	      BLUE("BLUE", 9, '9', "blue"), 
-	      GREEN("GREEN", 10, 'a', "green"), 
-	      AQUA("AQUA", 11, 'b', "aqua"), 
-	      RED("RED", 12, 'c', "red"), 
-	      LIGHT_PURPLE("LIGHT_PURPLE", 13, 'd', "light_purple"), 
-	      YELLOW("YELLOW", 14, 'e', "yellow"), 
-	      WHITE("WHITE", 15, 'f', "white"), 
-	      MAGIC("MAGIC", 16, 'k', "obfuscated"), 
-	      BOLD("BOLD", 17, 'l', "bold"), 
-	      STRIKETHROUGH("STRIKETHROUGH", 18, 'm', "strikethrough"), 
-	      UNDERLINE("UNDERLINE", 19, 'n', "underline"), 
-	      ITALIC("ITALIC", 20, 'o', "italic"), 
-	      RESET("RESET", 21, 'r', "reset");
-	      
-	      public static final char COLOR_CHAR = '\247';
-	      public static final String ALL_CODES = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
-	      public static final Pattern STRIP_COLOR_PATTERN;
-	      private static final Map<Character, ChatColor> BY_CHAR;
-	      private final char code;
-	      private final String toString;
-	      private final String name;
-	      
-	      static {
-	          STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf('\247') + "[0-9A-FK-OR]");
-	          BY_CHAR = new HashMap<Character, ChatColor>();
-	          ChatColor[] arrayOfChatColor;
-	          for (int j = (arrayOfChatColor = values()).length, i = 0; i < j; ++i) {
-	              final ChatColor colour = arrayOfChatColor[i];
-	              ChatColor.BY_CHAR.put(colour.code, colour);
-	          }
-	      }
-	      
-	      private ChatColor(final String s, final int n, final char code, final String name) {
-	          this.code = code;
-	          this.name = name;
-	          this.toString = new String(new char[] { '\247', code });
-	      }
-	      
-	      @Override
-	      public String toString() {
-	          return this.toString;
-	      }
-	      
-	      public static String stripColor(final String input) {
-	          if (input == null) {
-	              return null;
-	          }
-	          return ChatColor.STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
-	      }
-	      
-	      public static String translateAlternateColorCodes(final char altColorChar, final String textToTranslate) {
-	          final char[] b = textToTranslate.toCharArray();
-	          for (int i = 0; i < b.length - 1; ++i) {
-	              if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
-	                  b[i] = '\247';
-	                  b[i + 1] = Character.toLowerCase(b[i + 1]);
-	              }
-	          }
-	          return new String(b);
-	      }
-	      
-	      public static ChatColor getByChar(final char code) {
-	          return ChatColor.BY_CHAR.get(code);
-	      }
-	  }
-	  //ChatColor end
+	{
+		glCapMap.put(Integer.valueOf(cap), Boolean.valueOf(GL11.glGetBoolean(cap)));
+		if (flag) {
+			GL11.glEnable(cap);
+		} else {
+			GL11.glDisable(cap);
+		}
+	}
+
+	public static void revertGLCap(int cap)
+	{
+		Boolean origCap = (Boolean)glCapMap.get(Integer.valueOf(cap));
+		if (origCap != null) {
+			if (origCap.booleanValue()) {
+				GL11.glEnable(cap);
+			} else {
+				GL11.glDisable(cap);
+			}
+		}
+	}
+
+	public static void glEnable(int cap)
+	{
+		setGLCap(cap, true);
+	}
+
+	public static void glDisable(int cap)
+	{
+		setGLCap(cap, false);
+	}
+
+	public static void revertAllCaps()
+	{
+		for (Iterator localIterator = glCapMap.keySet().iterator(); localIterator.hasNext();)
+		{
+			int cap = ((Integer)localIterator.next()).intValue();
+			revertGLCap(cap);
+		}
+	}
+
+	private static Map<Integer, Boolean> glCapMap = new HashMap();
+	//GLUtils end
+
+
+
+
+	//ChatColor start
+	public enum ChatColor {
+		BLACK("BLACK", 0, '0', "black"),
+		DARK_BLUE("DARK_BLUE", 1, '1', "dark_blue"),
+		DARK_GREEN("DARK_GREEN", 2, '2', "dark_green"),
+		DARK_AQUA("DARK_AQUA", 3, '3', "dark_aqua"),
+		DARK_RED("DARK_RED", 4, '4', "dark_red"),
+		DARK_PURPLE("DARK_PURPLE", 5, '5', "dark_purple"),
+		GOLD("GOLD", 6, '6', "gold"),
+		GRAY("GRAY", 7, '7', "gray"),
+		DARK_GRAY("DARK_GRAY", 8, '8', "dark_gray"),
+		BLUE("BLUE", 9, '9', "blue"),
+		GREEN("GREEN", 10, 'a', "green"),
+		AQUA("AQUA", 11, 'b', "aqua"),
+		RED("RED", 12, 'c', "red"),
+		LIGHT_PURPLE("LIGHT_PURPLE", 13, 'd', "light_purple"),
+		YELLOW("YELLOW", 14, 'e', "yellow"),
+		WHITE("WHITE", 15, 'f', "white"),
+		MAGIC("MAGIC", 16, 'k', "obfuscated"),
+		BOLD("BOLD", 17, 'l', "bold"),
+		STRIKETHROUGH("STRIKETHROUGH", 18, 'm', "strikethrough"),
+		UNDERLINE("UNDERLINE", 19, 'n', "underline"),
+		ITALIC("ITALIC", 20, 'o', "italic"),
+		RESET("RESET", 21, 'r', "reset");
+
+		public static final char COLOR_CHAR = '\247';
+		public static final String ALL_CODES = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
+		public static final Pattern STRIP_COLOR_PATTERN;
+		private static final Map<Character, ChatColor> BY_CHAR;
+		private final char code;
+		private final String toString;
+		private final String name;
+
+		static {
+			STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf('\247') + "[0-9A-FK-OR]");
+			BY_CHAR = new HashMap<Character, ChatColor>();
+			ChatColor[] arrayOfChatColor;
+			for (int j = (arrayOfChatColor = values()).length, i = 0; i < j; ++i) {
+				final ChatColor colour = arrayOfChatColor[i];
+				ChatColor.BY_CHAR.put(colour.code, colour);
+			}
+		}
+
+		private ChatColor(final String s, final int n, final char code, final String name) {
+			this.code = code;
+			this.name = name;
+			this.toString = new String(new char[] { '\247', code });
+		}
+
+		@Override
+		public String toString() {
+			return this.toString;
+		}
+
+		public static String stripColor(final String input) {
+			if (input == null) {
+				return null;
+			}
+			return ChatColor.STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
+		}
+
+		public static String translateAlternateColorCodes(final char altColorChar, final String textToTranslate) {
+			final char[] b = textToTranslate.toCharArray();
+			for (int i = 0; i < b.length - 1; ++i) {
+				if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
+					b[i] = '\247';
+					b[i + 1] = Character.toLowerCase(b[i + 1]);
+				}
+			}
+			return new String(b);
+		}
+
+		public static ChatColor getByChar(final char code) {
+			return ChatColor.BY_CHAR.get(code);
+		}
+	}
+	//ChatColor end
 }
