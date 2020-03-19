@@ -240,7 +240,7 @@ public class Speed
                     }
                 }
 
-                if (Client.instance.getModuleManager().getModuleByClass((Class) AutoStrafe.class).isEnabled() && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) <= AutoStrafe.MaxDistance.getValue() + 2) {
+                if (Client.instance.getModuleManager().getModuleByClass((Class) AutoStrafe.class).isEnabled() && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) <= AutoStrafe.MaxDistance.getValue()) {
                     AutoStrafe.onStrafe(em, this.movementSpeed);
                 } else
                     em.setX((forward * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))

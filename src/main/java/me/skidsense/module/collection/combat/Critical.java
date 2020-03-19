@@ -6,7 +6,6 @@ import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
@@ -14,14 +13,11 @@ import me.skidsense.module.collection.move.Speed;
 import me.skidsense.module.collection.player.Scaffold;
 import me.skidsense.util.MoveUtil;
 import me.skidsense.util.TimerUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
 
 import java.awt.*;
-import java.util.Random;
 
 
 public class Critical extends Mod {
@@ -65,14 +61,11 @@ public class Critical extends Mod {
     public void doCrit(Entity e) {
         if(e.hurtResistantTime<=ht.getValue()&&e.hurtResistantTime>0) {
             switch (this.mode.getValue().toString()) {
-                case "Old":
-                    Random randomValue = new Random(System.currentTimeMillis() + System.nanoTime());
-                    double[] oldoffsets = new double[]{0.041, 0.002};
-                    for (int i = 0; i < oldoffsets.length; ++i) {
-                        EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
+                case "Packet2":
+                    final double[] arrayp = {0.06200999766588211, 0.0010100000072270632, 0.06200999766588211, 0.050999999046325684};
+                    for (int length = arrayp.length, i = 0; i < length; ++i) {
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + oldoffsets[i] + randomValue.nextDouble(), mc.thePlayer.posZ,
-                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                                mc.thePlayer.posY + arrayp[i], mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
                 case "Hypixel":
@@ -94,10 +87,10 @@ public class Critical extends Mod {
                                 mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                     }
                     break;
-                case "Experimental":
+                case "Packet":
                     int a1 = 1;
                     while (a1 <= 4) {
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(true));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
                         ++a1;
                     }
                     final double[] array = {0.0312622959183674, 0.0, 0.0312622959183674, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -106,7 +99,8 @@ public class Critical extends Mod {
                     while (v0 < length) {
                         final double v2 = array[v0];
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + v2, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                                mc.thePlayer.posY + v2, mc.thePlayer.posZ,
+                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                         ++v0;
                     }
                     break;
@@ -122,11 +116,11 @@ public class Critical extends Mod {
                     break;
 
             }
-            if (!this.nodeelay.getValue()) {
+            if (this.mode.getValue().equals(CritMode.Packet)) {
+            } else if (!this.nodeelay.getValue()) {
                 this.timer.reset();
             }
-
-            Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
+            //Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
         }
     }
 
@@ -135,7 +129,7 @@ public class Critical extends Mod {
         Hypixel,
         HypixelHalf,
         HVH,
-        Old;
+        Packet2;
     }
 }
 
