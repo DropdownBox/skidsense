@@ -193,10 +193,10 @@ public class Speed
                 ++this.stage;
             }
 
-            double gay2 = 0.399999987334013;
+            double motY = 0.408811279995D;
             if (this.mc.thePlayer.isPotionActive(Potion.jump)) {
-                gay2 += (float) (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1)
-                        * 0.1F;
+                motY += (double) ((float) (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1)
+                        * 0.1F);
             }
 
             if (em.getY() < 0.0D) {
@@ -206,7 +206,7 @@ public class Speed
             double forward;
             if (this.canZoom() && this.stage == 2
                     && (this.mc.thePlayer.moveForward != 0.0F || this.mc.thePlayer.moveStrafing != 0.0F)) {
-                this.mc.thePlayer.motionY = gay2;
+                this.mc.thePlayer.motionY = motY;
                 em.setY(this.mc.thePlayer.motionY);
                 this.movementSpeed = 0.635D * (1.0D + 0.11D * this.getSpeedEffect());
             } else if (this.stage == 3) {
@@ -216,40 +216,42 @@ public class Speed
                 List collidingList = this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer,
                         this.mc.thePlayer.boundingBox.offset(0.0D, this.mc.thePlayer.motionY, 0.0D));
                 if (collidingList.size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
-                    this.stage = isMoving2() ? 1 : 0;
+                    this.stage = MoveUtil.isMoving() ? 1 : 0;
                 }
                 this.movementSpeed = this.lastDist - this.lastDist / 59.0D;
             }
             this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
             forward = (double) this.mc.thePlayer.moveForward;
-            double strafe = (double) MovementInput.moveStrafe;
-            float yaw = this.mc.thePlayer.rotationYaw;
-            if (forward != 0.0D || strafe != 0.0D) {
-                if (forward != 0.0D) {
-                    if (strafe > 0.0D) {
-                        yaw += (float) (forward > 0.0D ? -45 : 45);
-                    } else if (strafe < 0.0D) {
-                        yaw += (float) (forward > 0.0D ? 45 : -45);
-                    }
+            if (Client.instance.getModuleManager().getModuleByClass((Class) AutoStrafe.class).isEnabled()
+                    && KillAura.target != null) {
+                AutoStrafe.onStrafe(em, this.defaultSpeed());
+                ++stage;
+            } else {
+                double strafe = (double) MovementInput.moveStrafe;
+                float yaw = this.mc.thePlayer.rotationYaw;
+                if (forward != 0.0D || strafe != 0.0D) {
+                    if (forward != 0.0D) {
+                        if (strafe > 0.0D) {
+                            yaw += (float) (forward > 0.0D ? -45 : 45);
+                        } else if (strafe < 0.0D) {
+                            yaw += (float) (forward > 0.0D ? 45 : -45);
+                        }
 
-                    strafe = 0.0D;
-                    if (forward > 0.0D) {
-                        forward = 1.0D;
-                    } else if (forward < 0.0D) {
-                        forward = -1.0D;
+                        strafe = 0.0D;
+                        if (forward > 0.0D) {
+                            forward = 1.0D;
+                        } else if (forward < 0.0D) {
+                            forward = -1.0D;
+                        }
                     }
-                }
-
-                if (Client.instance.getModuleManager().getModuleByClass((Class) AutoStrafe.class).isEnabled() && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) <= AutoStrafe.MaxDistance.getValue()) {
-                    AutoStrafe.onStrafe(em, this.movementSpeed);
-                } else
                     em.setX((forward * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))
                             + strafe * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
-                em.setZ((forward * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))
-                        - strafe * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
-            }
+                    em.setZ((forward * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))
+                            - strafe * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
+                }
 
-            ++this.stage;
+                ++this.stage;
+            }
         }
     }
 
