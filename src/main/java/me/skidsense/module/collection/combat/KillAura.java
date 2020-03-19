@@ -80,14 +80,9 @@ public class KillAura extends Mod {
 	public static EntityLivingBase attacktarget;
 	public float[] lastRotations = new float[] { 0.0f, 0.0f };;
 	public DecimalFormat format = new DecimalFormat("0.0");
-	public Entity lastEnt;
-	public float lastHealth = -1.0f;
-	public float damageDelt = 0.0f;
-	public float lastPlayerHealth = -1.0f;
-	public float damageDeltToPlayer = 0.0f;
+	public BlockPos AutoBlockPos = new BlockPos(-0.6,-0.6,-0.6);
 	public double animation = 0.0;
 	int attackSpeed;
-	Random random = new Random();
 
 	public KillAura() {
 		super("Kill Aura", new String[] { "Aura","KillAura" }, ModuleType.Fight);
@@ -106,7 +101,7 @@ public class KillAura extends Mod {
 		if (this.isBlocking) {
 			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-1,-1,-1), EnumFacing.DOWN));
+			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
@@ -189,7 +184,7 @@ public class KillAura extends Mod {
 		if (autoBlock.getValue() && this.canBlock() && this.isBlocking) {
 			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-1,-1,-1), EnumFacing.DOWN));
+			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			this.mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
@@ -204,7 +199,7 @@ public class KillAura extends Mod {
 			if (this.isBlocking) {
 				NetworkManager networkManager2 = this.mc.thePlayer.sendQueue.getNetworkManager();
 				C07PacketPlayerDigging.Action release_USE_ITEM2 = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-				networkManager2.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM2, new BlockPos(-1,-1,-1), EnumFacing.DOWN));
+				networkManager2.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM2, AutoBlockPos, EnumFacing.DOWN));
 				this.mc.thePlayer.clearItemInUse();
 				this.isBlocking = false;
 			}
@@ -234,7 +229,7 @@ public class KillAura extends Mod {
 
 		if (!this.getTargets(blockrange.getValue()).isEmpty() && this.canBlock() && !this.isBlocking  && autoBlock.getValue()) {
 			mc.thePlayer.sendQueue.addToSendQueue(
-					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+					new C08PacketPlayerBlockPlacement(AutoBlockPos, 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
@@ -296,7 +291,7 @@ public class KillAura extends Mod {
 		if (this.isBlocking && this.canBlock()) {
 			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-1,-1,-1), EnumFacing.DOWN));
+			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
@@ -332,9 +327,8 @@ public class KillAura extends Mod {
 			}
 		}
 		if (this.canBlock() && !this.isBlocking && autoBlock.getValue()) {
-			NetworkManager networkManager2 = this.mc.thePlayer.sendQueue.getNetworkManager();
-			networkManager2.sendPacket(
-					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(
+					new C08PacketPlayerBlockPlacement(AutoBlockPos, 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
