@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.hooks.value.Numbers;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.block.BlockAir;
@@ -11,7 +12,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.BlockPos;
 
 public class AntiFall extends Mod {
-
+    public Numbers<Double> Distance = new Numbers<Double>("Distance", "Distance", 6.0, 1.0, 20.0, 0.5);
     public AntiFall() {
         super("Anti Void", new String[] { "novoid", "antifall" }, ModuleType.World);
         setColor(new Color(223,233,233).getRGB());
@@ -34,7 +35,7 @@ public class AntiFall extends Mod {
         if (blockUnderneath)
             return;
         //if the fall distance is over 2
-        if (mc.thePlayer.fallDistance < 2)
+        if (mc.thePlayer.fallDistance < Distance.getValue())
             return;
         //and if the player isnt onground or vertically colided put the player up
         if (!mc.thePlayer.onGround && !mc.thePlayer.isCollidedVertically) {
