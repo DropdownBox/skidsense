@@ -12,7 +12,6 @@ import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.BlockUtil;
 import me.skidsense.util.MoveUtil;
-import me.skidsense.util.QuickMath;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -28,7 +27,6 @@ import net.minecraft.util.MovementInput;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Random;
 
 
 public class Speed
@@ -131,63 +129,6 @@ public class Speed
     @Sub
     public void onHypixelMove(EventMove em) {
         if (mode.getValue() == SpeedMode.Hypixel) {
-            Random randomValue = new Random(System.currentTimeMillis() + System.nanoTime());
-
-            //Sigma
-            if (Speed.mc.thePlayer.isCollidedHorizontally) {
-                this.collided = true;
-            }
-            if (this.collided) {
-                Speed.stage = -1;
-            }
-            if (this.stair > 0.0) {
-                this.stair -= 0.25;
-            }
-            this.less -= ((this.less > 1.0) ? 0.12 : 0.11);
-            if (this.less < 0.0) {
-                this.less = 0.0;
-            }
-            if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.01) && isMoving2()) {
-                this.collided = Speed.mc.thePlayer.isCollidedHorizontally;
-                if (Speed.stage >= 0 || this.collided) {
-                    Speed.stage = 0;
-                    final double a = 0.399999987334013 + MoveUtil.getJumpEffect() * 0.1;
-                    if (this.stair == 0.0) {
-                        Speed.mc.thePlayer.jump();
-                        em.setY(Speed.mc.thePlayer.motionY = a);
-                        System.out.println(a);
-                    }
-                    ++this.less;
-                    this.lessSlow = (this.less > 1.0 && !this.lessSlow);
-                    if (this.less > 1.12) {
-                        this.less = 1.11;
-                    }
-                }
-            }
-            this.speed = this.getHypixelSpeed(Speed.stage) + 0.0380;
-            this.speed *= QuickMath.getRandomInRange(0.870, 0.889);
-            if (this.stair > 0.0) {
-                this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
-            }
-            if (Speed.stage < 0) {
-                this.speed = MoveUtil.getBaseMoveSpeed();
-            }
-            if (this.lessSlow) {
-                this.speed *= 0.91;
-            }
-            if (BlockUtil.isInLiquid()) {
-                this.speed = 0.1;
-            }
-            if (Speed.mc.thePlayer.moveForward != 0.0f || Speed.mc.thePlayer.moveStrafing != 0.0f) {
-                if (Client.instance.getModuleManager().getModuleByClass((Class) AutoStrafe.class).isEnabled() && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) <= AutoStrafe.MaxDistance.getValue() + 1) {
-                    AutoStrafe.onStrafe(em, this.speed);
-                    ++Speed.stage;
-                } else {
-                    this.setMotion(em, this.speed);
-                    ++Speed.stage;
-                }
-            }
-        } else if (this.mode.getValue().equals(SpeedMode.Experimental)) {
             boolean jumpActive = this.mc.thePlayer.isPotionActive(Potion.jump);
             if (this.stage == 1) {
                 ++this.stage;
@@ -222,34 +163,31 @@ public class Speed
             }
             this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
             forward = (double) this.mc.thePlayer.moveForward;
-            if (Client.instance.getModuleManager().getModuleByClass((Class) AutoStrafe.class).isEnabled()
-                    && KillAura.target != null) {
-                AutoStrafe.onStrafe(em, this.defaultSpeed());
-                ++stage;
-            } else {
-                double strafe = (double) MovementInput.moveStrafe;
-                float yaw = this.mc.thePlayer.rotationYaw;
-                if (forward != 0.0D || strafe != 0.0D) {
-                    if (forward != 0.0D) {
-                        if (strafe > 0.0D) {
-                            yaw += (float) (forward > 0.0D ? -45 : 45);
-                        } else if (strafe < 0.0D) {
-                            yaw += (float) (forward > 0.0D ? 45 : -45);
-                        }
-
-                        strafe = 0.0D;
-                        if (forward > 0.0D) {
-                            forward = 1.0D;
-                        } else if (forward < 0.0D) {
-                            forward = -1.0D;
-                        }
+            double strafe = (double) MovementInput.moveStrafe;
+            float yaw = this.mc.thePlayer.rotationYaw;
+            if (forward != 0.0D || strafe != 0.0D) {
+                if (forward != 0.0D) {
+                    if (strafe > 0.0D) {
+                        yaw += (float) (forward > 0.0D ? -45 : 45);
+                    } else if (strafe < 0.0D) {
+                        yaw += (float) (forward > 0.0D ? 45 : -45);
                     }
+
+                    strafe = 0.0D;
+                    if (forward > 0.0D) {
+                        forward = 1.0D;
+                    } else if (forward < 0.0D) {
+                        forward = -1.0D;
+                    }
+                }
+                if (Client.instance.getModuleManager().getModuleByClass((Class) AutoStrafe.class).isEnabled() && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) <= AutoStrafe.MaxDistance.getValue()) {
+                    AutoStrafe.onStrafe(em, this.movementSpeed);
+                } else {
                     em.setX((forward * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))
                             + strafe * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
                     em.setZ((forward * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))
                             - strafe * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
                 }
-
                 ++this.stage;
             }
         }
@@ -413,7 +351,6 @@ public class Speed
         FastPort,
         Bhop,
         Hypixel,
-        Experimental,
         AAC;
     }
 

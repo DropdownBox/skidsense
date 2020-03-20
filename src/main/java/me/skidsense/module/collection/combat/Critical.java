@@ -109,7 +109,7 @@ public class Critical extends Mod {
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
                         ++a1;
                     }
-                    final double[] array = {0.0312622959183674, 0.0, 0.0312622959183674, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+                    final double[] array = {0.033600000987064504, 0.000650000001769514, 0.032300000774313276, 0.000650000001769514, 0.0, 0.0, 0.0, 0.0, 0.0};
                     final int length = array.length;
                     int v0 = 0;
                     while (v0 < length) {
@@ -124,20 +124,6 @@ public class Critical extends Mod {
                         ++v0;
                     }
                     break;
-                case "HypixelHalf":
-                    double[] hypixel2 = new double[]{0.0625, 0.00110000000000099};
-                    int hypixel2i = hypixel2.length;
-                    for (int i = 0; i < hypixel2i; ++i) {
-                        double offset = hypixel2[i];
-                        if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                    mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
-                        } else {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
-                        }
-                    }
-                    break;
-
             }
             if (this.mode.getValue().equals(CritMode.Packet)) {
             } else if (!this.nodeelay.getValue()) {
@@ -150,7 +136,6 @@ public class Critical extends Mod {
     enum CritMode {
         Packet,
         Hypixel,
-        HypixelHalf,
         HVH,
         Packet2;
     }

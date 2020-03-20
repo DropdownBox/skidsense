@@ -7,7 +7,6 @@ import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MoveUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 
 import java.awt.*;
@@ -25,13 +24,16 @@ public class Sprint
 
     @Sub
     private void onUpdate(EventPreUpdate event) {
-
         mc.thePlayer.setSprinting(this.canSprint());
+    }
 
+    @Override
+    public void onDisable() {
+        mc.thePlayer.setSprinting(false);
     }
 
     private boolean canSprint() {
-        return !mc.thePlayer.isCollidedHorizontally && !mc.thePlayer.isSneaking() && mc.thePlayer.getFoodStats().getFoodLevel() > 6 && (omni.getValue() ? MoveUtil.isMoving() : mc.thePlayer.moveForward > 0);
+        return !mc.thePlayer.isSneaking() && mc.thePlayer.getFoodStats().getFoodLevel() > 6 && (omni.getValue() ? MoveUtil.isMoving() : mc.thePlayer.moveForward > 0);
     }
 
     @Sub
