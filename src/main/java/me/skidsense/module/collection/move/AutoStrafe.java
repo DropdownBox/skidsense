@@ -6,16 +6,16 @@ import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.hooks.value.Value;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.RotationUtil;
-import net.minecraft.entity.*;
-import net.minecraft.util.*;
-import org.lwjgl.opengl.*;
-import net.minecraft.client.renderer.*;
-import org.lwjgl.util.glu.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.MovementInput;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.Cylinder;
 
 
 public class AutoStrafe extends Mod
@@ -27,7 +27,7 @@ public class AutoStrafe extends Mod
 	public static Option<Boolean> Auto = (Option<Boolean>)new Option("Auto", "Auto", (Object)true);
 
 	public AutoStrafe() {
-		super("Auto Strafe", new String[] { "AutoStrafe" }, ModuleType.Move);
+		super("Auto Strafe", new String[]{"Auto Strafe"}, ModuleType.Move);
 	}
 
 	public void onDisable() {
@@ -47,21 +47,26 @@ public class AutoStrafe extends Mod
 	}
 
 	public static void onStrafe(final EventMove eventMove) {
+		final double speed = getSpeedByXZ(eventMove.getX(), eventMove.getZ());
 		if (KillAura.target != null && mc.thePlayer.getDistanceSqToEntity(KillAura.target) <= MaxDistance.getValue()) {
-			if (!RotationUtil.canEntityBeSeen((Entity)KillAura.target)) {
+			if (!RotationUtil.canEntityBeSeen((Entity) KillAura.target)) {
 				return;
 			}
-			final double speed = getSpeedByXZ(eventMove.getX(), eventMove.getZ());
-			setMoveSpeed(speed * 0.9, KillAura.rotateNCP(KillAura.target)[0], Math.abs(AutoStrafe.mc.thePlayer.getDistanceToEntity((Entity)KillAura.target) - ((Double)AutoStrafe.MaxDistance.getValue()).floatValue()) <= 0.4, eventMove, ((Double)AutoStrafe.MaxDistance.getValue()).floatValue());
+			setMoveSpeed(speed * 0.9, KillAura.yaw, Math.abs(AutoStrafe.mc.thePlayer.getDistanceToEntity((Entity) KillAura.target) - ((Double) AutoStrafe.MaxDistance.getValue()).floatValue()) <= 0.4, eventMove, ((Double) AutoStrafe.MaxDistance.getValue()).floatValue());
+		} else {
+			setMotion(eventMove, speed);
 		}
 	}
 
+
 	public static void onStrafe(final EventMove eventMove, final double speed) {
-		if (KillAura.target != null && mc.thePlayer.getDistanceSqToEntity(KillAura.target) <= MaxDistance.getValue()) {
-			if (!RotationUtil.canEntityBeSeen((Entity)KillAura.target)) {
+		if (KillAura.target != null) {
+			if (!RotationUtil.canEntityBeSeen((Entity) KillAura.target) && mc.thePlayer.getDistanceSqToEntity(KillAura.target) <= MaxDistance.getValue()) {
 				return;
 			}
-			setMoveSpeed(speed * 0.9, KillAura.rotateNCP(KillAura.target)[0], Math.abs(AutoStrafe.mc.thePlayer.getDistanceToEntity((Entity)KillAura.target) - ((Double)AutoStrafe.MaxDistance.getValue()).floatValue()) <= 0.4, eventMove, ((Double)AutoStrafe.MaxDistance.getValue()).floatValue());
+			setMoveSpeed(speed * 0.9, KillAura.yaw, Math.abs(AutoStrafe.mc.thePlayer.getDistanceToEntity((Entity) KillAura.target) - ((Double) AutoStrafe.MaxDistance.getValue()).floatValue()) <= 0.4, eventMove, ((Double) AutoStrafe.MaxDistance.getValue()).floatValue());
+		} else {
+			setMotion(eventMove, speed);
 		}
 	}
 
@@ -79,14 +84,39 @@ public class AutoStrafe extends Mod
 			else if (AutoStrafe.mc.thePlayer.getDistanceToEntity((Entity)KillAura.target) < dist) {
 				forward = -speed;
 			}
-		}
-		else {
+		} else {
 			forward = ((forward > 0.0) ? 1 : ((forward < 0.0) ? -1 : 0));
 			forward *= speed;
 		}
 		strafe = ((strafe > 0.0) ? 1 : ((strafe < 0.0) ? -1 : 1));
 		EventMove.x = forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f));
 		EventMove.z = forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f));
+	}
+
+	private static void setMotion(EventMove em, double speed) {
+		double forward = MovementInput.moveForward;
+		double strafe = MovementInput.moveStrafe;
+		float yaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
+		if (forward == 0.0 && strafe == 0.0) {
+			em.setX(0.0);
+			em.setZ(0.0);
+		} else {
+			if (forward != 0.0) {
+				if (strafe > 0.0) {
+					yaw += (float) (forward > 0.0 ? -40 : 40);
+				} else if (strafe < 0.0) {
+					yaw += (float) (forward > 0.0 ? 40 : -40);
+				}
+				strafe = 0.0;
+				if (forward > 0.0) {
+					forward = 1.0;
+				} else if (forward < 0.0) {
+					forward = -1.0;
+				}
+			}
+			em.setX(forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f)));
+			em.setZ(forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f)));
+		}
 	}
 
 	@Sub
@@ -97,7 +127,7 @@ public class AutoStrafe extends Mod
 	}
 
 	private void drawESP(final EventRender3D render) {
-		if (!(boolean)AutoStrafe.Esp.getValue()) {
+		if (!(boolean) AutoStrafe.Esp.getValue()) {
 			return;
 		}
 		final double x = KillAura.target.lastTickPosX + (KillAura.target.posX - KillAura.target.lastTickPosX) * render.getPartialTicks() - AutoStrafe.mc.getRenderManager().viewerPosX;
@@ -136,3 +166,4 @@ public class AutoStrafe extends Mod
 		GL11.glPopMatrix();
 	}
 }
+

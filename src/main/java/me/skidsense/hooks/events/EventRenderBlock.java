@@ -5,14 +5,14 @@ import net.minecraft.block.Block;
 import net.minecraft.util.BlockPos;
 
 public class EventRenderBlock
-extends Event {
-    private int x;
-    private int y;
-    private int z;
+        extends Event {
+    public int x;
+    public int y;
+    public int z;
     private Block block;
     public BlockPos blockPos;
 
-    public EventRenderBlock(int x, int y, int z, Block block,BlockPos blockPos) {
+    public EventRenderBlock(int x, int y, int z, Block block, BlockPos blockPos) {
         this.x = x;
         this.y = y;
         this.z = z;

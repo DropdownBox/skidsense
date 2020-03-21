@@ -134,7 +134,7 @@ public class Speed
                 ++this.stage;
             }
 
-            double motY = 0.408811279995D;
+            double motY = 0.40896666;
             if (this.mc.thePlayer.isPotionActive(Potion.jump)) {
                 motY += (double) ((float) (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1)
                         * 0.1F);

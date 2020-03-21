@@ -50,7 +50,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.ToDoubleFunction;
 
@@ -73,14 +72,16 @@ public class KillAura extends Mod {
 	public boolean isBlocking;
 	TimerUtil timer = new TimerUtil();
 	int hit;
+	public static float yaw;
 	public float[] rotation;
 	private List<EntityLivingBase> loaded = new CopyOnWriteArrayList<EntityLivingBase>();
 	private List<EntityLivingBase> attacktargets = new CopyOnWriteArrayList<EntityLivingBase>();
 	public static EntityLivingBase target;
 	public static EntityLivingBase attacktarget;
-	public float[] lastRotations = new float[] { 0.0f, 0.0f };;
+	public float[] lastRotations = new float[]{0.0f, 0.0f};
+	;
 	public DecimalFormat format = new DecimalFormat("0.0");
-	public BlockPos AutoBlockPos = new BlockPos(-0.6,-0.6,-0.6);
+	public BlockPos AutoBlockPos = new BlockPos(-0.6, -0.6, -0.6);
 	public double animation = 0.0;
 	int attackSpeed;
 
@@ -214,6 +215,7 @@ public class KillAura extends Mod {
 			float[] array = rotateNCP(this.target);
 			eventMotion.yaw = array[0];
 			eventMotion.pitch = array[1];
+			KillAura.yaw = array[0];
 			mc.thePlayer.rotationYawHead = array[0];
 			mc.thePlayer.renderYawOffset = array[0];
 		}
