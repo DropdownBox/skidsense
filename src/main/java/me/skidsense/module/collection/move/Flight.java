@@ -24,10 +24,10 @@ import net.minecraft.util.MovementInput;
 
 public class Flight
         extends Mod {
-    public static int fastFlew;
-    public static double hypixel;
     public static Numbers<Double> zoomspeed = new Numbers<Double>("ZoomSpeed", "ZoomSpeed", 2.0, 0.1, 15.0, 0.1);
     public static Numbers<Double> timer = new Numbers<Double>("Timer", "Timer", 2.0, 1.0, 7.0, 0.1);
+    public static int fastFlew;
+    public static double hypixel;
     public static Numbers<Double> timerduration = new Numbers<Double>("TimerDuration", "TimerDuration", 400.0, 0.0, 1000.0, 50.0);
     public static Option<Boolean> damage = new Option<Boolean>("Damage", "Damage", true);
     private static Numbers<Double> speed = new Numbers<Double>("Speed", "Speed", 4.5, 1.0, 7.0, 0.1);
@@ -39,7 +39,7 @@ public class Flight
     int counter;
     int level;
     TimerUtil time;
-    private Mode<Enum> hypixelmode = new Mode<Enum>("Priority", "Priority", (Enum[]) flyhypmode.values(), (Enum) flyhypmode.Old);
+    private Mode<Enum> hypixelmode = new Mode<Enum>("Priority", "Priority", (Enum[]) flyhypmode.values(), (Enum) flyhypmode.Hypixel);
     private Mode<Enum> mode = new Mode<Enum>("Mode", "Mode", (Enum[]) flymode.values(), (Enum) flymode.Motion);
     private Option<Boolean> timerboost = new Option<Boolean>("TimerBoost", "TimerBoost", true);
     private Option<Boolean> boost = new Option<Boolean>("Boost", "Boost", true);
@@ -50,6 +50,16 @@ public class Flight
         super("Flight", new String[]{"Flight"}, ModuleType.Move);
         this.time = new TimerUtil();
 
+    }
+
+    @Override
+    public void onDisable() {
+        this.mc.timer.timerSpeed = 1.0f;
+        final EntityPlayerSP thePlayer = this.mc.thePlayer;
+        thePlayer.motionX *= 0.0;
+        final EntityPlayerSP thePlayer2 = this.mc.thePlayer;
+        thePlayer2.motionZ *= 0.0;
+        super.onDisable();
     }
 
     public static Block getBlockUnderPlayer(final EntityPlayerSP entityPlayerMP, final double n) {
@@ -66,9 +76,9 @@ public class Flight
 
     @Override
     public void onEnable() {
-        if (this.mode.getValue() == flymode.Old) {
+        if (this.mode.getValue() == flymode.Hypixel) {
             if (this.damage.getValue()) {
-                if (this.hypixelmode.getValue() == flyhypmode.Old) {
+                if (this.hypixelmode.getValue() == flyhypmode.Hypixel) {
                     int i = 0;
                     while (i <= 48) {
                         this.mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(this.mc.thePlayer.posX, this.mc.thePlayer.posY + 0.0514865, this.mc.thePlayer.posZ, false));
@@ -77,7 +87,7 @@ public class Flight
                         ++i;
                     }
                     this.mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C03PacketPlayer.C04PacketPlayerPosition(this.mc.thePlayer.posX, this.mc.thePlayer.posY, this.mc.thePlayer.posZ, true));
-                } else if (this.hypixelmode.getValue() == flyhypmode.Hypixel) {
+                } else if (this.hypixelmode.getValue() == flyhypmode.HypixelCN) {
                     this.damagePlayer(1);
                 } else if (this.hypixelmode.getValue() == flyhypmode.UHC) {
                     int j = 0;
@@ -110,14 +120,8 @@ public class Flight
         super.onEnable();
     }
 
-    @Override
-    public void onDisable() {
-        this.mc.timer.timerSpeed = 1.0f;
-        final EntityPlayerSP thePlayer = this.mc.thePlayer;
-        thePlayer.motionX *= 0.0;
-        final EntityPlayerSP thePlayer2 = this.mc.thePlayer;
-        thePlayer2.motionZ *= 0.0;
-        super.onDisable();
+    public boolean isOnGround(final double n) {
+        return !this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer, this.mc.thePlayer.getEntityBoundingBox().offset(0.0, -n, 0.0)).isEmpty();
     }
 
     @Sub
@@ -186,7 +190,7 @@ public class Flight
                 this.mc.thePlayer.motionY = 0.0;
             }
         }
-        if (this.mode.getValue() == flymode.Old) {
+        if (this.mode.getValue() == flymode.Hypixel) {
             ++Flight.fastFlew;
             final Block blockUnderPlayer = getBlockUnderPlayer(this.mc.thePlayer, 0.2);
             if (!this.isOnGround(1.0E-7) && !blockUnderPlayer.isFullBlock() && !(blockUnderPlayer instanceof BlockGlass)) {
@@ -234,8 +238,11 @@ public class Flight
 
     }
 
-    public boolean isOnGround(final double n) {
-        return !this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer, this.mc.thePlayer.getEntityBoundingBox().offset(0.0, -n, 0.0)).isEmpty();
+    public int getSpeedEffect() {
+        if (this.mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+            return this.mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier() + 1;
+        }
+        return 0;
     }
 
     public void damagePlayer(int damage) {
@@ -265,18 +272,11 @@ public class Flight
         mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
     }
 
-    public int getSpeedEffect() {
-        if (this.mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-            return this.mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier() + 1;
-        }
-        return 0;
-    }
-
     enum flymode {
-        Motion, Old;
+        Motion, Hypixel;
     }
 
     enum flyhypmode {
-        MW, UHC, Old, Hypixel
+        MW, UHC, Hypixel, HypixelCN
     }
 }
