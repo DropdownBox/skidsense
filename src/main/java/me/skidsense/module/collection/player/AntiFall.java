@@ -34,9 +34,6 @@ public class AntiFall extends Mod {
             saveMe = false;
             timer.reset();
         }
-        double prevX = mc.thePlayer.prevPosX;
-        double prevY = mc.thePlayer.prevPosY;
-        double prevZ = mc.thePlayer.prevPosZ;
         int dist = Distance.getValue().intValue();
         if (mc.thePlayer.fallDistance > dist && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
             if (!Onlyvoid.getValue() || !isBlockUnder()) {
@@ -44,10 +41,10 @@ public class AntiFall extends Mod {
                     saveMe = true;
                     timer.reset();
                 }
-                mc.thePlayer.fallDistance = 0;
                 switch (Mode.getValue().toString()) {
                     case "Hypixel":
-                        em.setX(em.getX() + mc.thePlayer.fallDistance);
+                        System.out.println("Do antifall");
+                        em.setY(em.getY() + dist);
                         mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(false));
                         break;
                     case "Motion":
