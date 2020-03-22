@@ -2,7 +2,7 @@ package me.skidsense.module.collection.player;
 
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -29,11 +29,14 @@ public class AntiFall extends Mod {
 
 
     @Sub
-    private void onUpdate(EventPreUpdate em) {
+    private void onUpdate(EventMove em) {
         if ((saveMe && timer.delay(50)) || mc.thePlayer.isCollidedVertically) {
             saveMe = false;
             timer.reset();
         }
+        double prevX = mc.thePlayer.prevPosX;
+        double prevY = mc.thePlayer.prevPosY;
+        double prevZ = mc.thePlayer.prevPosZ;
         int dist = Distance.getValue().intValue();
         if (mc.thePlayer.fallDistance > dist && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
             if (!Onlyvoid.getValue() || !isBlockUnder()) {
@@ -44,7 +47,8 @@ public class AntiFall extends Mod {
                 mc.thePlayer.fallDistance = 0;
                 switch (Mode.getValue().toString()) {
                     case "Hypixel":
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 12, mc.thePlayer.posZ, false));
+                        em.setX(em.getX() + mc.thePlayer.fallDistance);
+                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(false));
                         break;
                     case "Motion":
                         em.setY(mc.thePlayer.motionY = 0);
