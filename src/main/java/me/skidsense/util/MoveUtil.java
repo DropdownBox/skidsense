@@ -1,24 +1,16 @@
 package me.skidsense.util;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import me.skidsense.hooks.events.EventMove;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.BlockPressurePlate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovementInput;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class MoveUtil {
     private static Minecraft mc = Minecraft.getMinecraft();
@@ -285,7 +277,7 @@ public class MoveUtil {
 	}
 
     public static boolean isMoving() {
-        return Minecraft.getMinecraft().thePlayer.moveForward != 0.0f || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0f;
+        return mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0;
     }
 
 

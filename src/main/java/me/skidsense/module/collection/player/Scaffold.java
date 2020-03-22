@@ -1,11 +1,6 @@
 package me.skidsense.module.collection.player;
 
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-
 import me.skidsense.color.Colors;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPostUpdate;
@@ -16,11 +11,6 @@ import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MoveUtil;
-
-import net.minecraft.client.renderer.RenderGlobal;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSnow;
 import net.minecraft.client.Minecraft;
@@ -29,6 +19,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -36,11 +27,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 public class Scaffold
         extends Mod {
    ItemStack is;
@@ -108,6 +102,9 @@ public class Scaffold
       BlockPos underPos = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ);
       Block underBlock = mc.theWorld.getBlockState(underPos).getBlock();
       BlockPos blockBelow = new BlockPos(x, y, z);
+      if (this.mode.getValue() != Smode.CubeCraft) {
+         mc.thePlayer.setSprinting(true);
+      }
       if (Minecraft.getMinecraft().thePlayer != null) {
          this.blockData = this.getBlockData(blockBelow);
          if (this.blockData == null) {

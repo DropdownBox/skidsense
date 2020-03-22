@@ -117,7 +117,7 @@ extends Mod {
                         	}
             				
             				if(this.color.getValue()==colormode.Rainbow) {
-            	            	UnicodeFontRenderer afont = (UnicodeFontRenderer) Client.fontManager.roboto19;
+            	            	UnicodeFontRenderer afont = (UnicodeFontRenderer) Client.fontManager.comfortaa18;
                             	Gui.drawRect(x-m.getAnim()-5, y-1,x-m.getAnim()-4, y+9, customrainbow.getRGB());
                             	//Gui.drawRect(RenderUtil.width(), y-1,x-m.getAnim()-5, y, customrainbow.getRGB());
                             	Gui.drawRect(RenderUtil.width(), y-1,x-m.getAnim()-4, y+9, new Color(12, 12, 12).getRGB());

@@ -8,9 +8,9 @@ import me.skidsense.color.Colors;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.util.ClientUtil;
 import me.skidsense.util.MouseInputHandler;
-import me.skidsense.util.RenderUtil;
 import me.theresa.music.api.CloudMusicAPI;
 import me.theresa.music.api.NeteaseAPI;
+import me.theresa.music.util.SlowlyRenderUtil;
 import me.theresa.music.util.SongList;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -92,18 +92,18 @@ public class MusicWindow extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		// 整个窗口
-		RenderUtil.drawRoundedRect(x, y + 20, x + 510, y + 335, ClientUtil.reAlpha(Colors.WHITE.c, 0.85f), ClientUtil.reAlpha(Colors.WHITE.c, 0.85f));
-		RenderUtil.drawRoundedRect(x, y, x + 510, y + 20, ClientUtil.reAlpha(Colors.AQUA.c, 0.85f), ClientUtil.reAlpha(Colors.AQUA.c, 0.85f));
-		RenderUtil.drawRect(x, y + 19, x + 1, y + 20, ClientUtil.reAlpha(Colors.AQUA.c, 0.85f));
-		RenderUtil.drawRect(x + 509, y + 19, x + 510, y + 20, ClientUtil.reAlpha(Colors.AQUA.c, 0.85f));
+		SlowlyRenderUtil.drawRoundedRect(x, y + 20, x + 510, y + 335, ClientUtil.reAlpha(Colors.WHITE.c, 0.85f), ClientUtil.reAlpha(Colors.WHITE.c, 0.85f));
+		SlowlyRenderUtil.drawRoundedRect(x, y, x + 510, y + 20, ClientUtil.reAlpha(Colors.AQUA.c, 0.85f), ClientUtil.reAlpha(Colors.AQUA.c, 0.85f));
+		SlowlyRenderUtil.drawRect(x, y + 19, x + 1, y + 20, ClientUtil.reAlpha(Colors.AQUA.c, 0.85f));
+		SlowlyRenderUtil.drawRect(x + 509, y + 19, x + 510, y + 20, ClientUtil.reAlpha(Colors.AQUA.c, 0.85f));
 		
-		RenderUtil.drawRect(x, y + 20, x + 1, y + 21, ClientUtil.reAlpha(Colors.WHITE.c, 0.85f));
-		RenderUtil.drawRect(x + 509, y + 20, x + 510, y + 21, ClientUtil.reAlpha(Colors.WHITE.c, 0.85f));
+		SlowlyRenderUtil.drawRect(x, y + 20, x + 1, y + 21, ClientUtil.reAlpha(Colors.WHITE.c, 0.85f));
+		SlowlyRenderUtil.drawRect(x + 509, y + 20, x + 510, y + 21, ClientUtil.reAlpha(Colors.WHITE.c, 0.85f));
 
 		if(this.currentWindow == WindowCategory.MUSIC) {
-			RenderUtil.drawRect(x + 8, y, x + 44, y + 20, new Color(Colors.AQUA.c).darker().getRGB());
+			SlowlyRenderUtil.drawRect(x + 8, y, x + 44, y + 20, new Color(Colors.AQUA.c).darker().getRGB());
 		} else {
-			RenderUtil.drawRect(x + 47, y, x + 46 + Minecraft.getMinecraft().fontRendererObj.getStringWidth(mgr.nickname) + 4, y + 20, new Color(Colors.AQUA.c).darker().getRGB());
+			SlowlyRenderUtil.drawRect(x + 47, y, x + 46 + Minecraft.getMinecraft().fontRendererObj.getStringWidth(mgr.nickname) + 4, y + 20, new Color(Colors.AQUA.c).darker().getRGB());
 		}
 		
 		Minecraft.getMinecraft().fontRendererObj.drawString("我的歌单", (float) x + 10, y + 5, Colors.WHITE.c);
@@ -115,7 +115,7 @@ public class MusicWindow extends GuiScreen {
 			Minecraft.getMinecraft().fontRendererObj.drawString(mgr.nickname, (float) x + 48, y + 5, Colors.WHITE.c);
 		}
 
-		if (RenderUtil.isHovering(mouseX, mouseY, x + 48, y, x + 48 + Minecraft.getMinecraft().fontRendererObj.getStringWidth(mgr.nickname) + 4, y + 20)) {
+		if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 48, y, x + 48 + Minecraft.getMinecraft().fontRendererObj.getStringWidth(mgr.nickname) + 4, y + 20)) {
 			if (this.handler.canExcecute()) {
 				if (this.currentWindow != WindowCategory.USER) {
 					this.currentWindow = WindowCategory.USER;
@@ -123,7 +123,7 @@ public class MusicWindow extends GuiScreen {
 			}
 		}
 
-		if (RenderUtil.isHovering(mouseX, mouseY, x + 8, y, x + 44, y + 20)) {
+		if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 8, y, x + 44, y + 20)) {
 			if (this.handler.canExcecute()) {
 				if (this.currentWindow != WindowCategory.MUSIC) {
 					this.currentWindow = WindowCategory.MUSIC;
@@ -134,7 +134,7 @@ public class MusicWindow extends GuiScreen {
 		if (this.currentWindow == WindowCategory.USER) {
 			if (mgr.isLoggined) {
 				// 已登录
-				//RenderUtil.drawImage(mgr.user_avatar, x + 20, y + 25, 64, 64, 1);
+				//SlowlyRenderUtil.drawImage(mgr.user_avatar, x + 20, y + 25, 64, 64, 1);
 
 				Minecraft.getMinecraft().fontRendererObj.drawString("欢迎, " + mgr.nickname, x + 86f, y + 25, Colors.BLACK.c);
 				Minecraft.getMinecraft().fontRendererObj.drawString("所在城市区域代码: " + mgr.location_code, x + 86f, y + 35f,
@@ -149,7 +149,7 @@ public class MusicWindow extends GuiScreen {
 				this.searchField.yPosition = y + 86;
 				this.searchField.drawTextBox();
 				
-				RenderUtil.drawRect(x + 20, y + 90 + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, x + 234,
+				SlowlyRenderUtil.drawRect(x + 20, y + 90 + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, x + 234,
 						y + 91 + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, Colors.BLACK.c);
 				
 				if (MusicMgr.instance.searchResult.isEmpty()) {
@@ -157,13 +157,13 @@ public class MusicWindow extends GuiScreen {
 				} else {
 					this.processSearchScroll(mouseX, mouseY);
 					GL11.glEnable(GL11.GL_SCISSOR_TEST);
-					RenderUtil.doGlScissor(x + 20, y + 110, 214, 222);
-					wheelSearchSmoothTrack = RenderUtil.getAnimationState(wheelSearchSmoothTrack, wheelSearchStateTrack * 20f,
+					SlowlyRenderUtil.doGlScissor(x + 20, y + 110, 214, 222);
+					wheelSearchSmoothTrack = (float) SlowlyRenderUtil.getAnimationState(wheelSearchSmoothTrack, wheelSearchStateTrack * 20f,
 							(Math.max(10, (Math.abs(this.wheelSearchSmoothTrack - (wheelSearchStateTrack * 20))) * 50) * 0.3f));
 					float startY1 = y + wheelSearchSmoothTrack + 110;
 					for (TrackSlot s : mgr.searchResult) {
 						s.draw(mouseX, mouseY, x + 24, startY1);
-						if(RenderUtil.isHovering(mouseX, mouseY, x + 24 + 175, startY1, x + 24 + 210, startY1 + 24)) {
+						if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 24 + 175, startY1, x + 24 + 210, startY1 + 24)) {
 							if(this.handler.canExcecute()) {
 								if(MusicMgr.instance.lastPlayingTrack == null) {
 									MusicMgr.instance.lastPlayingTrack = mgr.searchResult;
@@ -179,11 +179,11 @@ public class MusicWindow extends GuiScreen {
 				
 				// 日推
 				Minecraft.getMinecraft().fontRendererObj.drawString("Daily", x + 260f, y + 92, Colors.BLACK.c);
-				RenderUtil.drawRect(x + 260, y + 90 + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, x + 490,
+				SlowlyRenderUtil.drawRect(x + 260, y + 90 + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, x + 490,
 						y + 91 + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, Colors.BLACK.c);
-				RenderUtil.drawRoundedRect(x + 490 - 40, y + 92, x + 490, y + 105, Colors.AQUA.c, Colors.AQUA.c);
+				SlowlyRenderUtil.drawRoundedRect(x + 490 - 40, y + 92, x + 490, y + 105, Colors.AQUA.c, Colors.AQUA.c);
 				Minecraft.getMinecraft().fontRendererObj.drawString("Refresh", x + 490f - 35f, y + 94.5f, Colors.WHITE.c);
-				if(RenderUtil.isHovering(mouseX, mouseY, x + 490 - 40, y + 92, x + 490, y + 105)) {
+				if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 490 - 40, y + 92, x + 490, y + 105)) {
 					if(handler.canExcecute()) {
 						try {
 							if(!mgr.dailyList.isEmpty()) {
@@ -199,12 +199,12 @@ public class MusicWindow extends GuiScreen {
 				if(!mgr.dailyList.isEmpty()) {
 					this.processDailyScroll(mouseX, mouseY);
 					GL11.glEnable(GL11.GL_SCISSOR_TEST);
-					RenderUtil.doGlScissor(x + 260, y + 110, 230, 222);
-					wheelDailySmoothTrack = RenderUtil.getAnimationState(wheelDailySmoothTrack, wheelDailyStateTrack * 20f, (Math.max(10, (Math.abs(this.wheelDailySmoothTrack - (wheelDailyStateTrack * 20))) * 50) * 0.3f));
+					SlowlyRenderUtil.doGlScissor(x + 260, y + 110, 230, 222);
+					wheelDailySmoothTrack = (float) SlowlyRenderUtil.getAnimationState(wheelDailySmoothTrack, wheelDailyStateTrack * 20f, (Math.max(10, (Math.abs(this.wheelDailySmoothTrack - (wheelDailyStateTrack * 20))) * 50) * 0.3f));
 					float c = y + wheelDailySmoothTrack + 110;
 					for (TrackSlot s : mgr.dailyList) {
 						s.draw(mouseX, mouseY, x + 264f, c);
-						if(RenderUtil.isHovering(mouseX, mouseY, x + 264f + 186, c, x + 264f + 226, c + 24)) {
+						if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 264f + 186, c, x + 264f + 226, c + 24)) {
 							if(this.handler.canExcecute()) {
 								if(MusicMgr.instance.lastPlayingTrack == null) {
 									MusicMgr.instance.lastPlayingTrack = mgr.dailyList;
@@ -241,11 +241,11 @@ public class MusicWindow extends GuiScreen {
 				int col = this.phoneNum.getText().isEmpty() ? Colors.GREY.c
 						: this.passwd.getText().isEmpty() ? Colors.GREY.c : Colors.AQUA.c;
 
-				RenderUtil.drawRoundedRect((x + (510f / 2) - 62), y + 185, (x + (510f / 2) + 54), y + 215, col, col);
+				SlowlyRenderUtil.drawRoundedRect((x + (510f / 2) - 62), y + 185, (x + (510f / 2) + 54), y + 215, col, col);
 				Minecraft.getMinecraft().fontRendererObj.drawString("Login", (x + (510f / 2) - 16), y + 195, Colors.WHITE.c);
 
 				if (!this.phoneNum.getText().isEmpty() && !this.passwd.getText().isEmpty()) {
-					if (RenderUtil.isHovering(mouseX, mouseY, (x + (510f / 2) - 62), y + 185, (x + (510f / 2) + 54), y + 215)) {
+					if (SlowlyRenderUtil.isHovering(mouseX, mouseY, (x + (510f / 2) - 62), y + 185, (x + (510f / 2) + 54), y + 215)) {
 						if (this.handler.canExcecute()) {
 							try {
 								this.processJson(NeteaseAPI.INSTANCE.loginWithPhoneNum(phoneNum.getText(), passwd.getText()));
@@ -261,18 +261,18 @@ public class MusicWindow extends GuiScreen {
 		if (this.currentWindow == WindowCategory.MUSIC) {
 
 			// 状态栏
-			RenderUtil.drawRect(x, y + 310, x + 510, y + 311, Colors.GREY.c);
-			RenderUtil.drawRect(x + 120, y + 20, x + 121, y + 310, Colors.GREY.c);
-			RenderUtil.drawRect(x + 0, y + 33, x + 121, y + 34, Colors.GREY.c);
-			RenderUtil.drawRect(x + 0, y + 275, x + 121, y + 276, Colors.GREY.c);
+			SlowlyRenderUtil.drawRect(x, y + 310, x + 510, y + 311, Colors.GREY.c);
+			SlowlyRenderUtil.drawRect(x + 120, y + 20, x + 121, y + 310, Colors.GREY.c);
+			SlowlyRenderUtil.drawRect(x + 0, y + 33, x + 121, y + 34, Colors.GREY.c);
+			SlowlyRenderUtil.drawRect(x + 0, y + 275, x + 121, y + 276, Colors.GREY.c);
 
 			Minecraft.getMinecraft().fontRendererObj.drawString("保存的歌单 (" + this.slots.size() + ")", x + 2f, y + 21,
 					Colors.GREY.c);
 
-			RenderUtil.drawRoundedRect(x + 122 - 26, y + 22, x + 118, y + 32f, Colors.AQUA.c, Colors.AQUA.c);
+			SlowlyRenderUtil.drawRoundedRect(x + 122 - 26, y + 22, x + 118, y + 32f, Colors.AQUA.c, Colors.AQUA.c);
 			Minecraft.getMinecraft().fontRendererObj.drawString("刷新", x + 122f - 23f, y + 21, Colors.WHITE.c);
 
-			if (RenderUtil.isHovering(mouseX, mouseY, x + 122 - 26, y + 22, x + 118, y + 32f)) {
+			if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 122 - 26, y + 22, x + 118, y + 32f)) {
 				if (this.handler.canExcecute()) {
 					if(mgr.isLoggined) {
 						MusicMgr.instance.currentSongList = null;
@@ -312,7 +312,7 @@ public class MusicWindow extends GuiScreen {
 				
 				GL11.glPushMatrix();
 				GL11.glEnable(GL11.GL_SCISSOR_TEST);
-				RenderUtil.doGlScissor(x, y + 275, 121, 32);
+				SlowlyRenderUtil.doGlScissor(x, y + 275, 121, 32);
 				Minecraft.getMinecraft().fontRendererObj.drawString(mgr.currentTrack.getName(), x + 34f, y + 282, Colors.BLACK.c);
 				Minecraft.getMinecraft().fontRendererObj.drawString(mgr.currentTrack.getArtists(), x + 34f, y + 295, Colors.GREY.c);
 				GL11.glDisable(GL11.GL_SCISSOR_TEST);
@@ -322,20 +322,20 @@ public class MusicWindow extends GuiScreen {
 			
 			if (!this.slots.isEmpty()) {
 				this.processSongListScroll(mouseX, mouseY);
-				wheelSongListSmoothTrack = RenderUtil.getAnimationState(wheelSongListSmoothTrack, wheelSongListStateTrack * 20f,
+				wheelSongListSmoothTrack = (float) SlowlyRenderUtil.getAnimationState(wheelSongListSmoothTrack, wheelSongListStateTrack * 20f,
 						(Math.max(10, (Math.abs(this.wheelSongListSmoothTrack - (wheelSongListStateTrack * 20))) * 50) * 0.3f));
 				
 				float startY = y + wheelSongListSmoothTrack + 42;
 
 				GL11.glEnable(GL11.GL_SCISSOR_TEST);
-				RenderUtil.doGlScissor(x, y + 34, 120, 241);
+				SlowlyRenderUtil.doGlScissor(x, y + 34, 120, 241);
 				for (SongListSlot s : slots) {
 					s.draw(mouseX, mouseY, x, startY);
 
-					if (RenderUtil.isHovering(mouseX, mouseY, x, startY - 4, x + 120, startY + 16)) {
+					if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x, startY - 4, x + 120, startY + 16)) {
 						if(this.handler.canExcecute()) {
 							
-							if(RenderUtil.isHovering(mouseX, mouseY, x, y + 34, x + 120, y + 275)) {
+							if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x, y + 34, x + 120, y + 275)) {
 								s.onCrink();
 							}
 							
@@ -352,14 +352,14 @@ public class MusicWindow extends GuiScreen {
 
 				SongList lists = MusicMgr.instance.currentSongList;
 
-				wheelSmoothTrack = RenderUtil.getAnimationState(wheelSmoothTrack, wheelStateTrack * 20f,
+				wheelSmoothTrack = (float) SlowlyRenderUtil.getAnimationState(wheelSmoothTrack, wheelStateTrack * 20f,
 						(Math.max(10, (Math.abs(this.wheelSmoothTrack - (wheelStateTrack * 20))) * 50) * 0.3f));
 				
 				float startY1 = y + wheelSmoothTrack + 22;
 				
 				GL11.glPushMatrix();
 				GL11.glEnable(GL11.GL_SCISSOR_TEST);
-				RenderUtil.doGlScissor(x + 121, y + 22, 387, 286);
+				SlowlyRenderUtil.doGlScissor(x + 121, y + 22, 387, 286);
 				if(!lists.songs.isEmpty()) {
 					this.processScroll(mouseX, mouseY);
 					for (TrackSlot s : lists.songs) {
@@ -368,8 +368,8 @@ public class MusicWindow extends GuiScreen {
 
 							s.draw(mouseX, mouseY, x + 126, startY1);
 							
-							if (RenderUtil.isHovering(mouseX, mouseY, x + 126 + 350, startY1, x + 126 + 382, startY1 + 24) && this.handler.canExcecute()) {
-								if(RenderUtil.isHovering(mouseX, mouseY, x + 122, y + 22, x + 121 + 387, y + 22 + 286)) {
+							if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 126 + 350, startY1, x + 126 + 382, startY1 + 24) && this.handler.canExcecute()) {
+								if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 122, y + 22, x + 121 + 387, y + 22 + 286)) {
 									s.onCrink();
 
 									if (MusicMgr.instance.lastPlayingTrack == null
@@ -385,8 +385,8 @@ public class MusicWindow extends GuiScreen {
 					}
 				} else {
 					Minecraft.getMinecraft().fontRendererObj.drawString("为防止请求太过频繁,请手动获取歌单内的歌曲", x + 232f, y + 120, Colors.BLACK.c);
-					if(RenderUtil.isHovering(mouseX, mouseY, x + 232f, y + 132, x + 232 + Minecraft.getMinecraft().fontRendererObj.getStringWidth("为防止请求太过频繁,请手动获取歌单内的歌曲"), y + 152)) {
-						RenderUtil.drawRoundedRect(x + 232f, y + 132, x + 232 + Minecraft.getMinecraft().fontRendererObj.getStringWidth("为防止请求太过频繁,请手动获取歌单内的歌曲"), y + 152, new Color(Colors.AQUA.c).darker().getRGB(), new Color(Colors.AQUA.c).darker().getRGB());
+					if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 232f, y + 132, x + 232 + Minecraft.getMinecraft().fontRendererObj.getStringWidth("为防止请求太过频繁,请手动获取歌单内的歌曲"), y + 152)) {
+						SlowlyRenderUtil.drawRoundedRect(x + 232f, y + 132, x + 232 + Minecraft.getMinecraft().fontRendererObj.getStringWidth("为防止请求太过频繁,请手动获取歌单内的歌曲"), y + 152, new Color(Colors.AQUA.c).darker().getRGB(), new Color(Colors.AQUA.c).darker().getRGB());
 						if(this.handler.canExcecute()) {
 							try {
 								for(int i = 0; i < mgr.allSongLists.size(); ++i) {
@@ -403,7 +403,7 @@ public class MusicWindow extends GuiScreen {
 							}
 						}
 					} else {
-						RenderUtil.drawRoundedRect(x + 232f, y + 132, x + 232 + Minecraft.getMinecraft().fontRendererObj.getStringWidth("为防止请求太过频繁,请手动获取歌单内的歌曲"), y + 152, Colors.AQUA.c, Colors.AQUA.c);
+						SlowlyRenderUtil.drawRoundedRect(x + 232f, y + 132, x + 232 + Minecraft.getMinecraft().fontRendererObj.getStringWidth("为防止请求太过频繁,请手动获取歌单内的歌曲"), y + 152, Colors.AQUA.c, Colors.AQUA.c);
 					}
 					Minecraft.getMinecraft().fontRendererObj.drawString("获取", x + 305f, y + 136, Colors.WHITE.c);
 				}
@@ -413,8 +413,8 @@ public class MusicWindow extends GuiScreen {
 			}
 			
 			// 暂停/播放 按钮
-			if(RenderUtil.isHovering(mouseX, mouseY, x + 4, y + 312, x + 26, y + 334)) {
-				RenderUtil.circle(x + 15, y + 323, 10, new Color(Colors.AQUA.c).darker().getRGB());
+			if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 4, y + 312, x + 26, y + 334)) {
+				SlowlyRenderUtil.circle(x + 15, y + 323, 10, new Color(Colors.AQUA.c).darker().getRGB());
 				
 				if(this.handler.canExcecute() && mgr.mediaPlayer != null) {
 					if(mgr.mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
@@ -424,7 +424,7 @@ public class MusicWindow extends GuiScreen {
 					}
 				}
 			} else {
-				RenderUtil.circle(x + 15, y + 323, 10, Colors.AQUA.c);
+				SlowlyRenderUtil.circle(x + 15, y + 323, 10, Colors.AQUA.c);
 			}
 			if(mgr.mediaPlayer != null) {
 				Minecraft.getMinecraft().fontRendererObj.drawString(mgr.mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING ? "| |" : "|>", x + 12f, y + 317, Colors.WHITE.c);
@@ -433,13 +433,13 @@ public class MusicWindow extends GuiScreen {
 			}
 			
 			// 下一首 按钮
-			if(RenderUtil.isHovering(mouseX, mouseY, x + 31, y + 314, x + 49, y + 332)) {
-				RenderUtil.circle(x + 40, y + 323, 8, new Color(Colors.AQUA.c).darker().getRGB());
+			if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 31, y + 314, x + 49, y + 332)) {
+				SlowlyRenderUtil.circle(x + 40, y + 323, 8, new Color(Colors.AQUA.c).darker().getRGB());
 				if(this.handler.canExcecute() && mgr.currentTrack != null && mgr.mediaPlayer != null) {
 					mgr.next();
 				}
 			} else {
-				RenderUtil.circle(x + 40, y + 323, 8, Colors.AQUA.c);
+				SlowlyRenderUtil.circle(x + 40, y + 323, 8, Colors.AQUA.c);
 			}
 			Minecraft.getMinecraft().fontRendererObj.drawString(">", x + 38f, y + 317, Colors.WHITE.c);
 			
@@ -453,19 +453,19 @@ public class MusicWindow extends GuiScreen {
 				Minecraft.getMinecraft().fontRendererObj.drawString(mgr.formatSeconds((int)progress2), x + 420f - Minecraft.getMinecraft().fontRendererObj.getStringWidth(mgr.formatSeconds((int)progress2)), y + 314f, Colors.BLACK.c);
 			}
 			
-			RenderUtil.drawRoundedRect(x + 60f, y + 322, x + 420, y + 326, Colors.GREY.c, Colors.GREY.c);
+			SlowlyRenderUtil.drawRoundedRect(x + 60f, y + 322, x + 420, y + 326, Colors.GREY.c, Colors.GREY.c);
 			
 			if(mgr.mediaPlayer != null) {
 				int fuck = (int) ((progress / progress2) * 1000);
 				if(fuck < 10) {
 					fuck = 10;
 				}
-				RenderUtil.drawRoundedRect(x + 60f, y + 322, x + 60 + (0.36f * fuck), y + 326, Colors.AQUA.c, Colors.AQUA.c);
+				SlowlyRenderUtil.drawRoundedRect(x + 60f, y + 322, x + 60 + (0.36f * fuck), y + 326, Colors.AQUA.c, Colors.AQUA.c);
 			}
 			
 			//歌词显示
 			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow("词", x + 440f, y + 318, mgr.displayLyric == false ? Colors.GREY.c : Colors.AQUA.c);
-			if(RenderUtil.isHovering(mouseX, mouseY, x + 440f, y + 320, x + 448f, y + 328)) {
+			if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 440f, y + 320, x + 448f, y + 328)) {
 				 if(this.handler.canExcecute()) {
 					 mgr.displayLyric = !mgr.displayLyric;
 				 }
@@ -473,7 +473,7 @@ public class MusicWindow extends GuiScreen {
 			
 			//歌词编码
 			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(mgr.isUtf ? "U" : "G", x + 460f, y + 318, Colors.GREY.c);
-			if(RenderUtil.isHovering(mouseX, mouseY, x + 460f, y + 320, x + 468f, y + 328)) {
+			if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 460f, y + 320, x + 468f, y + 328)) {
 				if(this.handler.canExcecute()) {
 					mgr.isUtf = !mgr.isUtf;
 					Notifications.getManager().post("重新播放歌曲使其生效");
@@ -481,7 +481,7 @@ public class MusicWindow extends GuiScreen {
 			}
 			//单曲循环
 			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow("R", x + 480f, y + 318, mgr.loop ? Colors.AQUA.c : Colors.GREY.c);
-			if(RenderUtil.isHovering(mouseX, mouseY, x + 480f, y + 320, x + 488f, y + 328)) {
+			if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 480f, y + 320, x + 488f, y + 328)) {
 				if(this.handler2.canExcecute()) {
 					mgr.loop = !mgr.loop;
 					if(mgr.mediaPlayer != null) {
@@ -534,7 +534,7 @@ public class MusicWindow extends GuiScreen {
 	}
 
 	public void processScroll(int mouseX, int mouseY) {
-		if (RenderUtil.isHovering(mouseX, mouseY, x + 121, y + 20, x + 121 + 389, y + 310)) {
+		if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 121, y + 20, x + 121 + 389, y + 310)) {
 			if (mouseWheel > 0) {
 				if (wheelStateTrack < 0)
 					wheelStateTrack++;
@@ -546,7 +546,7 @@ public class MusicWindow extends GuiScreen {
 	}
 
 	public void processSearchScroll(int mouseX, int mouseY) {
-		if (RenderUtil.isHovering(mouseX, mouseY, x + 20, y + 110, x + 20 + 160, y + 110 + 222)) {
+		if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 20, y + 110, x + 20 + 160, y + 110 + 222)) {
 			if (mouseWheel > 0) {
 				if (wheelSearchStateTrack < 0)
 					wheelSearchStateTrack++;
@@ -558,7 +558,7 @@ public class MusicWindow extends GuiScreen {
 	}
 	
 	public void processDailyScroll(int mouseX, int mouseY) {
-		if (RenderUtil.isHovering(mouseX, mouseY, x + 260f, y + 110, x + 490, y + 332)) {
+		if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 260f, y + 110, x + 490, y + 332)) {
 			if (mouseWheel > 0) {
 				if (wheelDailyStateTrack < 0)
 					wheelDailyStateTrack++;
@@ -570,7 +570,7 @@ public class MusicWindow extends GuiScreen {
 	}
 	
 	public void processSongListScroll(int mouseX, int mouseY) {
-		if (RenderUtil.isHovering(mouseX, mouseY, x, y + 34, x + 120, y + 275)) {
+		if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x, y + 34, x + 120, y + 275)) {
 			if (mouseWheel > 0) {
 				if (wheelSongListStateTrack < 0)
 					wheelSongListStateTrack++;
@@ -654,11 +654,11 @@ public class MusicWindow extends GuiScreen {
 
 	public void moveWindow(int mouseX, int mouseY) {
 		
-		if(RenderUtil.isHovering(mouseX, mouseY, x + 8, y, x + 44, y + 20) || RenderUtil.isHovering(mouseX, mouseY, x + 47, y, x + 46 + Minecraft.getMinecraft().fontRendererObj.getStringWidth(mgr.nickname) + 4, y + 20)) {
+		if(SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 8, y, x + 44, y + 20) || SlowlyRenderUtil.isHovering(mouseX, mouseY, x + 47, y, x + 46 + Minecraft.getMinecraft().fontRendererObj.getStringWidth(mgr.nickname) + 4, y + 20)) {
 			return;
 		}
 
-		if (RenderUtil.isHovering(mouseX, mouseY, x, y, x + 510, y + 20) && this.handler.canExcecute()) {
+		if (SlowlyRenderUtil.isHovering(mouseX, mouseY, x, y, x + 510, y + 20) && this.handler.canExcecute()) {
 
 			this.drag = true;
 			this.x2 = (int) (mouseX - this.x);

@@ -1103,6 +1103,54 @@ public class RenderUtil {
         return animation;
     }
 
+    public static void shutdown3DLightlessModel() {
+        GL11.glDisable(3042);
+        GL11.glEnable(2896);
+        GL11.glEnable(3553);
+        GL11.glDisable(2848);
+        GL11.glDisable(3042);
+        GL11.glEnable(2929);
+        GL11.glDepthMask(true);
+    }
+    public static void drawBorderedRect(float x, float y, float x1, float y1, int insideC, int borderC)
+    {
+        enableGL2D();
+        x *= 2.0F;
+        x1 *= 2.0F;
+        y *= 2.0F;
+        y1 *= 2.0F;
+        GL11.glScalef(0.5F, 0.5F, 0.5F);
+        drawVLine(x, y, y1, borderC);
+        drawVLine(x1 - 1.0F, y, y1, borderC);
+        drawHLine(x, x1 - 1.0F, y, borderC);
+        drawHLine(x, x1 - 2.0F, y1 - 1.0F, borderC);
+        drawRect(x + 1.0F, y + 1.0F, x1 - 1.0F, y1 - 1.0F, insideC);
+        GL11.glScalef(2.0F, 2.0F, 2.0F);
+        disableGL2D();
+    }
+
+    public static void drawVLine(float x, float y, float x1, int y1)
+    {
+        if (x1 < y)
+        {
+            float var5 = y;
+            y = x1;
+            x1 = var5;
+        }
+        drawRect(x, y + 1.0F, x + 1.0F, x1, y1);
+    }
+
+    public static void setup3DLightlessModel() {
+        GL11.glEnable(3042);
+        GL11.glEnable(3042);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848);
+        GL11.glDisable(2896);
+        GL11.glDisable(3553);
+        GL11.glDisable(2929);
+        GL11.glDepthMask(false);
+    }
+
     public static class R3DUtils {
         public static void startDrawing() {
             GL11.glEnable(3042);

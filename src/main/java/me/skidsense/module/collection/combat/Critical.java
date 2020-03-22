@@ -6,7 +6,6 @@ import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
@@ -14,14 +13,11 @@ import me.skidsense.module.collection.move.Speed;
 import me.skidsense.module.collection.player.Scaffold;
 import me.skidsense.util.MoveUtil;
 import me.skidsense.util.TimerUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
 
 import java.awt.*;
-import java.util.Random;
 
 
 public class Critical extends Mod {
@@ -32,7 +28,6 @@ public class Critical extends Mod {
     private static TimerUtil timer = new TimerUtil();
 
 
-
     public Critical() {
         super("Critical", new String[]{"criticals"}, ModuleType.Fight);
         this.setColor(new Color(208, 30, 142).getRGB());
@@ -40,21 +35,26 @@ public class Critical extends Mod {
     }
 
     @Sub
-    public void onAttack(EventAttack ent){
-        if(canCrit())
+    public void onAttack(EventAttack ent) {
+        if (canCrit()) {
             doCrit(ent.targetEntity);
+        }
+    }
+
+    @Sub
+    public void others() {
+        setSuffix(mode.getValue());
     }
 
     @Override
     public void onEnable() {
-        setSuffix(mode.getValue());
     }
 
     public static boolean canCrit() {
-            return !mc.thePlayer.isOnLadder()
-                    && !mc.thePlayer.isInWater()
-                    && !mc.thePlayer.isPotionActive(Potion.blindness)
-                    && mc.thePlayer.ridingEntity == null
+        return !mc.thePlayer.isOnLadder()
+                && !mc.thePlayer.isInWater()
+                && !mc.thePlayer.isPotionActive(Potion.blindness)
+                && mc.thePlayer.ridingEntity == null
                     && MoveUtil.isOnGround(0.001)
                     && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
                     && !Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()
@@ -65,14 +65,15 @@ public class Critical extends Mod {
     public void doCrit(Entity e) {
         if(e.hurtResistantTime<=ht.getValue()&&e.hurtResistantTime>0) {
             switch (this.mode.getValue().toString()) {
-                case "Old":
-                    Random randomValue = new Random(System.currentTimeMillis() + System.nanoTime());
-                    double[] oldoffsets = new double[]{0.041, 0.002};
-                    for (int i = 0; i < oldoffsets.length; ++i) {
-                        EntityPlayerSP p = Minecraft.getMinecraft().thePlayer;
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + oldoffsets[i] + randomValue.nextDouble(), mc.thePlayer.posZ,
-                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                case "Packet2":
+                    final double[] arrayp = {0.06200999766588211, 0.0010100000072270632, 0.06200999766588211, 0.050999999046325684};
+                    for (int length = arrayp.length, i = 0; i < length; ++i) {
+                        if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
+                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                    mc.thePlayer.posY + arrayp[i], mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                        } else {
+                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + arrayp[i], mc.thePlayer.posZ, false));
+                        }
                     }
                     break;
                 case "Hypixel":
@@ -80,62 +81,63 @@ public class Critical extends Mod {
                     int l = hypixeloffsets.length;
                     for (int i = 0; i < l; ++i) {
                         double offset = hypixeloffsets[i];
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + offset, mc.thePlayer.posZ,
-                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                        if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
+                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                    mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                        } else {
+                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+                        }
                     }
                     break;
                 case "HVH":
+
                     double[] offsets = new double[]{0.41888898688697815, 0.33320000767707825, 0.00120000005699695};
                     int HVHl = offsets.length;
                     for (int i = 0; i < HVHl; ++i) {
                         double offset = offsets[i];
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                        if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
+                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                    mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                        } else {
+                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
+                        }
                     }
                     break;
-                case "Experimental":
+                case "Packet":
                     int a1 = 1;
                     while (a1 <= 4) {
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(true));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
                         ++a1;
                     }
-                    final double[] array = {0.0312622959183674, 0.0, 0.0312622959183674, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+                    final double[] array = {0.033600000987064504, 0.000650000001769514, 0.032300000774313276, 0.000650000001769514, 0.0, 0.0, 0.0, 0.0, 0.0};
                     final int length = array.length;
                     int v0 = 0;
                     while (v0 < length) {
                         final double v2 = array[v0];
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + v2, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                        if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
+                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                    mc.thePlayer.posY + v2, mc.thePlayer.posZ,
+                                    KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                        } else {
+                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + v2, mc.thePlayer.posZ, false));
+                        }
                         ++v0;
                     }
                     break;
-                case "HypixelHalf":
-                    double[] hypixel2 = new double[]{0.0625, 0.00110000000000099};
-                    int hypixel2i = hypixel2.length;
-                    for (int i = 0; i < hypixel2i; ++i) {
-                        double offset = hypixel2[i];
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + offset, mc.thePlayer.posZ,
-                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
-                    }
-                    break;
-
             }
-            if (!this.nodeelay.getValue()) {
+            if (this.mode.getValue().equals(CritMode.Packet)) {
+            } else if (!this.nodeelay.getValue()) {
                 this.timer.reset();
             }
-
-            Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
+            //Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
         }
     }
 
     enum CritMode {
         Packet,
         Hypixel,
-        HypixelHalf,
         HVH,
-        Old;
+        Packet2;
     }
 }
 

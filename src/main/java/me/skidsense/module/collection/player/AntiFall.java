@@ -1,45 +1,77 @@
 package me.skidsense.module.collection.player;
 
-import java.awt.Color;
-
+import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.hooks.events.EventMove;
+import me.skidsense.hooks.value.Mode;
+import me.skidsense.hooks.value.Numbers;
+import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
-import net.minecraft.block.BlockAir;
+import me.skidsense.module.collection.move.Flight;
+import me.skidsense.util.TimerUtil;
 import net.minecraft.network.play.client.C03PacketPlayer;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.AxisAlignedBB;
+
+import java.awt.*;
 
 public class AntiFall extends Mod {
+    public Mode<Enum> Mode = new Mode<Enum>("Mode", "Mode", CatchMode.values(), CatchMode.Motion);
+    public Numbers<Double> Distance = new Numbers<Double>("Distance", "Distance", 6.0, 1.0, 20.0, 0.5);
+    public Option<Boolean> Onlyvoid = new Option<Boolean>("OnlyVoid", "OnlyVoid", true);
+    TimerUtil timer = new TimerUtil();
+    private boolean saveMe;
 
     public AntiFall() {
-        super("Anti Void", new String[] { "novoid", "antifall" }, ModuleType.World);
-        setColor(new Color(223,233,233).getRGB());
+        super("Anti Void", new String[]{"novoid", "antifall"}, ModuleType.World);
+        setColor(new Color(223, 233, 233).getRGB());
     }
 
+
     @Sub
-    private void onUpdate(EventPreUpdate e) {
-        //variable to hold if a block is underneath us
-        boolean blockUnderneath = false;
-        //for the players posy
-        for (int i = 0; i < mc.thePlayer.posY + 2; i++) {
-            BlockPos pos = new BlockPos(mc.thePlayer.posX, i, mc.thePlayer.posZ);
-            //if block underneath is air stop the code
-            if (mc.theWorld.getBlockState(pos).getBlock() instanceof BlockAir)
-                continue;
-            //else set the boolean to true
-            blockUnderneath = true;
+    private void onUpdate(EventMove em) {
+        if ((saveMe && timer.delay(50)) || mc.thePlayer.isCollidedVertically) {
+            saveMe = false;
+            timer.reset();
         }
-        //if blockunderneath return
-        if (blockUnderneath)
-            return;
-        //if the fall distance is over 2
-        if (mc.thePlayer.fallDistance < 2)
-            return;
-        //and if the player isnt onground or vertically colided put the player up
-        if (!mc.thePlayer.onGround && !mc.thePlayer.isCollidedVertically) {
-            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
-                    mc.thePlayer.posY + 12, mc.thePlayer.posZ, false));
+        double prevX = mc.thePlayer.prevPosX;
+        double prevY = mc.thePlayer.prevPosY;
+        double prevZ = mc.thePlayer.prevPosZ;
+        int dist = Distance.getValue().intValue();
+        if (mc.thePlayer.fallDistance > dist && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
+            if (!Onlyvoid.getValue() || !isBlockUnder()) {
+                if (!saveMe) {
+                    saveMe = true;
+                    timer.reset();
+                }
+                mc.thePlayer.fallDistance = 0;
+                switch (Mode.getValue().toString()) {
+                    case "Hypixel":
+                        em.setX(em.getX() + mc.thePlayer.fallDistance);
+                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(false));
+                        break;
+                    case "Motion":
+                        em.setY(mc.thePlayer.motionY = 0);
+                        break;
+                }
+            }
         }
     }
+
+    private boolean isBlockUnder() {
+        if (mc.thePlayer.posY < 0)
+            return false;
+        for (int off = 0; off < (int) mc.thePlayer.posY + 2; off += 2) {
+            AxisAlignedBB offset = mc.thePlayer.boundingBox.offset(0, -off, 0);
+            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, offset).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    enum CatchMode {
+        Motion, Hypixel
+    }
 }
+
