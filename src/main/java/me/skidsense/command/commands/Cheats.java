@@ -12,11 +12,11 @@ import net.minecraft.util.EnumChatFormatting;
 public class Cheats
 extends Command {
     public Cheats() {
-        super("Cheats", new String[]{"mods"}, "", "sketit");
+        super("Cheats","mods");
     }
 
     @Override
-    public String execute(String[] args) {
+    public String execute(String alias, String[] args) {
         if (args.length == 0) {
             Client.instance.getModuleManager();
             StringBuilder list = new StringBuilder(String.valueOf(ModManager.getMods().size()) + " Cheats - ");

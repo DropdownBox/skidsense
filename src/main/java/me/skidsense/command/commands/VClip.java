@@ -13,17 +13,19 @@ extends Command {
     private TimerUtil timer = new TimerUtil();
 
     public VClip() {
-        super("Vc", new String[]{"Vclip", "clip", "verticalclip", "clip"}, "", "Teleport down a specific ammount");
+        super("vclip","clip","vc");
+
     }
 
     @Override
-    public String execute(String[] args) {
+    public String execute(String alias,String[] args) {
             if (args.length > 0) {
                 if (MathUtil.parsable(args[0], (byte)4)) {
                     float distance = Float.parseFloat(args[0]);
                     Client.mc.thePlayer.setPosition(Client.mc.thePlayer.posX, Client.mc.thePlayer.posY + (double)distance, Client.mc.thePlayer.posZ);
                     Client.sendMessage("> Vclipped " + distance + " blocks");
                 } else {
+
                     this.syntaxError((Object)((Object)EnumChatFormatting.GRAY) + args[0] + " is not a valid number");
                 }
             } else {

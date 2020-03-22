@@ -24,15 +24,7 @@ implements Manager {
     public void init() {
         SplashProgress.setProgress(2, "CommandManager Init");
         this.commands = new ArrayList<>();
-        this.commands.add(new Command("test", new String[]{"test"}, "", "testing") {
 
-            @Override
-            public String execute(String[] args) {
-                for (Command command : CommandManager.this.commands) {
-                }
-                return null;
-            }
-        });
         this.commands.add(new Help());
         this.commands.add(new AutoLTest());
         this.commands.add(new Toggle());
@@ -75,10 +67,10 @@ implements Manager {
     private void onChat(EventChat e) {
         if (e.getMessage().length() > 1 && e.getMessage().startsWith(PREFIX)) {
             e.setCancelled(true);
-            String[] args = e.getMessage().trim().substring(1).split(" ");
+            String[] args = e.getMessage().trim().substring(PREFIX.length()).split(" ");
             Optional<Command> possibleCmd = this.getCommandByName(args[0]);
             if (possibleCmd.isPresent()) {
-                String result = possibleCmd.get().execute(Arrays.copyOfRange(args, 1, args.length));
+                String result = possibleCmd.get().execute(args[0],Arrays.copyOfRange(args, 1, args.length));
                 if (result != null && !result.isEmpty()) {
                     Client.sendMessage(result);
                 }
