@@ -183,7 +183,7 @@ public class Mod {
 			while (true) {
 				do {
 					if (!var4.hasNext()) {
-						Client.instance.getCommandManager().add(new Module$1(this, this.name, this.alias, String.format("%s%s", (options.length() == 0) ? "" : String.format("%s,", options.toString()), (other.length() == 0) ? "" : String.format("%s", other.toString())), "Setup this module"));
+						Client.instance.getCommandManager().add(new Module$1(this,this.name, this.alias));
 						return;
 					}
 
@@ -210,14 +210,17 @@ public class Mod {
 class Module$1 extends Command {
 	private final Mod m;
 	final Mod this$0;
-
-	Module$1(Mod var1, String $anonymous0, String[] $anonymous1, String $anonymous2, String $anonymous3) {
-		super($anonymous0, $anonymous1, $anonymous2, $anonymous3);
+	// FIXME
+	// TODO
+	// 建议大改ModCommand，见GitLab #4
+	// https://gitlab.com/Enteerman/exusiai_on_gitlab/-/issues/4
+	Module$1(Mod var1, String $anonymous0, String[] $anonymous1) {
+		super($anonymous0, $anonymous1);
 		this.this$0 = var1;
 		this.m = var1;
 	}
 
-	public String execute(String[] args) {
+	public String execute(String alias,String[] args) {
 		Option option;
 		if (args.length >= 2) {
 			option = null;
@@ -302,7 +305,8 @@ class Module$1 extends Command {
 				this.syntaxError("Valid .<module> <setting> <mode if needed>");
 			}
 		} else {
-			Client.sendMessage(String.format("%s Values: \n %s", this.getName().substring(0, 1).toUpperCase() + this.getName().substring(1).toLowerCase(), this.getSyntax(), "false"));
+			// FIXME
+			//Client.sendMessage(String.format("%s Values: \n %s", this.getName().substring(0, 1).toUpperCase() + this.getName().substring(1).toLowerCase() /*,this.getSyntax(), "false"*/));
 		}
 
 		return null;

@@ -6,11 +6,11 @@ import me.skidsense.command.Command;
 public class Help
 extends Command {
     public Help() {
-        super("Help", new String[]{"list"}, "", "sketit");
+        super("Help", "?");
     }
 
     @Override
-    public String execute(String[] args) {
+    public String execute(String alias,String[] args) {
         if (args.length == 0) {
             Client.sendMessageWithoutPrefix("\u00a77\u00a7m\u00a7l----------------------------------");
             Client.sendMessageWithoutPrefix("                    \u00a7b\u00a7lskidsense Client");

@@ -3,8 +3,6 @@ package me.skidsense.management;
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.command.Command;
-import me.skidsense.management.FileManager;
-import me.skidsense.management.Manager;
 
 import net.minecraft.util.EnumChatFormatting;
 
@@ -32,7 +30,7 @@ public class FriendManager implements Manager {
          }
       }
 
-      Client.instance.getCommandManager().add(new FriendManager$1(this, "f", new String[]{"friend", "fren", "fr"}, "add/del/list name alias", "Manage client friends"));
+      Client.instance.getCommandManager().add(new FriendManager$1(this, "f", new String[]{"friend", "fren", "fr"}));
    }
 
    public static boolean isFriend(String name) {
@@ -56,13 +54,13 @@ class FriendManager$1 extends Command {
 	   private final FriendManager fm;
 	   final FriendManager this$0;
 
-	   FriendManager$1(FriendManager var1, String $anonymous0, String[] $anonymous1, String $anonymous2, String $anonymous3) {
-	      super($anonymous0, $anonymous1, $anonymous2, $anonymous3);
+	   FriendManager$1(FriendManager var1, String $anonymous0, String[] $anonymous1) {
+	      super($anonymous0, $anonymous1);
 	      this.this$0 = var1;
 	      this.fm = var1;
 	   }
 
-	   public String execute(String[] args) {
+	   public String execute(String alias,String[] args) {
 	      String friends;
 	      String fr;
 	      Iterator var4;

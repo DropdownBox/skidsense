@@ -9,11 +9,11 @@ import org.lwjgl.input.Keyboard;
 public class Bind
 extends Command {
     public Bind() {
-        super("Bind", new String[]{"b"}, "", "sketit");
+        super("Bind","b");
     }
 
     @Override
-    public String execute(String[] args) {
+    public String execute(String alias, String[] args) {
         if (args.length >= 2) {
             Mod m = Client.instance.getModuleManager().getAlias(args[0]);
             if (m != null) {

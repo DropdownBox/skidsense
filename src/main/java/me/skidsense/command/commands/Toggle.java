@@ -11,11 +11,11 @@ import net.minecraft.util.EnumChatFormatting;
 public class Toggle
 extends Command {
     public Toggle() {
-        super("t", new String[]{"toggle", "togl", "turnon", "enable"}, "", "Toggles a specified Module");
+        super("toggle", "t");
     }
 
     @Override
-    public String execute(String[] args) {
+    public String execute(String alias,String[] args) {
         String modName = "";
         if (args.length > 1) {
             modName = args[1];
@@ -23,7 +23,7 @@ extends Command {
         	Client.sendMessageWithoutPrefix("\u00a7bCorrect usage:\u00a77 .t <module>");
         }
         boolean found = false;
-        Mod m = Client.instance.getModuleManager().getAlias(args[0]);
+        Mod m = Client.getModuleManager().getAlias(args[0]);
         if (m != null) {
             if (!m.isEnabled()) {
                 m.setEnabled(true);
