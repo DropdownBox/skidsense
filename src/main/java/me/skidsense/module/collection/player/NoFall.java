@@ -30,8 +30,7 @@ public class NoFall extends Mod {
                 fall -= mc.thePlayer.motionY;
             if (fall > 2) {
                 fall = 0;
-                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                        mc.thePlayer.posY,mc.thePlayer.posZ,mc.thePlayer.rotationYaw,mc.thePlayer.rotationPitch,true));
+                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(true));
             }
         } else
             fall = 0;
