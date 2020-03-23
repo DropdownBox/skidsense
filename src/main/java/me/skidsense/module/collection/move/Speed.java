@@ -11,6 +11,7 @@ import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.BlockUtil;
+import me.skidsense.util.MathUtil;
 import me.skidsense.util.MoveUtil;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.block.Block;
@@ -31,7 +32,8 @@ import java.util.List;
 
 public class Speed
         extends Mod {
-    private Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])SpeedMode.values(), (Enum)SpeedMode.Hypixel);
+    private Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[])SpeedMode.values(), (Enum)SpeedMode.Hypixel);
+    private Mode<Enum> MotionMode = new Mode("MotionMode", "MotionMode", (Enum[])Motions.values(), (Enum)Motions.Basic);
     private boolean firstJump;
     private boolean waitForGround;
     public static Option<Boolean> setback = new Option<Boolean> ("SetBack", "SetBack", true);
@@ -56,7 +58,6 @@ public class Speed
     public Speed() {
         super("Speed", new String[]{"zoom"}, ModuleType.Move);
         this.setColor(new Color(99, 248, 91).getRGB());
-        //this.addValues(this.mode,setback);
     }
     @Override
     public void onEnable() {
@@ -190,6 +191,37 @@ public class Speed
                 }
                 ++this.stage;
             }
+        }else if(this.mode.getValue() == SpeedMode.Test){
+            if (this.stage < 1) {
+                ++this.stage;
+                return;
+            }
+            boolean inLiquid = mc.thePlayer.isInWater() || mc.thePlayer.isInLava();
+            boolean slow = mc.thePlayer.isCollidedHorizontally
+                    || inLiquid;
+            if(slow)
+                collided = true;
+            if(mc.thePlayer.onGround)
+                stage = 2;
+            if (this.stage == 2 && (this.mc.thePlayer.moveForward != 0.0f || this.mc.thePlayer.moveStrafing != 0.0f) && this.mc.thePlayer.onGround) {
+                double y = getMotion();
+                if (this.mc.thePlayer.isPotionActive(Potion.jump)) {
+                    y += (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f;
+                }
+                collided = slow;
+                em.setY(this.mc.thePlayer.motionY = y);
+                this.movementSpeed = 0.62 * (1 + 0.119 * MoveUtil.getSpeedEffect());
+            }else if(stage == 3) {
+                movementSpeed = defaultSpeed() * (1.05 + 0.13 * MoveUtil.getSpeedEffect())
+                        + 0.1;
+            }else {
+                this.movementSpeed = this.lastDist * 0.991;
+            }
+            this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
+            if(collided)
+                movementSpeed = defaultSpeed();
+            setMoveSpeedNoStrafeEdit(movementSpeed, em);
+            ++this.stage;
         }
     }
 
@@ -351,34 +383,97 @@ public class Speed
         FastPort,
         Bhop,
         Hypixel,
+        Test,
         AAC;
     }
 
-    /*private void setMotion(EventMove em, double speed) {
-        double forward = Minecraft.getMinecraft().thePlayer.movementInput.moveForward;
-        double strafe = Minecraft.getMinecraft().thePlayer.movementInput.moveStrafe;
-        float yaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
-        if (forward == 0.0 && strafe == 0.0) {
-            em.setX(0.0);
-            em.setZ(0.0);
-        } else {
-            if (forward != 0.0) {
-                if (strafe > 0.0) {
-                    yaw += (float)(forward > 0.0 ? -40 : 40);
-                } else if (strafe < 0.0) {
-                    yaw += (float)(forward > 0.0 ? 40 : -40);
-                }
-                strafe = 0.0;
-                if (forward > 0.0) {
-                    forward = 1.0;
-                } else if (forward < 0.0) {
-                    forward = -1.0;
-                }
-            }
-            em.setX(forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f)));
-            em.setZ(forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f)));
+    static enum Motions{
+        Basic,
+        High,
+        Low,
+        Random,
+        High2,
+    }
+
+    public double getMotion(){
+        Enum curMode = MotionMode.getValue();
+        if(curMode.equals(Motions.Basic)) {
+            return 0.405412D;
+        } else if(curMode.equals(Motions.High)) {
+            return 0.408976666;
+        } else if(curMode.equals(Motions.Low)) {
+            return 0.4001754672;
+        } else if(curMode.equals(Motions.Random)) {
+            return 0.405412D + MathUtil.randomDouble(-20,20) / 10000;
+        } else if(curMode.equals(Motions.High2)) {
+            return 0.41999675;
         }
-    }*/
+        return 0.408666666d;
+    }
+
+    public void setMoveSpeed(final double speed) {
+        double forward = (double)this.mc.thePlayer.movementInput.moveForward;
+        double strafe = (double)this.mc.thePlayer.movementInput.moveStrafe;
+        float yaw;
+        {
+            yaw = mc.thePlayer.rotationYaw;
+            if (forward == 0.0 && strafe == 0.0) {
+                mc.thePlayer.motionX = (0.0);
+                mc.thePlayer.motionZ = (0.0);
+            }
+            else {
+                if (forward != 0.0) {
+                    if (strafe > 0.0) {
+                        yaw += ((forward > 0.0) ? -45 : 45);
+                    }
+                    else if (strafe < 0.0) {
+                        yaw += ((forward > 0.0) ? 45 : -45);
+                    }
+                    strafe = 0.0;
+                    if (forward > 0.0) {
+                        forward = 1.0;
+                    }
+                    else if (forward < 0.0) {
+                        forward = -1.0;
+                    }
+                }
+                mc.thePlayer.motionX = ((forward * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f))) + strafe * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f)))));
+                mc.thePlayer.motionZ = ((forward * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f))) - strafe * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f)))));
+            }
+        }
+    }
+
+    public void setMoveSpeedNoStrafeEdit(final double speed,EventMove eventMove) {
+        double forward = (double)this.mc.thePlayer.movementInput.moveForward;
+        double strafe = (double)this.mc.thePlayer.movementInput.moveStrafe;
+        float yaw;
+        {
+            yaw = mc.thePlayer.rotationYaw;
+            if (forward == 0.0 && strafe == 0.0) {
+                mc.thePlayer.motionX = (0.0);
+                mc.thePlayer.motionZ = (0.0);
+            }
+            else {
+                if (forward != 0.0) {
+                    if (strafe > 0.0) {
+                        yaw += ((forward > 0.0) ? -45 : 45);
+                    }
+                    else if (strafe < 0.0) {
+                        yaw += ((forward > 0.0) ? 45 : -45);
+                    }
+                    strafe = 0.0;
+                    if (forward > 0.0) {
+                        forward = 1.0;
+                    }
+                    else if (forward < 0.0) {
+                        forward = -1.0;
+                    }
+                }
+                eventMove.setX((forward * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f))) + strafe * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f)))));
+                eventMove.setZ((forward * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f))) - strafe * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f)))));
+            }
+        }
+    }
 
     public boolean isMoving2() {
         return Minecraft.getMinecraft().thePlayer.moveForward != 0.0f || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0f;
