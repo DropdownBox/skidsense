@@ -6,6 +6,8 @@ import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
+import me.skidsense.management.notifications.Notification;
+import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
@@ -43,9 +45,9 @@ public class AntiFall extends Mod {
                 }
                 switch (Mode.getValue().toString()) {
                     case "Hypixel":
-                        System.out.println("Do antifall");
+                        Notifications.getManager().post("AntiFall 触发");
                         em.setY(em.getY() + 1.5);
-                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(false));
+                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(true));
                         break;
                     case "Motion":
                         em.setY(mc.thePlayer.motionY = 0);

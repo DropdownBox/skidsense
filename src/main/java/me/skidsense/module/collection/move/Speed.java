@@ -180,8 +180,8 @@ public class Speed
                         forward = -1.0D;
                     }
                 }
-                if (Client.instance.getModuleManager().getModuleByClass((Class) AutoStrafe.class).isEnabled() && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) <= AutoStrafe.MaxDistance.getValue()) {
-                    AutoStrafe.onStrafe(em, this.movementSpeed);
+                if (Client.instance.getModuleManager().getModuleByClass((Class) NiggaStrafe.class).isEnabled() && KillAura.target != null) {
+                    NiggaStrafe.setMotionMoonx(em, this.movementSpeed);
                 } else {
                     em.setX((forward * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))
                             + strafe * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
@@ -262,7 +262,7 @@ public class Speed
                 if (BlockUtil.isInLiquid()) {
                     this.speed = 0.1;
                 }
-                this.setMotion(em, this.speed);
+                NiggaStrafe.setMotionMoonx(em, this.speed);
             }
             if (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f) {
                 ++Speed.stage;
@@ -354,7 +354,7 @@ public class Speed
         AAC;
     }
 
-    private void setMotion(EventMove em, double speed) {
+    /*private void setMotion(EventMove em, double speed) {
         double forward = Minecraft.getMinecraft().thePlayer.movementInput.moveForward;
         double strafe = Minecraft.getMinecraft().thePlayer.movementInput.moveStrafe;
         float yaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
@@ -378,7 +378,7 @@ public class Speed
             em.setX(forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f)));
             em.setZ(forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f)));
         }
-    }
+    }*/
 
     public boolean isMoving2() {
         return Minecraft.getMinecraft().thePlayer.moveForward != 0.0f || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0f;
