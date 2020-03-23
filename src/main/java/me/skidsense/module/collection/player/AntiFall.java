@@ -44,8 +44,8 @@ public class AntiFall extends Mod {
                 switch (Mode.getValue().toString()) {
                     case "Hypixel":
                         System.out.println("Do antifall");
-                        em.setY(em.getY() + 1.5);
-                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(false));
+                        em.setY(em.getY() + dist-0.5);
+                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(true));
                         break;
                     case "Motion":
                         em.setY(mc.thePlayer.motionY = 0);
