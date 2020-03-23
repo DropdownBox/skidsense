@@ -43,7 +43,7 @@ public class AntiFall extends Mod {
                 }
                 switch (Mode.getValue().toString()) {
                     case "Hypixel":
-                        em.setY(em.getY() + dist-0.5);
+                        em.setY(em.getY() + dist);
                         mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(true));
                         break;
                     case "Motion":
