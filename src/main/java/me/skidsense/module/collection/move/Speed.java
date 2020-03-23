@@ -9,8 +9,8 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.BlockUtil;
-import me.skidsense.util.MathUtil;
 import me.skidsense.util.MoveUtil;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.block.Block;
@@ -31,12 +31,10 @@ import java.util.List;
 
 public class Speed
         extends Mod {
-    private Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) SpeedMode.values(), (Enum) SpeedMode.Hypixel);
-    private Mode<Enum> MotionMode = new Mode("MotionMode", "MotionMode", (Enum[]) Motions.values(), (Enum) Motions.Basic);
+    private Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])SpeedMode.values(), (Enum)SpeedMode.Hypixel);
     private boolean firstJump;
     private boolean waitForGround;
-    public static Option<Boolean> setback = new Option<Boolean>("SetBack", "SetBack", true);
-    public static Option<Boolean> Randomize = new Option<Boolean>("Randomize", "Randomize", false);
+    public static Option<Boolean> setback = new Option<Boolean> ("SetBack", "SetBack", true);
     private static int stage;
     private double movementSpeed;
     private double lastDist;
@@ -54,40 +52,33 @@ public class Speed
     double zDist;
     float yaw;
     private double distance;
-    double motionSpeed;
 
     public Speed() {
         super("Speed", new String[]{"zoom"}, ModuleType.Move);
         this.setColor(new Color(99, 248, 91).getRGB());
         //this.addValues(this.mode,setback);
     }
-
     @Override
     public void onEnable() {
-        lastDist = 0;
         firstJump = true;
-        mc.timer.timerSpeed = 1;
+        mc.timer.timerSpeed=1;
         this.movementSpeed = this.defaultSpeed();
         this.lastDist = 0.0D;
         boolean player = Minecraft.getMinecraft().thePlayer == null;
-        slow = randomNumber(1000, 2000) / 100000F;
+        slow = randomNumber(1000,2000)/100000F;
         this.stage = 0;
         this.mc.timer.timerSpeed = 1.0f;
         super.onEnable();
     }
-
     public static int randomNumber(int max, int min) {
-        return Math.round((float) min + (float) Math.random() * (float) (max - min));
+        return Math.round((float)min + (float)Math.random() * (float)(max - min));
     }
-
     @Override
     public void onDisable() {
         this.mc.timer.timerSpeed = 1.0f;
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(), false);
+        KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(),false);
         super.onDisable();
     }
-
-    
 
     @Sub
     public void onPre(EventPreUpdate e) {
@@ -95,29 +86,29 @@ public class Speed
         xDist = (mc.thePlayer.posX - mc.thePlayer.prevPosX);
         zDist = (mc.thePlayer.posZ - mc.thePlayer.prevPosZ);
         this.lastDist = Math.sqrt(xDist * xDist + zDist * zDist);
-        if (mode.getValue().equals(SpeedMode.AAC)) {
-            if (MoveUtil.isMoving()) {
-                if (mc.thePlayer.hurtTime <= 0) {
-                    if (mc.thePlayer.onGround) {
+        if(mode.getValue().equals(SpeedMode.AAC)){
+            if(MoveUtil.isMoving()) {
+                if(mc.thePlayer.hurtTime <= 0) {
+                    if(mc.thePlayer.onGround) {
                         waitForGround = false;
-                        if (!firstJump)
+                        if(!firstJump)
                             firstJump = true;
                         mc.thePlayer.jump();
                         mc.thePlayer.motionY = 0.41;
-                    } else {
-                        if (waitForGround)
+                    }else{
+                        if(waitForGround)
                             return;
-                        if (mc.thePlayer.isCollidedHorizontally)
+                        if(mc.thePlayer.isCollidedHorizontally)
                             return;
                         firstJump = false;
                         mc.thePlayer.motionY -= 0.0149;
                     }
 
-                } else {
+                }else{
                     firstJump = true;
                     waitForGround = true;
                 }
-            } else {
+            }else{
                 mc.thePlayer.motionZ = 0;
                 mc.thePlayer.motionX = 0;
             }
@@ -126,174 +117,82 @@ public class Speed
             mc.thePlayer.motionZ = Math.cos(MoveUtil.getDirection()) * speed;
         }
     }
-
     @Sub
     public void onPacket(EventPacketRecieve e) {
-        if (e.getPacket() instanceof S08PacketPlayerPosLook && setback.getValue()) {
+        if(e.getPacket() instanceof S08PacketPlayerPosLook&&setback.getValue()) {
             this.setEnabled(false);
         }
     }
-
-    List getCollidingList(double motionY) {
+    List getCollidingList(double motionY){
         return this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer, this.mc.thePlayer.boundingBox.offset(0.0, motionY, 0.0));
     }
-
     @Sub
     public void onHypixelMove(EventMove em) {
-        switch (this.mode.getValue().toString()) {
-            case "Hypixel":
-                boolean jumpActive = this.mc.thePlayer.isPotionActive(Potion.jump);
-                if (this.stage == 1) {
-                    ++this.stage;
-                }
-
-                double motY = 0.399999986886975D;
-                if (this.mc.thePlayer.isPotionActive(Potion.jump)) {
-                    motY += (double) ((float) (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1)
-                            * 0.1F);
-                }
-
-                if (em.getY() < 0.0D) {
-                    em.setY(em.getY() * 1.05D);
-                }
-
-                double forward;
-                if (this.canZoom() && this.stage == 2
-                        && (this.mc.thePlayer.moveForward != 0.0F || this.mc.thePlayer.moveStrafing != 0.0F)) {
-                    this.mc.thePlayer.motionY = motY;
-                    em.setY(this.mc.thePlayer.motionY);
-                    this.movementSpeed = 0.635D * (1.0D + 0.11D * this.getSpeedEffect());
-                } else if (this.stage == 3) {
-                    forward = (0.63D - this.getSpeedEffect() / 50.0D) * (this.lastDist - defaultSpeed());
-                    this.movementSpeed = this.lastDist - forward;
-                } else {
-                    List collidingList = this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer,
-                            this.mc.thePlayer.boundingBox.offset(0.0D, this.mc.thePlayer.motionY, 0.0D));
-                    if (collidingList.size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
-                        this.stage = MoveUtil.isMoving() ? 1 : 0;
-                    }
-                    this.movementSpeed = this.lastDist - this.lastDist / 59.0D;
-                }
-
-                this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
-                if (Client.getModuleManager().getModuleByClass(AutoStrafe.class).isEnabled()) {
-                    double strafespeed = this.movementSpeed * 0.98;
-                    AutoStrafe.onStrafe(em, strafespeed);
-                    System.out.println(strafespeed);
-                } else {
-                    forward = this.mc.thePlayer.moveForward;
-                    double strafe = MovementInput.moveStrafe;
-                    float yaw = this.mc.thePlayer.rotationYaw;
-                    if (forward != 0.0D || strafe != 0.0D) {
-                        if (forward != 0.0D) {
-                            if (strafe > 0.0D) {
-                                yaw += (float) (forward > 0.0D ? -45 : 45);
-                            } else if (strafe < 0.0D) {
-                                yaw += (float) (forward > 0.0D ? 45 : -45);
-                            }
-
-                            strafe = 0.0D;
-                            if (forward > 0.0D) {
-                                forward = 1.0D;
-                            } else if (forward < 0.0D) {
-                                forward = -1.0D;
-                            }
-                        }
-                        em.setX((forward * this.movementSpeed * Math.cos(Math.toRadians(yaw + 90.0F))
-                                + strafe * this.movementSpeed * Math.sin(Math.toRadians(yaw + 90.0F))) * 0.995D);
-                        em.setZ((forward * this.movementSpeed * Math.sin(Math.toRadians(yaw + 90.0F))
-                                - strafe * this.movementSpeed * Math.cos(Math.toRadians(yaw + 90.0F))) * 0.995D);
-                    }
-                    ++this.stage;
-                }
-                break;
-            case "Test":
-                if (this.stage < 1) {
-                    ++this.stage;
-                    return;
-                }
-                boolean inLiquid = mc.thePlayer.isInWater() || mc.thePlayer.isInLava();
-                boolean slow = mc.thePlayer.isCollidedHorizontally
-                        || inLiquid;
-                if (slow)
-                    collided = true;
-                if (mc.thePlayer.onGround)
-                    stage = 2;
-                if (this.stage == 2 && (this.mc.thePlayer.moveForward != 0.0f || this.mc.thePlayer.moveStrafing != 0.0f) && this.mc.thePlayer.onGround) {
-                    double y = getMotion();
-                    if (this.mc.thePlayer.isPotionActive(Potion.jump)) {
-                        y += (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f;
-                    }
-                    collided = slow;
-                    em.setY(this.mc.thePlayer.motionY = y);
-                    //MotionUtils 用sigma的moveutils
-                    this.motionSpeed = 0.62 * (1 + 0.119 * MoveUtil.getSpeedEffect());
-                } else if (stage == 3) {
-                    motionSpeed = defaultSpeed() * (1.05 + 0.13 * MoveUtil.getSpeedEffect())
-                            + 0.1;
-                } else {
-                    this.motionSpeed = this.lastDist * 0.991;
-                }
-                this.motionSpeed = Math.max(this.motionSpeed, defaultSpeed());
-                if (collided)
-                    motionSpeed = defaultSpeed();
-                setMotion(em,motionSpeed);
+        if (mode.getValue() == SpeedMode.Hypixel) {
+            boolean jumpActive = this.mc.thePlayer.isPotionActive(Potion.jump);
+            if (this.stage == 1) {
                 ++this.stage;
+            }
+
+            double motY = 0.40896666;
+            if (this.mc.thePlayer.isPotionActive(Potion.jump)) {
+                motY += (double) ((float) (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1)
+                        * 0.1F);
+            }
+
+            if (em.getY() < 0.0D) {
+                em.setY(em.getY() * 1.05D);
+            }
+
+            double forward;
+            if (this.canZoom() && this.stage == 2
+                    && (this.mc.thePlayer.moveForward != 0.0F || this.mc.thePlayer.moveStrafing != 0.0F)) {
+                this.mc.thePlayer.motionY = motY;
+                em.setY(this.mc.thePlayer.motionY);
+                this.movementSpeed = 0.635D * (1.0D + 0.11D * this.getSpeedEffect());
+            } else if (this.stage == 3) {
+                forward = (0.63D - this.getSpeedEffect() / 50.0D) * (this.lastDist - defaultSpeed());
+                this.movementSpeed = this.lastDist - forward;
+            } else {
+                List collidingList = this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer,
+                        this.mc.thePlayer.boundingBox.offset(0.0D, this.mc.thePlayer.motionY, 0.0D));
+                if (collidingList.size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
+                    this.stage = MoveUtil.isMoving() ? 1 : 0;
+                }
+                this.movementSpeed = this.lastDist - this.lastDist / 59.0D;
+            }
+            this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
+            forward = (double) this.mc.thePlayer.moveForward;
+            double strafe = (double) MovementInput.moveStrafe;
+            float yaw = this.mc.thePlayer.rotationYaw;
+            if (forward != 0.0D || strafe != 0.0D) {
+                if (forward != 0.0D) {
+                    if (strafe > 0.0D) {
+                        yaw += (float) (forward > 0.0D ? -45 : 45);
+                    } else if (strafe < 0.0D) {
+                        yaw += (float) (forward > 0.0D ? 45 : -45);
+                    }
+
+                    strafe = 0.0D;
+                    if (forward > 0.0D) {
+                        forward = 1.0D;
+                    } else if (forward < 0.0D) {
+                        forward = -1.0D;
+                    }
+                }
+                if (Client.instance.getModuleManager().getModuleByClass((Class) NiggaStrafe.class).isEnabled() && KillAura.target != null) {
+                    NiggaStrafe.setMotionMoonx(em, this.movementSpeed);
+                } else {
+                    em.setX((forward * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))
+                            + strafe * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
+                    em.setZ((forward * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))
+                            - strafe * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
+                }
+                ++this.stage;
+            }
         }
     }
 
-    public double getMotionSpeed(int stage,double motionSpeed){
-        boolean swift = mc.thePlayer.isPotionActive(Potion.moveSpeed);
-        double moveSpeed = motionSpeed;
-        double random = Randomize.getValue() ? MathUtil.randomDouble(1000,50000 - (swift ? 30000 : 0)) / 1000000 : 0;
-        if(stage == 2 && mc.thePlayer.onGround){
-            moveSpeed *= 1.479665 + (random * 1.0012415122114514);
-            double maxSpeed = moveSpeed;
-            double lastToDec = (moveSpeed - defaultSpeed()) * 0.66;
-            int decSpeed = 0;
-        }else{
-            double decSpeedA =  moveSpeed;
-            boolean jumpPotion = mc.thePlayer.isPotionActive(Potion.jump);
-            if(jumpPotion)
-            {
-                moveSpeed *= 0.997;
-                if(swift) {
-                    moveSpeed *= 0.981 + random/12.77;
-                } else {
-                    moveSpeed *= 0.98 + random/11.06;
-                }
-                moveSpeed *= 0.991;
-            }
-            else
-            {
-                double boostVal = defaultSpeed() /10;
-                if(boostVal > 0.042) {
-                    boostVal = 0.042;
-                }
-                if(swift) {
-                    moveSpeed *= 0.937399541 + boostVal + random / 10.142915136246357547865789;
-                } else {
-                    moveSpeed *= 0.9745 + random / 10.2413624635746856867987807890890;
-                }
-            }
-            /*if(decSpeed <= lastToDec)
-            {
-                decSpeed += decSpeedA - moveSpeed;
-                moveSpeed -= 0.0015 + random / 400.12342345;
-                decSpeed += 0.0015 + random / 400.12342345;
-            }
-            else
-            {
-                decSpeed += decSpeedA - moveSpeed;
-                moveSpeed += 0.0005 + random / 400.12342345;
-                decSpeed -= 0.0005 + random / 400.12342345;
-            }*/
-        }
-        while(moveSpeed >= defaultSpeed() * (1.41 - MoveUtil.getSpeedEffect() * 0.005) && stage != 2) {
-            moveSpeed *= 0.99 + random / 30;
-        }
-        return moveSpeed;
-    }
 
     private double getHypixelSpeed(final int stage) {
         double value = MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;
@@ -307,13 +206,16 @@ public class Speed
                 if (!this.shouldslow) {
                     this.shouldslow = true;
                 }
-            } else if (this.shouldslow) {
+            }
+            else if (this.shouldslow) {
                 this.shouldslow = false;
             }
             value = 0.64 + (MoveUtil.getSpeedEffect() + 0.028 * MoveUtil.getSpeedEffect()) * 0.134;
-        } else if (stage == 1) {
+        }
+        else if (stage == 1) {
             value = firstvalue;
-        } else if (stage >= 2) {
+        }
+        else if (stage >= 2) {
             value = firstvalue - decr;
         }
         if (this.shouldslow || !this.lastCheck.delay(500.0f) || this.collided) {
@@ -326,8 +228,8 @@ public class Speed
     }
 
     @Sub
-    public void onMovement(EventMove em) {
-        if (mode.getValue() == SpeedMode.Bhop) {
+    public void onMovement(EventMove em){
+        if(mode.getValue() == SpeedMode.Bhop){
             if (Speed.mc.thePlayer.movementInput.moveForward == 0.0f && Speed.mc.thePlayer.movementInput.moveStrafe == 0.0f) {
                 this.speed = MoveUtil.defaultSpeed();
             }
@@ -337,16 +239,19 @@ public class Speed
             if (!BlockUtil.isInLiquid() && Speed.stage == 2 && Speed.mc.thePlayer.isCollidedVertically && MoveUtil.isOnGround(0.01) && (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f)) {
                 if (Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.jump)) {
                     em.setY(Speed.mc.thePlayer.motionY = 0.41999998688698 + (Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1);
-                } else {
+                }
+                else {
                     em.setY(Speed.mc.thePlayer.motionY = 0.41999998688698);
                 }
                 Speed.mc.thePlayer.jump();
                 this.speed *= 1.455;
-            } else if (Speed.stage == 3) {
+            }
+            else if (Speed.stage == 3) {
                 final double difference = 0.66 * (this.lastDist - MoveUtil.defaultSpeed());
                 this.speed = this.lastDist - difference;
-            } else {
-                final List collidingList = Speed.mc.theWorld.getCollidingBoundingBoxes((Entity) Speed.mc.thePlayer, Speed.mc.thePlayer.boundingBox.offset(0.0, Speed.mc.thePlayer.motionY, 0.0));
+            }
+            else {
+                final List collidingList = Speed.mc.theWorld.getCollidingBoundingBoxes((Entity)Speed.mc.thePlayer, Speed.mc.thePlayer.boundingBox.offset(0.0, Speed.mc.thePlayer.motionY, 0.0));
                 if ((collidingList.size() > 0 || Speed.mc.thePlayer.isCollidedVertically) && Speed.stage > 0) {
                     Speed.stage = ((Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f) ? 1 : 0);
                 }
@@ -357,79 +262,78 @@ public class Speed
                 if (BlockUtil.isInLiquid()) {
                     this.speed = 0.1;
                 }
-                this.setMotion(em, this.speed);
+                NiggaStrafe.setMotionMoonx(em, this.speed);
             }
             if (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f) {
                 ++Speed.stage;
             }
-        } else if (mode.getValue() == SpeedMode.HypixelPort) {
-            if (mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() || !MoveUtil.isMoving())
+        }else if(mode.getValue() == SpeedMode.HypixelPort){
+            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() ||!MoveUtil.isMoving())
                 return;
             double gay2 = 0.399921;
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
-                gay2 += (double) ((float) (mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
+                gay2 += (double)((float)(mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
             }
-            if (this.canZoom() && this.stage == 2 && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
-                if (!BlockUtil.isInLiquid()) {
+            if (this.canZoom() && this.stage == 2&&(mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
+                if(!BlockUtil.isInLiquid()){
                     this.mc.thePlayer.motionY = gay2;
                     em.setY(mc.thePlayer.motionY);
                 }
-                this.movementSpeed *= 1.7999;
+                this.movementSpeed *=  1.7999;
             } else if (this.stage == 3) {
-                double diff = (0.681 + (mc.thePlayer.ticksExisted % 2) / 50) * (this.lastDist - this.defaultSpeed());
+                double diff = (0.681+(mc.thePlayer.ticksExisted%2)/50) * (this.lastDist - this.defaultSpeed());
                 this.movementSpeed = this.lastDist - diff;
             } else {
                 if (getCollidingList(em.getY()).size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
                     this.stage = MoveUtil.isMoving() ? 1 : 0;
                 }
-                this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted % 2 == 0 ? -0.5 : -1) + 159.21);
+                this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted%2 == 0 ? -0.5 : -1)+159.21);
             }
-            if (!mc.thePlayer.onGround)
+            if(!mc.thePlayer.onGround)
                 em.setY(mc.thePlayer.motionY -= 1D);
             this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
-            if (isInLiquid()) movementSpeed = 0.12;
-            MoveUtil.setMoveSpeed(em, movementSpeed);
+            if(isInLiquid())movementSpeed=0.12;
+            MoveUtil.setMoveSpeed(em,movementSpeed);
             stage++;
             mc.thePlayer.stepHeight = 0.6F;
-        } else if (mode.getValue() == SpeedMode.FastPort) {
-            if (mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() || !MoveUtil.isMoving())
+        }else if(mode.getValue() == SpeedMode.FastPort){
+            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava()  ||!MoveUtil.isMoving())
                 return;
             double gay2 = 0.399921;
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
-                gay2 += (double) ((float) (mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
+                gay2 += (double)((float)(mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
             }
             if (this.canZoom() && this.stage == 2 && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
-                if (!isInLiquid()) {
+                if(!isInLiquid()){
                     this.mc.thePlayer.motionY = gay2;
                     em.setY(mc.thePlayer.motionY);
                 }
-                this.movementSpeed *= 2.1499;
+                this.movementSpeed *=  2.1499;
             } else if (this.stage == 3) {
-                double diff = (0.69 + (mc.thePlayer.ticksExisted % 2) / 50) * (this.lastDist - this.defaultSpeed());
+                double diff = (0.69+(mc.thePlayer.ticksExisted%2)/50) * (this.lastDist - this.defaultSpeed());
                 this.movementSpeed = this.lastDist - diff;
             } else {
                 if (getCollidingList(em.getY()).size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
                     this.stage = MoveUtil.isMoving() ? 1 : 0;
                 }
 
-                this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted % 2 == 0 ? -0.5 : -1) + 159.21);
+                this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted%2 == 0 ? -0.5 : -1)+159.21);
 
             }
-            if (!mc.thePlayer.onGround)
+            if(!mc.thePlayer.onGround)
                 em.setY(mc.thePlayer.motionY -= 2D);
             this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
-            if (isInLiquid()) movementSpeed = 0.12;
-            MoveUtil.setMoveSpeed(em, movementSpeed);
+            if(isInLiquid())movementSpeed=0.12;
+            MoveUtil.setMoveSpeed(em,movementSpeed);
             stage++;
             mc.thePlayer.stepHeight = 0.6F;
         }
     }
-
     private double defaultSpeed() {
         double baseSpeed = 0.2873D;
-        if (Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed)) {
+        if(Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed)) {
             int amplifier = Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier();
-            baseSpeed *= 1.0D + 0.2D * (double) (amplifier + 1);
+            baseSpeed *= 1.0D + 0.2D * (double)(amplifier + 1);
         }
 
         return baseSpeed;
@@ -447,19 +351,10 @@ public class Speed
         FastPort,
         Bhop,
         Hypixel,
-        Test,
         AAC;
     }
 
-    static enum Motions {
-        Basic,
-        High,
-        Low,
-        Random,
-        High2,
-    }
-
-    private void setMotion(EventMove em, double speed) {
+    /*private void setMotion(EventMove em, double speed) {
         double forward = Minecraft.getMinecraft().thePlayer.movementInput.moveForward;
         double strafe = Minecraft.getMinecraft().thePlayer.movementInput.moveStrafe;
         float yaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
@@ -469,9 +364,9 @@ public class Speed
         } else {
             if (forward != 0.0) {
                 if (strafe > 0.0) {
-                    yaw += (float) (forward > 0.0 ? -40 : 40);
+                    yaw += (float)(forward > 0.0 ? -40 : 40);
                 } else if (strafe < 0.0) {
-                    yaw += (float) (forward > 0.0 ? 40 : -40);
+                    yaw += (float)(forward > 0.0 ? 40 : -40);
                 }
                 strafe = 0.0;
                 if (forward > 0.0) {
@@ -483,14 +378,14 @@ public class Speed
             em.setX(forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f)));
             em.setZ(forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f)));
         }
-    }
+    }*/
 
     public boolean isMoving2() {
         return Minecraft.getMinecraft().thePlayer.moveForward != 0.0f || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0f;
     }
 
     public boolean isOnGround(double height) {
-        if (!this.mc.theWorld.getCollidingBoundingBoxes(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().offset(0.0, -height, 0.0)).isEmpty()) {
+        if (!this.mc.theWorld.getCollidingBoundingBoxes(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().offset(0.0, - height, 0.0)).isEmpty()) {
             return true;
         }
         return false;
@@ -515,9 +410,9 @@ public class Speed
             return true;
         }
         boolean inLiquid = false;
-        int y = (int) Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().minY;
-        for (int x = MathHelper.floor_double((double) Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().minX); x < MathHelper.floor_double(Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().maxX) + 1; ++x) {
-            for (int z = MathHelper.floor_double((double) Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().minZ); z < MathHelper.floor_double(Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().maxZ) + 1; ++z) {
+        int y = (int)Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().minY;
+        for (int x = MathHelper.floor_double((double)Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().minX); x < MathHelper.floor_double(Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().maxX) + 1; ++x) {
+            for (int z = MathHelper.floor_double((double)Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().minZ); z < MathHelper.floor_double(Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().maxZ) + 1; ++z) {
                 Block block = this.mc.theWorld.getBlockState(new BlockPos(x, y, z)).getBlock();
                 if (block == null || block.getMaterial() == Material.air) continue;
                 if (!(block instanceof BlockLiquid)) {
@@ -529,21 +424,5 @@ public class Speed
         return inLiquid;
     }
 
-    public double getMotion(){
-        Enum curMode = MotionMode.getValue();
-        if(curMode.equals(Motions.Basic)) {
-            return 0.405412D;
-        } else if(curMode.equals(Motions.High)) {
-            return 0.408976666;
-        } else if(curMode.equals(Motions.Low)) {
-            return 0.4001754672;
-        } else if(curMode.equals(Motions.Random)) {
-            return 0.405412D + MathUtil.randomDouble(-20,20) / 10000;
-        } else if(curMode.equals(Motions.High2)) {
-            return 0.41999675;
-        }
-        return 0.408666666d;
-    }
 }
-
 
