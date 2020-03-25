@@ -20,11 +20,11 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovementInput;
 
 import java.awt.*;
 import java.util.List;
@@ -54,6 +54,7 @@ public class Speed
     double zDist;
     float yaw;
     private double distance;
+    private int ticks;
 
     public Speed() {
         super("Speed", new String[]{"zoom"}, ModuleType.Move);
@@ -130,67 +131,38 @@ public class Speed
     @Sub
     public void onHypixelMove(EventMove em) {
         if (mode.getValue() == SpeedMode.Hypixel) {
-            boolean jumpActive = this.mc.thePlayer.isPotionActive(Potion.jump);
-            if (this.stage == 1) {
-                ++this.stage;
+            if (this.stage == 1)
+                stage++;
+            double arithmo = 0.399999987334013;
+            if (mc.thePlayer.isPotionActive(Potion.jump)) {
+                arithmo += (double) ((float) (mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
             }
-
-            double motY = 0.40896666;
-            if (this.mc.thePlayer.isPotionActive(Potion.jump)) {
-                motY += (double) ((float) (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1)
-                        * 0.1F);
-            }
-
-            if (em.getY() < 0.0D) {
-                em.setY(em.getY() * 1.05D);
-            }
-
-            double forward;
             if (this.canZoom() && this.stage == 2
-                    && (this.mc.thePlayer.moveForward != 0.0F || this.mc.thePlayer.moveStrafing != 0.0F)) {
-                this.mc.thePlayer.motionY = motY;
-                em.setY(this.mc.thePlayer.motionY);
-                this.movementSpeed = 0.635D * (1.0D + 0.11D * this.getSpeedEffect());
+                    && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
+                this.mc.thePlayer.motionY = arithmo;
+                em.setY(mc.thePlayer.motionY);
+                this.movementSpeed *= 1.673415;
             } else if (this.stage == 3) {
-                forward = (0.63D - this.getSpeedEffect() / 50.0D) * (this.lastDist - defaultSpeed());
-                this.movementSpeed = this.lastDist - forward;
+                double diff = (0.666 + movementSpeed * 0.07) * (this.lastDist - this.defaultSpeed());
+                this.movementSpeed = this.lastDist - diff;
             } else {
-                List collidingList = this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer,
-                        this.mc.thePlayer.boundingBox.offset(0.0D, this.mc.thePlayer.motionY, 0.0D));
-                if (collidingList.size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
+                if (getCollidingList(em.getY()).size() > 0
+                        || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
                     this.stage = MoveUtil.isMoving() ? 1 : 0;
                 }
-                this.movementSpeed = this.lastDist - this.lastDist / 59.0D;
+                this.movementSpeed = this.lastDist
+                        - this.lastDist / 159.21;
             }
-            this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
-            forward = (double) this.mc.thePlayer.moveForward;
-            double strafe = (double) MovementInput.moveStrafe;
-            float yaw = this.mc.thePlayer.rotationYaw;
-            if (forward != 0.0D || strafe != 0.0D) {
-                if (forward != 0.0D) {
-                    if (strafe > 0.0D) {
-                        yaw += (float) (forward > 0.0D ? -45 : 45);
-                    } else if (strafe < 0.0D) {
-                        yaw += (float) (forward > 0.0D ? 45 : -45);
-                    }
+            this.movementSpeed = Math.max(this.movementSpeed, this.defaultSpeed());
+            if (Client.instance.getModuleManager().getModuleByClass( AutoStrafe.class).isEnabled()
+                    && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) < 2.4F) {
+                AutoStrafe.onStrafe(em, this.defaultSpeed());
+                stage++;
+            } else {
+                MoveUtil.setMoveSpeed(em, movementSpeed);
+                stage++;
+            }
 
-                    strafe = 0.0D;
-                    if (forward > 0.0D) {
-                        forward = 1.0D;
-                    } else if (forward < 0.0D) {
-                        forward = -1.0D;
-                    }
-                }
-                if (Client.instance.getModuleManager().getModuleByClass((Class) NiggaStrafe.class).isEnabled() && KillAura.target != null) {
-                    NiggaStrafe.setMotionMoonx(em, this.movementSpeed);
-                } else {
-                    em.setX((forward * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))
-                            + strafe * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
-                    em.setZ((forward * this.movementSpeed * Math.sin(Math.toRadians((double) (yaw + 90.0F)))
-                            - strafe * this.movementSpeed * Math.cos(Math.toRadians((double) (yaw + 90.0F)))) * 0.997D);
-                }
-                ++this.stage;
-            }
         }else if(this.mode.getValue() == SpeedMode.Test){
             if (this.stage < 1) {
                 ++this.stage;
@@ -220,11 +192,62 @@ public class Speed
             this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
             if(collided)
                 movementSpeed = defaultSpeed();
-            setMoveSpeedNoStrafeEdit(movementSpeed, em);
+                setMoveSpeedNoStrafeEdit(movementSpeed, em);
             ++this.stage;
         }
     }
 
+    private void setMotionMoonx(EventMove e, double n) {//speed setmotion时使用这个 要不然会回弹
+        ++this.ticks;
+        if (KillAura.target != null && this.voidcheck() && this.ticks > 4) {
+            this.ticks = 0;
+        }
+        boolean b = NiggaStrafe.vec3 != null
+                && NiggaStrafe.entity != null
+                && (this.mc.gameSettings.keyBindJump.isKeyDown()
+                || !NiggaStrafe.press.getValue());
+
+        double n2 = b ? ((double)((Math.abs(this.mc.thePlayer.movementInput.moveForward) > 0.0f
+                || Math.abs(this.mc.thePlayer.movementInput.moveStrafe) > 0.0f) ? 1 : 0)) : this.mc.thePlayer.movementInput.moveForward;
+        double n3 = b ? 0.0 : this.mc.thePlayer.movementInput.moveStrafe;
+        float n4 = b ? this.angle(NiggaStrafe.vec3.getX(), NiggaStrafe.vec3.getZ()) : this.mc.thePlayer.rotationYaw;
+        if (n2 == 0.0 && n3 == 0.0) {
+            e.setX(0.0);
+            e.setZ(0.0);
+        }
+        else {
+            if (n2 != 0.0) {
+                if (n3 > 0.0) {
+                    n4 += ((n2 > 0.0) ? -45 : 45);
+                }
+                else if (n3 < 0.0) {
+                    n4 += ((n2 > 0.0) ? 45 : -45);
+                }
+                n3 = 0.0;
+                if (n2 > 0.0) {
+                    n2 = 1.0;
+                }
+                else if (n2 < 0.0) {
+                    n2 = -1.0;
+                }
+            }
+            e.setX(n2 * n * -Math.sin(Math.toRadians(n4)) + n3 * n * Math.cos(Math.toRadians(n4)));
+            e.setZ(n2 * n * Math.cos(Math.toRadians(n4)) - n3 * n * -Math.sin(Math.toRadians(n4)));
+        }
+    }
+
+    public boolean voidcheck() {
+        for (int i = (int)Math.ceil(this.mc.thePlayer.posY); i >= 0; --i) {
+            if (this.mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, i, mc.thePlayer.posZ)).getBlock() != Blocks.air) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public float angle(final double x, final double z) {
+        return (float)(Math.atan2(z - mc.thePlayer.posZ, x - mc.thePlayer.posX) * 180.0 / 3.141592653589793) - 90.0f;
+    }
 
     private double getHypixelSpeed(final int stage) {
         double value = MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;

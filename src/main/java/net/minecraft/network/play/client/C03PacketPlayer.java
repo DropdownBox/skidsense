@@ -1,9 +1,10 @@
 package net.minecraft.network.play.client;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
+
+import java.io.IOException;
 
 public class C03PacketPlayer implements Packet<INetHandlerPlayServer>
 {
@@ -12,7 +13,7 @@ public class C03PacketPlayer implements Packet<INetHandlerPlayServer>
     protected double z;
     protected float yaw;
     protected float pitch;
-    protected boolean onGround;
+    public boolean onGround;
     protected boolean moving;
     protected boolean rotating;
 

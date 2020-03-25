@@ -77,7 +77,7 @@ public class Critical extends Mod {
                     }
                     break;
                 case "Hypixel":
-                    double[] hypixeloffsets = new double[]{0.033600000987064504, 0.000650000001769514, 0.032300000774313276, 0.000650000001769514};
+                    double[] hypixeloffsets = new double[]{0.03500000014901161, 0.0, 0.03359999880194664, 0.0};
                     int l = hypixeloffsets.length;
                     for (int i = 0; i < l; ++i) {
                         double offset = hypixeloffsets[i];
@@ -109,7 +109,7 @@ public class Critical extends Mod {
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
                         ++a1;
                     }
-                    final double[] array = {0.033600000987064504, 0.000650000001769514, 0.032300000774313276, 0.000650000001769514, 0.0, 0.0, 0.0, 0.0, 0.0};
+                    final double[] array = { 0.03500000014901161, 0.0, 0.03359999880194664, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
                     final int length = array.length;
                     int v0 = 0;
                     while (v0 < length) {

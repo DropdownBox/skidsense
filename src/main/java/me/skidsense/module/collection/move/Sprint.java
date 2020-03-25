@@ -44,6 +44,7 @@ public class Sprint
                     C0BPacketEntityAction packet = (C0BPacketEntityAction) e.getPacket();
                     if (packet.getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING) {
                         e.setCancelled(true);
+                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C0BPacketEntityAction(mc.thePlayer, net.minecraft.network.play.client.C0BPacketEntityAction.Action.START_SPRINTING));
                     }
                 }
             } catch (ClassCastException ignored) {

@@ -1,7 +1,7 @@
 package me.skidsense.module.collection.player;
 
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.hooks.events.EventPacketRecieve;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.block.BlockAir;
@@ -11,7 +11,6 @@ import net.minecraft.util.BlockPos;
 import java.awt.*;
 
 public class NoFall extends Mod {
-    private int state;
 
 
     public NoFall() {
@@ -30,28 +29,10 @@ public class NoFall extends Mod {
     }
 
     @Sub
-    private void onUpdate(EventPreUpdate e) {
-        if (mc.thePlayer.fallDistance > 3.0f && this.isBlockUnder()) {
-            mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
-            state = 2;
-        } else if (state == 2 && mc.thePlayer.fallDistance < 2) {
-            mc.thePlayer.motionY = 0.001D;
-            state = 3;
-            return;
-        }
-        switch (state) {
-            case 3:
-                mc.thePlayer.motionY = 0.001D;
-                state = 4;
-                break;
-            case 4:
-                mc.thePlayer.motionY = 0.001D;
-                state = 5;
-                break;
-            case 5:
-                mc.thePlayer.motionY = 0.001D;
-                state = 1;
-                break;
+    private void onUpdate(EventPacketRecieve e) {
+            if (mc.thePlayer.fallDistance > 3.0 && e.getPacket() instanceof C03PacketPlayer && isBlockUnder()) {
+                C03PacketPlayer Packet = (C03PacketPlayer) e.getPacket();
+                Packet.onGround = (mc.thePlayer.fallDistance) % 3 == 0;
         }
     }
 
