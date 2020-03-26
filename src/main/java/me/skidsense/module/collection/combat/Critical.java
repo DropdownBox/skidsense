@@ -109,7 +109,7 @@ public class Critical extends Mod {
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
                         ++a1;
                     }
-                    final double[] array = { 0.03500000014901161, 0.0, 0.03359999880194664, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+                    final double[] array = { 0.03480000014901161, 0.0, 0.03329999880194664, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
                     final int length = array.length;
                     int v0 = 0;
                     while (v0 < length) {
@@ -129,7 +129,7 @@ public class Critical extends Mod {
             } else if (!this.nodeelay.getValue()) {
                 this.timer.reset();
             }
-            //Notifications.getManager().post("Do criticals. HurtTime:" + e.hurtResistantTime);
+
         }
     }
 

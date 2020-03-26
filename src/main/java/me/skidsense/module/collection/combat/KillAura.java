@@ -102,7 +102,7 @@ public class KillAura extends Mod {
 		if (this.isBlocking) {
 			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
+			networkManager.sendPacketNoEvent(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
@@ -185,7 +185,7 @@ public class KillAura extends Mod {
 		if (autoBlock.getValue() && this.canBlock() && this.isBlocking) {
 			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
+			networkManager.sendPacketNoEvent(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			this.mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
@@ -200,7 +200,7 @@ public class KillAura extends Mod {
 			if (this.isBlocking) {
 				NetworkManager networkManager2 = this.mc.thePlayer.sendQueue.getNetworkManager();
 				C07PacketPlayerDigging.Action release_USE_ITEM2 = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-				networkManager2.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM2, AutoBlockPos, EnumFacing.DOWN));
+				networkManager2.sendPacketNoEvent(new C07PacketPlayerDigging(release_USE_ITEM2, AutoBlockPos, EnumFacing.DOWN));
 				this.mc.thePlayer.clearItemInUse();
 				this.isBlocking = false;
 			}
@@ -293,30 +293,18 @@ public class KillAura extends Mod {
 		if (this.isBlocking && this.canBlock()) {
 			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
+			networkManager.sendPacketNoEvent(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
-		/**if (BlockUtil.isOnGround(0.01) && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
-		 && this.mc.thePlayer.isCollidedVertically && !this.mc.thePlayer.isInWater()
-		 && Client.getModuleManager().getModuleByClass(Critical.class).isEnabled()) {
-		 double[] offsets = new double[] { 0.05250000001303851D, 0.001500000013038516D, 0.014000000013038517D,
-		 0.001500000013038516D };
-		 int n = offsets.length;
-		 int n2 = 0;
-		 while (n2 < n) {
-		 double offset = offsets[n2];
-		 mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
-		 mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
-		 ++n2;
-		 }
-		 this.attackSpeed = 0;
-		 }**/
 		++this.attackSpeed;
 		EventAttack ent = new EventAttack(target);
 		EventManager.postAll(ent);
 		if(ent.isCancelled())
 			return;
+		if(Client.getModuleManager().getModuleByClass(Critical.class).isEnabled() && Critical.canCrit()){
+			this.attackSpeed = 0;
+		}
 		this.mc.thePlayer.swingItem();
 		this.mc.thePlayer.sendQueue
 				.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
@@ -329,7 +317,7 @@ public class KillAura extends Mod {
 			}
 		}
 		if (this.canBlock() && !this.isBlocking && autoBlock.getValue()) {
-			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(
 					new C08PacketPlayerBlockPlacement(AutoBlockPos, 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
