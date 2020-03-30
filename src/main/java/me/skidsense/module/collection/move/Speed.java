@@ -133,7 +133,7 @@ public class Speed
         if (mode.getValue() == SpeedMode.Hypixel) {
             if (this.stage == 1)
                 stage++;
-            double arithmo = 0.399999987334013;
+            double arithmo = getMotion();
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
                 arithmo += (double) ((float) (mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
             }
@@ -141,7 +141,7 @@ public class Speed
                     && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
                 this.mc.thePlayer.motionY = arithmo;
                 em.setY(mc.thePlayer.motionY);
-                this.movementSpeed *= 1.673415;
+                this.movementSpeed *= 1.674415;
             } else if (this.stage == 3) {
                 double diff = (0.666 + movementSpeed * 0.07) * (this.lastDist - this.defaultSpeed());
                 this.movementSpeed = this.lastDist - diff;
@@ -159,7 +159,7 @@ public class Speed
                 AutoStrafe.onStrafe(em, this.defaultSpeed());
                 stage++;
             } else {
-                MoveUtil.setMoveSpeed(em, movementSpeed);
+                setMoveSpeedNoStrafeEdit(movementSpeed, em);
                 stage++;
             }
 

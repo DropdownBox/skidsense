@@ -12,6 +12,7 @@ import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.move.Speed;
 import me.skidsense.module.collection.player.Scaffold;
 import me.skidsense.util.MoveUtil;
+import me.skidsense.util.QuickMath;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -104,22 +105,23 @@ public class Critical extends Mod {
                     }
                     break;
                 case "Packet":
+                    float random = (float) QuickMath.getRandomInRange(0.001,0.003);
                     int a1 = 1;
                     while (a1 <= 4) {
                         mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
                         ++a1;
                     }
-                    final double[] array = { 0.03480000014901161, 0.0, 0.03329999880194664, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+                    final double[] array = {0.06260000000000332, 0.0+random};
                     final int length = array.length;
                     int v0 = 0;
                     while (v0 < length) {
                         final double v2 = array[v0];
                         if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
                             mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                    mc.thePlayer.posY + v2, mc.thePlayer.posZ,
+                                    mc.thePlayer.posY + v2 , mc.thePlayer.posZ,
                                     KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
                         } else {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + v2, mc.thePlayer.posZ, false));
+                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + v2  , mc.thePlayer.posZ, false));
                         }
                         ++v0;
                     }
