@@ -32,7 +32,7 @@ import java.util.List;
 
 public class Speed
         extends Mod {
-    private Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[])SpeedMode.values(), (Enum)SpeedMode.Hypixel);
+    private Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[])SpeedMode.values(), (Enum)SpeedMode.HypixelHop);
     private Mode<Enum> MotionMode = new Mode("MotionMode", "MotionMode", (Enum[])Motions.values(), (Enum)Motions.Basic);
     private boolean firstJump;
     private boolean waitForGround;
@@ -117,6 +117,10 @@ public class Speed
             final double speed = MoveUtil.getBaseMoveSpeed();
             mc.thePlayer.motionX = -(Math.sin(MoveUtil.getDirection()) * speed);
             mc.thePlayer.motionZ = Math.cos(MoveUtil.getDirection()) * speed;
+        }else if (mode.getValue() == SpeedMode.OtherHypixelHop){
+            double xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX;
+            double zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ;
+            this.lastDist = Math.sqrt(xDist * xDist + zDist * zDist);
         }
     }
     @Sub
@@ -130,7 +134,7 @@ public class Speed
     }
     @Sub
     public void onHypixelMove(EventMove em) {
-        if (mode.getValue() == SpeedMode.Hypixel) {
+        if (mode.getValue() == SpeedMode.HypixelHop) {
             if (this.stage == 1)
                 stage++;
             double arithmo = getMotion();
@@ -156,7 +160,7 @@ public class Speed
             this.movementSpeed = Math.max(this.movementSpeed, this.defaultSpeed());
             if (Client.instance.getModuleManager().getModuleByClass( AutoStrafe.class).isEnabled()
                     && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) < 2.4F) {
-                AutoStrafe.onStrafe(em, this.defaultSpeed());
+                NiggaStrafe.doStrafeAtSpeed(em, this.defaultSpeed());
                 stage++;
             } else {
                 setMoveSpeedNoStrafeEdit(movementSpeed, em);
@@ -194,45 +198,87 @@ public class Speed
                 movementSpeed = defaultSpeed();
                 setMoveSpeedNoStrafeEdit(movementSpeed, em);
             ++this.stage;
-        }
-    }
+        }else if(this.mode.getValue() == SpeedMode.OtherHypixelHop){
+            if (MathUtil.round(mc.thePlayer.posY - ((int) mc.thePlayer.posY), 3) == MathUtil.round(0.138, 3)) {
+                mc.thePlayer.motionY -= 1.0;
+                em.setY(0.0931);
+                //mc.timer.timerSpeed = 2.89f;
+                //Artix.INSTANCE.chatMessage(true, "lol");
+                mc.thePlayer.posY -= 0.0931;
+                this.movementSpeed *= 1.25f;
+            }
+            //else
+            //mc.timer.timerSpeed = 1f;
 
-    private void setMotionMoonx(EventMove e, double n) {//speed setmotion时使用这个 要不然会回弹
-        ++this.ticks;
-        if (KillAura.target != null && this.voidcheck() && this.ticks > 4) {
-            this.ticks = 0;
-        }
-        boolean b = NiggaStrafe.vec3 != null
-                && NiggaStrafe.entity != null
-                && (this.mc.gameSettings.keyBindJump.isKeyDown()
-                || !NiggaStrafe.press.getValue());
-
-        double n2 = b ? ((double)((Math.abs(this.mc.thePlayer.movementInput.moveForward) > 0.0f
-                || Math.abs(this.mc.thePlayer.movementInput.moveStrafe) > 0.0f) ? 1 : 0)) : this.mc.thePlayer.movementInput.moveForward;
-        double n3 = b ? 0.0 : this.mc.thePlayer.movementInput.moveStrafe;
-        float n4 = b ? this.angle(NiggaStrafe.vec3.getX(), NiggaStrafe.vec3.getZ()) : this.mc.thePlayer.rotationYaw;
-        if (n2 == 0.0 && n3 == 0.0) {
-            e.setX(0.0);
-            e.setZ(0.0);
-        }
-        else {
-            if (n2 != 0.0) {
-                if (n3 > 0.0) {
-                    n4 += ((n2 > 0.0) ? -45 : 45);
+            mc.timer.timerSpeed = 1f;
+            if (this.stage == 2
+                    && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
+                mc.thePlayer.motionY = 0.39936;
+                em.setY(0.39936);
+                this.movementSpeed *= 2.0999;
+            }
+            else if (this.stage == 3) {
+                double difference = 0.66 * (this.lastDist - MoveUtil.getBaseMoveSpeed());
+                this.movementSpeed = this.lastDist - difference;
+            }
+            else {
+                if (mc.theWorld
+                        .getCollidingBoundingBoxes(mc.thePlayer,
+                                mc.thePlayer.boundingBox.offset(0.0, mc.thePlayer.motionY, 0.0))
+                        .size() > 0 || mc.thePlayer.isCollidedVertically) {
+                    this.stage = 1;
                 }
-                else if (n3 < 0.0) {
-                    n4 += ((n2 > 0.0) ? 45 : -45);
+                this.movementSpeed = this.lastDist - this.lastDist / 159.0;
+            }
+            this.movementSpeed = Math.max(this.movementSpeed, MoveUtil.getBaseMoveSpeed());
+            float forward = mc.thePlayer.movementInput.moveForward;
+            float strafe = mc.thePlayer.movementInput.moveStrafe;
+            float yaw = mc.thePlayer.rotationYaw;
+            if (forward == 0.0f && strafe == 0.0f) {
+                em.x = 0.0;
+                em.z = 0.0;
+            }
+            else if (forward != 0.0f) {
+                if (strafe >= 1.0f) {
+                    yaw += forward > 0.0f ? -45 : 45;
+                    strafe = 0.0f;
                 }
-                n3 = 0.0;
-                if (n2 > 0.0) {
-                    n2 = 1.0;
+                else if (strafe <= -1.0f) {
+                    yaw += forward > 0.0f ? 45 : -45;
+                    strafe = 0.0f;
                 }
-                else if (n2 < 0.0) {
-                    n2 = -1.0;
+                if (forward > 0.0f) {
+                    forward = 1.0f;
+                }
+                else if (forward < 0.0f) {
+                    forward = -1.0f;
                 }
             }
-            e.setX(n2 * n * -Math.sin(Math.toRadians(n4)) + n3 * n * Math.cos(Math.toRadians(n4)));
-            e.setZ(n2 * n * Math.cos(Math.toRadians(n4)) - n3 * n * -Math.sin(Math.toRadians(n4)));
+            double mx = Math.cos(Math.toRadians(yaw + 90.0f));
+            double mz = Math.sin(Math.toRadians(yaw + 90.0f));
+            em.x = (forward * this.movementSpeed * mx + strafe * this.movementSpeed * mz) * 0.99;
+            em.z = (forward * this.movementSpeed * mz - strafe * this.movementSpeed * mx) * 0.99;
+            if (forward == 0.0f && strafe == 0.0f) {
+                em.x = 0.0;
+                em.z = 0.0;
+            }
+            else if (forward != 0.0f) {
+                if (strafe >= 1.0f) {
+                    yaw += forward > 0.0f ? -45 : 45;
+                    strafe = 0.0f;
+                }
+                else if (strafe <= -1.0f) {
+                    yaw += forward > 0.0f ? 45 : -45;
+                    strafe = 0.0f;
+                }
+                if (forward > 0.0f) {
+                    forward = 1.0f;
+                }
+                else if (forward < 0.0f) {
+                    forward = -1.0f;
+                }
+            }
+            this.stage++;
         }
     }
 
@@ -317,7 +363,7 @@ public class Speed
                 if (BlockUtil.isInLiquid()) {
                     this.speed = 0.1;
                 }
-                NiggaStrafe.setMotionMoonx(em, this.speed);
+                NiggaStrafe.doStrafeAtSpeed(em, this.speed);
             }
             if (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f) {
                 ++Speed.stage;
@@ -402,10 +448,11 @@ public class Speed
     }
 
     static enum SpeedMode {
+        OtherHypixelHop,
         HypixelPort,
         FastPort,
         Bhop,
-        Hypixel,
+        HypixelHop,
         Test,
         AAC;
     }

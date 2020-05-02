@@ -15,6 +15,8 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
+import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.stream.GuiTwitchUserMode;
 import net.minecraft.client.renderer.GlStateManager;
@@ -672,7 +674,8 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     {
         if (this.mc.theWorld != null)
         {
-            this.drawGradientRect(0, 0, this.width, this.height, -1072689136, -804253680);
+            net.minecraft.client.gui.Gui.drawRect(0, 0, this.width, this.height, RenderUtil.reAlpha(-4179669,0.23f));
+            //this.drawGradientRect(0, 0, this.width, this.height, RenderUtil.reAlpha(-14057287,0.25f));
         }
         else
         {

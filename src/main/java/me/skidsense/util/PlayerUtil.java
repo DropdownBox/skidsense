@@ -1,5 +1,6 @@
 package me.skidsense.util;
 
+import me.skidsense.hooks.events.EventMove;
 import me.skidsense.module.collection.combat.KillAura;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -381,6 +382,34 @@ public class PlayerUtil {
 			}
 			mc.thePlayer.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f));
 			mc.thePlayer.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f));
+		}
+	}
+
+	public static void setSpeed(EventMove moveEvent, double moveSpeed, float pseudoYaw, double pseudoStrafe, double pseudoForward) {
+		double forward = pseudoForward;
+		double strafe = pseudoStrafe;
+		float yaw = pseudoYaw;
+		if (forward == 0.0 && strafe == 0.0) {
+			moveEvent.setZ(0.0);
+			moveEvent.setX(0.0);
+		} else {
+			if (forward != 0.0) {
+				if (strafe > 0.0) {
+					yaw += (float) (forward > 0.0 ? -45 : 45);
+				} else if (strafe < 0.0) {
+					yaw += (float) (forward > 0.0 ? 45 : -45);
+				}
+				strafe = 0.0;
+				if (forward > 0.0) {
+					forward = 1.0;
+				} else if (forward < 0.0) {
+					forward = -1.0;
+				}
+			}
+			double cos = java.lang.Math.cos((double) java.lang.Math.toRadians((double) (yaw + 90.0f)));
+			double sin = java.lang.Math.sin((double) java.lang.Math.toRadians((double) (yaw + 90.0f)));
+			moveEvent.setX(forward * moveSpeed * cos + strafe * moveSpeed * sin);
+			moveEvent.setZ(forward * moveSpeed * sin - strafe * moveSpeed * cos);
 		}
 	}
 }
