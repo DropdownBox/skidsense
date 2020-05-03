@@ -412,4 +412,5 @@ public class PlayerUtil {
 			moveEvent.setZ(forward * moveSpeed * sin - strafe * moveSpeed * cos);
 		}
 	}
+
 }
