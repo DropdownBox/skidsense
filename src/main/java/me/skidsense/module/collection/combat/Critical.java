@@ -1,8 +1,11 @@
 package me.skidsense.module.collection.combat;
 
+import com.sun.tools.corba.se.idl.toJavaPortable.Helper;
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
+import me.skidsense.hooks.events.EventPacketRecieve;
+import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -15,6 +18,8 @@ import me.skidsense.util.MoveUtil;
 import me.skidsense.util.QuickMath;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
 
@@ -22,11 +27,12 @@ import java.awt.*;
 
 
 public class Critical extends Mod {
-    private static Mode <Enum> mode =new Mode<>("Mode","Mode",CritMode.values(),CritMode.Hypixel);
+    private static Mode <Enum> mode =new Mode<>("Mode","Mode",CritMode.values(),CritMode.Packet);
     private static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
     private static Numbers<Double> ht = new Numbers<>("Hurttime", "Hurttime", 15.0, 0.0, 20.0, 1.0);
-    private static Option<Boolean> nodeelay = new Option("Nodelay", "Nodelay", false);
     private static TimerUtil timer = new TimerUtil();
+    private EntityLivingBase lastTarget;
+
 
 
     public Critical() {
@@ -37,18 +43,17 @@ public class Critical extends Mod {
 
     @Sub
     public void onAttack(EventAttack ent) {
-        if (canCrit()) {
+        if (canCrit() && lastTarget != ent.targetEntity) {
+            doCrit(ent.targetEntity);
+            lastTarget = (EntityLivingBase) ent.targetEntity;
+        }else if(canCrit() && ent.targetEntity.hurtResistantTime <= ht.getValue() && ent.targetEntity.hurtResistantTime>0){
             doCrit(ent.targetEntity);
         }
     }
 
-    @Sub
-    public void others() {
-        setSuffix(mode.getValue());
-    }
-
     @Override
     public void onEnable() {
+        super.onEnable();
     }
 
     public static boolean canCrit() {
@@ -64,82 +69,36 @@ public class Critical extends Mod {
     }
 
     public void doCrit(Entity e) {
-        if(e.hurtResistantTime<=ht.getValue()&&e.hurtResistantTime>0) {
-            switch (this.mode.getValue().toString()) {
-                case "Packet2":
-                    final double[] arrayp = {0.06200999766588211, 0.0010100000072270632, 0.06200999766588211, 0.050999999046325684};
-                    for (int length = arrayp.length, i = 0; i < length; ++i) {
-                        if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                    mc.thePlayer.posY + arrayp[i], mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
-                        } else {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + arrayp[i], mc.thePlayer.posZ, false));
-                        }
+        switch(mode.getValue().toString()) {
+            case "Packet": {
+                int a1 = 1;
+                while (a1 <= 4) {
+                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
+                    ++a1;
+                }
+                final double[] array = {0.06260000000000000015515, 0};
+                final int length = array.length;
+                int v0 = 0;
+                while (v0 < length) {
+                    final double v2 = array[v0];
+                    if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
+                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
+                                mc.thePlayer.posY + v2, mc.thePlayer.posZ,
+                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
+                    } else {
+                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + v2, mc.thePlayer.posZ, false));
                     }
-                    break;
-                case "Hypixel":
-                    double[] hypixeloffsets = new double[]{0.03500000014901161, 0.0, 0.03359999880194664, 0.0};
-                    int l = hypixeloffsets.length;
-                    for (int i = 0; i < l; ++i) {
-                        double offset = hypixeloffsets[i];
-                        if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                    mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
-                        } else {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
-                        }
-                    }
-                    break;
-                case "HVH":
-
-                    double[] offsets = new double[]{0.41888898688697815, 0.33320000767707825, 0.00120000005699695};
-                    int HVHl = offsets.length;
-                    for (int i = 0; i < HVHl; ++i) {
-                        double offset = offsets[i];
-                        if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                    mc.thePlayer.posY + offset, mc.thePlayer.posZ, KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
-                        } else {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offset, mc.thePlayer.posZ, false));
-                        }
-                    }
-                    break;
-                case "Packet":
-                    float random = (float) QuickMath.getRandomInRange(0.001,0.003);
-                    int a1 = 1;
-                    while (a1 <= 4) {
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
-                        ++a1;
-                    }
-                    final double[] array = {0.06260000000000332, 0.0+random};
-                    final int length = array.length;
-                    int v0 = 0;
-                    while (v0 < length) {
-                        final double v2 = array[v0];
-                        if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                    mc.thePlayer.posY + v2 , mc.thePlayer.posZ,
-                                    KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
-                        } else {
-                            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + v2  , mc.thePlayer.posZ, false));
-                        }
-                        ++v0;
-                    }
-                    break;
+                    ++v0;
+                    Client.sendMessage("暴击。");
+                }
+                break;
             }
-            if (this.mode.getValue().equals(CritMode.Packet)) {
-            } else if (!this.nodeelay.getValue()) {
-                this.timer.reset();
-            }
-
         }
-    }
+                this.timer.reset();
+        }
 
     enum CritMode {
         Packet,
-        Hypixel,
-        HVH,
-        Packet2;
     }
 }
 

@@ -1,6 +1,9 @@
 package net.minecraft.network.play.client;
 
 import java.io.IOException;
+
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventAttack;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -20,6 +23,12 @@ public class C02PacketUseEntity implements Packet<INetHandlerPlayServer>
 
     public C02PacketUseEntity(Entity entity, C02PacketUseEntity.Action action)
     {
+        if(action == Action.ATTACK){
+            EventAttack ent = new EventAttack(entity);
+            EventManager.postAll(ent);
+            if(ent.isCancelled())
+                return;
+        }
         this.entityId = entity.getEntityId();
         this.action = action;
     }

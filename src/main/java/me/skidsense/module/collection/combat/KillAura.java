@@ -298,10 +298,10 @@ public class KillAura extends Mod {
 			this.isBlocking = false;
 		}
 		++this.attackSpeed;
-		EventAttack ent = new EventAttack(target);
-		EventManager.postAll(ent);
-		if(ent.isCancelled())
-			return;
+//		EventAttack ent = new EventAttack(target);
+//		EventManager.postAll(ent);
+//		if(ent.isCancelled())
+//			return;
 		if(Client.getModuleManager().getModuleByClass(Critical.class).isEnabled() && Critical.canCrit()){
 			this.attackSpeed = 0;
 		}
