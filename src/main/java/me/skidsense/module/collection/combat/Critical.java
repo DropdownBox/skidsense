@@ -26,12 +26,11 @@ import java.awt.*;
 
 
 public class Critical extends Mod {
-    private static Mode <Enum> mode =new Mode<>("Mode","Mode",CritMode.values(),CritMode.Packet);
+    private static Mode<Enum> mode = new Mode("Mode", "Mode", CritMode.values(), CritMode.Packet);
     private static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
     private static Numbers<Double> ht = new Numbers<>("Hurttime", "Hurttime", 15.0, 0.0, 20.0, 1.0);
     private static TimerUtil timer = new TimerUtil();
     private EntityLivingBase lastTarget;
-
 
 
     public Critical() {
@@ -45,7 +44,7 @@ public class Critical extends Mod {
         if (canCrit() && lastTarget != ent.targetEntity) {
             doCrit(ent.targetEntity);
             lastTarget = (EntityLivingBase) ent.targetEntity;
-        }else if(canCrit() && ent.targetEntity.hurtResistantTime <= ht.getValue() && ent.targetEntity.hurtResistantTime>0){
+        } else if (canCrit() && ent.targetEntity.hurtResistantTime <= ht.getValue() && ent.targetEntity.hurtResistantTime > 0) {
             doCrit(ent.targetEntity);
         }
     }
@@ -60,43 +59,23 @@ public class Critical extends Mod {
                 && !mc.thePlayer.isInWater()
                 && !mc.thePlayer.isPotionActive(Potion.blindness)
                 && mc.thePlayer.ridingEntity == null
-                    && MoveUtil.isOnGround(0.001)
-                    && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
-                    && !Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()
-                    && !Client.getModuleManager().getModuleByClass(Scaffold.class).isEnabled()
-                    && Critical.timer.hasReached(delay.getValue());
+                && MoveUtil.isOnGround(0.001)
+                && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
+                && !Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()
+                && !Client.getModuleManager().getModuleByClass(Scaffold.class).isEnabled()
+                && Critical.timer.hasReached(delay.getValue());
     }
 
     public void doCrit(Entity e) {
-        switch(mode.getValue().toString()) {
-            case "Packet": {
-                int a1 = 1;
-                while (a1 <= 4) {
-                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
-                    ++a1;
-                }
-                final double[] array = {0.0626+QuickMath.getRandomInRange(0,0.00002), 0};
-                final int length = array.length;
-                int v0 = 0;
-                while (v0 < length) {
-                    final double v2 = array[v0];
-                    if (Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() && KillAura.target != null) {
-                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX,
-                                mc.thePlayer.posY + v2, mc.thePlayer.posZ,
-                                KillAura.rotateNCP(KillAura.target)[0], KillAura.rotateNCP(KillAura.target)[1], false));
-                    } else {
-                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + v2, mc.thePlayer.posZ, false));
-                    }
-                    ++v0;
-                }
-                break;
-            }
+        double[] offset = {0.4500000178813934, 0.00100002829999823, 0.04159994384107791, 0};
+        for (double d : offset) {
+            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, (mc.thePlayer.posY + d + QuickMath.getRandomInRange(-0.005, 0.005)), mc.thePlayer.posZ, false));
         }
-                this.timer.reset();
-        }
-
-    enum CritMode {
-        Packet,
+        this.timer.reset();
     }
-}
+        enum CritMode {
+            Packet,
+        }
+    }
+
 

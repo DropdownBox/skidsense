@@ -110,7 +110,7 @@ extends Mod {
             			if (m.getAnim() != -1) {
             				if(this.color.getValue()==colormode.Client) {
                         	//Gui.drawRect(RenderUtil.width(), y-1,x-m.getAnim()-5, y, new Color(220,20,20).getRGB());
-                        	Gui.drawRect(RenderUtil.width(), y+10,x-m.getAnim()-5, y+9, new Color(220,20,20,0).getRGB());
+                        	Gui.drawRect(RenderUtil.width(), y+15,x-m.getAnim()-5, y+9, new Color(220,20,20,0).getRGB());
                         	Gui.drawRect(RenderUtil.width(), y-1,x-m.getAnim()-4, y+10, new Color(12, 12, 12).getRGB());
                         	Gui.drawRect(x-m.getAnim()-5, y,x-m.getAnim()-4, y+9, new Color(220,20,20).getRGB());
                         	Client.fontManager.comfortaa18.drawStringWithShadow(m.getName()+m.getSuffix(), x-m.getAnim()-2, y-1,new Color(255,255,255).getRGB());
