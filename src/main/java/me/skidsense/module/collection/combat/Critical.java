@@ -1,6 +1,5 @@
 package me.skidsense.module.collection.combat;
 
-import com.sun.tools.corba.se.idl.toJavaPortable.Helper;
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
