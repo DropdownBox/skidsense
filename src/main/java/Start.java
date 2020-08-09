@@ -1,4 +1,4 @@
-import cf.kody.main.Main;
+import net.minecraft.client.main.Main;
 
 import java.util.Arrays;
 

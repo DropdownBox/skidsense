@@ -12,6 +12,8 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
+import me.skidsense.management.notifications.Notification;
+import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.player.Teams;
@@ -286,7 +288,7 @@ public class KillAura extends Mod {
 	public void attack() {
 		float modifierForCreature = EnchantmentHelper.getModifierForCreature(this.mc.thePlayer.getHeldItem(),
 				EnumCreatureAttribute.UNDEFINED);
-		if (this.mc.thePlayer.fallDistance > 0.0f && !this.mc.thePlayer.onGround && !this.mc.thePlayer.isOnLadder()
+		if (mc.thePlayer.fallDistance > 0.0f && !this.mc.thePlayer.onGround && !this.mc.thePlayer.isOnLadder()
 				&& !this.mc.thePlayer.isInWater() && !this.mc.thePlayer.isPotionActive(Potion.blindness)
 				&& this.mc.thePlayer.ridingEntity == null) {
 		}
@@ -305,9 +307,21 @@ public class KillAura extends Mod {
 		if(Client.getModuleManager().getModuleByClass(Critical.class).isEnabled() && Critical.canCrit()){
 			this.attackSpeed = 0;
 		}
-		this.mc.thePlayer.swingItem();
-		this.mc.thePlayer.sendQueue
-				.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+		mc.thePlayer.swingItem();
+		int stage = 1;
+		switch (stage){
+			case 1:{
+				mc.playerController.attackEntity(mc.thePlayer,target);
+				stage = 2;
+			}
+			case 2:
+				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+				stage = 1;
+				break;
+		}
+
+//		this.mc.thePlayer.sendQueue
+//				.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
 		if (this.mode.getValue() == AuraMode.Switch) {
 			++this.hit;
 			if (this.hit >= this.hitswitch.getValue()) {
@@ -450,7 +464,7 @@ public class KillAura extends Mod {
 	}
 
 	private int DistanceToEntity(Entity entity, Entity entity2) {
-		return (int) (entity.getDistanceToEntity(this.mc.thePlayer) - entity2.getDistanceToEntity(this.mc.thePlayer));
+		return (int) (entity.getDistanceToEntity(mc.thePlayer) - entity2.getDistanceToEntity(mc.thePlayer));
 	}
 
 	enum AuraPriority {

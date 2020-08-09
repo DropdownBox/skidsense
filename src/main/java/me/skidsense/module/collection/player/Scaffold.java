@@ -1,10 +1,8 @@
 package me.skidsense.module.collection.player;
 
 
-import me.skidsense.Client;
 import me.skidsense.color.Colors;
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender2D;
@@ -13,14 +11,16 @@ import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MoveUtil;
-import me.skidsense.util.PlayerUtil;
+import me.skidsense.util.PlaceInfo;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSnow;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -28,31 +28,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.potion.Potion;
+import net.minecraft.stats.StatList;
 import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
-
+import org.lwjgl.opengl.GL11;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Scaffold extends Mod {
-   ItemStack is;
    private BlockData blockData;
-   private timeHelper time = new timeHelper();
-   private timeHelper delay = new timeHelper();
    private timeHelper timer2 = new timeHelper();
-   public static Option<Boolean> tower = new Option<Boolean>("Tower", "Tower", true);
-   public static Option<Boolean> movetower = new Option<Boolean>("MoveTower", "MoveTower", false);
+   private Option<Boolean> tower = new Option<Boolean>("Tower", "Tower", true);
+   private Option<Boolean> movetower = new Option<Boolean>("MoveTower", "MoveTower", false);
    private Option<Boolean> noSwing = new Option<Boolean>("NoSwing", "NoSwing", true);
-   private Option<Boolean> esp = new Option<Boolean>("ESP", "ESP", false);
-   private Option<Boolean> slow = new Option ("SlowDown","SlowDown",false);
-   private Mode mode = new Mode("Priority", "Priority", Smode.values(), Smode.Hypixel);
-   private double olddelay;
-   int count, cubeSpoof = -1;
-   private BlockPos blockpos;
-   private float Disfall;
-   private EnumFacing facing;
+   private Option<Boolean> KeepRotation = new Option<Boolean>("KeepRotation", "KeepRotation", true);
    private List<Block> blacklisted = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava,
            Blocks.flowing_lava, Blocks.enchanting_table, Blocks.ender_chest, Blocks.yellow_flower, Blocks.carpet,
            Blocks.glass_pane, Blocks.stained_glass_pane, Blocks.iron_bars, Blocks.crafting_table, Blocks.snow_layer,
@@ -70,150 +61,134 @@ public class Scaffold extends Mod {
    public static List<Block> blacklistedBlocks = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water,
            Blocks.lava, Blocks.flowing_lava, Blocks.ender_chest, Blocks.enchanting_table, Blocks.stone_button,
            Blocks.wooden_button, Blocks.crafting_table, Blocks.beacon);
-   private boolean isRotated = false;
+   public static Option<Boolean> Lag = new Option<Boolean>("SpeedCheck","SpeedCheck", true);
+   public static Option<Boolean> auracheck = new Option<Boolean>("AuraCheck","AuraCheck", true);
+   public static Option<Boolean> safe = new Option<Boolean>("SafeWalk","SafeWalk", true);
    int slot;
-   private float animationY2;
-   private ItemStack currentlyHolding;
    static final int[] $SwitchMap$net$minecraft$util$EnumFacing = new int[EnumFacing.values().length];
 
    public Scaffold() {
-      super("Scaffold", new String[] { "Scaffold" }, ModuleType.Move);
+      super("Scaffold", new String[] { "ScaffoldWalk", "Scaffold" }, ModuleType.Player);
+   }
+   public static int getBlockCount() {
+
+      int blockCount = 0;
+      for (int i = 0; i < 45; i++) {
+         if (mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()) {
+            ItemStack is = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
+            Item item = is.getItem();
+            if (is.getItem() instanceof ItemBlock && isValid(item)) {
+               blockCount += is.stackSize;
+            }
+         }
+      }
+      return blockCount;
+   }
+   private static boolean isValid(Item item) {
+      if (!(item instanceof ItemBlock)) {
+         return false;
+      }
+      ItemBlock iBlock = (ItemBlock)item;
+      Block block = iBlock.getBlock();
+      if (blacklistedBlocks.contains(block)) {
+         return false;
+      }
+
+      return true;
    }
 
-   @Sub
-   public void onRender2D(EventRender2D event) {
-      ScaledResolution res = new ScaledResolution(mc);
-      FontRenderer font = mc.fontRendererObj;
-      int color = Colors.getColor(195, 0, 0, 255);
-      if (this.getBlockCount() >= 64 && 128 > this.getBlockCount()) {
-         color = Colors.getColor(195, 195, 0, 255);
-      } else if (this.getBlockCount() >= 128) {
-         color = Colors.getColor(0, 155, 0, 255);
-      }
-      GlStateManager.enableBlend();
-      font.drawStringWithShadow("" + this.getBlockCount(),
-              res.getScaledWidth() / 2 - font.getStringWidth(this.getBlockCount() + "") + 24,
-              res.getScaledHeight() / 2 - 3, color);
-      GlStateManager.disableBlend();
-   }
 
    @Sub
    public void onPre(EventPreUpdate event) {
       double x = mc.thePlayer.posX;
       double y = mc.thePlayer.posY - 1.0;
       double z = mc.thePlayer.posZ;
-      BlockPos underPos = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1, mc.thePlayer.posZ);
-      Block underBlock = mc.theWorld.getBlockState(underPos).getBlock();
       BlockPos blockBelow = new BlockPos(x, y, z);
       if (mc.thePlayer != null) {
          this.blockData = this.getBlockData(blockBelow, blacklistedBlocks);
-         float[] rot = this.getRotationsBlock(BlockData.position, BlockData.face);
-         event.pitch = rot[1];
-         event.yaw = rot[0];
-         mc.thePlayer.renderYawOffset = rot[0];
-         mc.thePlayer.rotationYawHead = rot[0];
          if (this.blockData == null) {
             this.blockData = this.getBlockData(blockBelow.offset(EnumFacing.DOWN), blacklistedBlocks);
          }
-         if (this.mc.theWorld.getBlockState(blockBelow = new BlockPos(x, y, z)).getBlock() == Blocks.air) {
-            if (this.blockData != null) {
-               if(slow.getValue()) {
-                  MoveUtil.setSpeed(0.03);
-               }
-            }
-            if (this.tower.getValue().booleanValue() && this.mc.gameSettings.keyBindJump.pressed) {
-               if (this.mode.getValue() == Smode.Hypixel) {
-                  if (this.movetower.getValue().booleanValue()) {
-                     if (this.mc.gameSettings.keyBindJump.pressed) {
-                        if (!mc.thePlayer.isPotionActive(Potion.jump))
-                           if (this.isMoving2()) {
-                              if (this.isOnGround(0.76) && !this.isOnGround(0.75)
-                                      && mc.thePlayer.motionY > 0.23
-                                      && mc.thePlayer.motionY < 0.25) {
-                                 mc.thePlayer.motionY = Math.round(mc.thePlayer.posY)
-                                         - mc.thePlayer.posY;
-                              }
-                              if (this.isOnGround(1.0E-4)) {
-                                 mc.thePlayer.motionY = 0.41993956416514;
-                                 mc.thePlayer.motionX *= 0.9;
-                                 mc.thePlayer.motionZ *= 0.9;
-                              } else if (mc.thePlayer.posY >= (double) Math
-                                      .round(mc.thePlayer.posY) - 1.0E-4
-                                      && mc.thePlayer.posY <= (double) Math
-                                      .round(mc.thePlayer.posY) + 1.0E-4) {
-                                 mc.thePlayer.motionY = 0.0;
-                              }
-                           } else {
-                              mc.thePlayer.motionX = 0.0;
-                              mc.thePlayer.motionZ = 0.0;
-                              mc.thePlayer.jumpMovementFactor = 0.0f;
-                              blockBelow = new BlockPos(x, y, z);
-                              if (this.mc.theWorld.getBlockState(blockBelow).getBlock() == Blocks.air
-                                      && this.blockData != null) {
-                                 mc.thePlayer.motionY = 0.4195751556457;
-                                 mc.thePlayer.motionX *= 0.75;
-                                 mc.thePlayer.motionZ *= 0.75;
-                              }
-                           }
+         if (this.tower.getValue().booleanValue()) {
+            if (this.movetower.getValue().booleanValue()) {
+               if (mc.gameSettings.keyBindJump.isKeyDown()) {
+                  if (this.isMoving2()) {
+                     if (this.isOnGround(0.76) && !this.isOnGround(0.75) && mc.thePlayer.motionY > 0.23
+                             && mc.thePlayer.motionY < 0.25) {
+                        fakeJump();
+
+                        mc.thePlayer.motionY = (double) Math.round(mc.thePlayer.posY) - mc.thePlayer.posY;
                      }
-                  } else if (!this.isMoving2() && this.mc.gameSettings.keyBindJump.pressed) {
+                     if (this.isOnGround(1.0E-4)) {
+                        fakeJump();
+                        mc.thePlayer.motionY = 0.42;
+                        mc.thePlayer.motionX *= 0.9;
+                        mc.thePlayer.motionZ *= 0.9;
+                     } else if (mc.thePlayer.posY >= (double) Math.round(mc.thePlayer.posY) - 1.0E-4
+                             && mc.thePlayer.posY <= (double) Math.round(mc.thePlayer.posY) + 1.0E-4) {
+                        fakeJump();
+                        mc.thePlayer.motionY = 0.0;
+                     }
+                  } else {
+                     fakeJump();
                      mc.thePlayer.motionX = 0.0;
                      mc.thePlayer.motionZ = 0.0;
                      mc.thePlayer.jumpMovementFactor = 0.0f;
                      blockBelow = new BlockPos(x, y, z);
-                     if (this.mc.theWorld.getBlockState(blockBelow).getBlock() == Blocks.air
+                     if (mc.theWorld.getBlockState(blockBelow).getBlock() == Blocks.air
                              && this.blockData != null) {
                         mc.thePlayer.motionY = 0.4196;
                         mc.thePlayer.motionX *= 0.75;
                         mc.thePlayer.motionZ *= 0.75;
                      }
                   }
-               } else if (this.mode.getValue() == Smode.Normal) {
-                  if (isAirBlock(underBlock) && this.blockData != null) {
-                     mc.thePlayer.motionY = 0.4196;
-                     mc.thePlayer.motionX *= 0.75;
-                     mc.thePlayer.motionZ *= 0.75;
-                  }
-                  if (!PlayerUtil.isMoving2()) {
-                     mc.thePlayer.motionX = 0;
-                     mc.thePlayer.motionZ = 0;
-                  }
+               }
+            } else if (!this.isMoving2() && mc.gameSettings.keyBindJump.isKeyDown()) {
+               fakeJump();
+               mc.thePlayer.motionX = 0.0;
+               mc.thePlayer.motionZ = 0.0;
+               mc.thePlayer.jumpMovementFactor = 0.0f;
+               blockBelow = new BlockPos(x, y, z);
+               if (mc.theWorld.getBlockState(blockBelow).getBlock() == Blocks.air && this.blockData != null) {
+                  mc.thePlayer.motionY = 0.4196;
+                  mc.thePlayer.motionX *= 0.75;
+                  mc.thePlayer.motionZ *= 0.75;
                }
             }
          }
-      }
-      if (this.tower.getValue().booleanValue() && this.mc.gameSettings.keyBindJump.pressed) {
-         if (this.mode.getValue() == Smode.CubeCraft) {
-            mc.thePlayer.setSprinting(false);
-            count++;
-            mc.thePlayer.motionX = 0;
-            mc.thePlayer.motionZ = 0;
-            mc.thePlayer.jumpMovementFactor = 0;
-            if (MoveUtil.isOnGround(2))
-               if (count == 1) {
-                  mc.thePlayer.motionY = 0.41;
-               } else {
+         float random = (float)this.randomNumber(-13, 13);
+         //System.out.println(random);
+         if(KeepRotation.getValue())
+         {
+            float[] rot = this.getRotationsBlock(BlockData.position, BlockData.face);
+            event.setPitch(rot[1]);
+            event.setYaw(rot[0]+random);
+         }
+         if (mc.theWorld.getBlockState(blockBelow = new BlockPos(x, y, z)).getBlock() == Blocks.air) {
+            if (this.blockData != null) {
+               if(!KeepRotation.getValue())
+               {
+                  float[] rot = this.getRotationsBlock(BlockData.position, BlockData.face);
 
-                  mc.thePlayer.motionY = 0.47;
-                  count = 0;
+                  event.setPitch(rot[1]);
+                  event.setYaw(rot[0]+random);
                }
-         } else if (this.mode.getValue() == Smode.Normal) {
-            if (isAirBlock(underBlock) && this.blockData != null) {
-               mc.thePlayer.motionY = 0.4196;
-               mc.thePlayer.motionX *= 0.75;
-               mc.thePlayer.motionZ *= 0.75;
-            }
-            if (!PlayerUtil.isMoving2()) {
-               mc.thePlayer.motionX = 0;
-               mc.thePlayer.motionZ = 0;
+               if (this.noSwing.getValue().booleanValue()) {
+                  mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+               } else {
+                  mc.thePlayer.swingItem();
+               }
             }
          }
       }
    }
-
+   public static double randomNumber(double max, double min) {
+      return (Math.random() * (max - min)) + min;
+   }
    public boolean isOnGround(double height) {
-      if (!this.mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer,
-              mc.thePlayer.getEntityBoundingBox().offset(0.0, -height, 0.0)).isEmpty()) {
+      if (!mc.theWorld
+              .getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(0.0, -height, 0.0))
+              .isEmpty()) {
          return true;
       }
       return false;
@@ -223,28 +198,32 @@ public class Scaffold extends Mod {
       return mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f;
    }
 
-   public float[] getRotationsBlock(BlockPos block, EnumFacing face) {
-      double x = (double) block.getX() + 0.5 - mc.thePlayer.posX + (double) face.getFrontOffsetX() / 2.0;
-      double z = (double) block.getZ() + 0.5 - mc.thePlayer.posZ + (double) face.getFrontOffsetZ() / 2.0;
-      double y = (double) block.getY() + 0.5;
-      double d1 = mc.thePlayer.posY + (double) mc.thePlayer.getEyeHeight() - y;
-      double d3 = MathHelper.sqrt_double(x * x + z * z);
-      float yaw = (float) (Math.atan2(z, x) * 180.0 / 3.141592653589793) - 90.0f;
-      float pitch = (float) (Math.atan2(d1, d3) * 180.0 / 3.141592653589793);
-      if (yaw < 0.0f) {
-         yaw += 360.0f;
-      }
-      return new float[] { yaw, pitch };
+   private void fakeJump() {
+      mc.thePlayer.isAirBorne = true;
+      mc.thePlayer.triggerAchievement(StatList.jumpStat);
    }
 
+
+   public static float[] getRotationsBlock(BlockPos block, EnumFacing face) {
+      double x = block.getX() + 0.5 - mc.thePlayer.posX +  (double) face.getFrontOffsetX()/2;
+      double z = block.getZ() + 0.5 - mc.thePlayer.posZ +  (double) face.getFrontOffsetZ()/2;
+      double y = (block.getY() + 0.5);
+      double d1 = mc.thePlayer.posY + mc.thePlayer.getEyeHeight() - y;
+      double d3 = MathHelper.sqrt_double(x * x + z * z);
+      float yaw = (float) (Math.atan2(z, x) * 180.0D / Math.PI) - 90.0F;
+      float pitch = (float) (Math.atan2(d1, d3) * 180.0D / Math.PI);
+      if (yaw < 0.0F) {
+         yaw += 360f;
+      }
+      return new float[]{yaw, pitch};
+   }
    @Sub
    public void onSafe(EventPostUpdate event) {
       int i;
       for (i = 36; i < 45; ++i) {
-
          Item item;
          if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()
-                 || !((item = (is = mc.thePlayer.inventoryContainer.getSlot(i).getStack())
+                 || !((item = (mc.thePlayer.inventoryContainer.getSlot(i).getStack())
                  .getItem()) instanceof ItemBlock)
                  || this.blacklisted.contains(((ItemBlock) item).getBlock())
                  || ((ItemBlock) item).getBlock().getLocalizedName().toLowerCase().contains("chest")
@@ -253,33 +232,17 @@ public class Scaffold extends Mod {
          int currentItem = mc.thePlayer.inventory.currentItem;
          mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(i - 36));
          mc.thePlayer.inventory.currentItem = i - 36;
-         this.currentlyHolding = this.mc.thePlayer.inventory.getStackInSlot(i - 36);
          mc.playerController.updateController();
-         mc.playerController.onPlayerRightClick(mc.thePlayer, this.mc.theWorld,
-                 mc.thePlayer.getHeldItem(), BlockData.position, BlockData.face,
-                 new Vec3(BlockData.access$2(this.blockData)).addVector(0.5, 0.5, 0.5)
-                         .add(new Vec3(BlockData.access$3(this.blockData).getDirectionVec()).scale((float) 0.5)));
-         if (this.noSwing.getValue().booleanValue()) {
-            mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
-         } else {
-            mc.thePlayer.swingItem();
+         try {
+            mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(),
+                    BlockData.position, BlockData.face,
+                    new Vec3(BlockData.access$2(this.blockData)).addVector(0.5, 0.5, 0.5)
+                            .add(scale(new Vec3(BlockData.access$3(this.blockData).getDirectionVec()), 0.5)));
+         } catch (Exception exception) {
+            // empty catch block
          }
-         if (this.mode.getValue() == Smode.CubeCraft) {
-            if (cubeSpoof != currentItem) {
-
-               C09PacketHeldItemChange p = new C09PacketHeldItemChange(currentItem);
-               cubeSpoof = currentItem;
-               mc.thePlayer.sendQueue.getNetworkManager().sendPacket(p);
-               mc.thePlayer.inventory.currentItem = currentItem;
-               mc.playerController.updateController();
-            } else {
-               mc.thePlayer.inventory.currentItem = currentItem;
-               mc.playerController.updateController();
-            }
-         } else {
-            mc.thePlayer.inventory.currentItem = currentItem;
-            mc.playerController.updateController();
-         }
+         mc.thePlayer.inventory.currentItem = currentItem;
+         mc.playerController.updateController();
          return;
       }
       if (this.invCheck()) {
@@ -295,58 +258,22 @@ public class Scaffold extends Mod {
             break;
          }
       }
-
    }
 
-//   public void setSpeed() {
-//      if (this.mode.getValue() == Smode.CubeCraft)
-//         mc.thePlayer.onGround = false;
-//      mc.thePlayer.jumpMovementFactor = 0;
-//      double forward = mc.thePlayer.movementInput.moveForward;
-//      double strafe = mc.thePlayer.movementInput.moveStrafe;
-//      float YAW = mc.thePlayer.rotationYaw;
-//      double a = (forward * 0.45 * Math.cos(Math.toRadians(YAW + 90.0f))
-//              + strafe * 0.45 * Math.sin(Math.toRadians(YAW + 90.0f)));
-//      double b = (forward * 0.45 * Math.sin(Math.toRadians(YAW + 90.0f))
-//              - strafe * 0.45 * Math.cos(Math.toRadians(YAW + 90.0f)));
-//      double c = Math.abs((a * b));
-//      double slow = 1 - c * 5;
-//      double speed = 0.35 + randomNumber(0.01, -0.05);
-//      speed *= slow;
-//      MoveUtil.setMotion(speed);
-//      mc.thePlayer.setSprinting(false);
-//   }
-
-//   public void SlowDown(){
-//      if (this.mode.getValue() == Smode.CubeCraft)
-//         mc.thePlayer.onGround = false;
-//      mc.thePlayer.jumpMovementFactor = 0;
-//      double forward = mc.thePlayer.movementInput.moveForward;
-//      double strafe = mc.thePlayer.movementInput.moveStrafe;
-//      float YAW = mc.thePlayer.rotationYaw;
-//      double a = (forward * 0.45 * Math.cos(Math.toRadians(YAW + 90.0f))
-//              + strafe * 0.45 * Math.sin(Math.toRadians(YAW + 90.0f)));
-//      double b = (forward * 0.45 * Math.sin(Math.toRadians(YAW + 90.0f))
-//              - strafe * 0.45 * Math.cos(Math.toRadians(YAW + 90.0f)));
-//      double c = Math.abs((a * b));
-//      double slow = 1 - c * 5;
-//      double speed = 0.35 + randomNumber(0.01, -0.05);
-//      speed *= slow;
-//      MoveUtil.setMotion(speed);
-//   }
-
+   public static float randomFloat(long seed) {
+      seed = System.currentTimeMillis() + seed;
+      return 0.3f + (float) new Random(seed).nextInt(70000000) / 1.0E8f + 1.458745E-8f;
+   }
 
    protected void swap(int slot, int hotbarNum) {
-      mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotbarNum, 2,
-              mc.thePlayer);
+      mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotbarNum, 2, mc.thePlayer);
    }
 
    private boolean invCheck() {
       for (int i = 36; i < 45; ++i) {
          Item item;
          if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()
-                 || !((item = mc.thePlayer.inventoryContainer.getSlot(i).getStack()
-                 .getItem()) instanceof ItemBlock)
+                 || !((item = mc.thePlayer.inventoryContainer.getSlot(i).getStack().getItem()) instanceof ItemBlock)
                  || this.blacklisted.contains(((ItemBlock) item).getBlock()))
             continue;
          return false;
@@ -354,157 +281,96 @@ public class Scaffold extends Mod {
       return true;
    }
 
-   private double getDoubleRandom(double min, double max) {
-      return ThreadLocalRandom.current().nextDouble(min, max);
-   }
-
-   private boolean canPlace(EntityPlayerSP player, WorldClient worldIn, ItemStack heldStack, BlockPos hitPos,
-                            EnumFacing side, Vec3 vec3) {
-      if (heldStack.getItem() instanceof ItemBlock) {
-         return ((ItemBlock) heldStack.getItem()).canPlaceBlockOnSide(worldIn, hitPos, side, player, heldStack);
-      }
-      return false;
-   }
-
-//    private void setBlockAndFacing(BlockPos bp) {
-//        if (this.mc.theWorld.getBlockState(bp.add(0, -1, 0)).getBlock() != Blocks.air) {
-//            this.blockpos = bp.add(0, -1, 0);
-//            this.facing = EnumFacing.UP;
-//        } else if (this.mc.theWorld.getBlockState(bp.add(-1, 0, 0)).getBlock() != Blocks.air) {
-//            this.blockpos = bp.add(-1, 0, 0);
-//            this.facing = EnumFacing.EAST;
-//        } else if (this.mc.theWorld.getBlockState(bp.add(1, 0, 0)).getBlock() != Blocks.air) {
-//            this.blockpos = bp.add(1, 0, 0);
-//            this.facing = EnumFacing.WEST;
-//        } else if (this.mc.theWorld.getBlockState(bp.add(0, 0, -1)).getBlock() != Blocks.air) {
-//            this.blockpos = bp.add(0, 0, -1);
-//            this.facing = EnumFacing.SOUTH;
-//        } else if (this.mc.theWorld.getBlockState(bp.add(0, 0, 1)).getBlock() != Blocks.air) {
-//            this.blockpos = bp.add(0, 0, 1);
-//            this.facing = EnumFacing.NORTH;
-//        } else {
-//            bp = null;
-//            this.facing = null;
-//        }
-//    }
-
-   private int getBlockCount() {
-      int blockCount = 0;
-      for (int i = 0; i < 45; ++i) {
-         if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack())
-            continue;
-         ItemStack is = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
-         Item item = is.getItem();
-         if (!(is.getItem() instanceof ItemBlock) || this.blacklisted.contains(((ItemBlock) item).getBlock()))
-            continue;
-         blockCount += is.stackSize;
-      }
-      return blockCount;
-   }
-
-   private int getBlockSlot() {
-      for (int i = 36; i < 45; ++i) {
-         ItemStack itemStack = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
-         if (itemStack == null || !(itemStack.getItem() instanceof ItemBlock) || itemStack.stackSize <= 0
-                 || this.blacklisted.stream().anyMatch(e -> e.equals(((ItemBlock) itemStack.getItem()).getBlock())))
-            continue;
-         return i - 36;
-      }
-      return -1;
+   public Vec3 scale(Vec3 t, double p_186678_1_) {
+      return new Vec3(t.xCoord * p_186678_1_, t.yCoord * p_186678_1_, t.zCoord * p_186678_1_);
    }
 
    private BlockData getBlockData(BlockPos pos, List list) {
-      Disfall = mc.thePlayer.fallDistance;
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(0, -1, 0)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(pos.add(0, -1, 0)).getBlock())) {
          return new BlockData(pos.add(0, -1, 0), EnumFacing.UP, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(-1, 0, 0)).getBlock())) {
-
-         return new BlockData(pos.add(-1, 0, 0), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                 && mc.thePlayer.onGround && mc.thePlayer.fallDistance == 0.0f
-                 && this.mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX,
-                 mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).getBlock() == Blocks.air
-                 ? EnumFacing.DOWN
-                 : EnumFacing.EAST,
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(pos.add(-1, 0, 0)).getBlock())) {
+         return new BlockData(pos.add(-1, 0, 0), mc.gameSettings.keyBindSprint.isKeyDown() && mc.thePlayer.onGround
+                 && mc.thePlayer.fallDistance == 0.0f
+                 && mc.theWorld
+                 .getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ))
+                 .getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.EAST,
                  this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(1, 0, 0)).getBlock())) {
-         return new BlockData(pos.add(1, 0, 0), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                 && mc.thePlayer.onGround && mc.thePlayer.fallDistance == 0.0f
-                 && this.mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX,
-                 mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).getBlock() == Blocks.air
-                 ? EnumFacing.DOWN
-                 : EnumFacing.WEST,
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(pos.add(1, 0, 0)).getBlock())) {
+         return new BlockData(pos.add(1, 0, 0), mc.gameSettings.keyBindSprint.isKeyDown() && mc.thePlayer.onGround
+                 && mc.thePlayer.fallDistance == 0.0f
+                 && mc.theWorld
+                 .getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ))
+                 .getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.WEST,
                  this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(0, 0, -1)).getBlock())) {
-         return new BlockData(pos.add(0, 0, -1), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                 && mc.thePlayer.onGround && mc.thePlayer.fallDistance == 0.0f
-                 && this.mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX,
-                 mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).getBlock() == Blocks.air
-                 ? EnumFacing.DOWN
-                 : EnumFacing.SOUTH,
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(pos.add(0, 0, -1)).getBlock())) {
+         return new BlockData(pos.add(0, 0, -1), mc.gameSettings.keyBindSprint.isKeyDown() && mc.thePlayer.onGround
+                 && mc.thePlayer.fallDistance == 0.0f
+                 && mc.theWorld
+                 .getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ))
+                 .getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.SOUTH,
                  this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(pos.add(0, 0, 1)).getBlock())) {
-         return new BlockData(pos.add(0, 0, 1), Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                 && mc.thePlayer.onGround && mc.thePlayer.fallDistance == 0.0f
-                 && this.mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX,
-                 mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).getBlock() == Blocks.air
-                 ? EnumFacing.DOWN
-                 : EnumFacing.NORTH,
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(pos.add(0, 0, 1)).getBlock())) {
+         return new BlockData(pos.add(0, 0, 1), mc.gameSettings.keyBindSprint.isKeyDown() && mc.thePlayer.onGround
+                 && mc.thePlayer.fallDistance == 0.0f
+                 && mc.theWorld
+                 .getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ))
+                 .getBlock() == Blocks.air ? EnumFacing.DOWN : EnumFacing.NORTH,
                  this.blockData);
       }
       BlockPos add = pos.add(-1, 0, 0);
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add.add(-1, 0, 0)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add.add(-1, 0, 0)).getBlock())) {
          return new BlockData(add.add(-1, 0, 0), EnumFacing.EAST, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add.add(1, 0, 0)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add.add(1, 0, 0)).getBlock())) {
          return new BlockData(add.add(1, 0, 0), EnumFacing.WEST, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add.add(0, 0, -1)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add.add(0, 0, -1)).getBlock())) {
          return new BlockData(add.add(0, 0, -1), EnumFacing.SOUTH, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add.add(0, 0, 1)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add.add(0, 0, 1)).getBlock())) {
          return new BlockData(add.add(0, 0, 1), EnumFacing.NORTH, this.blockData);
       }
       BlockPos add2 = pos.add(1, 0, 0);
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add2.add(-1, 0, 0)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add2.add(-1, 0, 0)).getBlock())) {
          return new BlockData(add2.add(-1, 0, 0), EnumFacing.EAST, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add2.add(1, 0, 0)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add2.add(1, 0, 0)).getBlock())) {
          return new BlockData(add2.add(1, 0, 0), EnumFacing.WEST, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add2.add(0, 0, -1)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add2.add(0, 0, -1)).getBlock())) {
          return new BlockData(add2.add(0, 0, -1), EnumFacing.SOUTH, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add2.add(0, 0, 1)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add2.add(0, 0, 1)).getBlock())) {
          return new BlockData(add2.add(0, 0, 1), EnumFacing.NORTH, this.blockData);
       }
       BlockPos add3 = pos.add(0, 0, -1);
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add3.add(-1, 0, 0)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add3.add(-1, 0, 0)).getBlock())) {
          return new BlockData(add3.add(-1, 0, 0), EnumFacing.EAST, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add3.add(1, 0, 0)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add3.add(1, 0, 0)).getBlock())) {
          return new BlockData(add3.add(1, 0, 0), EnumFacing.WEST, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add3.add(0, 0, -1)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add3.add(0, 0, -1)).getBlock())) {
          return new BlockData(add3.add(0, 0, -1), EnumFacing.SOUTH, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add3.add(0, 0, 1)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add3.add(0, 0, 1)).getBlock())) {
          return new BlockData(add3.add(0, 0, 1), EnumFacing.NORTH, this.blockData);
       }
       BlockPos add4 = pos.add(0, 0, 1);
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add4.add(-1, 0, 0)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add4.add(-1, 0, 0)).getBlock())) {
          return new BlockData(add4.add(-1, 0, 0), EnumFacing.EAST, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add4.add(1, 0, 0)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add4.add(1, 0, 0)).getBlock())) {
          return new BlockData(add4.add(1, 0, 0), EnumFacing.WEST, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add4.add(0, 0, -1)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add4.add(0, 0, -1)).getBlock())) {
          return new BlockData(add4.add(0, 0, -1), EnumFacing.SOUTH, this.blockData);
       }
-      if (!blacklistedBlocks.contains(this.mc.theWorld.getBlockState(add4.add(0, 0, 1)).getBlock())) {
+      if (!blacklistedBlocks.contains(mc.theWorld.getBlockState(add4.add(0, 0, 1)).getBlock())) {
          return new BlockData(add4.add(0, 0, 1), EnumFacing.NORTH, this.blockData);
       }
       return null;
@@ -540,9 +406,35 @@ public class Scaffold extends Mod {
    @Override
    public void onDisable() {
       super.onDisable();
-      mc.thePlayer.sendQueue
-              .addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-      mc.timer.timerSpeed = 1.0f;
+      mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+   }
+
+   static {
+      try {
+         Scaffold.$SwitchMap$net$minecraft$util$EnumFacing[EnumFacing.UP.ordinal()] = 1;
+      } catch (NoSuchFieldError noSuchFieldError) {
+         // empty catch block
+      }
+      try {
+         Scaffold.$SwitchMap$net$minecraft$util$EnumFacing[EnumFacing.SOUTH.ordinal()] = 2;
+      } catch (NoSuchFieldError noSuchFieldError) {
+         // empty catch block
+      }
+      try {
+         Scaffold.$SwitchMap$net$minecraft$util$EnumFacing[EnumFacing.NORTH.ordinal()] = 3;
+      } catch (NoSuchFieldError noSuchFieldError) {
+         // empty catch block
+      }
+      try {
+         Scaffold.$SwitchMap$net$minecraft$util$EnumFacing[EnumFacing.EAST.ordinal()] = 4;
+      } catch (NoSuchFieldError noSuchFieldError) {
+         // empty catch block
+      }
+      try {
+         Scaffold.$SwitchMap$net$minecraft$util$EnumFacing[EnumFacing.WEST.ordinal()] = 5;
+      } catch (NoSuchFieldError noSuchFieldError) {
+         // empty catch block
+      }
    }
 
    public class timeHelper {
@@ -578,22 +470,6 @@ public class Scaffold extends Mod {
          BlockData.face = face;
       }
 
-      private BlockPos getPosition() {
-         return position;
-      }
-
-      private EnumFacing getFacing() {
-         return face;
-      }
-
-      static BlockPos access$0(BlockData var0) {
-         return var0.getPosition();
-      }
-
-      static EnumFacing access$1(BlockData var0) {
-         return var0.getFacing();
-      }
-
       static BlockPos access$2(BlockData var0) {
          return position;
       }
@@ -601,11 +477,6 @@ public class Scaffold extends Mod {
       static EnumFacing access$3(BlockData var0) {
          return face;
       }
-   }
-
-   public static enum Smode {
-      Normal, Hypixel, CubeCraft,
-
    }
 
 }

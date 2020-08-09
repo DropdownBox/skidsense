@@ -12,7 +12,6 @@ import me.skidsense.management.fontRenderer.FontManager;
 import me.skidsense.module.Mod;
 import me.skidsense.module.collection.visual.TabGUI;
 import me.skidsense.util.ChatUtil;
-import me.theresa.music.MusicMgr;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockVine;
@@ -33,7 +32,6 @@ public class Client {
 	private CommandManager commandmanager;
 	private AltManager altmanager;
 	private FriendManager friendmanager;
-	private MusicMgr musicmgr;
 	public static FontManager fontMgr;
 	public static FontManager fontManager;
 	private TabGUI tabui;
@@ -52,7 +50,6 @@ public class Client {
 		this.tabui = new TabGUI();
 		this.tabui.init();
 		modulemanager = new ModManager();
-		this.musicmgr = new MusicMgr();
 		modulemanager.init();
 		this.altmanager = new AltManager();
 		AltManager.init();

@@ -1,6 +1,5 @@
 package me.skidsense.module.collection.combat;
 
-import com.sun.tools.corba.se.idl.toJavaPortable.Helper;
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
@@ -76,7 +75,7 @@ public class Critical extends Mod {
                     mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(false));
                     ++a1;
                 }
-                final double[] array = {0.06260000000000000015515, 0};
+                final double[] array = {0.0626+QuickMath.getRandomInRange(0,0.00002), 0};
                 final int length = array.length;
                 int v0 = 0;
                 while (v0 < length) {
@@ -89,7 +88,6 @@ public class Critical extends Mod {
                         mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + v2, mc.thePlayer.posZ, false));
                     }
                     ++v0;
-                    Client.sendMessage("暴击。");
                 }
                 break;
             }
