@@ -1,299 +1,229 @@
 package me.skidsense.module.collection.move;
 
-import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPacketRecieve;
 import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.hooks.value.Event;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.combat.KillAura;
-import me.skidsense.util.BlockUtil;
-import me.skidsense.util.MathUtil;
-import me.skidsense.util.MoveUtil;
-import me.skidsense.util.TimerUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.Entity;
-import net.minecraft.init.Blocks;
+import me.skidsense.util.*;
+import net.minecraft.block.BlockStairs;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.potion.Potion;
+import net.minecraft.stats.StatList;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.Timer;
 
 import java.awt.*;
 import java.util.List;
 
+public class Speed extends Mod {
 
-public class Speed
-        extends Mod {
-    private Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[])SpeedMode.values(), (Enum)SpeedMode.HypixelHop);
-    private Mode<Enum> MotionMode = new Mode("MotionMode", "MotionMode", (Enum[])Motions.values(), (Enum)Motions.Basic);
-    private boolean firstJump;
-    private boolean waitForGround;
-    public static Option<Boolean> setback = new Option<Boolean> ("SetBack", "SetBack", true);
-    private static int stage;
+    private Mode<Enum> mode = new Mode("Mode", "mode", SpeedMode.values(), SpeedMode.HypixelHop);
+    private Option<Boolean> setback = new Option("Setback","Setback",false);
+
+    private int stage;
     private double movementSpeed;
-    private double lastDist;
-    public boolean shouldslow = false;
-    TimerUtil timer = new TimerUtil();
-    TimerUtil lastCheck = new TimerUtil();
-    boolean collided;
-    boolean lessSlow;
-    double less;
-    double stair;
-    private double speed;
-    private double movespeed;
-    public double slow;
-    double xDist;
-    double zDist;
-    float yaw;
     private double distance;
-    private int ticks;
+    private double speed, speedvalue;
+    private double lastDist;
+    public static int  aacCount;
+    boolean collided,lessSlow,shouldslow = false;
+    double less, stair;
+    TimerUtil lastCheck = new TimerUtil();
+
+
+
 
     public Speed() {
-        super("Speed", new String[]{"zoom"}, ModuleType.Move);
-        this.setColor(new Color(99, 248, 91).getRGB());
+        super("Speed", new String[] { "zoom" }, ModuleType.Move);
+        setColor(new Color(99, 248, 91).getRGB());
     }
-    @Override
-    public void onEnable() {
-        firstJump = true;
-        mc.timer.timerSpeed=1;
-        this.movementSpeed = this.defaultSpeed();
-        this.lastDist = 0.0D;
-        boolean player = Minecraft.getMinecraft().thePlayer == null;
-        slow = randomNumber(1000,2000)/100000F;
-        this.stage = 0;
-        this.mc.timer.timerSpeed = 1.0f;
-        super.onEnable();
-    }
-    public static int randomNumber(int max, int min) {
-        return Math.round((float)min + (float)Math.random() * (float)(max - min));
-    }
+
+    private TimerUtil timer = new TimerUtil();
+
     @Override
     public void onDisable() {
-        this.mc.timer.timerSpeed = 1.0f;
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.getKeyCode(),false);
+        mc.timer.timerSpeed = 1.0f;
         super.onDisable();
     }
 
-    @Sub
-    public void onPre(EventPreUpdate e) {
-        this.setSuffix(this.mode.getValue());
-        xDist = (mc.thePlayer.posX - mc.thePlayer.prevPosX);
-        zDist = (mc.thePlayer.posZ - mc.thePlayer.prevPosZ);
-        this.lastDist = Math.sqrt(xDist * xDist + zDist * zDist);
-        if(mode.getValue().equals(SpeedMode.AAC)){
-            if(MoveUtil.isMoving()) {
-                if(mc.thePlayer.hurtTime <= 0) {
-                    if(mc.thePlayer.onGround) {
-                        waitForGround = false;
-                        if(!firstJump)
-                            firstJump = true;
-                        mc.thePlayer.jump();
-                        mc.thePlayer.motionY = 0.41;
-                    }else{
-                        if(waitForGround)
-                            return;
-                        if(mc.thePlayer.isCollidedHorizontally)
-                            return;
-                        firstJump = false;
-                        mc.thePlayer.motionY -= 0.0149;
-                    }
+    @Override
+    public void  onEnable(){
+        super.onEnable();
+    }
 
-                }else{
-                    firstJump = true;
-                    waitForGround = true;
-                }
-            }else{
-                mc.thePlayer.motionZ = 0;
-                mc.thePlayer.motionX = 0;
+    private boolean canZoom() {
+        return MoveUtil.isMoving() && mc.thePlayer.onGround;
+    }
+
+    @Sub
+    private void onUpdate(EventPreUpdate e) {
+        setSuffix(mode.getValue());
+        if(mode.getValue().equals(SpeedMode.HypixelHop)){
+            final double var7 = mc.thePlayer.posX - mc.thePlayer.prevPosX;
+            final double zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ;
+            this.distance = Math.sqrt(var7 * var7 + zDist * zDist);
+        }else
+        if (mode.getValue() == SpeedMode.Onground && canZoom()) {
+            switch (this.stage) {
+                case 1:
+                    e.setY(e.getY() + 0.4D);
+                    e.setOnGround(false);
+                    this.stage += 1;
+                    break;
+                case 2:
+                    e.setY(e.getY() + 0.4D);
+                    e.setOnGround(false);
+                    this.stage += 1;
+                    break;
+                default:
+                    this.stage = 1;
+                    break;
+
+                // this.momentum = ((float) EntityHelper.getNormalMovementSpeed());
             }
-            final double speed = MoveUtil.getBaseMoveSpeed();
-            mc.thePlayer.motionX = -(Math.sin(MoveUtil.getDirection()) * speed);
-            mc.thePlayer.motionZ = Math.cos(MoveUtil.getDirection()) * speed;
-        }else if (mode.getValue() == SpeedMode.OtherHypixelHop){
-            double xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX;
-            double zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ;
-            this.lastDist = Math.sqrt(xDist * xDist + zDist * zDist);
         }
     }
+
     @Sub
     public void onPacket(EventPacketRecieve e) {
-        if(e.getPacket() instanceof S08PacketPlayerPosLook&&setback.getValue()) {
-            this.setEnabled(false);
+        if(setback.getValue()) {
+            if (e.getPacket() instanceof S08PacketPlayerPosLook) {
+                this.setEnabled(false);
+            }
         }
     }
-    List getCollidingList(double motionY){
-        return this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer, this.mc.thePlayer.boundingBox.offset(0.0, motionY, 0.0));
-    }
+
+    // Hypixel Mode
     @Sub
-    public void onHypixelMove(EventMove em) {
-        if (mode.getValue() == SpeedMode.HypixelHop) {
-            if (this.stage == 1)
-                stage++;
-            double arithmo = getMotion();
-            if (mc.thePlayer.isPotionActive(Potion.jump)) {
-                arithmo += (double) ((float) (mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
-            }
-            if (this.canZoom() && this.stage == 2
-                    && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
-                this.mc.thePlayer.motionY = arithmo;
-                em.setY(mc.thePlayer.motionY);
-                this.movementSpeed *= 1.674415;
-            } else if (this.stage == 3) {
-                double diff = (0.666 + movementSpeed * 0.07) * (this.lastDist - this.defaultSpeed());
-                this.movementSpeed = this.lastDist - diff;
-            } else {
-                if (getCollidingList(em.getY()).size() > 0
-                        || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
-                    this.stage = MoveUtil.isMoving() ? 1 : 0;
+    private void onMove(EventMove e) {
+        switch (mode.getValue().toString()){
+            case "HypixelHop": {
+                if (mc.thePlayer.isCollidedHorizontally) {
+                    this.collided = true;
                 }
-                this.movementSpeed = this.lastDist
-                        - this.lastDist / 159.21;
-            }
-            this.movementSpeed = Math.max(this.movementSpeed, this.defaultSpeed());
-            if (Client.instance.getModuleManager().getModuleByClass( AutoStrafe.class).isEnabled()
-                    && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) < 2.4F) {
-                NiggaStrafe.doStrafeAtSpeed(em, this.defaultSpeed());
-                stage++;
-            } else {
-                setMoveSpeedNoStrafeEdit(movementSpeed, em);
-                stage++;
-            }
+                if (this.collided) {
+                    mc.timer.timerSpeed = 1.0f;
+                    stage = -1;
+                }
+                if (this.stair > 0.0) {
+                    this.stair -= 0.25;
+                }
+                this.less -= ((this.less > 1.0) ? 0.12 : 0.11);
+                if (this.less < 0.0) {
+                    this.less = 0.0;
+                }
+                if (!MoveUtil.isInLiquid() && MoveUtil.isOnGround(0.01) /*&& MoveUtil.()*/) {
+                    this.collided = mc.thePlayer.isCollidedHorizontally;
+                    if (stage >= 0 || this.collided) {
+                        stage = 0;
+                        final double a = 0.4086666 + MoveUtil.getJumpEffect() * 0.1;
+                        if (this.stair == 0.0) {
+                            mc.thePlayer.jump();
+                            if(mc.thePlayer.motionY < 0.4){
+                                e.setY(0.399999);
+                                System.out.println(1);
+                            }else
+                            e.setY(mc.thePlayer.motionY);
+                            System.out.println(2);
+                        }
+                        ++this.less;
+                        this.lessSlow = (this.less > 1.0 && !this.lessSlow);
+                        if (this.less > 1.12) {
+                            this.less = 1.12;
+                        }
+                    }
+                }
+                this.speed = this.getHypixelSpeed(stage) + 0.0331;
+                this.speed *= 0.91;
+                if (this.stair > 0.0) {
+                    this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
+                }
+                if (stage < 0) {
+                    this.speed = MoveUtil.getBaseMoveSpeed();
+                }
+                if (this.lessSlow) {
+                    this.speed *= 0.93;
+                }
+                if (MoveUtil.isInLiquid()) {
+                    this.speed = 0.12;
+                }
+                if (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f) {
+                    this.setMotion(e, this.speed);
+                    ++stage;
+                }
+                System.out.println(mc.thePlayer.motionY);
+                break;
+            } case "Bhop":{
+                if (mc.thePlayer.isCollidedHorizontally) {
+                    collided = true;
+                }
+                if (collided) {
+                    mc.timer.timerSpeed = 1;
+                    stage = -1;
+                }
+                if (stair > 0)
+                    stair -= 0.25;
+                less -= less > 1 ? 0.12 : 0.11;
+                if (less < 0)
+                    less = 0;
+                if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.01) && (PlayerUtil.isMoving2())) {
+                    collided = mc.thePlayer.isCollidedHorizontally;
+                    if (stage >= 0 || collided) {
+                        stage = 0;
 
-        }else if(this.mode.getValue() == SpeedMode.Test){
-            if (this.stage < 1) {
-                ++this.stage;
-                return;
-            }
-            boolean inLiquid = mc.thePlayer.isInWater() || mc.thePlayer.isInLava();
-            boolean slow = mc.thePlayer.isCollidedHorizontally
-                    || inLiquid;
-            if(slow)
-                collided = true;
-            if(mc.thePlayer.onGround)
-                stage = 2;
-            if (this.stage == 2 && (this.mc.thePlayer.moveForward != 0.0f || this.mc.thePlayer.moveStrafing != 0.0f) && this.mc.thePlayer.onGround) {
-                double y = getMotion();
-                if (this.mc.thePlayer.isPotionActive(Potion.jump)) {
-                    y += (this.mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f;
-                }
-                collided = slow;
-                em.setY(this.mc.thePlayer.motionY = y);
-                this.movementSpeed = 0.62 * (1 + 0.119 * MoveUtil.getSpeedEffect());
-            }else if(stage == 3) {
-                movementSpeed = defaultSpeed() * (1.05 + 0.13 * MoveUtil.getSpeedEffect())
-                        + 0.1;
-            }else {
-                this.movementSpeed = this.lastDist * 0.991;
-            }
-            this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
-            if(collided)
-                movementSpeed = defaultSpeed();
-                setMoveSpeedNoStrafeEdit(movementSpeed, em);
-            ++this.stage;
-        }else if(this.mode.getValue() == SpeedMode.OtherHypixelHop){
-            if (MathUtil.round(mc.thePlayer.posY - ((int) mc.thePlayer.posY), 3) == MathUtil.round(0.138, 3)) {
-                mc.thePlayer.motionY -= 1.0;
-                em.setY(0.0931);
-                //mc.timer.timerSpeed = 2.89f;
-                //Artix.INSTANCE.chatMessage(true, "lol");
-                mc.thePlayer.posY -= 0.0931;
-                this.movementSpeed *= 1.25f;
-            }
-            //else
-            //mc.timer.timerSpeed = 1f;
+                        double motY = 0.407 + MoveUtil.getJumpEffect() * 0.1;
+                        if (stair == 0) {
+                            mc.thePlayer.jump();
+                            e.setY(mc.thePlayer.motionY = motY);
+                        } else {
 
-            mc.timer.timerSpeed = 1f;
-            if (this.stage == 2
-                    && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
-                mc.thePlayer.motionY = 0.39936;
-                em.setY(0.39936);
-                this.movementSpeed *= 2.0999;
+                        }
+
+                        less++;
+                        if (less > 1 && !lessSlow)
+                            lessSlow = true;
+                        else
+                            lessSlow = false;
+                        if (less > 1.12)
+                            less = 1.12;
+                    }
+                }
+                speed = getHypixelSpeed(stage) + 0.0331;
+                speed *= 0.91;
+                if (stair > 0) {
+                    speed *= 0.7 - MoveUtil.getSpeedEffect() * 0.1;
+                }
+
+                if (stage < 0)
+                    speed = MoveUtil.defaultSpeed();
+                if (lessSlow) {
+                    speed *= 0.95;
+                }
+
+
+                if (BlockUtil.isInLiquid()) {
+                    speed = 0.12;
+                }
+
+                if ((mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
+                    setMotion(e, speed);
+                    ++stage;
+                }
+                break;
             }
-            else if (this.stage == 3) {
-                double difference = 0.66 * (this.lastDist - MoveUtil.getBaseMoveSpeed());
-                this.movementSpeed = this.lastDist - difference;
-            }
-            else {
-                if (mc.theWorld
-                        .getCollidingBoundingBoxes(mc.thePlayer,
-                                mc.thePlayer.boundingBox.offset(0.0, mc.thePlayer.motionY, 0.0))
-                        .size() > 0 || mc.thePlayer.isCollidedVertically) {
-                    this.stage = 1;
-                }
-                this.movementSpeed = this.lastDist - this.lastDist / 159.0;
-            }
-            this.movementSpeed = Math.max(this.movementSpeed, MoveUtil.getBaseMoveSpeed());
-            float forward = mc.thePlayer.movementInput.moveForward;
-            float strafe = mc.thePlayer.movementInput.moveStrafe;
-            float yaw = mc.thePlayer.rotationYaw;
-            if (forward == 0.0f && strafe == 0.0f) {
-                em.x = 0.0;
-                em.z = 0.0;
-            }
-            else if (forward != 0.0f) {
-                if (strafe >= 1.0f) {
-                    yaw += forward > 0.0f ? -45 : 45;
-                    strafe = 0.0f;
-                }
-                else if (strafe <= -1.0f) {
-                    yaw += forward > 0.0f ? 45 : -45;
-                    strafe = 0.0f;
-                }
-                if (forward > 0.0f) {
-                    forward = 1.0f;
-                }
-                else if (forward < 0.0f) {
-                    forward = -1.0f;
-                }
-            }
-            double mx = Math.cos(Math.toRadians(yaw + 90.0f));
-            double mz = Math.sin(Math.toRadians(yaw + 90.0f));
-            em.x = (forward * this.movementSpeed * mx + strafe * this.movementSpeed * mz) * 0.99;
-            em.z = (forward * this.movementSpeed * mz - strafe * this.movementSpeed * mx) * 0.99;
-            if (forward == 0.0f && strafe == 0.0f) {
-                em.x = 0.0;
-                em.z = 0.0;
-            }
-            else if (forward != 0.0f) {
-                if (strafe >= 1.0f) {
-                    yaw += forward > 0.0f ? -45 : 45;
-                    strafe = 0.0f;
-                }
-                else if (strafe <= -1.0f) {
-                    yaw += forward > 0.0f ? 45 : -45;
-                    strafe = 0.0f;
-                }
-                if (forward > 0.0f) {
-                    forward = 1.0f;
-                }
-                else if (forward < 0.0f) {
-                    forward = -1.0f;
-                }
-            }
-            this.stage++;
         }
     }
 
-    public boolean voidcheck() {
-        for (int i = (int)Math.ceil(this.mc.thePlayer.posY); i >= 0; --i) {
-            if (this.mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, i, mc.thePlayer.posZ)).getBlock() != Blocks.air) {
-                return false;
-            }
-        }
-        return true;
+    private void fakeJump() {
+        mc.thePlayer.isAirBorne = true;
+        mc.thePlayer.triggerAchievement(StatList.jumpStat);
     }
 
-    public float angle(final double x, final double z) {
-        return (float)(Math.atan2(z - mc.thePlayer.posZ, x - mc.thePlayer.posX) * 180.0 / 3.141592653589793) - 90.0f;
-    }
 
     private double getHypixelSpeed(final int stage) {
         double value = MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;
@@ -328,266 +258,45 @@ public class Speed
         return Math.max(value, this.shouldslow ? value : (MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect()));
     }
 
-    @Sub
-    public void onMovement(EventMove em){
-        if(mode.getValue() == SpeedMode.Bhop){
-            if (Speed.mc.thePlayer.movementInput.moveForward == 0.0f && Speed.mc.thePlayer.movementInput.moveStrafe == 0.0f) {
-                this.speed = MoveUtil.defaultSpeed();
-            }
-            if (Speed.stage == 1 && Speed.mc.thePlayer.isCollidedVertically && (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f)) {
-                this.speed = 1.309 + MoveUtil.defaultSpeed() - 0.01;
-            }
-            if (!BlockUtil.isInLiquid() && Speed.stage == 2 && Speed.mc.thePlayer.isCollidedVertically && MoveUtil.isOnGround(0.01) && (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f)) {
-                if (Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.jump)) {
-                    em.setY(Speed.mc.thePlayer.motionY = 0.41999998688698 + (Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1);
+    private void setMotion(EventMove em, double speed) {
+        double forward = mc.thePlayer.movementInput.moveForward;
+        double strafe = mc.thePlayer.movementInput.moveStrafe;
+        float yaw = mc.thePlayer.rotationYaw;
+        if (forward == 0.0 && strafe == 0.0) {
+            em.setX(0.0);
+            em.setZ(0.0);
+        } else {
+            if (forward != 0.0) {
+                if (strafe > 0.0) {
+                    yaw += (float) (forward > 0.0 ? -45 : 45);
+                } else if (strafe < 0.0) {
+                    yaw += (float) (forward > 0.0 ? 45 : -45);
                 }
-                else {
-                    em.setY(Speed.mc.thePlayer.motionY = 0.41999998688698);
+                strafe = 0.0;
+                if (forward > 0.0) {
+                    forward = 1.0;
+                } else if (forward < 0.0) {
+                    forward = -1.0;
                 }
-                Speed.mc.thePlayer.jump();
-                this.speed *= 1.455;
             }
-            else if (Speed.stage == 3) {
-                final double difference = 0.66 * (this.lastDist - MoveUtil.defaultSpeed());
-                this.speed = this.lastDist - difference;
-            }
-            else {
-                final List collidingList = Speed.mc.theWorld.getCollidingBoundingBoxes((Entity)Speed.mc.thePlayer, Speed.mc.thePlayer.boundingBox.offset(0.0, Speed.mc.thePlayer.motionY, 0.0));
-                if ((collidingList.size() > 0 || Speed.mc.thePlayer.isCollidedVertically) && Speed.stage > 0) {
-                    Speed.stage = ((Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f) ? 1 : 0);
-                }
-                this.speed = this.lastDist - this.lastDist / 159.0;
-            }
-            this.speed = Math.max(this.speed, MoveUtil.defaultSpeed());
-            if (Speed.stage > 0) {
-                if (BlockUtil.isInLiquid()) {
-                    this.speed = 0.1;
-                }
-                NiggaStrafe.doStrafeAtSpeed(em, this.speed);
-            }
-            if (Speed.mc.thePlayer.movementInput.moveForward != 0.0f || Speed.mc.thePlayer.movementInput.moveStrafe != 0.0f) {
-                ++Speed.stage;
-            }
-        }else if(mode.getValue() == SpeedMode.HypixelPort){
-            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava() ||!MoveUtil.isMoving())
-                return;
-            double gay2 = 0.399921;
-            if (mc.thePlayer.isPotionActive(Potion.jump)) {
-                gay2 += (double)((float)(mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
-            }
-            if (this.canZoom() && this.stage == 2&&(mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
-                if(!BlockUtil.isInLiquid()){
-                    this.mc.thePlayer.motionY = gay2;
-                    em.setY(mc.thePlayer.motionY);
-                }
-                this.movementSpeed *=  1.7999;
-            } else if (this.stage == 3) {
-                double diff = (0.681+(mc.thePlayer.ticksExisted%2)/50) * (this.lastDist - this.defaultSpeed());
-                this.movementSpeed = this.lastDist - diff;
-            } else {
-                if (getCollidingList(em.getY()).size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
-                    this.stage = MoveUtil.isMoving() ? 1 : 0;
-                }
-                this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted%2 == 0 ? -0.5 : -1)+159.21);
-            }
-            if(!mc.thePlayer.onGround)
-                em.setY(mc.thePlayer.motionY -= 1D);
-            this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
-            if(isInLiquid())movementSpeed=0.12;
-            MoveUtil.setMoveSpeed(em,movementSpeed);
-            stage++;
-            mc.thePlayer.stepHeight = 0.6F;
-        }else if(mode.getValue() == SpeedMode.FastPort){
-            if(mc.thePlayer.isOnLadder() || mc.thePlayer.isInWater() || mc.thePlayer.isInLava()  ||!MoveUtil.isMoving())
-                return;
-            double gay2 = 0.399921;
-            if (mc.thePlayer.isPotionActive(Potion.jump)) {
-                gay2 += (double)((float)(mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1f);
-            }
-            if (this.canZoom() && this.stage == 2 && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
-                if(!isInLiquid()){
-                    this.mc.thePlayer.motionY = gay2;
-                    em.setY(mc.thePlayer.motionY);
-                }
-                this.movementSpeed *=  2.1499;
-            } else if (this.stage == 3) {
-                double diff = (0.69+(mc.thePlayer.ticksExisted%2)/50) * (this.lastDist - this.defaultSpeed());
-                this.movementSpeed = this.lastDist - diff;
-            } else {
-                if (getCollidingList(em.getY()).size() > 0 || this.mc.thePlayer.isCollidedVertically && this.stage > 0) {
-                    this.stage = MoveUtil.isMoving() ? 1 : 0;
-                }
+            em.setX(forward * speed * Math.cos(Math.toRadians(yaw + 90))
+                    + strafe * speed * Math.sin(Math.toRadians(yaw + 90)));
+            em.setZ(forward * speed * Math.sin(Math.toRadians(yaw + 90))
+                    - strafe * speed * Math.cos(Math.toRadians(yaw + 90)));
 
-                this.movementSpeed = this.lastDist - this.lastDist / ((mc.thePlayer.ticksExisted%2 == 0 ? -0.5 : -1)+159.21);
-
-            }
-            if(!mc.thePlayer.onGround)
-                em.setY(mc.thePlayer.motionY -= 2D);
-            this.movementSpeed = Math.max(this.movementSpeed, defaultSpeed());
-            if(isInLiquid())movementSpeed=0.12;
-            MoveUtil.setMoveSpeed(em,movementSpeed);
-            stage++;
-            mc.thePlayer.stepHeight = 0.6F;
-        }
-    }
-    private double defaultSpeed() {
-        double baseSpeed = 0.2873D;
-        if(Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed)) {
-            int amplifier = Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier();
-            baseSpeed *= 1.0D + 0.2D * (double)(amplifier + 1);
-        }
-
-        return baseSpeed;
-    }
-
-    private boolean canZoom() {
-        if (MoveUtil.isMoving() && this.mc.thePlayer.onGround) {
-            return true;
-        }
-        return false;
-    }
-
-    static enum SpeedMode {
-        OtherHypixelHop,
-        HypixelPort,
-        FastPort,
-        Bhop,
-        HypixelHop,
-        Test,
-        AAC;
-    }
-
-    static enum Motions{
-        Basic,
-        High,
-        Low,
-        Random,
-        High2,
-    }
-
-    public double getMotion(){
-        Enum curMode = MotionMode.getValue();
-        if(curMode.equals(Motions.Basic)) {
-            return 0.405412D;
-        } else if(curMode.equals(Motions.High)) {
-            return 0.408976666;
-        } else if(curMode.equals(Motions.Low)) {
-            return 0.4001754672;
-        } else if(curMode.equals(Motions.Random)) {
-            return 0.405412D + MathUtil.randomDouble(-20,20) / 10000;
-        } else if(curMode.equals(Motions.High2)) {
-            return 0.41999675;
-        }
-        return 0.408666666d;
-    }
-
-    public void setMoveSpeed(final double speed) {
-        double forward = (double)this.mc.thePlayer.movementInput.moveForward;
-        double strafe = (double)this.mc.thePlayer.movementInput.moveStrafe;
-        float yaw;
-        {
-            yaw = mc.thePlayer.rotationYaw;
-            if (forward == 0.0 && strafe == 0.0) {
-                mc.thePlayer.motionX = (0.0);
-                mc.thePlayer.motionZ = (0.0);
-            }
-            else {
-                if (forward != 0.0) {
-                    if (strafe > 0.0) {
-                        yaw += ((forward > 0.0) ? -45 : 45);
-                    }
-                    else if (strafe < 0.0) {
-                        yaw += ((forward > 0.0) ? 45 : -45);
-                    }
-                    strafe = 0.0;
-                    if (forward > 0.0) {
-                        forward = 1.0;
-                    }
-                    else if (forward < 0.0) {
-                        forward = -1.0;
-                    }
-                }
-                mc.thePlayer.motionX = ((forward * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f))) + strafe * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f)))));
-                mc.thePlayer.motionZ = ((forward * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f))) - strafe * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f)))));
+            if (forward == 0.0F && strafe == 0.0F) {
+                em.setX(0.0);
+                em.setZ(0.0);
             }
         }
     }
 
-    public void setMoveSpeedNoStrafeEdit(final double speed,EventMove eventMove) {
-        double forward = (double)this.mc.thePlayer.movementInput.moveForward;
-        double strafe = (double)this.mc.thePlayer.movementInput.moveStrafe;
-        float yaw;
-        {
-            yaw = mc.thePlayer.rotationYaw;
-            if (forward == 0.0 && strafe == 0.0) {
-                mc.thePlayer.motionX = (0.0);
-                mc.thePlayer.motionZ = (0.0);
-            }
-            else {
-                if (forward != 0.0) {
-                    if (strafe > 0.0) {
-                        yaw += ((forward > 0.0) ? -45 : 45);
-                    }
-                    else if (strafe < 0.0) {
-                        yaw += ((forward > 0.0) ? 45 : -45);
-                    }
-                    strafe = 0.0;
-                    if (forward > 0.0) {
-                        forward = 1.0;
-                    }
-                    else if (forward < 0.0) {
-                        forward = -1.0;
-                    }
-                }
-                eventMove.setX((forward * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f))) + strafe * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f)))));
-                eventMove.setZ((forward * speed * Math.sin(Math.toRadians((double)(yaw + 90.0f))) - strafe * speed * Math.cos(Math.toRadians((double)(yaw + 90.0f)))));
-            }
-        }
+
+    public List getCollidingList(double motionY){
+        return this.mc.theWorld.getCollidingBoundingBoxes(this.mc.thePlayer, this.mc.thePlayer.boundingBox.offset(0.0, motionY, 0.0));
     }
 
-    public boolean isMoving2() {
-        return Minecraft.getMinecraft().thePlayer.moveForward != 0.0f || Minecraft.getMinecraft().thePlayer.moveStrafing != 0.0f;
+    enum SpeedMode {
+        Bhop, HypixelHop, Onground
     }
-
-    public boolean isOnGround(double height) {
-        if (!this.mc.theWorld.getCollidingBoundingBoxes(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().offset(0.0, - height, 0.0)).isEmpty()) {
-            return true;
-        }
-        return false;
-    }
-
-    public int getJumpEffect() {
-        if (Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.jump)) {
-            return Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.jump).getAmplifier() + 1;
-        }
-        return 0;
-    }
-
-    public int getSpeedEffect() {
-        if (Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed)) {
-            return Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier() + 1;
-        }
-        return 0;
-    }
-
-    public boolean isInLiquid() {
-        if (Minecraft.getMinecraft().thePlayer.isInWater()) {
-            return true;
-        }
-        boolean inLiquid = false;
-        int y = (int)Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().minY;
-        for (int x = MathHelper.floor_double((double)Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().minX); x < MathHelper.floor_double(Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().maxX) + 1; ++x) {
-            for (int z = MathHelper.floor_double((double)Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().minZ); z < MathHelper.floor_double(Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().maxZ) + 1; ++z) {
-                Block block = this.mc.theWorld.getBlockState(new BlockPos(x, y, z)).getBlock();
-                if (block == null || block.getMaterial() == Material.air) continue;
-                if (!(block instanceof BlockLiquid)) {
-                    return false;
-                }
-                inLiquid = true;
-            }
-        }
-        return inLiquid;
-    }
-
 }
-

@@ -13,6 +13,7 @@ import me.skidsense.util.MoveUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.MovementInput;
 
 import java.awt.*;
 import java.util.TimerTask;
@@ -116,9 +117,27 @@ public class Flight extends Mod {
             if (Minecraft.getMinecraft().gameSettings.keyBindSneak.pressed)
                 Minecraft.getMinecraft().thePlayer.motionY -= 0.5f;
             e.setY(mc.thePlayer.posY + posY / 10000000);
+        }else if(this.mode.getValue() == FlightMode.New) {
+            if (!mc.thePlayer.isCollidedVertically) {
+                mc.thePlayer.setSprinting(false);
+                mc.thePlayer.cameraYaw = 0.15384614F;
+                if (mc.thePlayer.ticksExisted % 2 == 0) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.28E-9D, mc.thePlayer.posZ);
+                }
+                if (mc.thePlayer.ticksExisted % 25 == 0 && !mc.thePlayer.onGround && !mc.thePlayer.isSwingInProgress) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1.28E-10D, mc.thePlayer.posZ);
+                }
+            }
         }
     }
+    private double qa0CkD32q5wwwTB() {
+        return mc.thePlayer.isSprinting() ? 0.2806D : 0.21585D;
+    }
 
+
+    public boolean tdDHn2bVGAQQ0Ww() {
+        return (mc.thePlayer.movementInput.moveForward != 0.01F || mc.thePlayer.movementInput.moveStrafe != 0.01F);
+    }
     public float getRealWalkYaw() {
         float curYaw = mc.thePlayer.rotationYaw, realYaw;
         boolean keyFor = mc.gameSettings.keyBindForward.pressed;
@@ -180,52 +199,81 @@ public class Flight extends Mod {
     @Sub
     private void onMove(EventMove e) {
         if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
-                if (moveSpeed == 7D) {
-                    if (!FirstBoost)
-                        moveSpeed = 0.1D;
-                    else
-                        FirstBoost = false;
-                }
-                 else {
-                    if (level != 1 || Minecraft.getMinecraft().thePlayer.moveForward == 0.0F
-                            && Minecraft.getMinecraft().thePlayer.moveStrafing == 0.0F) {
-                        if (level == 2) {
-                            level = 3;
-                            moveSpeed *= 2.1499999D;
-                        } else if (level == 3) {
-                            level = 4;
-                            double difference = (0.011D) * (lastDist - MathUtil.getBaseMovementSpeed());
-                            moveSpeed = lastDist - difference;
-                        } else {
-                            if (Minecraft.getMinecraft().theWorld
-                                    .getCollidingBoundingBoxes(Minecraft.getMinecraft().thePlayer,
-                                            Minecraft.getMinecraft().thePlayer.boundingBox.offset(0.0D,
-                                                    Minecraft.getMinecraft().thePlayer.motionY, 0.0D))
-                                    .size() > 0 || Minecraft.getMinecraft().thePlayer.isCollidedVertically) {
-                                level = 1;
-                            }
-                            moveSpeed = lastDist - lastDist / 159.0D;
-                        }
+            if (moveSpeed == 7D) {
+                if (!FirstBoost)
+                    moveSpeed = 0.1D;
+                else
+                    FirstBoost = false;
+            } else {
+                if (level != 1 || Minecraft.getMinecraft().thePlayer.moveForward == 0.0F
+                        && Minecraft.getMinecraft().thePlayer.moveStrafing == 0.0F) {
+                    if (level == 2) {
+                        level = 3;
+                        moveSpeed *= 2.1499999D;
+                    } else if (level == 3) {
+                        level = 4;
+                        double difference = (0.011D) * (lastDist - MathUtil.getBaseMovementSpeed());
+                        moveSpeed = lastDist - difference;
                     } else {
-                        level = 2;
-                        int amplifier = Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed)
-                                ? Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.moveSpeed)
-                                .getAmplifier() + 1
-                                : 0;
-                        double boost = Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed) ? 1.7 : 2.1;
-                        moveSpeed = boost * MathUtil.getBaseMovementSpeed();
+                        if (Minecraft.getMinecraft().theWorld
+                                .getCollidingBoundingBoxes(Minecraft.getMinecraft().thePlayer,
+                                        Minecraft.getMinecraft().thePlayer.boundingBox.offset(0.0D,
+                                                Minecraft.getMinecraft().thePlayer.motionY, 0.0D))
+                                .size() > 0 || Minecraft.getMinecraft().thePlayer.isCollidedVertically) {
+                            level = 1;
+                        }
+                        moveSpeed = lastDist - lastDist / 159.0D;
                     }
+                } else {
+                    level = 2;
+                    int amplifier = Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed)
+                            ? Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.moveSpeed)
+                            .getAmplifier() + 1
+                            : 0;
+                    double boost = Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed) ? 1.7 : 2.1;
+                    moveSpeed = boost * MathUtil.getBaseMovementSpeed();
                 }
+            }
 
-                moveSpeed = this.mode.getValue() == FlightMode.Damage
-                        ? Math.max(moveSpeed, MathUtil.getBaseMovementSpeed())
-                        : MathUtil.getBaseMovementSpeed();
-                MoveUtil.setMoveSpeed(e, moveSpeed);
+            moveSpeed = this.mode.getValue() == FlightMode.Damage
+                    ? Math.max(moveSpeed, MathUtil.getBaseMovementSpeed())
+                    : MathUtil.getBaseMovementSpeed();
+            MoveUtil.setMoveSpeed(e, moveSpeed);
 
+
+        }else if(mode.getValue() == FlightMode.New){
+
+                setMotion(getBaseMoveSpeed());
             }
         }
+    public static void setMotion(double speed) {
+        double forward = MovementInput.moveForward;
+        double strafe = MovementInput.moveStrafe;
+        float yaw = mc.thePlayer.rotationYaw;
+        if ((forward == 0.0D) && (strafe == 0.0D)) {
+            mc.thePlayer.motionX = 0;
+            mc.thePlayer.motionZ = 0;
+        } else {
+            if (forward != 0.0D) {
+                if (strafe > 0.0D) {
+                    yaw += (forward > 0.0D ? -45 : 45);
+                } else if (strafe < 0.0D) {
+                    yaw += (forward > 0.0D ? 45 : -45);
+                }
+                strafe = 0.0D;
+                if (forward > 0.0D) {
+                    forward = 1;
+                } else if (forward < 0.0D) {
+                    forward = -1;
+                }
+            }
+            mc.thePlayer.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 90.0F)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0F));
+            mc.thePlayer.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 90.0F)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0F));
+        }
+    }
 
-    static double getBaseMoveSpeed() {
+
+        static double getBaseMoveSpeed() {
         double baseSpeed = 0.2873;
         if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
             int amplifier = mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier();
@@ -235,7 +283,7 @@ public class Flight extends Mod {
     }
 
     public static enum FlightMode {
-        Vanilla, Hypixel, Damage,
+        Vanilla, Hypixel, Damage,New
     }
 
     public static enum DamageMode {

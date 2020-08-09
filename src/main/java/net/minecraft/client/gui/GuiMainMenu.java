@@ -29,7 +29,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.realms.RealmsBridge;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -265,13 +264,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
         this.mc.setConnectedToRealms(false);
 
-        if (Minecraft.getMinecraft().gameSettings.getOptionOrdinalValue(GameSettings.Options.REALMS_NOTIFICATIONS) && !this.field_183502_L)
-        {
-            RealmsBridge realmsbridge = new RealmsBridge();
-            this.field_183503_M = realmsbridge.getNotificationScreen(this);
-            this.field_183502_L = true;
-        }
-
         if (this.func_183501_a())
         {
             this.field_183503_M.setGuiSize(this.width, this.height);
@@ -331,10 +323,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
             this.mc.displayGuiScreen(new GuiMultiplayer(this));
         }
 
-        if (button.id == 14 && this.realmsButton.visible)
-        {
-            this.switchToRealms();
-        }
+
 
         if (button.id == 4) {
             this.mc.shutdown();
@@ -363,11 +352,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         }
     }
 
-    private void switchToRealms()
-    {
-        RealmsBridge realmsbridge = new RealmsBridge();
-        realmsbridge.switchToRealms(this);
-    }
 
     public void confirmClicked(boolean result, int id)
     {
