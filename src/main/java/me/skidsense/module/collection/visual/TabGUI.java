@@ -3,19 +3,16 @@ package me.skidsense.module.collection.visual;
 import java.awt.Color;
 
 import me.skidsense.Client;
-import me.skidsense.SplashProgress;
-//import me.skidsense.hooks.EventBus;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventKey;
+import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
 import me.skidsense.management.Manager;
 import me.skidsense.management.ModManager;
-import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MathUtil;
@@ -24,10 +21,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
 public class TabGUI
-implements Manager {
+        implements Manager {
     private Section section = Section.TYPES;
     private ModuleType selectedType = ModuleType.values()[0];
-    private Mod selectedMod = null;
+    private Mod selectedModule = null;
     private Value selectedValue = null;
     private int currentType = 0;
     private int currentModule = 0;
@@ -40,29 +37,25 @@ implements Manager {
 
     @Override
     public void init() {
-    	SplashProgress.setProgress(4, "TabGui Init");
         ModuleType[] arrmoduleType = ModuleType.values();
         int n = arrmoduleType.length;
         int n2 = 0;
         while (n2 < n) {
             ModuleType mt = arrmoduleType[n2];
-            if (this.maxType <= Client.mc.fontRendererObj.getStringWidth(mt.name().toUpperCase()) + 4) {
-                this.maxType = Client.mc.fontRendererObj.getStringWidth(mt.name().toUpperCase()) + 4;
+            if (this.maxType <= Minecraft.getMinecraft().fontRendererObj.getStringWidth(mt.name().toUpperCase()) + 4) {
+                this.maxType = Minecraft.getMinecraft().fontRendererObj.getStringWidth(mt.name().toUpperCase()) + 4;
             }
             ++n2;
         }
-        //Client.getModuleManager();
         for (Mod m : ModManager.getMods()) {
-        	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.verdana16;
-            if (this.maxModule > font.getStringWidth(m.getName().toUpperCase()) + 4) continue;
-            this.maxModule = font.getStringWidth(m.getName().toUpperCase()) + 4;
+            if (this.maxModule > Minecraft.getMinecraft().fontRendererObj.getStringWidth(m.getName().toUpperCase()) + 4) continue;
+            this.maxModule = Minecraft.getMinecraft().fontRendererObj.getStringWidth(m.getName().toUpperCase()) + 4;
         }
-        //Client.getModuleManager();
         for (Mod m : ModManager.getMods()) {
             if (m.getValues().isEmpty()) continue;
-            for (Value<?> val : m.getValues()) {
-                if (this.maxValue > Client.mc.fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + 4) continue;
-                this.maxValue = Client.mc.fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + 4;
+            for (Value val : m.getValues()) {
+                if (this.maxValue > Minecraft.getMinecraft().fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + 4) continue;
+                this.maxValue = Minecraft.getMinecraft().fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + 4;
             }
         }
         this.maxModule += 12;
@@ -71,72 +64,76 @@ implements Manager {
         this.maxType = this.maxType < this.maxModule ? this.maxModule : this.maxType;
         this.maxModule += this.maxType;
         this.maxValue += this.maxModule;
+        this.maxValue += this.maxModule;
         EventManager.getOtherEventManager().register(this);
+        //EventBus.getInstance().register(this);
     }
 
     private void resetValuesLength() {
         this.maxValue = 0;
-        for (Value val : this.selectedMod.getValues()) {
+        for (Value val : this.selectedModule.getValues()) {
             int off;
-            int n = off = val instanceof Option ? 6 : Client.mc.fontRendererObj.getStringWidth(String.format(" \u00a77%s", val.getValue().toString())) + 6;
-            if (this.maxValue > Client.mc.fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + off) continue;
-            this.maxValue = Client.mc.fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + off;
+            int n = off = val instanceof Option ? 6 : Minecraft.getMinecraft().fontRendererObj.getStringWidth(String.format(" \u00a77%s", val.getValue().toString())) + 6;
+            if (this.maxValue > Minecraft.getMinecraft().fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + off) continue;
+            this.maxValue = Minecraft.getMinecraft().fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + off;
         }
         this.maxValue += this.maxModule;
     }
 
     @Sub
     private void renderTabGUI(EventRender2D e) {
-                if (!Client.mc.gameSettings.showDebugInfo && Client.instance.getModuleManager().getModuleByClass(HUD.class).isEnabled()) {
-                int categoryY = this.height;
+        block34 : {
+            block33 : {
+                //CFontRenderer font = FontLoaders.kiona18;
+                if (!HUD.useFont) break block33;
+                if (Minecraft.getMinecraft().gameSettings.showDebugInfo || !Client.getModuleManager().getModuleByClass(HUD.class).isEnabled()) break block34;
+                int categoryY = HUD.shouldMove ? 26 : this.height;
                 int moduleY = categoryY;
                 int valueY = categoryY;
-            	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.zeroarr;
-            	//Gui.drawRect(2, 2, 49, 13, new Color(0, 0, 0, 100).getRGB());
-            	 Gui.drawRect(3,15, this.maxType+18, categoryY+this.maxType+21,new Color(16, 16, 16, 250).getRGB());
-               // RenderUtil.drawRect(4,12,47,13,new Color(255,255,255).getRGB());
+                RenderUtil.drawBorderedRect(2.0f, categoryY, this.maxType - 25, categoryY + 12 * ModuleType.values().length, 2.0f, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
                 ModuleType[] moduleArray = ModuleType.values();
                 int mA = moduleArray.length;
                 int mA2 = 0;
                 while (mA2 < mA) {
                     ModuleType mt = moduleArray[mA2];
                     if (this.selectedType == mt) {
-                    	 Gui.drawRect(5, (double)categoryY+5, (double)this.maxType-34, (double)(categoryY + font.FONT_HEIGHT) +4, new Color(220,0,0).getRGB());
+                        RenderUtil.rectangle(2.5, (double)categoryY + 0.5, (double)this.maxType - 25.5, (double)(categoryY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT) + 2.5, new Color(102, 172, 255).getRGB());
                         moduleY = categoryY;
                     }
                     if (this.selectedType == mt) {
-                    	Client.fontManager.zeroarr.drawStringWithShadow(mt.name(), 8.0f, categoryY + (float)4, -1);
+                        //font.drawStringWithShadow(mt.name(), 7.0, categoryY + 3, -1);
                     } else {
-                    	Client.fontManager.zeroarr.drawStringWithShadow(mt.name(), 6.0f, categoryY + (float)4, new Color(180, 180, 180).getRGB());
+                        //font.drawStringWithShadow(mt.name(), 5.0, categoryY + 3, new Color(180, 180, 180).getRGB());
                     }
-                    categoryY += 11;
+                    categoryY += 12;
                     ++mA2;
                 }
                 if (this.section == Section.MODULES || this.section == Section.VALUES) {
-                    RenderUtil.drawRect(this.maxType+19, moduleY, this.maxModule+70, moduleY + 12 * Client.instance.getModuleManager().getModulesInType(this.selectedType).size()+4, new Color(20, 20, 20, 220).getRGB());
-                    for (Mod m : Client.instance.getModuleManager().getModulesInType(this.selectedType)) {
-                        if (this.selectedMod == m) {
-                        	RenderUtil.rectangle((double)this.maxType+20, (double)moduleY +2, (double)this.maxModule +9, (double)(moduleY + Client.mc.fontRendererObj.FONT_HEIGHT) + 5, new Color(200,0,0).getRGB());
+                    RenderUtil.drawBorderedRect(this.maxType - 20, moduleY, this.maxModule - 38, moduleY + 12 * Client.getModuleManager().getModulesInType(this.selectedType).size(), 2.0f, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
+                    for (Mod m : Client.getModuleManager().getModulesInType(this.selectedType)) {
+                        if (this.selectedModule == m) {
+                            RenderUtil.rectangle((double)this.maxType - 19.5, (double)moduleY + 0.5, (double)this.maxModule - 38.5, (double)(moduleY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT) + 2.5, new Color(102, 172, 255).getRGB());
                             valueY = moduleY;
                         }
-                        if (this.selectedMod == m) {
-                            Client.fontManager.zeroarr.drawStringWithShadow(m.getName(), this.maxType+22, moduleY + 2, m.isEnabled() ? -1 : 11184810);
+                        if (this.selectedModule == m) {
+                            //font.drawStringWithShadow(m.getName(), this.maxType - 15, moduleY + 3, m.isEnabled() ? -1 : 11184810);
                         } else {
-                        	Client.fontManager.zeroarr.drawStringWithShadow(m.getName(), this.maxType+22, moduleY + 2, m.isEnabled() ? -1 : 11184810);
+                            //font.drawStringWithShadow(m.getName(), this.maxType - 17, moduleY + 3, m.isEnabled() ? -1 : 11184810);
                         }
                         if (!m.getValues().isEmpty()) {
-                            if (this.section == Section.VALUES && this.selectedMod == m) {
-                                RenderUtil.drawRect(this.maxModule +72, valueY, this.maxValue +70, valueY + 12 * this.selectedMod.getValues().size()+4, new Color(20,20,20,220).getRGB());
-                                for (Value val : this.selectedMod.getValues()) {
-                                	if(this.selectedValue == val) {
-                                	RenderUtil.rectangle((double)this.maxModule +74, (double)valueY+2, (double)this.maxValue +68, (double)(valueY + Client.mc.fontRendererObj.FONT_HEIGHT) + 5, new Color(200,0,0,120).getRGB());
-                                	}if (val instanceof Option) {
-                                    	Client.fontManager.zeroarr.drawStringWithShadow(val.getDisplayName(), this.selectedValue == val ? this.maxModule +75 : this.maxModule +75, valueY + 2, (Boolean)val.getValue() != false ? new Color(255,255, 255).getRGB() : 11184810);
+                            RenderUtil.rectangle(this.maxModule - 38, (double)moduleY + 0.5, this.maxModule - 39, (double)(moduleY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT) + 2.5, new Color(153, 200, 255).getRGB());
+                            if (this.section == Section.VALUES && this.selectedModule == m) {
+                                RenderUtil.drawBorderedRect(this.maxModule - 32, valueY, this.maxValue - 25, valueY + 12 * this.selectedModule.getValues().size(), 2.0f, new Color(10, 10, 10, 180).getRGB(), new Color(10, 10, 10, 180).getRGB());
+                                for (Value val : this.selectedModule.getValues()) {
+                                    RenderUtil.rectangle((double)this.maxModule - 31.5, (double)valueY + 0.5, (double)this.maxValue - 25.5, (double)(valueY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT) + 2.5, this.selectedValue == val ? new Color(102, 172, 255).getRGB() : 0);
+                                    if (val instanceof Option) {
+                                        //font.drawStringWithShadow(val.getDisplayName(), this.selectedValue == val ? this.maxModule - 27 : this.maxModule - 29, valueY + 3, (Boolean)val.getValue() != false ? new Color(153, 200, 255).getRGB() : 11184810);
                                     } else {
+                                        String toRender = String.format("%s: \u00a77%s", val.getDisplayName(), val.getValue().toString());
                                         if (this.selectedValue == val) {
-                                        	Client.fontManager.zeroarr.drawStringWithShadow(val.getDisplayName()+":"+val.getValue(), this.maxModule+75, valueY + 2, -1);
+                                            //font.drawStringWithShadow(toRender, this.maxModule - 27, valueY + 3, -1);
                                         } else {
-                                        	Client.fontManager.zeroarr.drawStringWithShadow(val.getDisplayName()+":"+val.getValue(), this.maxModule+75, valueY + 2, -1);
+                                            //font.drawStringWithShadow(toRender, this.maxModule - 29, valueY + 3, -1);
                                         }
                                     }
                                     valueY += 12;
@@ -146,13 +143,72 @@ implements Manager {
                         moduleY += 12;
                     }
                 }
-            	//Gui.drawRect(2, 2, 49, 13, new Color(0, 0, 0, 100).getRGB());
+                break block34;
+            }
+            if (!Minecraft.getMinecraft().gameSettings.showDebugInfo && Client.getModuleManager().getModuleByClass(HUD.class).isEnabled()) {
+                int categoryY = HUD.shouldMove ? 26 : this.height;
+                int moduleY = categoryY;
+                int valueY = categoryY;
+                RenderUtil.drawBorderedRect(2.0f, categoryY, this.maxType - 25, categoryY + 12 * ModuleType.values().length, 2.0f, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
+                ModuleType[] moduleArray = ModuleType.values();
+                int mA = moduleArray.length;
+                int mA2 = 0;
+                while (mA2 < mA) {
+                    ModuleType mt = moduleArray[mA2];
+                    if (this.selectedType == mt) {
+                        RenderUtil.rectangle(2.5, (double)categoryY + 0.5, (double)this.maxType - 25.5, (double)(categoryY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT) + 2.5, new Color(102, 172, 255).getRGB());
+                        moduleY = categoryY;
+                    }
+                    if (this.selectedType == mt) {
+                        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(mt.name(), 7.0f, categoryY + 2, -1);
+                    } else {
+                        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(mt.name(), 5.0f, categoryY + 2, new Color(180, 180, 180).getRGB());
+                    }
+                    categoryY += 12;
+                    ++mA2;
+                }
+                if (this.section == Section.MODULES || this.section == Section.VALUES) {
+                    RenderUtil.drawBorderedRect(this.maxType - 20, moduleY, this.maxModule - 38, moduleY + 12 * Client.getModuleManager().getModulesInType(this.selectedType).size(), 2.0f, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
+                    for (Mod m : Client.getModuleManager().getModulesInType(this.selectedType)) {
+                        if (this.selectedModule == m) {
+                            RenderUtil.rectangle((double)this.maxType - 19.5, (double)moduleY + 0.5, (double)this.maxModule - 38.5, (double)(moduleY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT) + 2.5, new Color(102, 172, 255).getRGB());
+                            valueY = moduleY;
+                        }
+                        if (this.selectedModule == m) {
+                            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(m.getName(), this.maxType - 15, moduleY + 2, m.isEnabled() ? -1 : 11184810);
+                        } else {
+                            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(m.getName(), this.maxType - 17, moduleY + 2, m.isEnabled() ? -1 : 11184810);
+                        }
+                        if (!m.getValues().isEmpty()) {
+                            RenderUtil.rectangle(this.maxModule - 38, (double)moduleY + 0.5, this.maxModule - 39, (double)(moduleY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT) + 2.5, new Color(153, 200, 255).getRGB());
+                            if (this.section == Section.VALUES && this.selectedModule == m) {
+                                RenderUtil.drawBorderedRect(this.maxModule - 32, valueY, this.maxValue - 25, valueY + 12 * this.selectedModule.getValues().size(), 2.0f, new Color(10, 10, 10, 180).getRGB(), new Color(10, 10, 10, 180).getRGB());
+                                for (Value val : this.selectedModule.getValues()) {
+                                    RenderUtil.rectangle((double)this.maxModule - 31.5, (double)valueY + 0.5, (double)this.maxValue - 25.5, (double)(valueY + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT) + 2.5, this.selectedValue == val ? new Color(102, 172, 255).getRGB() : 0);
+                                    if (val instanceof Option) {
+                                        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(val.getDisplayName(), this.selectedValue == val ? this.maxModule - 27 : this.maxModule - 29, valueY + 2, (Boolean)val.getValue() != false ? new Color(153, 200, 255).getRGB() : 11184810);
+                                    } else {
+                                        String toRender = String.format("%s: \u00a77%s", val.getDisplayName(), val.getValue().toString());
+                                        if (this.selectedValue == val) {
+                                            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(toRender, this.maxModule - 27, valueY + 2, -1);
+                                        } else {
+                                            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(toRender, this.maxModule - 29, valueY + 2, -1);
+                                        }
+                                    }
+                                    valueY += 12;
+                                }
+                            }
+                        }
+                        moduleY += 12;
+                    }
+                }
             }
         }
+    }
 
     @Sub
     private void onKey(EventKey e) {
-        if (!Client.mc.gameSettings.showDebugInfo) {
+        if (!Minecraft.getMinecraft().gameSettings.showDebugInfo) {
             block0 : switch (e.getKey()) {
                 case 208: {
                     switch (TabGUI.$SWITCH_TABLE$com$enjoytheban$module$modules$render$UI$TabUI$Section()[this.section.ordinal()]) {
@@ -166,18 +222,18 @@ implements Manager {
                         }
                         case 2: {
                             ++this.currentModule;
-                            if (this.currentModule > Client.instance.getModuleManager().getModulesInType(this.selectedType).size() - 1) {
+                            if (this.currentModule > Client.getModuleManager().getModulesInType(this.selectedType).size() - 1) {
                                 this.currentModule = 0;
                             }
-                            this.selectedMod = Client.instance.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
+                            this.selectedModule = Client.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
                             break block0;
                         }
                         case 3: {
                             ++this.currentValue;
-                            if (this.currentValue > this.selectedMod.getValues().size() - 1) {
+                            if (this.currentValue > this.selectedModule.getValues().size() - 1) {
                                 this.currentValue = 0;
                             }
-                            this.selectedValue = this.selectedMod.getValues().get(this.currentValue);
+                            this.selectedValue = this.selectedModule.getValues().get(this.currentValue);
                         }
                     }
                     break;
@@ -195,17 +251,17 @@ implements Manager {
                         case 2: {
                             --this.currentModule;
                             if (this.currentModule < 0) {
-                                this.currentModule = Client.instance.getModuleManager().getModulesInType(this.selectedType).size() - 1;
+                                this.currentModule = Client.getModuleManager().getModulesInType(this.selectedType).size() - 1;
                             }
-                            this.selectedMod = Client.instance.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
+                            this.selectedModule = Client.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
                             break block0;
                         }
                         case 3: {
                             --this.currentValue;
                             if (this.currentValue < 0) {
-                                this.currentValue = this.selectedMod.getValues().size() - 1;
+                                this.currentValue = this.selectedModule.getValues().size() - 1;
                             }
-                            this.selectedValue = this.selectedMod.getValues().get(this.currentValue);
+                            this.selectedValue = this.selectedModule.getValues().get(this.currentValue);
                         }
                     }
                     break;
@@ -214,20 +270,19 @@ implements Manager {
                     switch (TabGUI.$SWITCH_TABLE$com$enjoytheban$module$modules$render$UI$TabUI$Section()[this.section.ordinal()]) {
                         case 1: {
                             this.currentModule = 0;
-                            this.selectedMod = Client.instance.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
+                            this.selectedModule = Client.getModuleManager().getModulesInType(this.selectedType).get(this.currentModule);
                             this.section = Section.MODULES;
                             break block0;
                         }
                         case 2: {
-                            if (this.selectedMod.getValues().isEmpty()) break block0;
+                            if (this.selectedModule.getValues().isEmpty()) break block0;
                             this.resetValuesLength();
                             this.currentValue = 0;
-                            this.selectedValue = this.selectedMod.getValues().get(this.currentValue);
+                            this.selectedValue = this.selectedModule.getValues().get(this.currentValue);
                             this.section = Section.VALUES;
                             break block0;
                         }
                         case 3: {
-                            if (Client.onServer("enjoytheban")) break block0;
                             if (this.selectedValue instanceof Option) {
                                 this.selectedValue.setValue((Boolean)this.selectedValue.getValue() == false);
                             } else if (this.selectedValue instanceof Numbers) {
@@ -255,7 +310,7 @@ implements Manager {
                             break block0;
                         }
                         case 2: {
-                            this.selectedMod.setEnabled(!this.selectedMod.isEnabled());
+                            this.selectedModule.setEnabled(!this.selectedModule.isEnabled());
                             break block0;
                         }
                         case 3: {
@@ -275,7 +330,6 @@ implements Manager {
                             break block0;
                         }
                         case 3: {
-                            if (Client.onServer("enjoytheban")) break block0;
                             if (this.selectedValue instanceof Option) {
                                 this.selectedValue.setValue((Boolean)this.selectedValue.getValue() == false);
                             } else if (this.selectedValue instanceof Numbers) {
@@ -293,7 +347,7 @@ implements Manager {
                                 this.selectedValue.setValue(theme.getModes()[next]);
                             }
                             this.maxValue = 0;
-                            for (Value val : this.selectedMod.getValues()) {
+                            for (Value val : this.selectedModule.getValues()) {
                                 int off;
                                 int n = off = val instanceof Option ? 6 : Minecraft.getMinecraft().fontRendererObj.getStringWidth(String.format(" \u00a77%s", val.getValue().toString())) + 6;
                                 if (this.maxValue > Minecraft.getMinecraft().fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + off) continue;

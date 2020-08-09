@@ -71,7 +71,6 @@ public class Client {
 
 	public void shutDown() {
 		String values = "";
-		instance.getModuleManager();
 		for (Mod m : ModManager.getMods()) {
 			for (Value v : m.getValues()) {
 				values = String.valueOf(values) + String.format("%s:%s:%s%s", m.getName(), v.getName(), v.getValue(), System.lineSeparator());
