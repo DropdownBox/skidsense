@@ -7,6 +7,7 @@ import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
+import me.skidsense.util.MoveUtil;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -22,13 +23,13 @@ extends Mod {
 
     @Sub
     private void onPreUpdate(EventPreUpdate e) {
-        if (mc.thePlayer.isUsingItem() && this.mc.thePlayer.isBlocking() && KillAura.target == null) {
+        if (mc.thePlayer.isUsingItem() && this.mc.thePlayer.isBlocking() && KillAura.target == null && MoveUtil.isMoving()) {
             this.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
         }
     }
     @Sub
     private void onPostUpdate(EventPreUpdate e) {
-        if (mc.thePlayer.isUsingItem() && this.mc.thePlayer.isBlocking() && KillAura.target == null) {
+        if (mc.thePlayer.isUsingItem() && this.mc.thePlayer.isBlocking() && KillAura.target == null && MoveUtil.isMoving()) {
             mc.thePlayer.sendQueue.addToSendQueue((Packet)new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
         }
     }

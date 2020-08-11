@@ -3,10 +3,10 @@ package net.minecraft.util;
 public class AxisAlignedBB
 {
     public final double minX;
-    public final double minY;
+    public double minY;
     public final double minZ;
     public final double maxX;
-    public final double maxY;
+    public double maxY;
     public final double maxZ;
 
     public AxisAlignedBB(double x1, double y1, double z1, double x2, double y2, double z2)

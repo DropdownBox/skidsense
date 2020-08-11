@@ -36,15 +36,11 @@ public class Critical extends Mod {
     public Critical() {
         super("Critical", new String[]{"criticals"}, ModuleType.Fight);
         this.setColor(new Color(208, 30, 142).getRGB());
-        //addValues(mode,delay,ht);
     }
 
     @Sub
     public void onAttack(EventAttack ent) {
-        if (canCrit() && lastTarget != ent.targetEntity) {
-            doCrit(ent.targetEntity);
-            lastTarget = (EntityLivingBase) ent.targetEntity;
-        } else if (canCrit() && ent.targetEntity.hurtResistantTime <= ht.getValue() && ent.targetEntity.hurtResistantTime > 0) {
+        if (canCrit() && ent.targetEntity.hurtResistantTime <= ht.getValue() && ent.targetEntity.hurtResistantTime > 0) {
             doCrit(ent.targetEntity);
         }
     }
@@ -67,9 +63,9 @@ public class Critical extends Mod {
     }
 
     public void doCrit(Entity e) {
-        double[] offset = {0.4500000178813934, 0.00100002829999823, 0.04159994384107791, 0};
+        double[] offset = {0.03135642737949951, 0, 0.03135642737949951, 0};
         for (double d : offset) {
-            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, (mc.thePlayer.posY + d + QuickMath.getRandomInRange(-0.005, 0.005)), mc.thePlayer.posZ, false));
+            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, (mc.thePlayer.posY + d + QuickMath.getRandomInRange(-0.001,0.001)), mc.thePlayer.posZ, false));
         }
         this.timer.reset();
     }

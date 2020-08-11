@@ -1,5 +1,6 @@
 package me.skidsense.module.collection.move;
 
+import com.sun.xml.internal.bind.v2.model.annotation.Quick;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPostUpdate;
@@ -10,283 +11,156 @@ import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MathUtil;
 import me.skidsense.util.MoveUtil;
+import me.skidsense.util.QuickMath;
+import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.MovementInput;
+import org.lwjgl.Sys;
 
 import java.awt.*;
 import java.util.TimerTask;
 
 public class Flight extends Mod {
-    public Mode dmode = new Mode("Damage", "Damage", (Enum[]) DamageMode.values(), (Enum) DamageMode.Random);
     public Mode mode = new Mode("Mode", "Mode", (Enum[]) FlightMode.values(), (Enum) FlightMode.Vanilla);
     private Option<Boolean> UHC = new Option("UHC", "UHC", Boolean.valueOf(false));
-    int counter, level;
-    double moveSpeed, lastDist;
-    boolean FirstBoost;
-    int packetOrder;
+    private int counter;
+    private boolean allowed;
+    public boolean reset;
+    public float timerSpeed;
+
+    private double x, y, z, mineplexSpeed, lastDist, speed,randomValue;
+
+    TimerUtil timer = new TimerUtil();
+
 
     public Flight() {
-        super("Flight", new String[] { "MotionFly" }, ModuleType.Move);
-        this.setColor(new Color(158, 114, 243).getRGB());
+        super("Flight", new String[]{"Fly"}, ModuleType.Move);
     }
 
-    public void damage(int d) {
-        if (this.dmode.getValue() == DamageMode.Random) {
-            Random(d);
+    @Override
+    public void onEnable(){
+        super.onEnable();
+        speed = 0;
+        if (MoveUtil.isMoving() && !mc.gameSettings.keyBindSprint.isKeyDown()) {
+            allowed = !allowed;
         }
     }
 
-    public void Random(int floor_double) {
+    public static void damageHypixel() {
         if (mc.thePlayer.onGround) {
-            final double[] offsets = new double[]{0.06D, 0.0001D};
-            for (int i = 0; i < 53; i++) {
-                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offsets[0], mc.thePlayer.posZ, false));
-                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false));
-                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + offsets[1], mc.thePlayer.posZ, false));
+            final double offset = 0.4122222218322211111111F;
+            final NetHandlerPlayClient netHandler = mc.getNetHandler();
+            final EntityPlayerSP player = mc.thePlayer;
+            final double x = player.posX;
+            final double y = player.posY;
+            final double z = player.posZ;
+            for (int i = 0; i < 9; i++) {
+                netHandler.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + offset, z, false));
+                netHandler.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.000002737272, z, false));
+                netHandler.addToSendQueue(new C03PacketPlayer(false));
             }
-            }
+            netHandler.addToSendQueue(new C03PacketPlayer(true));
         }
-
-
-    void sendPacket(double addY, boolean ground) {
-        mc.thePlayer.sendQueue
-                .addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY + addY,
-                        mc.thePlayer.posZ, mc.thePlayer.rotationYawHead, mc.thePlayer.rotationPitch, ground));
-    }
-
-    double posY;
-
-    @Override
-    public void onEnable() {
-        if (this.mode.getValue() == FlightMode.Damage) {
-            damage(1);
-            new java.util.Timer().schedule(new TimerTask() {
-
-                @Override
-                public void run() {
-                }
-            }, 240L);
-
-        }
-        level = 1;
-        moveSpeed = 0.1D;
-        FirstBoost = true;
-        lastDist = 0.0D;
-        posY = mc.thePlayer.posY;
     }
 
     @Override
-    public void onDisable() {
-        this.mc.timer.timerSpeed = 1.0f;
-        level = 1;
-        moveSpeed = 0.1D;
-        lastDist = 0.0D;
-    }
-
-    private boolean canZoom() {
-        if (MoveUtil.isMoving() && this.mc.thePlayer.onGround) {
-            return true;
-        }
-        return false;
+    public void onDisable(){
+        mc.timer.timerSpeed = 1f;
+        super.onDisable();
     }
 
     @Sub
-    private void onUpdate(EventPreUpdate e) {
-        this.setSuffix(this.mode.getValue());
-        if (this.mode.getValue() == FlightMode.Vanilla) {
-            this.mc.thePlayer.motionY = this.mc.thePlayer.movementInput.jump ? 1.0
-                    : (this.mc.thePlayer.movementInput.sneak ? -1.0 : 0.0);
-            if (MoveUtil.isMoving()) {
-                MoveUtil.setSpeed(2.0);
-            } else {
-                MoveUtil.setSpeed(0.0);
-            }
-        } else if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
-
-            Minecraft.getMinecraft().thePlayer.motionY = 0.0D;
-                mc.thePlayer.motionZ *= 0.0;
-                mc.thePlayer.motionX *= 0.0;
-                mc.thePlayer.onGround = false;
-            ++counter;
-            if (counter % 2 == 0)
-                posY++;
-            if (Minecraft.getMinecraft().gameSettings.keyBindJump.pressed)
-                Minecraft.getMinecraft().thePlayer.motionY += 0.5f;
-            if (Minecraft.getMinecraft().gameSettings.keyBindSneak.pressed)
-                Minecraft.getMinecraft().thePlayer.motionY -= 0.5f;
-            e.setY(mc.thePlayer.posY + posY / 10000000);
-        }else if(this.mode.getValue() == FlightMode.New) {
-            if (!mc.thePlayer.isCollidedVertically) {
-                mc.thePlayer.setSprinting(false);
-                mc.thePlayer.cameraYaw = 0.15384614F;
+    public void onUpdate(EventPreUpdate event){
+        if (mode.getValue().equals(mode.getValue() == FlightMode.Damage)) {
+            mc.thePlayer.onGround = true;
+            double xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX;
+            double zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ;
+            lastDist = Math.sqrt((xDist * xDist) + (zDist * zDist));
+            if (counter > 1) {
+                mc.thePlayer.motionY = 0;
                 if (mc.thePlayer.ticksExisted % 2 == 0) {
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.28E-9D, mc.thePlayer.posZ);
-                }
-                if (mc.thePlayer.ticksExisted % 25 == 0 && !mc.thePlayer.onGround && !mc.thePlayer.isSwingInProgress) {
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1.28E-10D, mc.thePlayer.posZ);
-                }
-            }
-        }
-    }
-    private double qa0CkD32q5wwwTB() {
-        return mc.thePlayer.isSprinting() ? 0.2806D : 0.21585D;
-    }
-
-
-    public boolean tdDHn2bVGAQQ0Ww() {
-        return (mc.thePlayer.movementInput.moveForward != 0.01F || mc.thePlayer.movementInput.moveStrafe != 0.01F);
-    }
-    public float getRealWalkYaw() {
-        float curYaw = mc.thePlayer.rotationYaw, realYaw;
-        boolean keyFor = mc.gameSettings.keyBindForward.pressed;
-        boolean keyBack = mc.gameSettings.keyBindBack.pressed;
-        boolean keyLeft = mc.gameSettings.keyBindLeft.pressed;
-        boolean keyRight = mc.gameSettings.keyBindRight.pressed;
-        if (keyFor) {
-            if (keyLeft) {
-                realYaw = curYaw - 45;
-            } else if (keyRight) {
-                realYaw = curYaw + 45;
-            } else {
-                realYaw = curYaw;
-            }
-        } else if (keyBack) {
-            if (keyLeft) {
-                realYaw = curYaw - 135;
-            } else if (keyRight) {
-                realYaw = curYaw + 135;
-            } else {
-                realYaw = curYaw - 180;
-            }
-        } else {
-            if (keyLeft) {
-                realYaw = curYaw - 90;
-            } else if (keyRight) {
-                realYaw = curYaw + 90;
-            } else {
-                realYaw = curYaw;
-            }
-        }
-
-        return realYaw;
-
-    }
-
-    public double radions(float degrees) {
-        return degrees * Math.PI / 180;
-    }
-
-    public void hClip(double offset) {
-        double playerYaw = radions(getRealWalkYaw());
-        mc.thePlayer.setPosition(mc.thePlayer.posX - (Math.sin(playerYaw) * offset),
-                mc.thePlayer.posY + 0.0000000000001, mc.thePlayer.posZ + (Math.cos(playerYaw) * offset));
-    }
-
-    @Sub
-    public void onPost(EventPostUpdate e) {
-        if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
-            double xDist = Minecraft.getMinecraft().thePlayer.posX - Minecraft.getMinecraft().thePlayer.prevPosX;
-            double zDist = Minecraft.getMinecraft().thePlayer.posZ - Minecraft.getMinecraft().thePlayer.prevPosZ;
-            lastDist = Math.sqrt(xDist * xDist + zDist * zDist);
-        }
-    }
-
-    int stage;
-    private double distance;
-
-    @Sub
-    private void onMove(EventMove e) {
-        if (this.mode.getValue() == FlightMode.Hypixel || this.mode.getValue() == FlightMode.Damage) {
-            if (moveSpeed == 7D) {
-                if (!FirstBoost)
-                    moveSpeed = 0.1D;
-                else
-                    FirstBoost = false;
-            } else {
-                if (level != 1 || Minecraft.getMinecraft().thePlayer.moveForward == 0.0F
-                        && Minecraft.getMinecraft().thePlayer.moveStrafing == 0.0F) {
-                    if (level == 2) {
-                        level = 3;
-                        moveSpeed *= 2.1499999D;
-                    } else if (level == 3) {
-                        level = 4;
-                        double difference = (0.011D) * (lastDist - MathUtil.getBaseMovementSpeed());
-                        moveSpeed = lastDist - difference;
-                    } else {
-                        if (Minecraft.getMinecraft().theWorld
-                                .getCollidingBoundingBoxes(Minecraft.getMinecraft().thePlayer,
-                                        Minecraft.getMinecraft().thePlayer.boundingBox.offset(0.0D,
-                                                Minecraft.getMinecraft().thePlayer.motionY, 0.0D))
-                                .size() > 0 || Minecraft.getMinecraft().thePlayer.isCollidedVertically) {
-                            level = 1;
-                        }
-                        moveSpeed = lastDist - lastDist / 159.0D;
-                    }
+                    reset = true;
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + randomValue, mc.thePlayer.posZ);
                 } else {
-                    level = 2;
-                    int amplifier = Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed)
-                            ? Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.moveSpeed)
-                            .getAmplifier() + 1
-                            : 0;
-                    double boost = Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed) ? 1.7 : 2.1;
-                    moveSpeed = boost * MathUtil.getBaseMovementSpeed();
+                    reset = false;
+                }
+                if (!MoveUtil.isMoving()) {
+                    double speed = 0.1;
+
+                    mc.thePlayer.motionX = (-Math.sin(MoveUtil.getDirection())) * speed;
+                    mc.thePlayer.motionZ = Math.cos(MoveUtil.getDirection()) * speed;
+
+                }
+
+
+                if (mc.thePlayer.ticksExisted % 5 == 0) {
+                    randomValue += QuickMath.getRandomInRange(-0.000009D, 0.000009D);
                 }
             }
-
-            moveSpeed = this.mode.getValue() == FlightMode.Damage
-                    ? Math.max(moveSpeed, MathUtil.getBaseMovementSpeed())
-                    : MathUtil.getBaseMovementSpeed();
-            MoveUtil.setMoveSpeed(e, moveSpeed);
-
-
-        }else if(mode.getValue() == FlightMode.New){
-
-                setMotion(getBaseMoveSpeed());
-            }
-        }
-    public static void setMotion(double speed) {
-        double forward = MovementInput.moveForward;
-        double strafe = MovementInput.moveStrafe;
-        float yaw = mc.thePlayer.rotationYaw;
-        if ((forward == 0.0D) && (strafe == 0.0D)) {
-            mc.thePlayer.motionX = 0;
-            mc.thePlayer.motionZ = 0;
-        } else {
-            if (forward != 0.0D) {
-                if (strafe > 0.0D) {
-                    yaw += (forward > 0.0D ? -45 : 45);
-                } else if (strafe < 0.0D) {
-                    yaw += (forward > 0.0D ? 45 : -45);
-                }
-                strafe = 0.0D;
-                if (forward > 0.0D) {
-                    forward = 1;
-                } else if (forward < 0.0D) {
-                    forward = -1;
-                }
-            }
-            mc.thePlayer.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 90.0F)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0F));
-            mc.thePlayer.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 90.0F)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0F));
         }
     }
 
+    @Sub
+    public void onMove(EventMove e) {
+        if (mode.getValue() == FlightMode.Damage) {
+            mc.thePlayer.onGround = true;
+            if (mc.thePlayer.ticksExisted % 10 == 0 && MoveUtil.isMoving()) {
+                mc.thePlayer.cameraYaw = 0.16f;
+            }
+                switch (counter) {
+                    case 0:
+                        if (timer.delay(allowed ? 250 : 150)) {
+                            damageHypixel();
+                            speed = MoveUtil.getBaseMoveSpeed() * (allowed ? 1.25 : 1.25);
+                            timer.reset();
 
-        static double getBaseMoveSpeed() {
-        double baseSpeed = 0.2873;
-        if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-            int amplifier = mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).getAmplifier();
-            baseSpeed *= 1.0 + 0.2 * (double) (amplifier + 1);
+
+                            counter = 1;
+                        } else {
+                            speed = 0;
+                            e.setX(mc.thePlayer.motionX = 0);
+                            e.setY(mc.thePlayer.motionY = 0);
+                            e.setZ(mc.thePlayer.motionZ = 0);
+                        }
+                        break;
+                    case 1:
+                        speed *= 2.14999;
+                        e.setY(mc.thePlayer.motionY = 0.41999998688697815D);
+                        counter = 2;
+                        break;
+                    case 2:
+                        speed = (allowed ? 1.37 : 1.42);
+                        counter = 3;
+                        break;
+                    default:
+                        if (counter > 10) {
+                            if (timerSpeed > 1.0) {
+                                mc.timer.timerSpeed = timerSpeed -= 0.055;
+                            } else {
+                                mc.timer.timerSpeed = 1.0f;
+                            }
+                        } else if (counter == 9) {
+                            // timerSpeed = 2.6f;
+                            timerSpeed = 1.4f;
+                        }
+
+                        if (mc.thePlayer.isCollidedHorizontally) {
+                            mc.timer.timerSpeed = 1.0f;
+                            speed *= .5;
+                        }
+                        speed -= speed / 159;
+                        counter++;
+                        break;
+                }
+                MoveUtil.setSpeed(speed == 0 ? 0 : Math.max(speed, MoveUtil.getBaseMoveSpeed()));
         }
-        return baseSpeed;
     }
 
-    public static enum FlightMode {
-        Vanilla, Hypixel, Damage,New
-    }
-
-    public static enum DamageMode {
-        Random,
+    enum FlightMode{
+        Vanilla,Damage
     }
 }

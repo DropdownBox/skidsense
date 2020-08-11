@@ -13,6 +13,7 @@ import me.skidsense.module.ModuleType;
 import me.skidsense.util.*;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.stats.StatList;
+import net.minecraft.util.MovementInput;
 
 import java.awt.*;
 import java.util.List;
@@ -57,6 +58,35 @@ public class Speed extends Mod {
             this.stair = 0.75D;
         }
 
+    }
+
+    private void setMotion(final EventMove em, final double speed) {
+        double forward = MovementInput.moveForward;
+        double strafe = MovementInput.moveStrafe;
+        float yaw = mc.thePlayer.rotationYaw;
+        if (forward == 0.0 && strafe == 0.0) {
+            em.setX(0.0);
+            em.setZ(0.0);
+        }
+        else {
+            if (forward != 0.0) {
+                if (strafe > 0.0) {
+                    yaw += ((forward > 0.0) ? -45 : 45);
+                }
+                else if (strafe < 0.0) {
+                    yaw += ((forward > 0.0) ? 45 : -45);
+                }
+                strafe = 0.0;
+                if (forward > 0.0) {
+                    forward = 1.0;
+                }
+                else if (forward < 0.0) {
+                    forward = -1.0;
+                }
+            }
+            em.setX(mc.thePlayer.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 88.0)) + strafe * speed * Math.sin(Math.toRadians(yaw + 87.9000815258789)));
+            em.setZ(mc.thePlayer.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 88.0)) - strafe * speed * Math.cos(Math.toRadians(yaw + 87.9000815258789)));
+        }
     }
 
 
@@ -126,7 +156,7 @@ public class Speed extends Mod {
 
     // Hypixel Mode
     @Sub
-    private void onMove(EventMove e) {
+    private void onMove(final EventMove e) {
         if (mode.getValue() == SpeedMode.HypixelHop) {
             if (mc.thePlayer.isCollidedHorizontally) {
                 this.collided = true;
@@ -146,17 +176,13 @@ public class Speed extends Mod {
                 this.less = 0.0D;
             }
 
-            if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.01D) && MoveUtil.isMoving()) {
+            if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.000000000000008D) && MoveUtil.isMoving()) {
                 this.collided = mc.thePlayer.isCollidedHorizontally;
                 if (this.stage >= 0 || this.collided) {
                     this.stage = 0;
-                    double a = 0.4086666D + (double) MoveUtil.getJumpEffect() * 0.1D;
-                    if (this.stair == 0.0D) {
-                        mc.thePlayer.jump();
-                        mc.thePlayer.motionY = a;
-                        e.setY(mc.thePlayer.motionY);
+                    if (this.stair == 0.0) {
+                        e.setY(mc.thePlayer.motionY = 0.40906634241114514 + MoveUtil.getJumpEffect() * 0.1);
                     }
-
                     ++this.less;
                     boolean bl = this.lessSlow = this.less > 1.0D && !this.lessSlow;
                     if (this.less > 1.12D) {
@@ -165,8 +191,8 @@ public class Speed extends Mod {
                 }
             }
 
-            this.speed = this.getHypixelSpeed(this.stage) + 0.0331D;
-            this.speed *= 0.91D;
+            this.speed = this.getHypixelSpeed(this.stage) + 0.0331;
+            this.speed *= 0.93D;
             if (this.stair > 0.0D) {
                 this.speed *= 0.66D - (double) MoveUtil.getSpeedEffect() * 0.1D;
             }
@@ -183,8 +209,8 @@ public class Speed extends Mod {
                 this.speed = 0.12D;
             }
 
-            if ((mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
-                MoveUtil.setMotion(e, speed);
+            if (MoveUtil.isMoving()) {
+                setMotion(e, speed);
                 ++stage;
             }
         }
@@ -197,14 +223,15 @@ public class Speed extends Mod {
 
 
     private double getHypixelSpeed(final int stage) {
-        double value = MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;
+        double value = MoveUtil.defaultSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;
         final double firstvalue = 0.4145 + MoveUtil.getSpeedEffect() / 12.5;
-        final double decr = stage / 500.0 * 2.0;
+        final double thirdvalue = 0.4045 + MoveUtil.getSpeedEffect() / 12.5;
+        final double decr = stage / 500.0 * 3.0;
         if (stage == 0) {
-            if (this.timer.delay(300.0f)) {
-                this.timer.reset();
+            if (timer.isDelayComplete((long) 300.0)) {
+                timer.reset();
             }
-            if (!this.lastCheck.delay(500.0f)) {
+            if (!this.lastCheck.isDelayComplete((long) 500.0)) {
                 if (!this.shouldslow) {
                     this.shouldslow = true;
                 }
@@ -217,50 +244,21 @@ public class Speed extends Mod {
         else if (stage == 1) {
             value = firstvalue;
         }
-        else if (stage >= 2) {
-            value = firstvalue - decr;
+        else if (stage == 2) {
+            value = thirdvalue;
         }
-        if (this.shouldslow || !this.lastCheck.delay(500.0f) || this.collided) {
+        else if (stage >= 3) {
+            value = thirdvalue - decr;
+        }
+        if (this.shouldslow || !this.lastCheck.isDelayComplete((long) 500.0) || this.collided) {
             value = 0.2;
             if (stage == 0) {
                 value = 0.0;
             }
         }
-        return Math.max(value, this.shouldslow ? value : (MoveUtil.getBaseMoveSpeed() + 0.028 * MoveUtil.getSpeedEffect()));
+        return Math.max(value, this.shouldslow ? value : (MoveUtil.defaultSpeed() + 0.028 * MoveUtil.getSpeedEffect()));
     }
 
-    private void setMotion(EventMove em, double speed) {
-        double forward = mc.thePlayer.movementInput.moveForward;
-        double strafe = mc.thePlayer.movementInput.moveStrafe;
-        float yaw = mc.thePlayer.rotationYaw;
-        if (forward == 0.0 && strafe == 0.0) {
-            em.setX(0.0);
-            em.setZ(0.0);
-        } else {
-            if (forward != 0.0) {
-                if (strafe > 0.0) {
-                    yaw += (float) (forward > 0.0 ? -45 : 45);
-                } else if (strafe < 0.0) {
-                    yaw += (float) (forward > 0.0 ? 45 : -45);
-                }
-                strafe = 0.0;
-                if (forward > 0.0) {
-                    forward = 1.0;
-                } else if (forward < 0.0) {
-                    forward = -1.0;
-                }
-            }
-            em.setX(forward * speed * Math.cos(Math.toRadians(yaw + 90))
-                    + strafe * speed * Math.sin(Math.toRadians(yaw + 90)));
-            em.setZ(forward * speed * Math.sin(Math.toRadians(yaw + 90))
-                    - strafe * speed * Math.cos(Math.toRadians(yaw + 90)));
-
-            if (forward == 0.0F && strafe == 0.0F) {
-                em.setX(0.0);
-                em.setZ(0.0);
-            }
-        }
-    }
 
 
     public List getCollidingList(double motionY){
