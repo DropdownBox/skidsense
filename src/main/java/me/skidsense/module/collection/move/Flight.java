@@ -44,7 +44,8 @@ public class Flight extends Mod {
     @Override
     public void onEnable(){
         super.onEnable();
-        speed = 0;
+        counter = 0;
+
         if (MoveUtil.isMoving() && !mc.gameSettings.keyBindSprint.isKeyDown()) {
             allowed = !allowed;
         }
@@ -70,6 +71,9 @@ public class Flight extends Mod {
     @Override
     public void onDisable(){
         mc.timer.timerSpeed = 1f;
+        if (mode.getValue().equals(mode.getValue() == FlightMode.Damage) && reset) {
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - randomValue, mc.thePlayer.posZ);
+        }
         super.onDisable();
     }
 

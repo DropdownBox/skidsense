@@ -115,22 +115,22 @@ public class Scaffold extends Mod {
                   if (this.isMoving2()) {
                      if (this.isOnGround(0.76) && !this.isOnGround(0.75) && mc.thePlayer.motionY > 0.23
                              && mc.thePlayer.motionY < 0.25) {
-                        fakeJump();
+                        //fakeJump();
 
                         mc.thePlayer.motionY = (double) Math.round(mc.thePlayer.posY) - mc.thePlayer.posY;
                      }
                      if (this.isOnGround(1.0E-4)) {
-                        fakeJump();
+                        //fakeJump();
                         mc.thePlayer.motionY = 0.42;
                         mc.thePlayer.motionX *= 0.9;
                         mc.thePlayer.motionZ *= 0.9;
                      } else if (mc.thePlayer.posY >= (double) Math.round(mc.thePlayer.posY) - 1.0E-4
                              && mc.thePlayer.posY <= (double) Math.round(mc.thePlayer.posY) + 1.0E-4) {
-                        fakeJump();
+                        //fakeJump();
                         mc.thePlayer.motionY = 0.0;
                      }
                   } else {
-                     fakeJump();
+                     //fakeJump();
                      mc.thePlayer.motionX = 0.0;
                      mc.thePlayer.motionZ = 0.0;
                      mc.thePlayer.jumpMovementFactor = 0.0f;
@@ -144,7 +144,7 @@ public class Scaffold extends Mod {
                   }
                }
             } else if (!this.isMoving2() && mc.gameSettings.keyBindJump.isKeyDown()) {
-               fakeJump();
+               //fakeJump();
                mc.thePlayer.motionX = 0.0;
                mc.thePlayer.motionZ = 0.0;
                mc.thePlayer.jumpMovementFactor = 0.0f;
@@ -194,10 +194,10 @@ public class Scaffold extends Mod {
       return mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f;
    }
 
-   private void fakeJump() {
-      mc.thePlayer.isAirBorne = true;
-      mc.thePlayer.triggerAchievement(StatList.jumpStat);
-   }
+//   private void fakeJump() {
+//      mc.thePlayer.isAirBorne = true;
+//      mc.thePlayer.triggerAchievement(StatList.jumpStat);
+//   }
 
 
    public static float[] getRotationsBlock(BlockPos block, EnumFacing face) {
