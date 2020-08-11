@@ -162,7 +162,7 @@ public class Scaffold extends Mod {
                         mc.thePlayer.motionY = 0.4196;
                         mc.thePlayer.motionX *= 0.75;
                         mc.thePlayer.motionZ *= 0.75;
-                     }
+                     }//
                   }
                } else if (this.mode.getValue() == Smode.Normal) {
                   if (isAirBlock(underBlock) && this.blockData != null) {

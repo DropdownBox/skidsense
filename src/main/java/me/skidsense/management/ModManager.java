@@ -87,8 +87,7 @@ implements Manager {
         addMod(new InvCleaner());
         addMod(new Blink());
         addMod(new Scaffold());
-        addMod(new Disabler());
-        
+
         addMod(new Animations());
         addMod(new ArmorStatus());
         addMod(new ClickGui());

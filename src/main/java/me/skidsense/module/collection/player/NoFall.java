@@ -7,6 +7,7 @@ import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.util.AxisAlignedBB;
 
 import java.awt.*;
 
