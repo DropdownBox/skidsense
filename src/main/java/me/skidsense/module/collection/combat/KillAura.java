@@ -308,17 +308,17 @@ public class KillAura extends Mod {
 			this.attackSpeed = 0;
 		}
 		mc.thePlayer.swingItem();
-		int stage = 1;
-		switch (stage){
-			case 1:{
-				mc.playerController.attackEntity(mc.thePlayer,target);
-				stage = 2;
-			}
-			case 2:
+//		int stage = 1;
+//		switch (stage){
+//			case 1:{
+//				mc.playerController.attackEntity(mc.thePlayer,target);
+//				stage = 2;
+//			}
+//			case 2:
 				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
-				stage = 1;
-				break;
-		}
+//				stage = 1;
+//				break;
+//		}
 
 //		this.mc.thePlayer.sendQueue
 //				.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));

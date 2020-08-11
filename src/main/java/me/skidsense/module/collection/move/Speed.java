@@ -1,21 +1,18 @@
 package me.skidsense.module.collection.move;
 
+import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPacketRecieve;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.hooks.value.Event;
+import me.skidsense.hooks.events.EventStep;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.*;
-import net.minecraft.block.BlockStairs;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
-import net.minecraft.potion.Potion;
 import net.minecraft.stats.StatList;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.Timer;
 
 import java.awt.*;
 import java.util.List;
@@ -23,23 +20,21 @@ import java.util.List;
 public class Speed extends Mod {
 
     private Mode<Enum> mode = new Mode("Mode", "mode", SpeedMode.values(), SpeedMode.HypixelHop);
-    private Option<Boolean> setback = new Option("Setback","Setback",false);
+    private Option<Boolean> setback = new Option("Setback", "Setback", false);
 
     private int stage;
     private double movementSpeed;
     private double distance;
     private double speed, speedvalue;
     private double lastDist;
-    public static int  aacCount;
-    boolean collided,lessSlow,shouldslow = false;
+    public static int aacCount;
+    boolean collided, lessSlow, shouldslow = false;
     double less, stair;
     TimerUtil lastCheck = new TimerUtil();
 
 
-
-
     public Speed() {
-        super("Speed", new String[] { "zoom" }, ModuleType.Move);
+        super("Speed", new String[]{"zoom"}, ModuleType.Move);
         setColor(new Color(99, 248, 91).getRGB());
     }
 
@@ -51,8 +46,40 @@ public class Speed extends Mod {
         super.onDisable();
     }
 
+    @Sub
+    public void onStep(EventStep event) {
+        double height = mc.thePlayer.getEntityBoundingBox().minY - mc.thePlayer.posY;
+        if (height > 0.7D) {
+            this.less = 0.0D;
+        }
+
+        if (height == 0.5D) {
+            this.stair = 0.75D;
+        }
+
+    }
+
+
     @Override
-    public void  onEnable(){
+    public void onEnable() {
+        boolean isCollidedHorizontally;
+        final boolean player = mc.thePlayer == null;
+        if (player) {
+            isCollidedHorizontally = false;
+        }
+        else {
+            isCollidedHorizontally = mc.thePlayer.isCollidedHorizontally;
+        }
+        this.collided = isCollidedHorizontally;
+        this.lessSlow = false;
+        if (mc.thePlayer != null) {
+            this.speed = MoveUtil.defaultSpeed();
+        }
+        this.less = 0.0;
+        this.lastDist = 0.0;
+        stage = 2;
+        mc.timer.timerSpeed = 1.0f;
+        this.movementSpeed = ((mc.thePlayer == null) ? 0.2873 : MoveUtil.getBaseMoveSpeed());
         super.onEnable();
     }
 
@@ -63,12 +90,11 @@ public class Speed extends Mod {
     @Sub
     private void onUpdate(EventPreUpdate e) {
         setSuffix(mode.getValue());
-        if(mode.getValue().equals(SpeedMode.HypixelHop)){
+        if (mode.getValue().equals(SpeedMode.HypixelHop)) {
             final double var7 = mc.thePlayer.posX - mc.thePlayer.prevPosX;
             final double zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ;
             this.distance = Math.sqrt(var7 * var7 + zDist * zDist);
-        }else
-        if (mode.getValue() == SpeedMode.Onground && canZoom()) {
+        } else if (mode.getValue() == SpeedMode.Onground && canZoom()) {
             switch (this.stage) {
                 case 1:
                     e.setY(e.getY() + 0.4D);
@@ -91,7 +117,7 @@ public class Speed extends Mod {
 
     @Sub
     public void onPacket(EventPacketRecieve e) {
-        if(setback.getValue()) {
+        if (setback.getValue()) {
             if (e.getPacket() instanceof S08PacketPlayerPosLook) {
                 this.setEnabled(false);
             }
@@ -101,120 +127,65 @@ public class Speed extends Mod {
     // Hypixel Mode
     @Sub
     private void onMove(EventMove e) {
-        switch (mode.getValue().toString()){
-            case "HypixelHop": {
-                if (mc.thePlayer.isCollidedHorizontally) {
-                    this.collided = true;
-                }
-                if (this.collided) {
-                    mc.timer.timerSpeed = 1.0f;
-                    stage = -1;
-                }
-                if (this.stair > 0.0) {
-                    this.stair -= 0.25;
-                }
-                this.less -= ((this.less > 1.0) ? 0.12 : 0.11);
-                if (this.less < 0.0) {
-                    this.less = 0.0;
-                }
-                if (!MoveUtil.isInLiquid() && MoveUtil.isOnGround(0.01) /*&& MoveUtil.()*/) {
-                    this.collided = mc.thePlayer.isCollidedHorizontally;
-                    if (stage >= 0 || this.collided) {
-                        stage = 0;
-                        final double a = 0.4086666 + MoveUtil.getJumpEffect() * 0.1;
-                        if (this.stair == 0.0) {
-                            mc.thePlayer.jump();
-                            if(mc.thePlayer.motionY < 0.4){
-                                e.setY(0.399999);
-                                System.out.println(1);
-                            }else
-                            e.setY(mc.thePlayer.motionY);
-                            System.out.println(2);
-                        }
-                        ++this.less;
-                        this.lessSlow = (this.less > 1.0 && !this.lessSlow);
-                        if (this.less > 1.12) {
-                            this.less = 1.12;
-                        }
+        if (mode.getValue() == SpeedMode.HypixelHop) {
+            if (mc.thePlayer.isCollidedHorizontally) {
+                this.collided = true;
+            }
+
+            if (this.collided) {
+                mc.timer.timerSpeed = 1.0F;
+                this.stage = -1;
+            }
+
+            if (this.stair > 0.0D) {
+                this.stair -= 0.25D;
+            }
+
+            this.less -= this.less > 1.0D ? 0.12D : 0.11D;
+            if (this.less < 0.0D) {
+                this.less = 0.0D;
+            }
+
+            if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.01D) && MoveUtil.isMoving()) {
+                this.collided = mc.thePlayer.isCollidedHorizontally;
+                if (this.stage >= 0 || this.collided) {
+                    this.stage = 0;
+                    double a = 0.4086666D + (double) MoveUtil.getJumpEffect() * 0.1D;
+                    if (this.stair == 0.0D) {
+                        mc.thePlayer.jump();
+                        mc.thePlayer.motionY = a;
+                        e.setY(mc.thePlayer.motionY);
+                    }
+
+                    ++this.less;
+                    boolean bl = this.lessSlow = this.less > 1.0D && !this.lessSlow;
+                    if (this.less > 1.12D) {
+                        this.less = 1.12D;
                     }
                 }
-                this.speed = this.getHypixelSpeed(stage) + 0.0331;
-                this.speed *= 0.91;
-                if (this.stair > 0.0) {
-                    this.speed *= 0.66 - MoveUtil.getSpeedEffect() * 0.1;
-                }
-                if (stage < 0) {
-                    this.speed = MoveUtil.getBaseMoveSpeed();
-                }
-                if (this.lessSlow) {
-                    this.speed *= 0.93;
-                }
-                if (MoveUtil.isInLiquid()) {
-                    this.speed = 0.12;
-                }
-                if (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f) {
-                    this.setMotion(e, this.speed);
-                    ++stage;
-                }
-                System.out.println(mc.thePlayer.motionY);
-                break;
-            } case "Bhop":{
-                if (mc.thePlayer.isCollidedHorizontally) {
-                    collided = true;
-                }
-                if (collided) {
-                    mc.timer.timerSpeed = 1;
-                    stage = -1;
-                }
-                if (stair > 0)
-                    stair -= 0.25;
-                less -= less > 1 ? 0.12 : 0.11;
-                if (less < 0)
-                    less = 0;
-                if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.01) && (PlayerUtil.isMoving2())) {
-                    collided = mc.thePlayer.isCollidedHorizontally;
-                    if (stage >= 0 || collided) {
-                        stage = 0;
+            }
 
-                        double motY = 0.407 + MoveUtil.getJumpEffect() * 0.1;
-                        if (stair == 0) {
-                            mc.thePlayer.jump();
-                            e.setY(mc.thePlayer.motionY = motY);
-                        } else {
+            this.speed = this.getHypixelSpeed(this.stage) + 0.0331D;
+            this.speed *= 0.91D;
+            if (this.stair > 0.0D) {
+                this.speed *= 0.66D - (double) MoveUtil.getSpeedEffect() * 0.1D;
+            }
 
-                        }
+            if (this.stage < 0) {
+                this.speed = MoveUtil.getBaseMoveSpeed();
+            }
 
-                        less++;
-                        if (less > 1 && !lessSlow)
-                            lessSlow = true;
-                        else
-                            lessSlow = false;
-                        if (less > 1.12)
-                            less = 1.12;
-                    }
-                }
-                speed = getHypixelSpeed(stage) + 0.0331;
-                speed *= 0.91;
-                if (stair > 0) {
-                    speed *= 0.7 - MoveUtil.getSpeedEffect() * 0.1;
-                }
+            if (this.lessSlow) {
+                this.speed *= 0.93D;
+            }
 
-                if (stage < 0)
-                    speed = MoveUtil.defaultSpeed();
-                if (lessSlow) {
-                    speed *= 0.95;
-                }
+            if (PlayerUtil.isInLiquid()) {
+                this.speed = 0.12D;
+            }
 
-
-                if (BlockUtil.isInLiquid()) {
-                    speed = 0.12;
-                }
-
-                if ((mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
-                    setMotion(e, speed);
-                    ++stage;
-                }
-                break;
+            if ((mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) {
+                MoveUtil.setMotion(e, speed);
+                ++stage;
             }
         }
     }
@@ -297,6 +268,6 @@ public class Speed extends Mod {
     }
 
     enum SpeedMode {
-        Bhop, HypixelHop, Onground
+        HypixelHop, Onground
     }
 }

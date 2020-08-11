@@ -102,7 +102,7 @@ public class MoveUtil {
         mc.thePlayer.motionZ = MathHelper.cos(getDirection()) * speed;
     }
     
-    public static void setMotion(double speed) {
+    public static void setMotion(EventMove e,double speed) {
         double forward = mc.thePlayer.movementInput.moveForward;
         double strafe = mc.thePlayer.movementInput.moveStrafe;
         float yaw = mc.thePlayer.rotationYaw;
@@ -123,8 +123,8 @@ public class MoveUtil {
                     forward = -1;
                 }
             }
-            mc.thePlayer.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 90.0F)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0F)); 
-            mc.thePlayer.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 90.0F)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0F));
+            e.setX(forward * speed * Math.cos(Math.toRadians(yaw + 90.0F)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0F)));
+            e.setZ(forward * speed * Math.sin(Math.toRadians(yaw + 90.0F)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0F)));
         }
     }   
 

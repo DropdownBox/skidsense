@@ -3,6 +3,7 @@ package me.skidsense.module.collection.move;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPacketRecieve;
+import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
@@ -25,7 +26,7 @@ public class Sprint
     }
 
     @Sub
-    private void onUpdate(EventMove event) {
+    private void onUpdate(EventPreUpdate event) {
         mc.thePlayer.setSprinting(this.canSprint());
     }
 
@@ -39,7 +40,7 @@ public class Sprint
     }
 
     @Sub
-    public void onEvent(EventPacketRecieve e) {
+    public void onEvent(EventPacketSend e) {
         final Packet<?> packet = e.getPacket();
         if (keepsprint.getValue() && packet instanceof C0BPacketEntityAction) {
             final C0BPacketEntityAction playerPacket = (C0BPacketEntityAction) packet;
