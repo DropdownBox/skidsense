@@ -267,7 +267,7 @@ public class Scaffold extends Mod {
    public static boolean roi() {
       int v = 0;
       for(v = 0; v < 9; ++v) {
-          ItemStack v = krd.aqo.xlh.xfm[v];
+         tsn v = krd.aqo.xlh.xfm[v];
          if (v != null) {
             ++v;
          }
