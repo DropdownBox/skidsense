@@ -22,28 +22,28 @@ public class AntiDesync extends Mod {
     }
 
     @Override
-    public void onEnable(){
+    public void onEnable() {
         super.onEnable();
     }
 
     @Override
-    public void onDisable(){
+    public void onDisable() {
+        lastSlot = -1;
         super.onDisable();
     }
 
     @Sub
-    public void onEvent(Event e) {
-        if (e instanceof EventPreUpdate) {
-            EventPreUpdate eu = (EventPreUpdate) e;
-            if (this.lastSlot != -1 && this.lastSlot != mc.thePlayer.inventory.currentItem) {
-                mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-            }
-            } else if (e instanceof EventPacketSend) {
-            EventPacketSend ep = (EventPacketSend) e;
-            if (ep.getPacket() instanceof C09PacketHeldItemChange) {
-                C09PacketHeldItemChange packet = (C09PacketHeldItemChange) ep.getPacket();
-                this.lastSlot = packet.getSlotId();
-            }
+    public void onPreUpdate(EventPreUpdate e) {
+        if (this.lastSlot != -1 && this.lastSlot != mc.thePlayer.inventory.currentItem) {
+            mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+        }
+    }
+
+    @Sub
+    public void onPacketSend(EventPacketSend e) {
+        if (e.getPacket() instanceof C09PacketHeldItemChange) {
+            C09PacketHeldItemChange packet = (C09PacketHeldItemChange) e.getPacket();
+            this.lastSlot = packet.getSlotId();
         }
     }
 }

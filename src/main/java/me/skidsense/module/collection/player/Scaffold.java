@@ -37,6 +37,7 @@ import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.potion.Potion;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.*;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import sun.security.pkcs11.Secmod;
@@ -50,7 +51,15 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Scaffold extends Mod {
 
-   private List<Block> badBlocks = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.flowing_lava, Blocks.enchanting_table, Blocks.carpet, Blocks.glass_pane, Blocks.stained_glass_pane, Blocks.iron_bars, Blocks.snow_layer, Blocks.ice, Blocks.packed_ice, Blocks.coal_ore, Blocks.diamond_ore, Blocks.emerald_ore, Blocks.chest, Blocks.trapped_chest, Blocks.torch, Blocks.anvil, Blocks.trapped_chest, Blocks.noteblock, Blocks.jukebox, Blocks.tnt, Blocks.gold_ore, Blocks.iron_ore, Blocks.lapis_ore, Blocks.lit_redstone_ore, Blocks.quartz_ore, Blocks.redstone_ore, Blocks.wooden_pressure_plate, Blocks.stone_pressure_plate, Blocks.light_weighted_pressure_plate, Blocks.heavy_weighted_pressure_plate, Blocks.stone_button, Blocks.wooden_button, Blocks.lever, Blocks.tallgrass, Blocks.tripwire, Blocks.tripwire_hook, Blocks.rail, Blocks.waterlily, Blocks.red_flower, Blocks.red_mushroom, Blocks.brown_mushroom, Blocks.vine, Blocks.trapdoor, Blocks.yellow_flower, Blocks.ladder, Blocks.furnace, Blocks.sand, Blocks.cactus, Blocks.dispenser, Blocks.noteblock, Blocks.dropper, Blocks.crafting_table, Blocks.web, Blocks.pumpkin, Blocks.sapling, Blocks.cobblestone_wall, Blocks.oak_fence);
+   private List<Block> badBlocks = Arrays.asList(Blocks.air, Blocks.water, Blocks.flowing_water, Blocks.lava, Blocks.flowing_lava,
+           Blocks.enchanting_table, Blocks.carpet, Blocks.glass_pane, Blocks.stained_glass_pane, Blocks.iron_bars,
+           Blocks.snow_layer, Blocks.ice, Blocks.packed_ice, Blocks.coal_ore, Blocks.diamond_ore, Blocks.emerald_ore,
+           Blocks.chest, Blocks.trapped_chest, Blocks.torch, Blocks.anvil, Blocks.trapped_chest, Blocks.noteblock, Blocks.jukebox, Blocks.tnt,
+           Blocks.gold_ore, Blocks.iron_ore, Blocks.lapis_ore, Blocks.lit_redstone_ore, Blocks.quartz_ore, Blocks.redstone_ore,
+           Blocks.wooden_pressure_plate, Blocks.stone_pressure_plate, Blocks.light_weighted_pressure_plate, Blocks.heavy_weighted_pressure_plate,
+           Blocks.stone_button, Blocks.wooden_button, Blocks.lever, Blocks.tallgrass, Blocks.tripwire, Blocks.tripwire_hook, Blocks.rail, Blocks.waterlily,
+           Blocks.red_flower, Blocks.red_mushroom, Blocks.brown_mushroom, Blocks.vine, Blocks.trapdoor, Blocks.yellow_flower, Blocks.ladder, Blocks.furnace,
+           Blocks.sand, Blocks.cactus, Blocks.dispenser, Blocks.noteblock, Blocks.dropper, Blocks.crafting_table, Blocks.web, Blocks.pumpkin, Blocks.sapling, Blocks.cobblestone_wall, Blocks.oak_fence);
    private BlockData blockData;
 //   private Setting blockFly;
 //   private Setting tower;
@@ -61,9 +70,10 @@ public class Scaffold extends Mod {
 //   private Setting keepY;
 
    public static boolean isPlaceTick = false;
+   int currentSlot;
    int slot;
    private double startY;
-   public TimerUtil towerTimer = new TimerUtil();
+   //public TimerUtil towerTimer = new TimerUtil();
    public static Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) ScaffoldMode.values(), (Enum) ScaffoldMode.Hypixel);
    public static Option<Boolean> keeprots = new Option<Boolean>("KeepRotation", "KeepRotation", true);
    public static Option<Boolean> tower = new Option<>("Tower","Tower",true);
@@ -96,7 +106,6 @@ public class Scaffold extends Mod {
    public void onDisable() {
       super.onDisable();
       this.isPlaceTick = false;
-      towerTimer.reset();
    }
 
    @Override
@@ -108,11 +117,21 @@ public class Scaffold extends Mod {
    }
 
    @Sub
-   public void onPreUpdate(EventPreUpdate e){
-      int slot = this.getSlot();
+   public void onPreUpdate(EventPreUpdate e) {
+      slot = this.getSlot();
       this.isPlaceTick = keeprots.getValue() ? blockData != null && slot != -1 : blockData != null && slot != -1 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(0, -1, 0)).getBlock() == Blocks.air;
       if (slot == -1) {
-         this.moveBlocksToHotbar();
+         for (int i = 9; i < 36; ++i) {
+            Item item;
+            if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()
+                    || !((item = mc.thePlayer.inventoryContainer.getSlot(i).getStack()
+                    .getItem()) instanceof ItemBlock)
+                    || this.badBlocks.contains(((ItemBlock) item).getBlock())
+                    || ((ItemBlock) item).getBlock().getLocalizedName().toLowerCase().contains("chest"))
+               continue;
+            this.swap(i, 7);
+            break;
+         }
          return;
       }
       this.blockData = this.getBlockData();
@@ -120,19 +139,39 @@ public class Scaffold extends Mod {
          return;
       }
 
+
+
       // tower and towermove
-      if(mc.gameSettings.keyBindJump.isKeyDown() && tower.getValue() && (this.towermove.getValue() || !MoveUtil.isMoving()) && !mc.thePlayer.isPotionActive(Potion.jump)) {
-         if(towerTimer.hasReached(130)) {
-            mc.thePlayer.jump();
-            if (MoveUtil.isMoving()) {
-               MoveUtil.setSpeed((MoveUtil.getBaseMoveSpeed() / 1.25));
+      if (mc.gameSettings.keyBindJump.isKeyDown() && tower.getValue() && (this.towermove.getValue() || !MoveUtil.isMoving()) && !mc.thePlayer.isPotionActive(Potion.jump)) {
+         //mc.thePlayer.jump();
+         if (MoveUtil.isMoving()) {
+            if (MoveUtil.isOnGround(0.76) && !MoveUtil.isOnGround(0.75)
+                    && mc.thePlayer.motionY > 0.23
+                    && mc.thePlayer.motionY < 0.25) {
+               e.setY(mc.thePlayer.motionY = Math.round(mc.thePlayer.posY)
+                       - mc.thePlayer.posY);
             }
-            towerTimer.reset();
-         } else if (towerTimer.getTime() >= 120) {
-            mc.thePlayer.motionY = 0;
+            if (MoveUtil.isOnGround(1.0E-4)) {
+               e.setY(mc.thePlayer.motionY = 0.41993956416514);
+               mc.thePlayer.motionX *= 0.9;
+               mc.thePlayer.motionZ *= 0.9;
+            } else if (mc.thePlayer.posY >= (double) Math
+                    .round(mc.thePlayer.posY) - 1.0E-4
+                    && mc.thePlayer.posY <= (double) Math
+                    .round(mc.thePlayer.posY) + 1.0E-4) {
+               e.setY(mc.thePlayer.motionY = 0.0);
+            }
+         } else {
+            mc.thePlayer.motionX = 0.0;
+            mc.thePlayer.motionZ = 0.0;
+            mc.thePlayer.jumpMovementFactor = 0.0f;
+            if (isPlaceTick
+                    && this.blockData != null) {
+               e.setY(mc.thePlayer.motionY = 0.4195751556457);
+               mc.thePlayer.motionX *= 0.75;
+               mc.thePlayer.motionZ *= 0.75;
+            }
          }
-      } else {
-         towerTimer.reset();
       }
 
       if (this.isPlaceTick) {
@@ -176,9 +215,14 @@ public class Scaffold extends Mod {
       }
    }
 
+   protected void swap(int slot, int hotbarNum) {
+      mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotbarNum, 2,
+              mc.thePlayer);
+   }
+
    @Sub
    public void onPostUpdate(EventPostUpdate e){
-      final int currentSlot = mc.thePlayer.inventory.currentItem;
+      currentSlot = mc.thePlayer.inventory.currentItem;
       mc.thePlayer.inventory.currentItem = slot;
       if (this.getPlaceBlock(this.blockData.getPosition(), this.blockData.getFacing())) {
          mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(currentSlot));
@@ -189,7 +233,7 @@ public class Scaffold extends Mod {
    private boolean getPlaceBlock(final BlockPos pos, final EnumFacing facing) {
       final Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
       Vec3i data = this.blockData.getFacing().getDirectionVec();
-      if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), pos, facing, new Vec3(this.blockData.getPosition()).addVector(0.5, 0.5, 0.5).add(new Vec3(data.getX() * 0.5, data.getY() * 0.5, data.getZ() * 0.5)))) {
+      if (slot != -1 && mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), pos, facing, new Vec3(this.blockData.getPosition()).addVector(0.5, 0.5, 0.5).add(new Vec3(data.getX() * 0.5, data.getY() * 0.5, data.getZ() * 0.5)))) {
          if(this.swing.getValue()) {
             mc.thePlayer.swingItem();
          } else {
@@ -249,27 +293,6 @@ public class Scaffold extends Mod {
       return -1;
    }
 
-   private void moveBlocksToHotbar() {
-      boolean added = false;
-      if (getEmptySlotInHotbar() != -1) {
-         for (int k = 0; k < mc.thePlayer.inventory.mainInventory.length; ++k) {
-            if (k > 8 && !added) {
-               final ItemStack itemStack = mc.thePlayer.inventory.mainInventory[k];
-               if (itemStack != null && this.isValid(itemStack)) {
-                  swapShift(k);
-                  added = true;
-               }
-            }
-         }
-      }
-   }
-
-   public static void swapShift(int slot) {
-      Minecraft.getMinecraft().playerController.windowClick(
-              Minecraft.getMinecraft().thePlayer.inventoryContainer.windowId, slot, 0, 1,
-              Minecraft.getMinecraft().thePlayer);
-   }
-
    public static int getEmptySlotInHotbar() {
       for (int i = 0; i < 9; i++) {
          if (mc.thePlayer.inventory.mainInventory[i] == null)
@@ -305,7 +328,7 @@ public class Scaffold extends Mod {
       return count;
    }
 
-   private static final class BlockData {
+   public static class BlockData {
       private final BlockPos blockPos;
       private final EnumFacing enumFacing;
 

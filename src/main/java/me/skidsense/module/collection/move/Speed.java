@@ -176,7 +176,7 @@ public class Speed extends Mod {
                 this.less = 0.0D;
             }
 
-            if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.000000000000008D) && MoveUtil.isMoving()) {
+            if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.0001D) && MoveUtil.isMoving()) {
                 this.collided = mc.thePlayer.isCollidedHorizontally;
                 if (this.stage >= 0 || this.collided) {
                     this.stage = 0;
