@@ -73,7 +73,7 @@ public class Scaffold extends Mod {
    int currentSlot;
    int slot;
    private double startY;
-   //public TimerUtil towerTimer = new TimerUtil();
+   public TimerUtil towerTimer = new TimerUtil();
    public static Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) ScaffoldMode.values(), (Enum) ScaffoldMode.Hypixel);
    public static Option<Boolean> keeprots = new Option<Boolean>("KeepRotation", "KeepRotation", true);
    public static Option<Boolean> tower = new Option<>("Tower","Tower",true);
@@ -116,23 +116,27 @@ public class Scaffold extends Mod {
       }
    }
 
+   protected void swap(int slot, int hotbarNum) {
+      mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotbarNum, 2,
+              mc.thePlayer);
+   }
+
    @Sub
    public void onPreUpdate(EventPreUpdate e) {
       slot = this.getSlot();
       this.isPlaceTick = keeprots.getValue() ? blockData != null && slot != -1 : blockData != null && slot != -1 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(0, -1, 0)).getBlock() == Blocks.air;
-      if (slot == -1) {
-         for (int i = 9; i < 36; ++i) {
-            Item item;
-            if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()
-                    || !((item = mc.thePlayer.inventoryContainer.getSlot(i).getStack()
-                    .getItem()) instanceof ItemBlock)
-                    || this.badBlocks.contains(((ItemBlock) item).getBlock())
-                    || ((ItemBlock) item).getBlock().getLocalizedName().toLowerCase().contains("chest"))
-               continue;
-            this.swap(i, 7);
-            break;
-         }
-         return;
+      if (slot == -1 && getBlockCount() > 0) {
+            for (int i = 9; i < 36; ++i) {
+               Item item;
+               if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()
+                       || !((item = mc.thePlayer.inventoryContainer.getSlot(i).getStack()
+                       .getItem()) instanceof ItemBlock)
+                       || this.badBlocks.contains(((ItemBlock) item).getBlock())
+                       || ((ItemBlock) item).getBlock().getLocalizedName().toLowerCase().contains("chest"))
+                  continue;
+               this.swap(i, 7);
+               return;
+            }
       }
       this.blockData = this.getBlockData();
       if (this.blockData == null) {
@@ -147,11 +151,12 @@ public class Scaffold extends Mod {
          if (MoveUtil.isMoving()) {
             if (MoveUtil.isOnGround(0.76) && !MoveUtil.isOnGround(0.75)
                     && mc.thePlayer.motionY > 0.23
-                    && mc.thePlayer.motionY < 0.25) {
+                    && mc.thePlayer.motionY < 0.25
+            ) {
                e.setY(mc.thePlayer.motionY = Math.round(mc.thePlayer.posY)
                        - mc.thePlayer.posY);
             }
-            if (MoveUtil.isOnGround(1.0E-4)) {
+            if (MoveUtil.isOnGround(1.0E-4) ) {
                e.setY(mc.thePlayer.motionY = 0.41993956416514);
                mc.thePlayer.motionX *= 0.9;
                mc.thePlayer.motionZ *= 0.9;
@@ -161,16 +166,17 @@ public class Scaffold extends Mod {
                     .round(mc.thePlayer.posY) + 1.0E-4) {
                e.setY(mc.thePlayer.motionY = 0.0);
             }
-         } else {
+         } else if(towerTimer.hasReached(180)) {
             mc.thePlayer.motionX = 0.0;
             mc.thePlayer.motionZ = 0.0;
             mc.thePlayer.jumpMovementFactor = 0.0f;
             if (isPlaceTick
                     && this.blockData != null) {
-               e.setY(mc.thePlayer.motionY = 0.4195751556457);
+               e.setY(mc.thePlayer.motionY = 0.408666);
                mc.thePlayer.motionX *= 0.75;
                mc.thePlayer.motionZ *= 0.75;
             }
+            towerTimer.reset();
          }
       }
 
@@ -215,11 +221,6 @@ public class Scaffold extends Mod {
       }
    }
 
-   protected void swap(int slot, int hotbarNum) {
-      mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotbarNum, 2,
-              mc.thePlayer);
-   }
-
    @Sub
    public void onPostUpdate(EventPostUpdate e){
       currentSlot = mc.thePlayer.inventory.currentItem;
@@ -231,7 +232,6 @@ public class Scaffold extends Mod {
    }
 
    private boolean getPlaceBlock(final BlockPos pos, final EnumFacing facing) {
-      final Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
       Vec3i data = this.blockData.getFacing().getDirectionVec();
       if (slot != -1 && mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), pos, facing, new Vec3(this.blockData.getPosition()).addVector(0.5, 0.5, 0.5).add(new Vec3(data.getX() * 0.5, data.getY() * 0.5, data.getZ() * 0.5)))) {
          if(this.swing.getValue()) {
@@ -292,14 +292,35 @@ public class Scaffold extends Mod {
       }
       return -1;
    }
-
-   public static int getEmptySlotInHotbar() {
-      for (int i = 0; i < 9; i++) {
-         if (mc.thePlayer.inventory.mainInventory[i] == null)
-            return i;
-      }
-      return -1;
-   }
+//
+//   private void moveBlocksToHotbar() {
+//      boolean added = false;
+//      if (getEmptySlotInHotbar() != -1) {
+//         for (int k = 0; k < mc.thePlayer.inventory.mainInventory.length; ++k) {
+//            if (k > 8 && !added) {
+//               final ItemStack itemStack = mc.thePlayer.inventory.mainInventory[k];
+//               if (itemStack != null && this.isValid(itemStack)) {
+//                  swapShift(getEmptySlotInHotbar());
+//                  added = true;
+//               }
+//            }
+//         }
+//      }
+//   }
+//
+//   public static void swapShift(int slot) {
+//      Minecraft.getMinecraft().playerController.windowClick(
+//              Minecraft.getMinecraft().thePlayer.inventoryContainer.windowId, slot, 0, 114514,
+//              Minecraft.getMinecraft().thePlayer);
+//   }
+//
+//   public static int getEmptySlotInHotbar() {
+//      for (int i = 0; i < 9; i++) {
+//         if (mc.thePlayer.inventory.mainInventory[i] == null)
+//            return i;
+//      }
+//      return -1;
+//   }
 
    private boolean isValid(ItemStack itemStack) {
       if (itemStack.getItem() instanceof ItemBlock) {

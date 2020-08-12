@@ -160,7 +160,6 @@ public class Speed2
             this.movementSpeed = Math.max(this.movementSpeed, this.defaultSpeed());
             if (Client.instance.getModuleManager().getModuleByClass( AutoStrafe.class).isEnabled()
                     && KillAura.target != null && mc.thePlayer.getDistanceToEntity(KillAura.target) < 2.4F) {
-                NiggaStrafe.doStrafeAtSpeed(em, this.defaultSpeed());
                 stage++;
             } else {
                 setMoveSpeedNoStrafeEdit(movementSpeed, em);
@@ -363,7 +362,6 @@ public class Speed2
                 if (BlockUtil.isInLiquid()) {
                     this.speed = 0.1;
                 }
-                NiggaStrafe.doStrafeAtSpeed(em, this.speed);
             }
             if (mc.thePlayer.movementInput.moveForward != 0.0f || mc.thePlayer.movementInput.moveStrafe != 0.0f) {
                 ++stage;

@@ -18,7 +18,7 @@ public class AntiDesync extends Mod {
     private int lastSlot = -1;
 
     public AntiDesync() {
-        super("AntiDesync", new String[]{}, ModuleType.Player);
+        super("Anti Desync", new String[]{}, ModuleType.Player);
     }
 
     @Override

@@ -192,7 +192,7 @@ public class Speed extends Mod {
                 }
             }
 
-            this.speed = this.getHypixelSpeed(this.stage) + 0.0331;
+            this.speed = this.getHypixelSpeed(this.stage) + 0.0333;
             this.speed *= 0.91D;
             if (this.stair > 0.0D) {
                 this.speed *= 0.66D - (double) MoveUtil.getSpeedEffect() * 0.1D;
@@ -218,6 +218,9 @@ public class Speed extends Mod {
                     setMotion(e, speed);
                     ++stage;
                 }
+            }else if(MoveUtil.isMoving()) {
+                setMotion(e, speed);
+                ++stage;
             }
         }
     }
