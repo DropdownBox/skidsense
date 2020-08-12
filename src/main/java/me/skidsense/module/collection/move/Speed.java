@@ -181,7 +181,8 @@ public class Speed extends Mod {
                 if (this.stage >= 0 || this.collided) {
                     this.stage = 0;
                     if (this.stair == 0.0) {
-                        e.setY(mc.thePlayer.motionY = 0.40906634241114514 + MoveUtil.getJumpEffect() * 0.1);
+                        mc.thePlayer.jump();
+                        e.setY(mc.thePlayer.motionY = 0.4086666D + MoveUtil.getJumpEffect() * 0.1);
                     }
                     ++this.less;
                     boolean bl = this.lessSlow = this.less > 1.0D && !this.lessSlow;
@@ -192,7 +193,7 @@ public class Speed extends Mod {
             }
 
             this.speed = this.getHypixelSpeed(this.stage) + 0.0331;
-            this.speed *= 0.93D;
+            this.speed *= 0.91D;
             if (this.stair > 0.0D) {
                 this.speed *= 0.66D - (double) MoveUtil.getSpeedEffect() * 0.1D;
             }
@@ -209,9 +210,14 @@ public class Speed extends Mod {
                 this.speed = 0.12D;
             }
 
-            if (MoveUtil.isMoving()) {
-                setMotion(e, speed);
-                ++stage;
+            if (Client.getModuleManager().getModuleByClass(AutoStrafe.class).isEnabled()) {
+                if (MoveUtil.isMoving() && mc.gameSettings.keyBindJump.isKeyDown() || !AutoStrafe.Onkey.getValue()) {
+                    AutoStrafe.onStrafe(e, speed);
+                    ++stage;
+                } else if(MoveUtil.isMoving()) {
+                    setMotion(e, speed);
+                    ++stage;
+                }
             }
         }
     }

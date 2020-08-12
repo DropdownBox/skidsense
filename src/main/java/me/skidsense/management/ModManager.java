@@ -77,8 +77,7 @@ implements Manager {
         addMod(new Sprint());
         addMod(new Speed());
         addMod(new NoSlow());
-        addMod(new NiggaStrafe());
-        
+
         addMod(new AntiFall());
         addMod(new AutoGG());
         addMod(new AntiVelocity());
@@ -87,6 +86,7 @@ implements Manager {
         addMod(new InvCleaner());
         addMod(new Blink());
         addMod(new Scaffold());
+        addMod(new AntiDesync());
 
         addMod(new Animations());
         addMod(new ArmorStatus());

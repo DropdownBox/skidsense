@@ -25,6 +25,8 @@ public class AutoStrafe extends Mod
 	public static Option<Boolean> Esp = (Option<Boolean>)new Option("TargetESP", "TargetESP", (Object)true);;
 	public static Option<Boolean> OnlySpeed = (Option<Boolean>)new Option("Speed", "Speed", (Object)true);
 	public static Option<Boolean> Auto = (Option<Boolean>)new Option("Auto", "Auto", (Object)true);
+	public static Option<Boolean> Onkey = (Option<Boolean>)new Option("OnJumpKey", "OnJumpKey", (Object)true);
+
 
 	public AutoStrafe() {
 		super("Auto Strafe", new String[]{"Auto Strafe"}, ModuleType.Move);

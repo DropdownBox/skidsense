@@ -43,7 +43,7 @@ public class AntiFall extends Mod {
                 }
                 switch (Mode.getValue().toString()) {
                     case "Hypixel":
-                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY + 12,mc.thePlayer.posZ, false));
+                        mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY + Distance.getValue(),mc.thePlayer.posZ, false));
                         break;
                     case "Motion":
                         em.setY(dist+5);
