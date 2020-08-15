@@ -74,7 +74,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
      * The last Y position which was transmitted to the server, used to determine when the Y position changes and needs
      * to be re-transmitted
      */
-    private double lastReportedPosY;
+    public double lastReportedPosY;
 
     /**
      * The last Z position which was transmitted to the server, used to determine when the Z position changes and needs

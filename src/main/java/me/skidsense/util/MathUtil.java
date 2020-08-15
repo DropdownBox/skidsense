@@ -111,6 +111,11 @@ public class MathUtil {
         return (i + i1) / 2;
     }
 
+    public static double preciseRound(double value, double precision) {
+        double scale = Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
+    }
+
 
     public static class NumberType {
         public static final byte SHORT = 0;

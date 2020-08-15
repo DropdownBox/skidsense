@@ -6,13 +6,14 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.AxisAlignedBB;
 
 import java.awt.*;
 
 public class NoFall extends Mod {
-    private float lastFall;
+    private double actualFallDistance;
 
     public NoFall() {
         super("NoFall", new String[]{"Nofalldamage"}, ModuleType.Player);
@@ -21,8 +22,9 @@ public class NoFall extends Mod {
 
     @Sub
     private void onUpdate(EventPreUpdate e) {
-        if(mc.thePlayer.fallDistance > 3.0F){
-            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(mc.thePlayer.ticksExisted % ThreadLocalRandom.current().nextInt(45, 75) != 0));
+        if (this.mc.thePlayer.fallDistance > 3.0f) {
+            mc.thePlayer.onGround = false;
+            mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
         }
     }
 }

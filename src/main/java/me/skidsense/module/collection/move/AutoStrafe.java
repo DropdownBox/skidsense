@@ -3,12 +3,17 @@ package me.skidsense.module.collection.move;
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventMove;
+import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender3D;
+import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
+import me.skidsense.module.collection.player.AntiFall;
+import me.skidsense.module.collection.player.Scaffold;
+import me.skidsense.util.MoveUtil;
 import me.skidsense.util.RotationUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -17,97 +22,79 @@ import net.minecraft.util.MovementInput;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
 
+import java.awt.*;
 
-public class AutoStrafe extends Mod
-{
-	public static Numbers<Double> MaxDistance = (Numbers<Double>)new Numbers("Distance", "Distance", (Number)3.0, (Number)1.0, (Number)5.0, (Number)0.1);;
-	public static Option<Boolean> keep = (Option<Boolean>)new Option("KeepDistance", "KeepDistance", (Object)true);;
-	public static Option<Boolean> Esp = (Option<Boolean>)new Option("TargetESP", "TargetESP", (Object)true);;
-	public static Option<Boolean> OnlySpeed = (Option<Boolean>)new Option("Speed", "Speed", (Object)true);
-	public static Option<Boolean> Auto = (Option<Boolean>)new Option("Auto", "Auto", (Object)true);
-	public static Option<Boolean> Onkey = (Option<Boolean>)new Option("OnJumpKey", "OnJumpKey", (Object)true);
 
+public class AutoStrafe extends Mod {
+	public Option<Boolean> Render = new Option<Boolean>("Render", "Render", true);
+	public Option<Boolean> OnSpace = new Option<Boolean>("OnSpace", "OnSpace", true);
+	public Numbers<Double> Distance = new Numbers<Double>("Distance", "Distance", 1.6,0.1,3.0,0.1);
+	private int direction = -1;
+//	private Setting range;
+//	private Setting render;
+//	private Setting renderheight;
+//	private Setting space;
 
 	public AutoStrafe() {
-		super("Auto Strafe", new String[]{"Auto Strafe"}, ModuleType.Move);
+		super("Auto Strafe",new String[]{"TargetStrafe","AutoStrafe"}, ModuleType.Move);
+//		Sight.instance.sm.rSetting(space = new Setting("OnSpace", this, true));
+//		Sight.instance.sm.rSetting(render = new Setting("Render", this, true));
+//		Sight.instance.sm.rSetting(renderheight = new Setting("RenderHeight", this, 0.05, 0.01, 1, false));
+//		Sight.instance.sm.rSetting(range = new Setting("Range", this, 1.6, 0.1, 3, false));
 	}
 
-	public void onDisable() {
-		super.onDisable();
-	}
 
-	public static double getSpeedByXZ(final double motionX, final double motionZ) {
-		final double vel = Math.sqrt(motionX * motionX + motionZ * motionZ);
-		return vel;
+
+	@Sub
+	public void onPreUpdate(EventPreUpdate e){
+		if (mc.thePlayer.isCollidedHorizontally) {
+			if (this.direction == -1) {
+				this.direction = 1;
+			} else {
+				this.direction = -1;
+			}
+		}
 	}
 
 	@Sub
-	public void onMotion(final EventMove eventMove) {
-		if (KillAura.target != null && Client.instance.getModuleManager().getModuleByClass((Class)KillAura.class).isEnabled() && !AutoStrafe.mc.thePlayer.isOnLadder() && !(boolean)AutoStrafe.OnlySpeed.getValue()) {
-			onStrafe(eventMove);
+	public void onMove(EventMove e){
+		if (this.canStrafe()) {
+			this.strafe(e, MoveUtil.getBaseMoveSpeed());
 		}
 	}
 
-	public static void onStrafe(final EventMove eventMove) {
-		final double speed = getSpeedByXZ(eventMove.getX(), eventMove.getZ());
-		if (KillAura.target != null && mc.thePlayer.getDistanceSqToEntity(KillAura.target) <= MaxDistance.getValue()) {
-			if (!RotationUtil.canEntityBeSeen((Entity) KillAura.target)) {
-				return;
-			}
-			setMoveSpeed(speed * 0.9, KillAura.yaw, Math.abs(AutoStrafe.mc.thePlayer.getDistanceToEntity((Entity) KillAura.target) - ((Double) AutoStrafe.MaxDistance.getValue()).floatValue()) <= 0.4, eventMove, ((Double) AutoStrafe.MaxDistance.getValue()).floatValue());
-		} else {
-			setMotion(eventMove, speed);
-		}
-	}
-
-
-	public static void onStrafe(final EventMove eventMove, final double speed) {
+	@Sub
+	public void onRender(EventRender3D e){
 		if (KillAura.target != null) {
-			if (!RotationUtil.canEntityBeSeen((Entity) KillAura.target) && mc.thePlayer.getDistanceSqToEntity(KillAura.target) <= MaxDistance.getValue()) {
-				return;
-			}
-			setMoveSpeed(speed * 0.9, KillAura.yaw, Math.abs(AutoStrafe.mc.thePlayer.getDistanceToEntity((Entity) KillAura.target) - ((Double) AutoStrafe.MaxDistance.getValue()).floatValue()) <= 0.4, eventMove, ((Double) AutoStrafe.MaxDistance.getValue()).floatValue());
-		} else {
-			setMotion(eventMove, speed);
+			this.drawRadius(KillAura.target, ((EventRender3D) e).getPartialTicks(), Distance.getValue());
 		}
 	}
 
-	public static void setMoveSpeed(final double speed, final float yaw, final boolean forwardTo, final EventMove eventMove, final float dist) {
-		final MovementInput movementInput = AutoStrafe.mc.thePlayer.movementInput;
-		double forward = MovementInput.moveForward;
-		final MovementInput movementInput2 = AutoStrafe.mc.thePlayer.movementInput;
-		double strafe = MovementInput.moveStrafe;
-		if (AutoStrafe.keep.getValue()) {
-			if (forwardTo) {
-				if (forward > 0.0) {
-					forward = 0.0;
-				}
-			}
-			else if (AutoStrafe.mc.thePlayer.getDistanceToEntity((Entity)KillAura.target) < dist) {
-				forward = -speed;
-			}
+	public void strafe(EventMove e, double moveSpeed) {
+		float[] rots = RotationUtil.getRotations(KillAura.target);
+		double dist = mc.thePlayer.getDistanceToEntity(KillAura.target);
+		if (dist >= Distance.getValue()) {
+			setSpeed(e, moveSpeed, rots[0], direction, 1);
 		} else {
-			forward = ((forward > 0.0) ? 1 : ((forward < 0.0) ? -1 : 0));
-			forward *= speed;
+			setSpeed(e, moveSpeed, rots[0], direction, 0);
 		}
-		strafe = ((strafe > 0.0) ? 1 : ((strafe < 0.0) ? -1 : 1));
-		EventMove.x = forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f));
-		EventMove.z = forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f));
 	}
 
-	private static void setMotion(EventMove em, double speed) {
-		double forward = MovementInput.moveForward;
-		double strafe = MovementInput.moveStrafe;
-		float yaw = Minecraft.getMinecraft().thePlayer.rotationYaw;
+	public static void setSpeed(final EventMove moveEvent, final double moveSpeed, final float pseudoYaw,
+								final double pseudoStrafe, final double pseudoForward) {
+		double forward = pseudoForward;
+		double strafe = pseudoStrafe;
+		float yaw = pseudoYaw;
+
 		if (forward == 0.0 && strafe == 0.0) {
-			em.setX(0.0);
-			em.setZ(0.0);
+			moveEvent.setZ(0);
+			moveEvent.setX(0);
 		} else {
 			if (forward != 0.0) {
 				if (strafe > 0.0) {
-					yaw += (float) (forward > 0.0 ? -40 : 40);
+					yaw += ((forward > 0.0) ? -45 : 45);
 				} else if (strafe < 0.0) {
-					yaw += (float) (forward > 0.0 ? 40 : -40);
+					yaw += ((forward > 0.0) ? 45 : -45);
 				}
 				strafe = 0.0;
 				if (forward > 0.0) {
@@ -116,56 +103,69 @@ public class AutoStrafe extends Mod
 					forward = -1.0;
 				}
 			}
-			em.setX(forward * speed * Math.cos(Math.toRadians(yaw + 90.0f)) + strafe * speed * Math.sin(Math.toRadians(yaw + 90.0f)));
-			em.setZ(forward * speed * Math.sin(Math.toRadians(yaw + 90.0f)) - strafe * speed * Math.cos(Math.toRadians(yaw + 90.0f)));
+			final double cos = Math.cos(Math.toRadians(yaw + 90.0f));
+			final double sin = Math.sin(Math.toRadians(yaw + 90.0f));
+
+			moveEvent.setX((forward * moveSpeed * cos + strafe * moveSpeed * sin));
+			moveEvent.setZ((forward * moveSpeed * sin - strafe * moveSpeed * cos));
 		}
 	}
 
-	@Sub
-	public void onRender(final EventRender3D render) {
-		if (KillAura.target != null) {
-			this.drawESP(render);
+	private void drawRadius(final Entity entity, final float partialTicks, final double rad) {
+		float points = 90F;
+		GlStateManager.enableDepth();
+		for (double il = 0; il < 4.9E-324; il += 4.9E-324) {
+			GL11.glPushMatrix();
+			GL11.glDisable(3553);
+			GL11.glEnable(2848);
+			GL11.glEnable(2881);
+			GL11.glEnable(2832);
+			GL11.glEnable(3042);
+			GL11.glBlendFunc(770, 771);
+			GL11.glHint(3154, 4354);
+			GL11.glHint(3155, 4354);
+			GL11.glHint(3153, 4354);
+			GL11.glDisable(2929);
+			GL11.glLineWidth(6.0f);
+			GL11.glBegin(3);
+			final double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - mc.getRenderManager().viewerPosX;
+			final double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - mc.getRenderManager().viewerPosY;
+			final double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - mc.getRenderManager().viewerPosZ;
+			final double pix2 = 6.283185307179586;
+			float speed = 5000f;
+			float baseHue = System.currentTimeMillis() % (int)speed;
+			while (baseHue > speed) {
+				baseHue -= speed;
+			}
+			baseHue /= speed;
+			for (int i = 0; i <= 90; ++i) {
+				float max = ((float) i + (float)(il * 8)) / points;
+				float hue = max + baseHue ;
+				while (hue > 1) {
+					hue -= 1;
+				}
+				final float r = 0.003921569f * new Color(Color.HSBtoRGB(hue, 0.75F, 1F)).getRed();
+				final float g = 0.003921569f * new Color(Color.HSBtoRGB(hue, 0.75F, 1F)).getGreen();
+				final float b = 0.003921569f * new Color(Color.HSBtoRGB(hue, 0.75F, 1F)).getBlue();
+				GL11.glColor3f(r, g, b);
+				GL11.glVertex3d(x + rad * Math.cos(i * pix2 / points), y + il, z + rad * Math.sin(i * pix2 / points));
+			}
+			GL11.glEnd();
+			GL11.glDepthMask(true);
+			GL11.glEnable(2929);
+			GL11.glDisable(2848);
+			GL11.glDisable(2881);
+			GL11.glEnable(2832);
+			GL11.glEnable(3553);
+			GL11.glPopMatrix();
+			GlStateManager.color(255, 255, 255);
 		}
 	}
 
-	private void drawESP(final EventRender3D render) {
-		if (!(boolean) AutoStrafe.Esp.getValue()) {
-			return;
+	public boolean canStrafe() {
+		if (this.OnSpace.getValue() && !mc.gameSettings.keyBindJump.isKeyDown()) {
+			return false;
 		}
-		final double x = KillAura.target.lastTickPosX + (KillAura.target.posX - KillAura.target.lastTickPosX) * render.getPartialTicks() - AutoStrafe.mc.getRenderManager().viewerPosX;
-		final double y = KillAura.target.lastTickPosY + (KillAura.target.posY - KillAura.target.lastTickPosY) * render.getPartialTicks() - AutoStrafe.mc.getRenderManager().viewerPosY;
-		final double z = KillAura.target.lastTickPosZ + (KillAura.target.posZ - KillAura.target.lastTickPosZ) * render.getPartialTicks() - AutoStrafe.mc.getRenderManager().viewerPosZ;
-		this.esp((Entity)KillAura.target, x, y, z);
-	}
-
-	public void esp(final Entity player, final double x, final double y, final double z) {
-		GL11.glPushMatrix();
-		GL11.glDisable(2896);
-		GL11.glDisable(3553);
-		GL11.glEnable(3042);
-		GL11.glBlendFunc(770, 771);
-		GL11.glDisable(2929);
-		GL11.glEnable(2848);
-		GL11.glDepthMask(true);
-		GlStateManager.translate(x, y, z);
-		if (KillAura.target.hurtTime <= 0) {
-			GlStateManager.color(0.9f, 0.9f, 0.9f, 0.9f);
-		}
-		else {
-			GlStateManager.color(1.35f, 0.0f, 0.0f, 1.0f);
-		}
-		GlStateManager.rotate(180.0f, 90.0f, 0.0f, 2.0f);
-		GlStateManager.rotate(180.0f, 0.0f, 90.0f, 90.0f);
-		final Cylinder c = new Cylinder();
-		c.setDrawStyle(100011);
-		c.draw(((Double)AutoStrafe.MaxDistance.getValue()).floatValue(), ((Double)AutoStrafe.MaxDistance.getValue()).floatValue(), 0.0f, 500, 1);
-		GL11.glDepthMask(true);
-		GL11.glDisable(2848);
-		GL11.glEnable(2929);
-		GL11.glDisable(3042);
-		GL11.glEnable(2896);
-		GL11.glEnable(3553);
-		GL11.glPopMatrix();
+		return KillAura.target != null && Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() &&Client.getModuleManager().getModuleByClass(Speed.class).isEnabled() && !Client.getModuleManager().getModuleByClass(Scaffold.class).isEnabled();
 	}
 }
-

@@ -17,6 +17,7 @@ import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.player.Teams;
+import me.skidsense.util.Location;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
 import me.skidsense.util.TimerUtil;
@@ -214,15 +215,41 @@ public class KillAura extends Mod {
 				target = this.loaded.get(0);
 			}
 			this.target = target;
-			float[] array = rotateNCP(this.target);
+			float[] array = getRotationsForAura(KillAura.target, KillAura.blockrange.getValue() + 1.0);
+			if (array == null) {
+				return;
+			}
 			eventMotion.yaw = array[0];
 			eventMotion.pitch = array[1];
-			KillAura.yaw = array[0];
 			mc.thePlayer.rotationYawHead = array[0];
 			mc.thePlayer.renderYawOffset = array[0];
 		}
 		this.lastRotations = new float[] { eventMotion.yaw, eventMotion.pitch };
 	}
+
+	public static float[] getRotationsForAura(Entity entity, double maxRange) {
+		double diffY;
+		if (entity == null) {
+			return null;
+		}
+		double diffX = entity.posX - mc.thePlayer.posX;
+		double diffZ = entity.posZ - mc.thePlayer.posZ;
+		Location BestPos = new Location(entity.posX, entity.posY, entity.posZ);
+		Location myEyePos = new Location(mc.thePlayer.posX, mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
+		for (diffY = entity.boundingBox.minY + 0.7; diffY < entity.boundingBox.maxY - 0.1; diffY += 0.1) {
+			if (myEyePos.distanceTo(new Location(entity.posX, diffY, entity.posZ)) >= myEyePos.distanceTo(BestPos)) continue;
+			BestPos = new Location(entity.posX, diffY, entity.posZ);
+		}
+		if (myEyePos.distanceTo(BestPos) >= maxRange) {
+			return null;
+		}
+		diffY = BestPos.getY() - (mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight());
+		double dist = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
+		float yaw = (float)(Math.atan2(diffZ, diffX) * 180.0 / 3.141592653589793) - 90.0f;
+		float pitch = (float)(- Math.atan2(diffY, dist) * 180.0 / 3.141592653589793);
+		return new float[]{yaw, pitch};
+	}
+
 
 	@Sub
 	public void EventPostUpdate(me.skidsense.hooks.events.EventPostUpdate e) {

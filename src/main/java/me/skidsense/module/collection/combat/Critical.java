@@ -5,21 +5,26 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.events.EventPacketRecieve;
 import me.skidsense.hooks.events.EventPacketSend;
+import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
+import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.move.Speed;
 import me.skidsense.module.collection.player.Scaffold;
+import me.skidsense.notifications.Notification;
 import me.skidsense.util.MoveUtil;
 import me.skidsense.util.QuickMath;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
+import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.potion.Potion;
 
 import java.awt.*;
@@ -41,7 +46,8 @@ public class Critical extends Mod {
     @Sub
     public void onAttack(EventAttack ent) {
         if (canCrit() && ent.targetEntity.hurtResistantTime <= ht.getValue() && ent.targetEntity.hurtResistantTime > 0) {
-            doCrit(ent.targetEntity);
+            doCrit();
+            Notifications.getManager().post("发包了！HurtTime:"+ent.targetEntity.hurtResistantTime);
         }
     }
 
@@ -50,28 +56,32 @@ public class Critical extends Mod {
         super.onEnable();
     }
 
+    @Override
+    public void onDisable(){
+        super.onDisable();
+    }
+
     public static boolean canCrit() {
         return !mc.thePlayer.isOnLadder()
                 && !mc.thePlayer.isInWater()
                 && !mc.thePlayer.isPotionActive(Potion.blindness)
                 && mc.thePlayer.ridingEntity == null
-                && MoveUtil.isOnGround(0.001)
+                && mc.thePlayer.onGround
                 && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()
                 && !Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()
                 && !Client.getModuleManager().getModuleByClass(Scaffold.class).isEnabled()
                 && Critical.timer.hasReached(delay.getValue());
     }
 
-    public void doCrit(Entity e) {
-        double[] offset = {0.03135642737949951, 0, 0.03135642737949951, 0};
+    public void doCrit() {
+        double rand = QuickMath.getRandomInRange(0,0.001);
+        double[] offset = {0.03135642737949951 + rand, 0.0, 0.03135642737949951 + rand, 0.0};
         for (double d : offset) {
-            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, (mc.thePlayer.posY + d), mc.thePlayer.posZ, false));
+            mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + d, mc.thePlayer.posZ, false));
         }
         this.timer.reset();
     }
-        enum CritMode {
-            Packet,
-        }
+    enum CritMode {
+        Packet,
     }
-
-
+}

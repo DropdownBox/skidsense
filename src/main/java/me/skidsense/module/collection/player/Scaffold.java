@@ -1,32 +1,18 @@
 package me.skidsense.module.collection.player;
 
 
-import me.skidsense.color.Colors;
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.hooks.events.EventRender2D;
-import me.skidsense.hooks.value.Event;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.combat.KillAura2;
+import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.MoveUtil;
-import me.skidsense.util.PlaceInfo;
-import me.skidsense.util.TimerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
-import net.minecraft.block.BlockSnow;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -35,19 +21,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.potion.Potion;
-import net.minecraft.stats.StatList;
 import net.minecraft.util.*;
-import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-import sun.security.pkcs11.Secmod;
 
-import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Scaffold extends Mod {
 
@@ -73,7 +51,7 @@ public class Scaffold extends Mod {
    int currentSlot;
    int slot;
    private double startY;
-   public TimerUtil towerTimer = new TimerUtil();
+   //public TimerUtil towerTimer = new TimerUtil();
    public static Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) ScaffoldMode.values(), (Enum) ScaffoldMode.Hypixel);
    public static Option<Boolean> keeprots = new Option<Boolean>("KeepRotation", "KeepRotation", true);
    public static Option<Boolean> tower = new Option<>("Tower","Tower",true);
@@ -116,27 +94,23 @@ public class Scaffold extends Mod {
       }
    }
 
-   protected void swap(int slot, int hotbarNum) {
-      mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotbarNum, 2,
-              mc.thePlayer);
-   }
-
    @Sub
    public void onPreUpdate(EventPreUpdate e) {
       slot = this.getSlot();
       this.isPlaceTick = keeprots.getValue() ? blockData != null && slot != -1 : blockData != null && slot != -1 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(0, -1, 0)).getBlock() == Blocks.air;
-      if (slot == -1 && getBlockCount() > 0) {
-            for (int i = 9; i < 36; ++i) {
-               Item item;
-               if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()
-                       || !((item = mc.thePlayer.inventoryContainer.getSlot(i).getStack()
-                       .getItem()) instanceof ItemBlock)
-                       || this.badBlocks.contains(((ItemBlock) item).getBlock())
-                       || ((ItemBlock) item).getBlock().getLocalizedName().toLowerCase().contains("chest"))
-                  continue;
-               this.swap(i, 7);
-               return;
-            }
+      if (getBlockCount() > 0 && slot == -1) {
+         for (int i = 9; i < 36; ++i) {
+            Item item;
+            if (!mc.thePlayer.inventoryContainer.getSlot(i).getHasStack()
+                    || !((item = mc.thePlayer.inventoryContainer.getSlot(i).getStack()
+                    .getItem()) instanceof ItemBlock)
+                    || this.badBlocks.contains(((ItemBlock) item).getBlock())
+                    || ((ItemBlock) item).getBlock().getLocalizedName().toLowerCase().contains("chest"))
+               continue;
+            this.swap(i, 7);
+            break;
+         }
+         return;
       }
       this.blockData = this.getBlockData();
       if (this.blockData == null) {
@@ -151,12 +125,11 @@ public class Scaffold extends Mod {
          if (MoveUtil.isMoving()) {
             if (MoveUtil.isOnGround(0.76) && !MoveUtil.isOnGround(0.75)
                     && mc.thePlayer.motionY > 0.23
-                    && mc.thePlayer.motionY < 0.25
-            ) {
+                    && mc.thePlayer.motionY < 0.25) {
                e.setY(mc.thePlayer.motionY = Math.round(mc.thePlayer.posY)
                        - mc.thePlayer.posY);
             }
-            if (MoveUtil.isOnGround(1.0E-4) ) {
+            if (MoveUtil.isOnGround(1.0E-4)) {
                e.setY(mc.thePlayer.motionY = 0.41993956416514);
                mc.thePlayer.motionX *= 0.9;
                mc.thePlayer.motionZ *= 0.9;
@@ -166,17 +139,12 @@ public class Scaffold extends Mod {
                     .round(mc.thePlayer.posY) + 1.0E-4) {
                e.setY(mc.thePlayer.motionY = 0.0);
             }
-         } else if(towerTimer.hasReached(180)) {
-            mc.thePlayer.motionX = 0.0;
-            mc.thePlayer.motionZ = 0.0;
-            mc.thePlayer.jumpMovementFactor = 0.0f;
-            if (isPlaceTick
-                    && this.blockData != null) {
-               e.setY(mc.thePlayer.motionY = 0.408666);
-               mc.thePlayer.motionX *= 0.75;
-               mc.thePlayer.motionZ *= 0.75;
+         } else {
+            if (mc.thePlayer.onGround) {
+               mc.thePlayer.motionY = 0.42f;
+            } else if (mc.thePlayer.motionY < 0.17D && mc.thePlayer.motionY > 0.16D) {
+               mc.thePlayer.motionY = -0.01f;
             }
-            towerTimer.reset();
          }
       }
 
@@ -221,6 +189,11 @@ public class Scaffold extends Mod {
       }
    }
 
+   protected void swap(int slot, int hotbarNum) {
+      mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotbarNum, 2,
+              mc.thePlayer);
+   }
+
    @Sub
    public void onPostUpdate(EventPostUpdate e){
       currentSlot = mc.thePlayer.inventory.currentItem;
@@ -232,16 +205,19 @@ public class Scaffold extends Mod {
    }
 
    private boolean getPlaceBlock(final BlockPos pos, final EnumFacing facing) {
+      final Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY + mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
       Vec3i data = this.blockData.getFacing().getDirectionVec();
-      if (slot != -1 && mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), pos, facing, new Vec3(this.blockData.getPosition()).addVector(0.5, 0.5, 0.5).add(new Vec3(data.getX() * 0.5, data.getY() * 0.5, data.getZ() * 0.5)))) {
-         if(this.swing.getValue()) {
-            mc.thePlayer.swingItem();
-         } else {
-            mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+      if(mc.theWorld.getBlockState(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).getBlock() == Blocks.air) {
+         if (getBlockCount() > 0 && slot != -1 && mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), pos, facing, new Vec3(this.blockData.getPosition()).addVector(0.5, 0.5, 0.5).add(new Vec3(data.getX() * 0.5, data.getY() * 0.5, data.getZ() * 0.5)))) {
+            if (this.swing.getValue()) {
+               mc.thePlayer.swingItem();
+            } else {
+               mc.thePlayer.sendQueue.addToSendQueue(new C0APacketAnimation());
+            }
+            return true;
          }
-         return true;
       }
-      return false;
+         return false;
    }
 
    private BlockData getBlockData() {
@@ -292,35 +268,14 @@ public class Scaffold extends Mod {
       }
       return -1;
    }
-//
-//   private void moveBlocksToHotbar() {
-//      boolean added = false;
-//      if (getEmptySlotInHotbar() != -1) {
-//         for (int k = 0; k < mc.thePlayer.inventory.mainInventory.length; ++k) {
-//            if (k > 8 && !added) {
-//               final ItemStack itemStack = mc.thePlayer.inventory.mainInventory[k];
-//               if (itemStack != null && this.isValid(itemStack)) {
-//                  swapShift(getEmptySlotInHotbar());
-//                  added = true;
-//               }
-//            }
-//         }
-//      }
-//   }
-//
-//   public static void swapShift(int slot) {
-//      Minecraft.getMinecraft().playerController.windowClick(
-//              Minecraft.getMinecraft().thePlayer.inventoryContainer.windowId, slot, 0, 114514,
-//              Minecraft.getMinecraft().thePlayer);
-//   }
-//
-//   public static int getEmptySlotInHotbar() {
-//      for (int i = 0; i < 9; i++) {
-//         if (mc.thePlayer.inventory.mainInventory[i] == null)
-//            return i;
-//      }
-//      return -1;
-//   }
+
+   public static int getEmptySlotInHotbar() {
+      for (int i = 0; i < 9; i++) {
+         if (mc.thePlayer.inventory.mainInventory[i] == null)
+            return i;
+      }
+      return -1;
+   }
 
    private boolean isValid(ItemStack itemStack) {
       if (itemStack.getItem() instanceof ItemBlock) {
@@ -367,3 +322,4 @@ public class Scaffold extends Mod {
       }
    }
 }
+
