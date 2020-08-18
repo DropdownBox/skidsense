@@ -25,7 +25,6 @@ public class ClickGui extends Mod {
 				this.mc.displayGuiScreen(new ClickUI());
 				break;
 		}
-		
 		this.setEnabled(false);
 	}
 	
