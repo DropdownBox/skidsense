@@ -12,12 +12,9 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
-import me.skidsense.management.notifications.Notification;
-import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.player.Teams;
-import me.skidsense.util.Location;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
 import me.skidsense.util.TimerUtil;
@@ -47,6 +44,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
+import sun.security.pkcs11.Secmod;
 
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -58,8 +56,8 @@ import java.util.function.ToDoubleFunction;
 
 public class KillAura extends Mod {
 	public static float anima;
-	public Mode<Enum> priority = new Mode<Enum>("TargetPriority", "TargetPriority", AuraPriority.values(), AuraPriority.Angle);
-	public Mode<Enum> mode = new Mode<Enum>("Mode", "Mode", AuraMode.values(), AuraMode.Switch);
+	public Mode<AuraPriority> priority = new Mode<>("TargetPriority", "TargetPriority", AuraPriority.values(), AuraPriority.Angle);
+	public Mode<AuraMode> mode = new Mode<>("Mode", "Mode", AuraMode.values(), AuraMode.Switch);
 	public Option<Boolean> players = new Option<Boolean>("Players", "Players", true);
 	public Option<Boolean> mobs = new Option<Boolean>("Mobs", "Mobs", false);
 	public Option<Boolean> animals = new Option<Boolean>("Animals", "Animals", false);
@@ -84,7 +82,7 @@ public class KillAura extends Mod {
 	public float[] lastRotations = new float[]{0.0f, 0.0f};
 	;
 	public DecimalFormat format = new DecimalFormat("0.0");
-	public BlockPos AutoBlockPos = new BlockPos(-0.6, -0.6, -0.6);
+	public BlockPos AutoBlockPos = new BlockPos(-1, -1, -1);
 	public double animation = 0.0;
 	int attackSpeed;
 
@@ -103,9 +101,8 @@ public class KillAura extends Mod {
 	public void onDisable() {
 		super.onDisable();
 		if (this.isBlocking) {
-			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacketNoEvent(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
@@ -159,36 +156,14 @@ public class KillAura extends Mod {
 	}
 
 	@Sub
-	public void targetHud(EventRender2D event) {
-		ScaledResolution sr2 = new ScaledResolution(mc);
-		if (target != null) {
-			GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-			FontRenderer font = KillAura.mc.fontRendererObj;
-			font.drawStringWithShadow(target.getDisplayName().getFormattedText(), sr2.getScaledWidth() / 2 - font.getStringWidth(target.getName()) / 2, sr2.getScaledHeight() / 2 - 30, 16777215);
-			mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/icons.png"));
-			int i2 = 0;
-			while ((float)i2 < ((EntityLivingBase)target).getMaxHealth() / 2.0f) {
-				KillAura.mc.ingameGUI.drawTexturedModalRect((float)(sr2.getScaledWidth() / 2) - ((EntityLivingBase)target).getMaxHealth() / 2.0f * 10.0f / 2.0f + (float)(i2 * 10), (float)(sr2.getScaledHeight() / 2 - 20), 16, 0, 9, 9);
-				++i2;
-			}
-			i2 = 0;
-			while ((float)i2 < ((EntityLivingBase)target).getHealth() / 2.0f) {
-				KillAura.mc.ingameGUI.drawTexturedModalRect((float)(sr2.getScaledWidth() / 2) - ((EntityLivingBase)target).getMaxHealth() / 2.0f * 10.0f / 2.0f + (float)(i2 * 10), (float)(sr2.getScaledHeight() / 2 - 20), 52, 0, 9, 9);
-				++i2;
-			}
-		}
-	}
-
-	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
 		if (!this.mc.thePlayer.isEntityAlive() && this.autodisable.getValue()) {
 			this.setEnabled(false);
 		}
 		this.setSuffix(mode.getValue());
 		if (autoBlock.getValue() && this.canBlock() && this.isBlocking) {
-			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacketNoEvent(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			this.mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
@@ -201,9 +176,8 @@ public class KillAura extends Mod {
 			target = null;
 			this.attackSpeed = 0;
 			if (this.isBlocking) {
-				NetworkManager networkManager2 = this.mc.thePlayer.sendQueue.getNetworkManager();
 				C07PacketPlayerDigging.Action release_USE_ITEM2 = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-				networkManager2.sendPacketNoEvent(new C07PacketPlayerDigging(release_USE_ITEM2, AutoBlockPos, EnumFacing.DOWN));
+				mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM2, AutoBlockPos, EnumFacing.DOWN));
 				this.mc.thePlayer.clearItemInUse();
 				this.isBlocking = false;
 			}
@@ -215,41 +189,15 @@ public class KillAura extends Mod {
 				target = this.loaded.get(0);
 			}
 			this.target = target;
-			float[] array = getRotationsForAura(KillAura.target, KillAura.blockrange.getValue() + 1.0);
-			if (array == null) {
-				return;
-			}
+			float[] array = rotateNCP(this.target);
 			eventMotion.yaw = array[0];
 			eventMotion.pitch = array[1];
+			KillAura.yaw = array[0];
 			mc.thePlayer.rotationYawHead = array[0];
 			mc.thePlayer.renderYawOffset = array[0];
 		}
 		this.lastRotations = new float[] { eventMotion.yaw, eventMotion.pitch };
 	}
-
-	public static float[] getRotationsForAura(Entity entity, double maxRange) {
-		double diffY;
-		if (entity == null) {
-			return null;
-		}
-		double diffX = entity.posX - mc.thePlayer.posX;
-		double diffZ = entity.posZ - mc.thePlayer.posZ;
-		Location BestPos = new Location(entity.posX, entity.posY, entity.posZ);
-		Location myEyePos = new Location(mc.thePlayer.posX, mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
-		for (diffY = entity.boundingBox.minY + 0.7; diffY < entity.boundingBox.maxY - 0.1; diffY += 0.1) {
-			if (myEyePos.distanceTo(new Location(entity.posX, diffY, entity.posZ)) >= myEyePos.distanceTo(BestPos)) continue;
-			BestPos = new Location(entity.posX, diffY, entity.posZ);
-		}
-		if (myEyePos.distanceTo(BestPos) >= maxRange) {
-			return null;
-		}
-		diffY = BestPos.getY() - (mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight());
-		double dist = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
-		float yaw = (float)(Math.atan2(diffZ, diffX) * 180.0 / 3.141592653589793) - 90.0f;
-		float pitch = (float)(- Math.atan2(diffY, dist) * 180.0 / 3.141592653589793);
-		return new float[]{yaw, pitch};
-	}
-
 
 	@Sub
 	public void EventPostUpdate(me.skidsense.hooks.events.EventPostUpdate e) {
@@ -315,40 +263,25 @@ public class KillAura extends Mod {
 	public void attack() {
 		float modifierForCreature = EnchantmentHelper.getModifierForCreature(this.mc.thePlayer.getHeldItem(),
 				EnumCreatureAttribute.UNDEFINED);
-		if (mc.thePlayer.fallDistance > 0.0f && !this.mc.thePlayer.onGround && !this.mc.thePlayer.isOnLadder()
+		if (this.mc.thePlayer.fallDistance > 0.0f && !this.mc.thePlayer.onGround && !this.mc.thePlayer.isOnLadder()
 				&& !this.mc.thePlayer.isInWater() && !this.mc.thePlayer.isPotionActive(Potion.blindness)
 				&& this.mc.thePlayer.ridingEntity == null) {
 		}
 		if (this.isBlocking && this.canBlock()) {
 			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			networkManager.sendPacketNoEvent(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
+			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
 		++this.attackSpeed;
-//		EventAttack ent = new EventAttack(target);
-//		EventManager.postAll(ent);
-//		if(ent.isCancelled())
-//			return;
-		if(Client.getModuleManager().getModuleByClass(Critical.class).isEnabled() && Critical.canCrit()){
-			this.attackSpeed = 0;
-		}
-		mc.thePlayer.swingItem();
-//		int stage = 1;
-//		switch (stage){
-//			case 1:{
-//				mc.playerController.attackEntity(mc.thePlayer,target);
-//				stage = 2;
-//			}
-//			case 2:
-				mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
-//				stage = 1;
-//				break;
-//		}
-
-//		this.mc.thePlayer.sendQueue
-//				.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+		EventAttack ent = new EventAttack(target);
+		EventManager.postAll(ent);
+		if(ent.isCancelled())
+			return;
+		this.mc.thePlayer.swingItem();
+		this.mc.thePlayer.sendQueue
+				.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
 		if (this.mode.getValue() == AuraMode.Switch) {
 			++this.hit;
 			if (this.hit >= this.hitswitch.getValue()) {
@@ -358,7 +291,7 @@ public class KillAura extends Mod {
 			}
 		}
 		if (this.canBlock() && !this.isBlocking && autoBlock.getValue()) {
-			mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(
 					new C08PacketPlayerBlockPlacement(AutoBlockPos, 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
@@ -491,7 +424,7 @@ public class KillAura extends Mod {
 	}
 
 	private int DistanceToEntity(Entity entity, Entity entity2) {
-		return (int) (entity.getDistanceToEntity(mc.thePlayer) - entity2.getDistanceToEntity(mc.thePlayer));
+		return (int) (entity.getDistanceToEntity(this.mc.thePlayer) - entity2.getDistanceToEntity(this.mc.thePlayer));
 	}
 
 	enum AuraPriority {

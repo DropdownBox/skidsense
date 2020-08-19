@@ -2,16 +2,17 @@ package me.skidsense.module.collection.move;
 
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventMove;
-import me.skidsense.hooks.events.EventPacketRecieve;
-import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.hooks.events.EventStep;
+import me.skidsense.hooks.events.*;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.*;
+import net.minecraft.entity.player.PlayerCapabilities;
+import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
+import net.minecraft.network.play.client.C13PacketPlayerAbilities;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
+import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.MovementInput;
 
@@ -22,6 +23,7 @@ public class Speed extends Mod {
 
     private Mode<Enum> mode = new Mode("Mode", "mode", SpeedMode.values(), SpeedMode.HypixelHop);
     private Option<Boolean> setback = new Option("Setback", "Setback", false);
+    private Option<Boolean> disabler = new Option<>("Disabaler","Disabler",false);
 
     private int stage;
     private double movementSpeed;
@@ -41,6 +43,39 @@ public class Speed extends Mod {
 
     private TimerUtil timer = new TimerUtil();
 
+    @Sub
+    public void DisablerUpdate(EventPreUpdate e){
+        if(disabler.getValue()){
+            PlayerCapabilities pc = new PlayerCapabilities();
+            pc.isCreativeMode = true;
+            pc.allowFlying = true;
+            pc.isFlying = true;
+            pc.disableDamage = true;
+            if (mc.thePlayer.isSpectator())  {
+                mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(pc));
+            }
+            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(
+                    new C0FPacketConfirmTransaction(65536, (short) 32767, true));
+        }
+    }
+
+    @Sub
+    public void onDisablerPacketSend(EventPacketSend e){
+        if(disabler.getValue()){
+            if (e.getPacket() instanceof C13PacketPlayerAbilities || e.getPacket() instanceof C0FPacketConfirmTransaction) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
+    @Sub
+    public void onDisablerPacketReceive(EventPacketRecieve e){
+        if(disabler.getValue()){
+            if(e.getPacket() instanceof S32PacketConfirmTransaction) {
+                e.setCancelled(true);
+            }
+        }
+    }
     @Override
     public void onDisable() {
         mc.timer.timerSpeed = 1.0f;
