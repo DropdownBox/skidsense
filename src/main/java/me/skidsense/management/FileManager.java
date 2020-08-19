@@ -145,7 +145,7 @@ public class FileManager
 		}
 		loadLastAlt();
 		loadAlts();
-		getAnnouncement();
+		//getAnnouncement();
 	}
 
 	public static void getAnnouncement() {

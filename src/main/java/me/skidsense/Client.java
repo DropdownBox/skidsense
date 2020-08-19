@@ -36,7 +36,6 @@ public class Client {
 	public static FontManager fontManager;
 	private TabGUI tabui;
 	public static ResourceLocation CLIENT_CAPE = new ResourceLocation("skidsense/cape.png");
-	public static final ArrayList<ResourceLocation> gifLocations = new ArrayList<ResourceLocation>();
 	public static void renameClient(String s){
 		clientName = s;
 		Display.setTitle(String.format("%s [1.8.8]",s));
@@ -78,19 +77,13 @@ public class Client {
 		}
 		FileManager.save("Values.txt", values, false);
 		String enabled = "";
-		instance.getModuleManager();
 		for (Mod m : ModManager.getMods()) {
-			if (!m.isEnabled()) continue;
+			if (!m.isEnabled()) {
+				continue;
+			}
 			enabled = String.valueOf(enabled) + String.format("%s%s", m.getName(), System.lineSeparator());
 		}
 		FileManager.save("Enabled.txt", enabled, false);
-	}
-
-
-	public static void LoadGif() {
-		for (int i = 0; i < 273; i++) {
-			gifLocations.add(new ResourceLocation("skidsense/gif/bitchkody " + String.valueOf(i) + ".png"));
-		}
 	}
 
 	public static BlockPos getBlockCorner(BlockPos start, BlockPos end) {

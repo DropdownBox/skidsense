@@ -1044,7 +1044,6 @@ public class RenderUtil {
         RenderUtil.drawOutlinedBoundingBox(box);
     }
 
-    // TODO 浣犺繖鏄粈涔堝偦閫糉ernFlower瑙ｅ嚭鏉ョ殑RenderUtil鍦ㄨ繖閲岃��姝︽壃濞佸憿涓嶇敤GL11鐨勫父鏁颁綘璁╂垜缁存姢浣犲鍛�
     public static void drawSolidBlockESP(double x, double y, double z, float red, float green, float blue, float alpha) {
         glInit(red, green, blue, alpha);
         glEnable(GL_POLYGON_SMOOTH);
@@ -1089,7 +1088,6 @@ public class RenderUtil {
         GlStateManager.depthMask(!start);
     }
 
-    // TODO 浣犺繖鏄粈涔堝偦閫糉ernFlower瑙ｅ嚭鏉ョ殑RenderUtil鍦ㄨ繖閲岃��姝︽壃濞佸憿涓嶇敤GL11鐨勫父鏁颁綘璁╂垜缁存姢浣犲鍛�
     private static void glInit(float red, float green, float blue, float alpha) {
         GL11.glPushMatrix();
         GL11.glEnable(GL_BLEND);
