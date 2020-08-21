@@ -341,11 +341,11 @@ public class Flight extends Mod {
                     final double y = player.posY;
                     final double z = player.posZ;
                     for (int i = 0; i < 9; i++) {
-                        netHandler.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + offset, z, false));
-                        netHandler.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.000002737272, z, false));
-                        netHandler.addToSendQueue(new C03PacketPlayer(false));
+                        netHandler.sendpacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y + offset, z, false));
+                        netHandler.sendpacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.000002737372, z, false));
+                        netHandler.sendpacketNoEvent(new C03PacketPlayer(false));
                     }
-                    netHandler.addToSendQueue(new C03PacketPlayer(true));
+                    netHandler.sendpacketNoEvent(new C03PacketPlayer(true));
                     System.out.println("执行白细胞伤害！");
                 }
             }
@@ -463,7 +463,7 @@ public class Flight extends Mod {
         if(mode.getValue() == FlyMode.HypixelDamage) {
             for (Packet packet : this.packets) {
                 mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(packet);
-                System.out.println("发送了数据包: "+packet);
+                System.out.println("发送了数据包: "+packet.getClass().getName());
             }
             packets.clear();
         }

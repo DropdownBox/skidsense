@@ -181,6 +181,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet>
             return;
         sendPacketNoEvent(packet);
     }
+
     public void sendPacketNoEvent(Packet packetIn)
     {
         if (this.isChannelOpen())
