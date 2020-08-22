@@ -56,7 +56,7 @@ import java.util.function.ToDoubleFunction;
 
 public class KillAura extends Mod {
 	public static float anima;
-	public Mode<AuraPriority> priority = new Mode<>("TargetPriority", "TargetPriority", AuraPriority.values(), AuraPriority.Angle);
+	public Mode<AuraPriority> priority = new Mode<>("Priority", "Priority", AuraPriority.values(), AuraPriority.Angle);
 	public Mode<AuraMode> mode = new Mode<>("Mode", "Mode", AuraMode.values(), AuraMode.Switch);
 	public Option<Boolean> players = new Option<Boolean>("Players", "Players", true);
 	public Option<Boolean> mobs = new Option<Boolean>("Mobs", "Mobs", false);

@@ -18,8 +18,8 @@ public class InvMove extends Mod {
 	
 	@Sub
 	public void onUpdate(EventPreUpdate event) {
-		if (this.mc.currentScreen != null && !(this.mc.currentScreen instanceof GuiChat)) {
-			KeyBinding[] key = { this.mc.gameSettings.keyBindForward, this.mc.gameSettings.keyBindBack, this.mc.gameSettings.keyBindLeft, this.mc.gameSettings.keyBindRight, this.mc.gameSettings.keyBindSprint, this.mc.gameSettings.keyBindJump };
+		if (mc.currentScreen != null && !(mc.currentScreen instanceof GuiChat)) {
+			KeyBinding[] key = { mc.gameSettings.keyBindForward, mc.gameSettings.keyBindBack, mc.gameSettings.keyBindLeft, mc.gameSettings.keyBindRight, mc.gameSettings.keyBindSprint, mc.gameSettings.keyBindJump };
 			KeyBinding[] array;
 			for (int length = (array = key).length, i = 0; i < length; ++i) {
 				KeyBinding b = array[i];
