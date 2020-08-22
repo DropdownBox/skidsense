@@ -12,14 +12,15 @@ import java.awt.*;
 
 public class NoFall extends Mod {
     public NoFall() {
-        super("NoFall", new String[]{"Nofalldamage"}, ModuleType.Player);
+        super("No Fall", new String[]{"Nofalldamage","NoFall"}, ModuleType.Player);
         setColor(new Color(242, 137, 73).getRGB());
     }
 
     @Sub
     private void onUpdate(EventPreUpdate e) {
         if (mc.thePlayer.fallDistance > 3.0F) {
-            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(mc.thePlayer.ticksExisted % ThreadLocalRandom.current().nextInt(45, 75) != 0));
+            mc.thePlayer.onGround = false;
+            mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
         }
     }
 }
