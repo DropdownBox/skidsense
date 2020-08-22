@@ -25,12 +25,9 @@ public class AutoGG extends Mod {
             IChatComponent i = ((S45PacketTitle) e.getPacket()).getMessage();
             if(i != null){
                 String text = i.getUnformattedText();
-                Client.sendMessageWithoutPrefix(text);
-                if (text.contains("VICTORY") || text.contains("胜利") || text.contains("勝利") || text.contains("ПОБЕДА")) {
-                    ChatUtil.sendChat_NoFilter("/achat gg");
-                }
+                if (text.contains("VICTORY") || text.contains("胜利") || text.contains("勝利") || text.contains("ПОБЕДА"))
+                    ChatUtil.sendChat_NoFilter("/achat Get Good Get SkidSense.");
             }
-
         }
     }
 }
