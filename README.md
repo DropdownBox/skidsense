@@ -1,3 +1,2 @@
 # skidsense
-Skidsense is a decent client
- 没有啊？
+Skidsense is a decent client 没有啊？
