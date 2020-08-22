@@ -197,11 +197,13 @@ public class Scaffold extends Mod {
    @Sub
    public void onPostUpdate(EventPostUpdate e){
       currentSlot = mc.thePlayer.inventory.currentItem;
-      mc.thePlayer.inventory.currentItem = slot;
-      if (this.getPlaceBlock(this.blockData.getPosition(), this.blockData.getFacing())) {
-         mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(currentSlot));
+      if(this.blockData != null){
+         mc.thePlayer.inventory.currentItem = slot;
+         if (this.getPlaceBlock(this.blockData.getPosition(), this.blockData.getFacing())) {
+            mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(currentSlot));
+         }
+         mc.thePlayer.inventory.currentItem = currentSlot;
       }
-      mc.thePlayer.inventory.currentItem = currentSlot;
    }
 
    private boolean getPlaceBlock(final BlockPos pos, final EnumFacing facing) {
