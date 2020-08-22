@@ -230,7 +230,7 @@ public class Speed extends Mod {
             this.speed = this.getHypixelSpeed(this.stage) + 0.033;
             this.speed *= 0.9D;
             if (this.stair > 0.0D) {
-                this.speed *= 0.66D - (double) MoveUtil.getSpeedEffect() * 0.1D;
+                this.speed *= 0.65D - (double) MoveUtil.getSpeedEffect() * 0.1D;
             }
 
             if (this.stage < 0) {
