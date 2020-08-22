@@ -6,6 +6,7 @@ import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
+import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Collections;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
@@ -45,12 +47,12 @@ extends Mod {
 
     @Sub
     private void renderHud(EventRender2D event) {
-    	UnicodeFontRenderer font = (UnicodeFontRenderer) Client.fontManager.comfortaa18;
-        if (!this.mc.gameSettings.showDebugInfo) {
+    	FontRenderer font = Minecraft.getMinecraft().fontRendererObj;
+        if (!mc.gameSettings.showDebugInfo) {
             int y = 1;
             int rainbowTick = 0;
-    		ArrayList<Mod> mods = (ArrayList<Mod>) ((ArrayList<Mod>) Client.instance.getModuleManager().getMods()).clone();
-            Collections.sort(mods, new Comparator<Mod>() { public int compare(Mod m1, Mod m2) { if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) > Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return -1; } if (Client.fontManager.comfortaa18.getStringWidth(m1.getName()+m1.getSuffix()) < Client.fontManager.comfortaa18.getStringWidth(m2.getName()+m2.getSuffix())) { return 1; } return 0; } });
+    		ArrayList<Mod> mods = (ArrayList<Mod>) ((ArrayList<Mod>) ModManager.getMods()).clone();
+            Collections.sort(mods, new Comparator<Mod>() { public int compare(Mod m1, Mod m2) { if (font.getStringWidth(m1.getName()+m1.getSuffix()) > font.getStringWidth(m2.getName()+m2.getSuffix())) { return -1; } if (font.getStringWidth(m1.getName()+m1.getSuffix()) < font.getStringWidth(m2.getName()+m2.getSuffix())) { return 1; } return 0; } });
             
 
 	        String[] a;
@@ -71,12 +73,12 @@ extends Mod {
             		second = "";
 	            }
             }
-            Client.fontManager.comfortaa18.drawStringWithShadow(first, 4, (float)2, new Color(220,1,5).getRGB());
-            Client.fontManager.comfortaa18.drawStringWithShadow(second, Client.fontManager.comfortaa18.getStringWidth(first)+5, (float)2, new Color(255,255,255).getRGB());
-            Client.fontManager.comfortaa18.drawStringWithShadow("#001", Client.fontManager.comfortaa18.getStringWidth(Client.clientName)+8, 2, new Color(180,180,180).getRGB());
-            /*Client.fontManager.comfortaa18.drawStringWithShadow("Skid", 4, (float)2, new Color(255,255,255).getRGB());
-            Client.fontManager.comfortaa18.drawStringWithShadow("sense", Client.fontManager.comfortaa18.getStringWidth("Skid")+5, (float)2, new Color(220,1,5).getRGB());
-            Client.fontManager.comfortaa18.drawStringWithShadow("#001", Client.fontManager.comfortaa18.getStringWidth("Skidsense")+7, 2, new Color(180,180,180).getRGB());*/
+            font.drawStringWithShadow(first, 4, (float)2, new Color(220,1,5).getRGB());
+            font.drawStringWithShadow(second, font.getStringWidth(first)+5, (float)2, new Color(255,255,255).getRGB());
+            font.drawStringWithShadow("#001", font.getStringWidth(Client.clientName)+8, 2, new Color(180,180,180).getRGB());
+            /*font.drawStringWithShadow("Skid", 4, (float)2, new Color(255,255,255).getRGB());
+            font.drawStringWithShadow("sense", font.getStringWidth("Skid")+5, (float)2, new Color(220,1,5).getRGB());
+            font.drawStringWithShadow("#001", font.getStringWidth("Skidsense")+7, 2, new Color(180,180,180).getRGB());*/
             
             if(this.info.getValue().booleanValue() && !(mc.currentScreen instanceof GuiChat)) {
          	   ScaledResolution res = new ScaledResolution(mc);
@@ -113,33 +115,32 @@ extends Mod {
                         	Gui.drawRect(RenderUtil.width(), y+15,x-m.getAnim()-5, y+9, new Color(220,20,20,0).getRGB());
                         	Gui.drawRect(RenderUtil.width(), y-1,x-m.getAnim()-4, y+10, new Color(12, 12, 12).getRGB());
                         	Gui.drawRect(x-m.getAnim()-5, y,x-m.getAnim()-4, y+9, new Color(220,20,20).getRGB());
-                        	Client.fontManager.comfortaa18.drawStringWithShadow(m.getName()+m.getSuffix(), x-m.getAnim()-2, y-1,new Color(255,255,255).getRGB());
+                        	font.drawStringWithShadow(m.getName()+m.getSuffix(), x-m.getAnim()-2, y-1,new Color(255,255,255).getRGB());
                         	}
             				
             				if(this.color.getValue()==colormode.Rainbow) {
-            	            	UnicodeFontRenderer afont = (UnicodeFontRenderer) Client.fontManager.comfortaa18;
-                            	Gui.drawRect(x-m.getAnim()-5, y-1,x-m.getAnim()-4, y+9, customrainbow.getRGB());
+                            	//Gui.drawRect(x-m.getAnim()-5, y-1,x-m.getAnim()-4, y+9, customrainbow.getRGB());
                             	//Gui.drawRect(RenderUtil.width(), y-1,x-m.getAnim()-5, y, customrainbow.getRGB());
                             	Gui.drawRect(RenderUtil.width(), y-1,x-m.getAnim()-4, y+9, new Color(12, 12, 12).getRGB());
-                            	Client.fontManager.comfortaa18.drawStringWithShadow(m.getName()+m.getSuffix(), x-m.getAnim()-2, y-1,customrainbow.getRGB());
+                            	font.drawStringWithShadow(m.getName()+m.getSuffix(), x-m.getAnim()-2, y-1,customrainbow.getRGB());
                             	}
-            				if (m.getAnim() < Client.fontManager.comfortaa18.getStringWidth(text) && m.isEnabled()) {
+            				if (m.getAnim() < font.getStringWidth(text) && m.isEnabled()) {
             					m.setAnim(m.getAnim() + 1);
             				}
             				if (m.getAnim() > -1 && !m.isEnabled()) {
             					m.setAnim(m.getAnim() - 1);
             				}
-            				if (m.getAnim() > Client.fontManager.comfortaa18.getStringWidth(text) && m.isEnabled()) {
-            					m.setAnim(Client.fontManager.comfortaa18.getStringWidth(text));
+            				if (m.getAnim() > font.getStringWidth(text) && m.isEnabled()) {
+            					m.setAnim(font.getStringWidth(text));
             				}
             				
-                    		y +=Math.min(Client.fontManager.comfortaa18.FONT_HEIGHT, m.getAnim());
+                    		y +=Math.min(font.FONT_HEIGHT, m.getAnim());
                     if (++rainbowTick > 50) {
                         rainbowTick = 0;
                     }
                     }
             			}
-            this.drawPotionStatus(new ScaledResolution(this.mc));
+            this.drawPotionStatus(new ScaledResolution(mc));
                     }
         }
 	
