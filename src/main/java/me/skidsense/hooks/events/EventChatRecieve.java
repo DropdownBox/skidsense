@@ -2,13 +2,12 @@ package me.skidsense.hooks.events;
 
 import me.skidsense.hooks.value.Event;
 
-public class EventChat
+public class EventChatRecieve
 extends Event {
     private String message;
 
-    public EventChat(String message) {
+    public EventChatRecieve(String message) {
         this.message = message;
-        this.setType((byte)0);
     }
 
     public String getMessage() {

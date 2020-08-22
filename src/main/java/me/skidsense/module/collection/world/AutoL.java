@@ -2,7 +2,7 @@
 package me.skidsense.module.collection.world;
 
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventChat;
+import me.skidsense.hooks.events.EventChatRecieve;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import java.awt.Color;
@@ -26,7 +26,7 @@ public class AutoL extends Mod {
 	}
 
 	@Sub
-	private void onLChat(EventChat e) {
+	private void onLChat(EventChatRecieve e) {
 		if(KillAura.slowtarget != null){
 			if(e.getMessage().contains(Minecraft.getMinecraft().thePlayer.getName()) && e.getMessage().contains(KillAura.slowtarget.getName())){
 				Minecraft.getMinecraft().getNetHandler().sendpacketNoEvent(new C01PacketChatMessage("[skidsense]" + " " + knm[RD.nextInt(knm.length)] + " " + fuckTextArrayList != null ? String.format(fuckTextArrayList.get(new Random(System.nanoTime()).nextInt(fuckTextArrayList.size())), KillAura.slowtarget.getName()) : String.format("%s在這個遊戲中你必須使用滑鼠左鍵和右鍵",KillAura.slowtarget.getName())));

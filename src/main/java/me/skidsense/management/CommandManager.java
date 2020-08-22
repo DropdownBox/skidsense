@@ -9,7 +9,8 @@ import me.skidsense.command.Command;
 import me.skidsense.command.commands.*;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventChat;
+import me.skidsense.hooks.events.EventChatRecieve;
+import me.skidsense.hooks.events.EventChatSend;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +65,7 @@ implements Manager {
     }
 
     @Sub
-    private void onChat(EventChat e) {
+    private void onChat(EventChatSend e) {
         if (e.getMessage().length() > 1 && e.getMessage().startsWith(PREFIX)) {
             e.setCancelled(true);
             String[] args = e.getMessage().trim().substring(PREFIX.length()).split(" ");
