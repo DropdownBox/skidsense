@@ -21,3 +21,6 @@ skidsense.iml
 skidsense.iws
 skidsense.main.iml
 skidsense.test.iml
+*.prefs
+.classpath
+.project
