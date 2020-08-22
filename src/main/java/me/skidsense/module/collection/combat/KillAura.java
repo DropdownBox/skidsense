@@ -12,8 +12,10 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
+import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.player.Teams;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
@@ -157,6 +159,10 @@ public class KillAura extends Mod {
 
 	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
+		if(Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()){
+			setEnabled(false);
+			Notifications.getManager().post("KillAura is not compatible with Flight");
+		}
 		if (!this.mc.thePlayer.isEntityAlive() && this.autodisable.getValue()) {
 			this.setEnabled(false);
 		}
