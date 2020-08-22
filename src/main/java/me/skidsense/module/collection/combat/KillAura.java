@@ -44,7 +44,6 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
-import sun.security.pkcs11.Secmod;
 
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -79,6 +78,7 @@ public class KillAura extends Mod {
 	private List<EntityLivingBase> attacktargets = new CopyOnWriteArrayList<EntityLivingBase>();
 	public static EntityLivingBase target;
 	public static EntityLivingBase attacktarget;
+	public static EntityLivingBase slowtarget;
 	public float[] lastRotations = new float[]{0.0f, 0.0f};
 	;
 	public DecimalFormat format = new DecimalFormat("0.0");
@@ -157,6 +157,9 @@ public class KillAura extends Mod {
 
 	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
+		if(target != null) {
+			slowtarget = target;
+		}
 		if (!this.mc.thePlayer.isEntityAlive() && this.autodisable.getValue()) {
 			this.setEnabled(false);
 		}
