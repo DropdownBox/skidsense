@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class Flight extends Mod {
-    public Mode mode = new Mode("Mode", "Mode", (Enum[]) FlyMode.values(), (Enum) FlyMode.Vanilla);
+    public static Mode mode = new Mode("Mode", "Mode", (Enum[]) FlyMode.values(), (Enum) FlyMode.Vanilla);
     public Mode DMode = new Mode("DamageMode", "DamageMode", (Enum[]) DamageMode.values(), (Enum) DamageMode.Semi);
     private Option<Boolean> lagcheck = new Option<Boolean>("LagCheck", "LagCheck", true);
     private Option<Boolean> disabler = new Option<Boolean>("Disabler", "Disabler", true);
