@@ -27,7 +27,7 @@ import java.awt.*;
 
 public class AutoStrafe extends Mod {
 	public Option<Boolean> Render = new Option<Boolean>("Render", "Render", true);
-	public Option<Boolean> OnSpace = new Option<Boolean>("OnSpace", "OnSpace", true);
+	public static Option<Boolean> OnSpace = new Option<Boolean>("OnSpace", "OnSpace", true);
 	public Numbers<Double> Distance = new Numbers<Double>("Distance", "Distance", 1.6,0.1,3.0,0.1);
 	private int direction = -1;
 //	private Setting range;
@@ -71,6 +71,7 @@ public class AutoStrafe extends Mod {
 	}
 
 	public void strafe(EventMove e, double moveSpeed) {
+		mc.thePlayer.onGround = false;
 		float[] rots = RotationUtil.getRotations(KillAura.target);
 		double dist = mc.thePlayer.getDistanceToEntity(KillAura.target);
 		if (dist >= Distance.getValue()) {
@@ -162,8 +163,8 @@ public class AutoStrafe extends Mod {
 		}
 	}
 
-	public boolean canStrafe() {
-		if (this.OnSpace.getValue() && !mc.gameSettings.keyBindJump.isKeyDown()) {
+	public static boolean canStrafe() {
+		if (OnSpace.getValue() && !mc.gameSettings.keyBindJump.isKeyDown()) {
 			return false;
 		}
 		return KillAura.target != null && Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled() &&Client.getModuleManager().getModuleByClass(Speed.class).isEnabled() && !Client.getModuleManager().getModuleByClass(Scaffold.class).isEnabled();

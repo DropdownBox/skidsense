@@ -12,8 +12,10 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
+import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.player.Teams;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
@@ -146,10 +148,10 @@ public class KillAura extends Mod {
 
 			}
 			GlStateManager.popMatrix();
-			if(this.anima<=KillAura.target.getHealth()*6) {
-				this.anima+=2;
-			}if(this.anima>KillAura.target.getHealth()*6) {
-				this.anima-=2;
+			if(anima<=KillAura.target.getHealth()*6) {
+				anima+=2;
+			}if(anima>KillAura.target.getHealth()*6) {
+				anima-=2;
 			}
 			Gui.drawRect(x/2+115, y/2+187, x/2+120+(hpPercentage * 1.2) * 100, y/2+185, new Color(225,20,20).getRGB());
 		}
@@ -157,6 +159,10 @@ public class KillAura extends Mod {
 
 	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
+		if(Client.getModuleManager().getModuleByClass(Flight.class).isEnabled() && Flight.mode.getValue() == Flight.FlyMode.HypixelDamage){
+			Notifications.getManager().post("KillAura is not compatible with Flight.");
+			setEnabled(false);
+		}
 		if(target != null) {
 			slowtarget = target;
 		}

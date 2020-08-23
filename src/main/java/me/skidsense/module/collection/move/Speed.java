@@ -51,9 +51,7 @@ public class Speed extends Mod {
             pc.allowFlying = true;
             pc.isFlying = true;
             pc.disableDamage = true;
-            if (mc.thePlayer.isSpectator())  {
-                mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(pc));
-            }
+            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(pc));
             mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(
                     new C0FPacketConfirmTransaction(65536, (short) 32767, true));
         }
@@ -227,8 +225,8 @@ public class Speed extends Mod {
                 }
             }
 
-            this.speed = this.getHypixelSpeed(this.stage) + 0.033;
-            this.speed *= 0.9D;
+            this.speed = this.getHypixelSpeed(this.stage) + 0.0331;
+            this.speed *= 0.91D;
             if (this.stair > 0.0D) {
                 this.speed *= 0.65D - (double) MoveUtil.getSpeedEffect() * 0.1D;
             }
@@ -245,7 +243,8 @@ public class Speed extends Mod {
                 this.speed = 0.12D;
             }
 
-            if(MoveUtil.isMoving()) {
+            if(MoveUtil.isMoving() && !AutoStrafe.canStrafe()) {
+                mc.thePlayer.onGround = false;
                 setMotion(e, speed);
                 ++stage;
             }

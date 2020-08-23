@@ -19,8 +19,7 @@ public class NoFall extends Mod {
     @Sub
     private void onUpdate(EventPreUpdate e) {
         if (mc.thePlayer.fallDistance > 3.0F) {
-            mc.thePlayer.onGround = false;
-            mc.getNetHandler().addToSendQueue(new C03PacketPlayer(true));
+            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(mc.thePlayer.ticksExisted % ThreadLocalRandom.current().nextInt(45, 75) != 0));
         }
     }
 }
