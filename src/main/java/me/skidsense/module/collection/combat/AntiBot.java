@@ -18,7 +18,6 @@ public class AntiBot extends Mod {
 	public Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) AntiMode.values(), (Enum) AntiMode.WatchDog);
 	public static ArrayList<EntityPlayer> nigbot = new ArrayList<>();
 	public static ArrayList<EntityPlayer> whitepig = new ArrayList<>();
-	private TimerUtil o0O00ooO = new TimerUtil();
 
 	public AntiBot() {
 		super("Anti Bot", new String[]{"AntiBot"},ModuleType.Fight);
@@ -86,11 +85,7 @@ public class AntiBot extends Mod {
 			if (this.mode.getValue() == AntiMode.WatchDog) {
 				if (entity.getDisplayName().getFormattedText().startsWith("\u00a7") && !entity.isInvisible()
 						&& !entity.getDisplayName().getFormattedText().toLowerCase().contains("[npc]")) {
-					if(isInGodMode(entity))
-					{
-						return true;
-					}
-					return false;
+					return isInGodMode(entity);
 				}
 				return true;
 			}

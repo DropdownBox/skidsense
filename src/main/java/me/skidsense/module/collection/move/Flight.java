@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class Flight extends Mod {
-    public Mode mode = new Mode("Mode", "Mode", (Enum[]) FlyMode.values(), (Enum) FlyMode.Vanilla);
+    public static Mode mode = new Mode("Mode", "Mode", (Enum[]) FlyMode.values(), (Enum) FlyMode.Vanilla);
     public Mode DMode = new Mode("DamageMode", "DamageMode", (Enum[]) DamageMode.values(), (Enum) DamageMode.Semi);
     private Option<Boolean> lagcheck = new Option<Boolean>("LagCheck", "LagCheck", true);
     private Option<Boolean> disabler = new Option<Boolean>("Disabler", "Disabler", true);
@@ -90,9 +90,7 @@ public class Flight extends Mod {
             pc.allowFlying = true;
             pc.isFlying = true;
             pc.disableDamage = true;
-            if (mc.thePlayer.isSpectator())  {
-                mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(pc));
-            }
+            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(pc));
             mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(
                     new C0FPacketConfirmTransaction(65536, (short) 32767, true));
         }
@@ -231,11 +229,14 @@ public class Flight extends Mod {
 
     @Sub
     public void onPacketSend(EventPacketSend e){
-        if (e.getPacket() instanceof S00PacketKeepAlive) {
-            e.setCancelled(true);
-            S00PacketKeepAlive packet = (S00PacketKeepAlive)e.getPacket();
-            mc.thePlayer.sendQueue.addToSendQueue(new C00PacketKeepAlive(packet.func_149134_c() + QuickMath.getRandomInRange(500,800)));
+        if(groundpacket.getValue()){
+            if(e.getPacket() instanceof C03PacketPlayer){
+                C03PacketPlayer playerpacket = (C03PacketPlayer)e.getPacket();
+                playerpacket.onGround = true;
+            }
         }
+
+
         if(mode.getValue() == FlyMode.HypixelDamage) {
             if (e.getPacket() instanceof C03PacketPlayer.C04PacketPlayerPosition
                     || e.getPacket() instanceof C03PacketPlayer.C06PacketPlayerPosLook
@@ -462,7 +463,7 @@ public class Flight extends Mod {
         mc.thePlayer.motionZ = 0.0;
         if(mode.getValue() == FlyMode.HypixelDamage) {
             for (Packet packet : this.packets) {
-                mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(packet);
+                mc.thePlayer.sendQueue.addToSendQueue(packet);
                 System.out.println("发送了数据包: "+packet.getClass().getName());
             }
             packets.clear();
@@ -560,10 +561,6 @@ public class Flight extends Mod {
             }
             mc.thePlayer.capabilities.allowFlying = true;
         } else if (this.mode.getValue() == FlyMode.HypixelDamage) {
-            if(groundpacket.getValue()) {
-                mc.thePlayer.onGround = true;
-                e.setOnGround(true);
-            }
             if (!damaged)
                 return;
             if (BoostTimer.hasReached(zoomboost.getValue() * 1000) || !fast) {
