@@ -29,7 +29,11 @@ public class AutoL extends Mod {
 	private void onLChat(EventChatRecieve e) {
 		if(KillAura.slowtarget != null){
 			if(e.getMessage().contains(Minecraft.getMinecraft().thePlayer.getName()) && e.getMessage().contains(KillAura.slowtarget.getName())){
-				Minecraft.getMinecraft().getNetHandler().sendpacketNoEvent(new C01PacketChatMessage("[skidsense]" + " " + knm[RD.nextInt(knm.length)] + " " + fuckTextArrayList != null ? String.format(fuckTextArrayList.get(new Random(System.nanoTime()).nextInt(fuckTextArrayList.size())), KillAura.slowtarget.getName()) : String.format("%s在這個遊戲中你必須使用滑鼠左鍵和右鍵",KillAura.slowtarget.getName())));
+				if(KillAura.slowtarget.getName().contains("TW")) {
+					ChatUtil.sendChat_NoFilter(String.format("我就在台北，你他媽的坐捷运來打我啊？,%s", KillAura.slowtarget.getName()));
+				}else {
+					Minecraft.getMinecraft().getNetHandler().sendpacketNoEvent(new C01PacketChatMessage("[skidsense]" + " " + knm[RD.nextInt(knm.length)] + " " + fuckTextArrayList != null ? String.format(fuckTextArrayList.get(new Random(System.nanoTime()).nextInt(fuckTextArrayList.size())), KillAura.slowtarget.getName()) : String.format("%s在這個遊戲中你必須使用滑鼠左鍵和右鍵",KillAura.slowtarget.getName())));	
+				}
 			}
 		}
 	}
