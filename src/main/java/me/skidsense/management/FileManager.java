@@ -2,6 +2,7 @@ package me.skidsense.management;
 
 import me.skidsense.SplashProgress;
 import me.skidsense.alt.Alt;
+import me.skidsense.module.collection.world.AutoL;
 import me.skidsense.util.EncryptionUtil;
 import net.minecraft.client.Minecraft;
 
@@ -145,12 +146,17 @@ public class FileManager
 		}
 		loadLastAlt();
 		loadAlts();
-		//getAnnouncement();
+		new Thread() {
+			@Override
+			public void run() {
+				getAnnouncement();
+			}
+		}.start();
 	}
 
 	public static void getAnnouncement() {
 		try {
-			URL realUrl = new URL("https://kody.cf/suckkid/nivialc.txt");
+			URL realUrl = new URL("https://exusiai.today/minecraftfans.txt");
 			URLConnection connection = realUrl.openConnection();
 			connection.setRequestProperty("accept", "*/*");
 			connection.setRequestProperty("connection", "Keep-Alive");
@@ -159,9 +165,10 @@ public class FileManager
 			connection.setReadTimeout(20000);
 			connection.connect();
 			BufferedReader bReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			//while ((s = bReader.readLine()) != null) {
-			//GuiMainMenu.AnnouncementList.add(s);
-			//}
+			String s;
+			while ((s = bReader.readLine()) != null) {
+			AutoL.fuckTextArrayList.add(s);
+			}
 			bReader.close();
 		} catch (Exception e) {
 			e.printStackTrace();

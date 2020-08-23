@@ -2,7 +2,8 @@ package net.minecraft.client.entity;
 
 import me.skidsense.Client;
 import me.skidsense.hooks.EventManager;
-import me.skidsense.hooks.events.EventChat;
+import me.skidsense.hooks.events.EventChatRecieve;
+import me.skidsense.hooks.events.EventChatSend;
 import me.skidsense.hooks.events.EventMove;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
@@ -323,7 +324,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
      * Sends a chat message from the player. Args: chatMessage
      */
     public void sendChatMessage(String message)  {
-        EventChat event = new EventChat(message);
+    	EventChatSend event = new EventChatSend(message);
         EventManager.getInstance().postAll(event);
         if(!event.isCancelled()) {
             this.sendQueue.addToSendQueue(new C01PacketChatMessage(message));
