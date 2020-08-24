@@ -16,7 +16,6 @@ import net.minecraft.network.play.client.C01PacketChatMessage;
 
 public class AutoL extends Mod {
 	public static ArrayList<String> fuckTextArrayList = new ArrayList<String>();
-	private StringBuilder SBL = new StringBuilder();
 	private Random RD =new Random(System.currentTimeMillis());
 	private String[] knm = {"qwq","poi","QAQ","QWQ","qaq","awa","(๑>؂<๑）","(⑉• •⑉)‥♡","ヾ(●´∇｀●)ﾉ","POI~","(｡•́︿•̀｡)","poi~","-3-"};
 
@@ -29,7 +28,7 @@ public class AutoL extends Mod {
 	private void onLChat(EventChatRecieve e) {
 		if(KillAura.slowtarget != null){
 			if(e.getMessage().contains(Minecraft.getMinecraft().thePlayer.getName()) && e.getMessage().contains(KillAura.slowtarget.getName())){
-				if(KillAura.slowtarget.getName().contains("TW")) {
+				if(KillAura.slowtarget.getName().contains("TW") || KillAura.slowtarget.getName().contains("tw")) {
 					ChatUtil.sendChat_NoFilter(String.format("我就在台北，你他媽的坐捷运來打我啊？,%s", KillAura.slowtarget.getName()));
 				}else {
 					Minecraft.getMinecraft().getNetHandler().sendpacketNoEvent(new C01PacketChatMessage("[skidsense]" + " " + knm[RD.nextInt(knm.length)] + " " + fuckTextArrayList != null ? String.format(fuckTextArrayList.get(new Random(System.nanoTime()).nextInt(fuckTextArrayList.size())), KillAura.slowtarget.getName()) : String.format("%s在這個遊戲中你必須使用滑鼠左鍵和右鍵",KillAura.slowtarget.getName())));	
