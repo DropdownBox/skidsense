@@ -21,6 +21,7 @@ import net.minecraft.network.play.server.S00PacketKeepAlive;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 import net.minecraft.potion.Potion;
+import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovementInput;
@@ -75,6 +76,7 @@ public class Flight extends Mod {
     private double lastDistance;
     private int boostHypixelState;
     private int stage, groundtick;
+    private boolean jumped;
     private ArrayList<Packet> packets = new ArrayList<>();
 
 
@@ -90,16 +92,15 @@ public class Flight extends Mod {
             pc.allowFlying = true;
             pc.isFlying = true;
             pc.disableDamage = true;
-            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(pc));
-            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(
-                    new C0FPacketConfirmTransaction(65536, (short) 32767, true));
+//            mc.thePlayer.sendQueue.sendpacketNoEvent(
+//                    new C0FPacketConfirmTransaction(65536, (short) 32767, true));
         }
     }
 
     @Sub
     public void onDisablerPacketSend(EventPacketSend e){
         if(disabler.getValue() && mode.getValue() == FlyMode.HypixelDamage){
-            if (e.getPacket() instanceof C13PacketPlayerAbilities || e.getPacket() instanceof C0FPacketConfirmTransaction) {
+            if (e.getPacket() instanceof C0FPacketConfirmTransaction) {
                 e.setCancelled(true);
             }
         }
@@ -212,7 +213,7 @@ public class Flight extends Mod {
     }
 
     @Sub
-    private void onPacket(EventPacketRecieve ep) {
+    public void onPacket(EventPacketRecieve ep) {
         if (this.lagcheck.getValue().booleanValue()) {
             if (ep.getPacket() instanceof S08PacketPlayerPosLook && this.deactivationDelay.delay(2000F)) {
                 ++this.packetCounter;
@@ -238,7 +239,7 @@ public class Flight extends Mod {
 
 
         if(mode.getValue() == FlyMode.HypixelDamage) {
-            if (e.getPacket() instanceof C03PacketPlayer.C04PacketPlayerPosition
+            if (jumped && e.getPacket() instanceof C03PacketPlayer.C04PacketPlayerPosition
                     || e.getPacket() instanceof C03PacketPlayer.C06PacketPlayerPosLook
                     || e.getPacket() instanceof C08PacketPlayerBlockPlacement || e.getPacket() instanceof C0APacketAnimation
                     || e.getPacket() instanceof C0BPacketEntityAction || e.getPacket() instanceof C02PacketUseEntity) {
@@ -248,6 +249,11 @@ public class Flight extends Mod {
                 ++packetsconter;
             }
         }
+    }
+
+    private void fakeJump() {
+        mc.thePlayer.isAirBorne = true;
+        mc.thePlayer.triggerAchievement(StatList.jumpStat);
     }
 
     @Sub
@@ -359,13 +365,18 @@ public class Flight extends Mod {
                         e.printStackTrace();
                     }
                     damaged = true;
-                    if (jump.getValue())
+                    if (jump.getValue()) {
                         mc.thePlayer.jump();
+                        jumped = true;
+                    }
+
                 })).start();
             } else {
                 damaged = true;
-                if (jump.getValue())
+                if (jump.getValue()) {
                     mc.thePlayer.jump();
+                    jumped = true;
+                }
             }
 
             boostHypixelState = 1;
@@ -448,7 +459,9 @@ public class Flight extends Mod {
 
     @Override
     public void onDisable() {
+        jumped = false;
         this.hypixelCounter = 0;
+        packetsconter = 0;
         final double posX = this.mc.thePlayer.posX;
         final double posY = this.mc.thePlayer.posY;
         final double posZ = this.mc.thePlayer.posZ;
@@ -463,8 +476,11 @@ public class Flight extends Mod {
         mc.thePlayer.motionZ = 0.0;
         if(mode.getValue() == FlyMode.HypixelDamage) {
             for (Packet packet : this.packets) {
-                mc.thePlayer.sendQueue.addToSendQueue(packet);
+                mc.getNetHandler().getNetworkManager().sendPacket(packet);
                 System.out.println("发送了数据包: "+packet.getClass().getName());
+                if(packet instanceof C03PacketPlayer) {
+                    System.out.println("GroundState: "+((C03PacketPlayer) packet).onGround);
+                }
             }
             packets.clear();
         }

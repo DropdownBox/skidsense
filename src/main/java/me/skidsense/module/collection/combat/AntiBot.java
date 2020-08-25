@@ -26,7 +26,7 @@ public class AntiBot extends Mod {
 
 	@Sub
 	public void onUpdate(EventPreUpdate event) {
-        this.setSuffix(this.mode.getValue());
+		this.setSuffix(this.mode.getValue());
 		if (mode.getValue() == AntiMode.WatchDog) {
 			for (Object entities : mc.theWorld.loadedEntityList) {
 				if (entities instanceof EntityPlayer) {
@@ -56,10 +56,10 @@ public class AntiBot extends Mod {
 					if (!ent.isInvisible() || ent.ticksExisted <= 105) {
 						continue;
 					}
-					
+
 					ent.setInvisible(false);
-		       	    Notifications.getManager().post("Removed Bot :" + ent.getName());
-		       	 Minecraft.getMinecraft().theWorld.removeEntity(ent);
+					Notifications.getManager().post("Removed Bot :" + ent.getName());
+					Minecraft.getMinecraft().theWorld.removeEntity(ent);
 				}
 			}
 		}
@@ -79,13 +79,17 @@ public class AntiBot extends Mod {
 		}
 		return false;
 	}
-	
+
 	public boolean isServerBot(Entity entity) {
 		if (this.isEnabled()) {
 			if (this.mode.getValue() == AntiMode.WatchDog) {
 				if (entity.getDisplayName().getFormattedText().startsWith("\u00a7") && !entity.isInvisible()
 						&& !entity.getDisplayName().getFormattedText().toLowerCase().contains("[npc]")) {
-					return isInGodMode(entity);
+					if(isInGodMode(entity))
+					{
+						return true;
+					}
+					return false;
 				}
 				return true;
 			}
@@ -116,4 +120,4 @@ public class AntiBot extends Mod {
 	public void onDisable() {
 		nigbot.clear();
 	}
-	}
+}

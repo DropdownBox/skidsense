@@ -18,6 +18,7 @@ import me.skidsense.util.RotationUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.stats.StatList;
 import net.minecraft.util.MovementInput;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Cylinder;
@@ -60,6 +61,8 @@ public class AutoStrafe extends Mod {
 	public void onMove(EventMove e){
 		if (this.canStrafe()) {
 			this.strafe(e, MoveUtil.getBaseMoveSpeed());
+			mc.thePlayer.isAirBorne = true;
+			mc.thePlayer.triggerAchievement(StatList.jumpStat);
 		}
 	}
 

@@ -209,12 +209,12 @@ public class Speed extends Mod {
                 this.less = 0.0D;
             }
 
-            if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.0001D) && MoveUtil.isMoving()) {
+            if (!BlockUtil.isInLiquid() && MoveUtil.isOnGround(0.001D) && MoveUtil.isMoving()) {
                 this.collided = mc.thePlayer.isCollidedHorizontally;
                 if (this.stage >= 0 || this.collided) {
                     this.stage = 0;
                     if (this.stair == 0.0) {
-                        mc.thePlayer.jump();
+                        //mc.thePlayer.jump();
                         e.setY(mc.thePlayer.motionY = 0.408666666666666666666D + MoveUtil.getJumpEffect() * 0.1);
                     }
                     ++this.less;
@@ -244,7 +244,8 @@ public class Speed extends Mod {
             }
 
             if(MoveUtil.isMoving() && !AutoStrafe.canStrafe()) {
-                mc.thePlayer.onGround = false;
+                //mc.thePlayer.onGround = false;
+                fakeJump();
                 setMotion(e, speed);
                 ++stage;
             }
