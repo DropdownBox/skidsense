@@ -18,7 +18,7 @@ public class FontManager {
 	public FontRenderer sigmaarr;
 	public FontRenderer zeroarr;
 	public FontRenderer comfortaa18;
-	public FontRenderer comfortaa216;
+	public FontRenderer comfortaa16;
 	public FontRenderer comfortaa14;
 	public FontRenderer comfortaa20;
 	public FontRenderer comfortaa34;
@@ -30,10 +30,6 @@ public class FontManager {
 	public FontRenderer sansation18;
 	public FontRenderer sansation14;
 	public FontRenderer sansation28;
-	public FontRenderer notoSans25;
-	public FontRenderer notoSans30;
-	public FontRenderer jbmono25;
-	public FontRenderer jbmono30;
     public FontRenderer kiona16;
 	public FontRenderer kiona18;
 	
@@ -46,7 +42,7 @@ public class FontManager {
 		sigmaarr = this.getFont("sigma", 8f);
 		zeroarr = this.getFont("comfortaa", 17f);
 		comfortaa18 = this.getFont("comfortaa", 18f);
-		comfortaa216 = this.getFont("comfortaa2", 18f);
+		comfortaa16 = this.getFont("comfortaa2", 18f);
 		comfortaa14 = this.getFont("comfortaa", 14f);
 		comfortaa20 = this.getFont("comfortaa", 20f);
 		comfortaa34 = this.getFont("comfortaa", 34f);
@@ -58,10 +54,6 @@ public class FontManager {
 		sansation14 = this.getFont("sansation", 14f);
 		sansation28 = this.getFont("sansation", 28f);
 		sansation16 = this.getFont("sansation", 16f);
-		notoSans25 = this.getFont("notosansCN", 25f,".otf",true);
-		notoSans30 = this.getFont("notosansCN", 30f,".otf",true);
-		jbmono25 = this.getFont("jetbrainsmono", 25f);
-		jbmono30 = this.getFont("jetbrainsmono", 30f);
 		kiona16 = this.getFont("Kiona-Regular", 16f);
 		kiona18 = this.getFont("Kiona-Regular", 18f);
 	}
