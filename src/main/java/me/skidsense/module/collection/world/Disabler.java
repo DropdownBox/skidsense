@@ -5,13 +5,14 @@
 
 package me.skidsense.module.collection.world;
 
+import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.move.Flight;
+import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.QuickMath;
 import net.minecraft.network.play.client.C00PacketKeepAlive;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
@@ -38,36 +39,40 @@ public class Disabler extends Mod {
 
     @Sub
     private void onPacketSend(EventPacketSend ep) {
-        switch (mode.getValue().toString()) {
-            case "TimeOut":
-            case "SpoofSpectator": {
-                if (ep.getPacket() instanceof C0FPacketConfirmTransaction) {
-                    ep.setCancelled(true);
+        if (mc.theWorld != null && mc.thePlayer != null && !Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled()) {
+            switch (mode.getValue().toString()) {
+                case "TimeOut":
+                case "SpoofSpectator": {
+                    if (ep.getPacket() instanceof C0FPacketConfirmTransaction) {
+                        ep.setCancelled(true);
+                    }
+                    if (ep.getPacket() instanceof C00PacketKeepAlive) {
+                        ep.setCancelled(true);
+                    }
+                    break;
                 }
-                if (ep.getPacket() instanceof C00PacketKeepAlive) {
-                    ep.setCancelled(true);
+                case "NoPayload": {
+                    if (ep.getPacket() instanceof C17PacketCustomPayload) {
+                        ep.setCancelled(true);
+                    }
+                    break;
                 }
-                break;
-            }
-            case "NoPayload": {
-                if(ep.getPacket() instanceof C17PacketCustomPayload){
-                    ep.setCancelled(true);
-                }
-                break;
             }
         }
     }
 
     @Sub
-    private void onUpdate(EventPreUpdate e){
-        switch (mode.getValue().toString()){
-            case "SpamTransaction":{
-                mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C0FPacketConfirmTransaction(0, (short) QuickMath.getRandomInRange(-32767, 32767), false));
-                break;
-            }
-            case "SpoofSpectator":{
-                mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C18PacketSpectate((UUID.randomUUID())));
-                break;
+    private void onUpdate(EventPreUpdate e) {
+        if (mc.theWorld != null && mc.thePlayer != null && !Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled()) {
+            switch (mode.getValue().toString()) {
+                case "SpamTransaction": {
+                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C0FPacketConfirmTransaction(0, (short) QuickMath.getRandomInRange(-32767, 32767), false));
+                    break;
+                }
+                case "SpoofSpectator": {
+                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C18PacketSpectate((UUID.randomUUID())));
+                    break;
+                }
             }
         }
     }
