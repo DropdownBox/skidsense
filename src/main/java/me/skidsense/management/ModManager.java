@@ -21,10 +21,7 @@ import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.module.collection.move.*;
 import me.skidsense.module.collection.player.*;
 import me.skidsense.module.collection.visual.*;
-import me.skidsense.module.collection.world.AutoL;
-import me.skidsense.module.collection.world.ChestStealer;
-import me.skidsense.module.collection.world.NoRotate;
-import me.skidsense.module.collection.world.SpeedMine;
+import me.skidsense.module.collection.world.*;
 import me.skidsense.util.GLUtils;
 
 import java.lang.reflect.Field;
@@ -106,7 +103,8 @@ implements Manager {
         addMod(new NoRotate());
         addMod(new AutoTool());
         addMod(new SpeedMine());
-        
+        addMod(new Disabler());
+
         this.readSettings();
         for (Mod m : mods) {
             m.makeCommand();
