@@ -47,7 +47,6 @@ public class Critical extends Mod {
     public void onAttack(EventAttack ent) {
         if (canCrit() && ent.targetEntity.hurtResistantTime <= ht.getValue() && ent.targetEntity.hurtResistantTime > 0) {
             doCrit();
-            Notifications.getManager().post("发包了！HurtTime:"+ent.targetEntity.hurtResistantTime);
         }
     }
 
@@ -74,8 +73,7 @@ public class Critical extends Mod {
     }
 
     public void doCrit() {
-        double rand = QuickMath.getRandomInRange(0,0.001);
-        double[] offset = {0.03135642737949951 + rand, 0.0, 0.03135642737949951 + rand, 0.0};
+        double[] offset = {0.03135642737949951, 0.0, 0.03135642737949951, 0.0};
         for (double d : offset) {
             mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + d, mc.thePlayer.posZ, false));
         }

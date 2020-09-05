@@ -214,7 +214,7 @@ public class Speed extends Mod {
                 if (this.stage >= 0 || this.collided) {
                     this.stage = 0;
                     if (this.stair == 0.0) {
-                        //mc.thePlayer.jump();
+                        mc.thePlayer.jump();
                         e.setY(mc.thePlayer.motionY = 0.408666666666666666666D + MoveUtil.getJumpEffect() * 0.1);
                     }
                     ++this.less;
