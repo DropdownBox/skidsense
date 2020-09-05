@@ -106,7 +106,7 @@ extends Mod {
             	if(m.wasRemoved()) {
             		continue;
             	}
-                    	Color customrainbow = new Color(Color.HSBtoRGB((float)((double)(double)rainbowTick / 80.0*1.6 + Math.sin(this.mc.thePlayer.ticksExisted /100.0*1.0)) % 1.0f, (float)this.rainbowspeed.getValue().floatValue(), 0.6f));
+                    	Color customrainbow = new Color(Color.HSBtoRGB((float)((double)(double)rainbowTick / 80.0*1.5 + Math.sin(this.mc.thePlayer.ticksExisted /100.0*1.0)) % 1.0f, (float)this.rainbowspeed.getValue().floatValue(), 0.9f));
             	String text =  m.getName()+m.getSuffix();
                     	float x = RenderUtil.width();                   	
             			if (m.getAnim() != -1) {
