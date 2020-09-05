@@ -47,6 +47,11 @@ public class RenderUtil {
     public static double interpolate(double newPos, double oldPos) {
         return oldPos + (newPos - oldPos) * (double)Client.mc.timer.renderPartialTicks;
     }
+    
+    public static double interpolate(double newPos, float oldPos) {
+        return oldPos + (newPos - oldPos) * (double)Client.mc.timer.renderPartialTicks;
+    }
+    
     public static boolean isHovering(float mouseX,float mouseY,float boxX,float boxY,float boxX1,float boxY1){
 	    return (mouseX >= boxX && mouseX <= boxX1 && mouseY >= boxY && mouseY <= boxY1) || (mouseX <= boxX && mouseX >= boxX1 && mouseY <= boxY && mouseY >= boxY1);
     }
@@ -1258,6 +1263,10 @@ public class RenderUtil {
             final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
             BBDrawA(aa, tessellator, worldRenderer);
         }
+    }
+
+    public static double interpolate(double current, double old, double scale) {
+        return old + (current - old) * scale;
     }
 }
 

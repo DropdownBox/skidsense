@@ -199,7 +199,7 @@ public class GuiIngame extends Gui
             this.renderPlayerStats(scaledresolution);
         }
         GlStateManager.disableBlend();
-        EventManager.getInstance().postAll(new EventRenderGui(scaledresolution));
+        EventManager.getInstance().postAll(new EventRenderGui(scaledresolution,partialTicks));
         GlStateManager.disableBlend();
 
         if (this.mc.thePlayer.getSleepTimer() > 0)
