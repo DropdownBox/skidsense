@@ -215,7 +215,7 @@ public class Speed extends Mod {
                     this.stage = 0;
                     if (this.stair == 0.0) {
                         mc.thePlayer.jump();
-                        e.setY(mc.thePlayer.motionY = 0.408666666666666666666D + MoveUtil.getJumpEffect() * 0.1);
+                        e.setY(mc.thePlayer.motionY = 0.40866666f + MoveUtil.getJumpEffect() * 0.1);
                     }
                     ++this.less;
                     boolean bl = this.lessSlow = this.less > 1.0D && !this.lessSlow;

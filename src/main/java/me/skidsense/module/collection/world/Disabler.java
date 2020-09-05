@@ -14,10 +14,8 @@ import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.QuickMath;
-import net.minecraft.network.play.client.C00PacketKeepAlive;
-import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
-import net.minecraft.network.play.client.C17PacketCustomPayload;
-import net.minecraft.network.play.client.C18PacketSpectate;
+import net.minecraft.network.play.client.*;
+
 import java.util.UUID;
 
 public class Disabler extends Mod {
@@ -43,10 +41,7 @@ public class Disabler extends Mod {
             switch (mode.getValue().toString()) {
                 case "TimeOut":
                 case "SpoofSpectator": {
-                    if (ep.getPacket() instanceof C0FPacketConfirmTransaction) {
-                        ep.setCancelled(true);
-                    }
-                    if (ep.getPacket() instanceof C00PacketKeepAlive) {
+                    if (ep.getPacket() instanceof C0FPacketConfirmTransaction || ep.getPacket() instanceof C00PacketKeepAlive || ep.getPacket() instanceof C13PacketPlayerAbilities) {
                         ep.setCancelled(true);
                     }
                     break;
