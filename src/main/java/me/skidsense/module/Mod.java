@@ -8,6 +8,7 @@ import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
 import me.skidsense.management.FileManager;
 import me.skidsense.management.ModManager;
+import me.skidsense.management.animation.Translate;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -35,6 +36,7 @@ public class Mod {
 	protected boolean removed;
 	public static Minecraft mc = Minecraft.getMinecraft();
 	public static Random random = new Random();
+	public Translate translate = new Translate(0.0F, 0.0F);
 
 	public Mod(String name, String[] alias, ModuleType type) {
 		this.name = name;
@@ -115,7 +117,7 @@ public class Mod {
 		}
 
 	}
-
+    
 	public void setColor(int color) {
 		this.color = color;
 	}
