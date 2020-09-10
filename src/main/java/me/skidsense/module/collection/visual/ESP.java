@@ -1,374 +1,513 @@
 package me.skidsense.module.collection.visual;
 
 import java.awt.Color;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector4d;
-import javax.vecmath.Vector4f;
-
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.monster.EntityGolem;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Vec3;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
-
-import com.mojang.realmsclient.gui.ChatFormatting;
-
-import me.skidsense.Client;
-import me.skidsense.color.Colors;
-import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventRender2D;
-import me.skidsense.hooks.events.EventRenderGui;
-import me.skidsense.hooks.value.Mode;
-import me.skidsense.hooks.value.Numbers;
-import me.skidsense.hooks.value.Option;
-import me.skidsense.module.Mod;
-import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.player.Teams;
-import me.skidsense.util.RenderUtil;
-import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.tileentity.TileEntityEnderChest;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.StringUtils;
+import net.optifine.util.MathUtils;
+
+import org.lwjgl.opengl.GL11;
+
+import me.skidsense.Client;
+import me.skidsense.color.ColorManager;
+import me.skidsense.color.ColorObject;
+import me.skidsense.color.Colors;
+import me.skidsense.hooks.Sub;
+import me.skidsense.hooks.events.EventRender3D;
+import me.skidsense.hooks.events.EventRenderGui;
+import me.skidsense.hooks.value.Mode;
+import me.skidsense.hooks.value.Option;
+import me.skidsense.management.FriendManager;
+import me.skidsense.module.Mod;
+import me.skidsense.module.ModuleType;
+import me.skidsense.util.RenderUtil;
+import me.skidsense.util.TeamUtils;
 
 public class ESP extends Mod {
-	public Mode mode = new Mode("Mode", "Mode", esp2dmode.values(), esp2dmode.Off);
-	public Option<Boolean> teamBasedColors = new Option("TeamBasedColors", "TeamBasedColors", false);
-	public Option<Boolean> tags = new Option("Tags", "Tags", false);
-	public Option<Boolean> healthNumber = new Option("HealthNumber", "HealthNumber", false);
-	public Option<Boolean> healthBar = new Option("HealthBar", "HealthBar", true);
-	public Option<Boolean> localPlayer = new Option("LocalPlayer", "LocalPlayer", true);
-	public Numbers<Double> width = new Numbers("Width", "Width", 0.5, 0.1, 1.0, 0.1);
-	public List<EntityPlayer> collectedEntities = new ArrayList<>();
-	private final IntBuffer viewport = GLAllocation.createDirectIntBuffer(16);
-	private final FloatBuffer modelview = GLAllocation.createDirectFloatBuffer(16);
-	private final FloatBuffer projection = GLAllocation.createDirectFloatBuffer(16);
-	private final FloatBuffer vector = GLAllocation.createDirectFloatBuffer(4);
-	private static final Map<EntityPlayer, float[][]> modelRotations = new HashMap<EntityPlayer, float[][]>();
-
-	private final int black = new Color(0, 0, 0, 150).getRGB();
-
+    private Map<EntityLivingBase, double[]> entityConvertedPointsMap = new HashMap<EntityLivingBase, double[]>();
+	public Mode<Enum> BOX_STYLE_MODE = new Mode("Mode", "Mode", BoxMode.values(), BoxMode.Box);
+    public Option<Boolean> BOX = new Option<Boolean>("2DBox", "2DBox", true);
+	public Option<Boolean> TEAM_BASED_COLORS = new Option<Boolean>("TeamBasedColors", "TeamBasedColors", false);
+	public Option<Boolean> TAGS = new Option<Boolean>("Tags", "Tags", false);
+	public Option<Boolean> HEALTH_BAR = new Option<Boolean>("HealthBar", "HealthBar", true);
+	public Option<Boolean> HEALTH_NUMBER = new Option<Boolean>("HealthNumber", "HealthNumber", false);
+	public Option<Boolean> ITEMS = new Option<Boolean>("Items", "Items", false);
+	public Option<Boolean> REAL_ITEM_NAME = new Option<Boolean>("ItemRealName", "ItemRealName", false);
+	public Option<Boolean> ARMOR = new Option<Boolean>("Armor", "Armor", false);
+    public Option<Boolean> INVISIBLES = new Option<Boolean>("Invisibles", "Invisibles", false);
+	
 	public ESP() {
-		super("ESP", new String[] { "ESP2D" }, ModuleType.Visual);
-		this.removed = true;
-	}
-
-	enum esp2dmode {
-		Box, Off,
-	}
-
-	public static int[] getFractionIndicies(float[] fractions, float progress) {
-		int[] range = new int[2];
-
-		int startPoint = 0;
-		while (startPoint < fractions.length && fractions[startPoint] <= progress) {
-			startPoint++;
-		}
-
-		if (startPoint >= fractions.length) {
-			startPoint = fractions.length - 1;
-		}
-
-		range[0] = startPoint - 1;
-		range[1] = startPoint;
-
-		return range;
-	}
-
-	public static Color blend(Color color1, Color color2, double ratio) {
-		float r = (float) ratio;
-		float ir = (float) 1.0 - r;
-
-		float rgb1[] = new float[3];
-		float rgb2[] = new float[3];
-
-		color1.getColorComponents(rgb1);
-		color2.getColorComponents(rgb2);
-
-		float red = rgb1[0] * r + rgb2[0] * ir;
-		float green = rgb1[1] * r + rgb2[1] * ir;
-		float blue = rgb1[2] * r + rgb2[2] * ir;
-
-		if (red < 0) {
-			red = 0;
-		} else if (red > 255) {
-			red = 255;
-		}
-		if (green < 0) {
-			green = 0;
-		} else if (green > 255) {
-			green = 255;
-		}
-		if (blue < 0) {
-			blue = 0;
-		} else if (blue > 255) {
-			blue = 255;
-		}
-
-		Color color = null;
-		try {
-			color = new Color(red, green, blue);
-		} catch (IllegalArgumentException exp) {
-			NumberFormat nf = NumberFormat.getNumberInstance();
-			System.out.println(nf.format(red) + "; " + nf.format(green) + "; " + nf.format(blue));
-			exp.printStackTrace();
-		}
-		return color;
-	}
-
-	public static Color blendColors(float[] fractions, Color[] colors, float progress) {
-		Color color = null;
-		if (fractions != null) {
-			if (colors != null) {
-				if (fractions.length == colors.length) {
-					int[] indicies = getFractionIndicies(fractions, progress);
-
-					if (indicies[0] < 0 || indicies[0] >= fractions.length || indicies[1] < 0
-							|| indicies[1] >= fractions.length) {
-						return colors[0];
-					}
-					float[] range = new float[] { fractions[indicies[0]], fractions[indicies[1]] };
-					Color[] colorRange = new Color[] { colors[indicies[0]], colors[indicies[1]] };
-
-					float max = range[1] - range[0];
-					float value = progress - range[0];
-					float weight = value / max;
-
-					color = blend(colorRange[0], colorRange[1], 1f - weight);
-				} else {
-					throw new IllegalArgumentException("Fractions and colours must have equal number of elements");
-				}
-			} else {
-				throw new IllegalArgumentException("Colours can't be null");
-			}
-		} else {
-			throw new IllegalArgumentException("Fractions can't be null");
-		}
-		return color;
+		super("2D ESP", new String[] { "2DESP" }, ModuleType.Visual);
 	}
 
 	@Sub
+	public void onRender3D(EventRender3D e) {
+		this.updatePositions();
+	}
+	
+	@Sub
 	public void onRender2D(EventRenderGui event) {
-		GL11.glPushMatrix();
-		this.collectedEntities.clear();
-		this.collectEntities();
-		double boxWidth = this.width.getValue().doubleValue();
-		double scaling = event.getResolution().getScaleFactor()
-				/ Math.pow(event.getResolution().getScaleFactor(), 2.0);
-		GlStateManager.scale(scaling, scaling, scaling);
-		for (EntityPlayer entity : collectedEntities) {
-			if (isValid(entity) && RenderUtil.isInViewFrustrum(entity)) {
-				double x = RenderUtil.interpolate(entity.posX, entity.lastTickPosX, event.getPartialTicks());
-				double y = RenderUtil.interpolate(entity.posY, entity.lastTickPosY, event.getPartialTicks());
-				double z = RenderUtil.interpolate(entity.posZ, entity.lastTickPosZ, event.getPartialTicks());
-				double width = entity.width / 1.5;
-				double height = entity.height + (entity.isSneaking() ? -0.3 : 0.2);
-				AxisAlignedBB aabb = new AxisAlignedBB(x - width, y, z - width, x + width, y + height, z + width);
-				List<Vector3d> vectors = Arrays.asList(new Vector3d(aabb.minX, aabb.minY, aabb.minZ),
-						new Vector3d(aabb.minX, aabb.maxY, aabb.minZ), new Vector3d(aabb.maxX, aabb.minY, aabb.minZ),
-						new Vector3d(aabb.maxX, aabb.maxY, aabb.minZ), new Vector3d(aabb.minX, aabb.minY, aabb.maxZ),
-						new Vector3d(aabb.minX, aabb.maxY, aabb.maxZ), new Vector3d(aabb.maxX, aabb.minY, aabb.maxZ),
-						new Vector3d(aabb.maxX, aabb.maxY, aabb.maxZ));
-				mc.entityRenderer.setupCameraTransform(event.getPartialTicks(), 0);
-				Vector4d position = null;
-				for (Vector3d vector : vectors) {
-					vector = project2D(event.getResolution(), vector.x - mc.getRenderManager().viewerPosX,
-							vector.y - mc.getRenderManager().viewerPosY, vector.z - mc.getRenderManager().viewerPosZ);
-					if (vector != null && vector.z >= 0.0 && vector.z < 1.0) {
-						if (position == null) {
-							position = new Vector4d(vector.x, vector.y, vector.z, 0.0);
-						}
-						position.x = Math.min(vector.x, position.x);
-						position.y = Math.min(vector.y, position.y);
-						position.z = Math.max(vector.x, position.z);
-						position.w = Math.max(vector.y, position.w);
-					}
-				}
-				mc.entityRenderer.setupOverlayRendering();
-				if (position != null) {
-					double posX = position.x;
-					double posY = position.y;
-					double endPosX = position.z;
-					double endPosY = position.w;
-					int color2 = Colors.getColor(200, 200, 200);
-					if (teamBasedColors.getValue())
-						color2 = Colors.getColor(235, 60, 60);
-					if (Teams.isOnSameTeam((Entity) entity)) {
-						color2 = Colors.getColor(0, 150, 0, 255);
-					} else if (entity.isInvisible()) {
-						color2 = Colors.getColor(200, 200, 0, 255);
-					} else {
-						color2 = Colors.getColor(255, 70, 70, 255);
-					}
-					if (mode.getValue() == esp2dmode.Box) {
-						// Left
-						RenderUtil.drawRect(posX - 1, posY, posX + boxWidth, endPosY + .5,
-								Colors.getColor(0, 0, 0, 250));
-						// Top
-						RenderUtil.drawRect(posX - 1, posY - .5, endPosX + .5, posY + .5 + boxWidth,
-								Colors.getColor(0, 0, 0, 250));
-						// Right
-						RenderUtil.drawRect(endPosX - .5 - boxWidth, posY, endPosX + .5, endPosY + .5,
-								Colors.getColor(0, 0, 0, 250));
-						// Bottom
-						RenderUtil.drawRect(posX - 1, endPosY - boxWidth - .5, endPosX + .5, endPosY + .5,
-								Colors.getColor(0, 0, 0, 250));
-
-						// Left
-						RenderUtil.drawRect(posX - .5, posY, posX + boxWidth - .5, endPosY, color2);
-						// Bottom
-						RenderUtil.drawRect(posX, endPosY - boxWidth, endPosX, endPosY, color2);
-						// Top
-						RenderUtil.drawRect(posX - .5, posY, endPosX, posY + boxWidth, color2);
-						// Right
-						RenderUtil.drawRect(endPosX - boxWidth, posY, endPosX, endPosY, color2);
-					}
-					if (tags.getValue()) {
-						double dif = (endPosX - posX) / 2;
-						String colorCode = Teams.isOnSameTeam(entity) ? "\247a" : "\247c";
-						mc.fontRendererObj.drawStringWithShadow(colorCode + entity.getName(),
-								(float) (posX + dif) - (mc.fontRendererObj.getStringWidth(entity.getName()) / 2),
-								(float) ((posY - (9 / 1.5f * 2.0f)) + 1.0f), color2);
-					}
-					double armorstrength = 0;
-					EntityPlayer player = (EntityPlayer) entity;
-					for (int index = 3; index >= 0; index--) {
-						ItemStack stack = player.inventory.armorInventory[index];
-						if (stack != null) {
-							armorstrength += getArmorStrength(stack);
-						}
-					}
-					if (armorstrength > 0.0f) {
-						double offset = posY - endPosY;
-						double percentoffset = offset / 40;
-						double finalnumber = percentoffset * armorstrength * 2;
-						RenderUtil.drawRect(endPosX + 1.5f, posY - 0.5f, endPosX + 3f, endPosY + 0.5f, black);
-						RenderUtil.drawRect(endPosX + 2f, endPosY + finalnumber, endPosX + 2.5f, endPosY,
-								new Color(200, 200, 200).getRGB());
-					}
-					if (healthBar.getValue() || healthNumber.getValue()) {
-						double hpPercentage = entity.getHealth() / entity.getMaxHealth();
-						if (hpPercentage > 1)
-							hpPercentage = 1;
-						else if (hpPercentage < 0)
-							hpPercentage = 0;
-
-						float health = entity.getHealth();
-
-						double hpHeight = (endPosY - posY) * hpPercentage;
-
-						double difference = posY - endPosY + 0.5;
-
-						if (health > 0 && healthBar.getValue()) {
-							RenderUtil.drawOutline(posX - 3.5, posY - .5, 1.5, (endPosY - posY) + 1, 1, black);
-							float healthHeight = (float) ((endPosY - y) * (((EntityLivingBase) entity).getHealth()
-									/ ((EntityLivingBase) entity).getMaxHealth()));
-							float[] fractions = new float[] { 0f, 0.5f, 1f };
-							Color[] colors = new Color[] { Color.RED, Color.YELLOW, Color.GREEN };
-							float progress = (health * 5) * 0.01f;
-							Color customColor = blendColors(fractions, colors, progress).brighter();
-							RenderUtil.drawRect(posX - 3, endPosY - hpHeight, posX - 2.5, endPosY,
-									customColor.getRGB());
-						}
-						if (healthNumber.getValue()) {
-							Client.fontManager.zeroarr.drawStringWithShadow((int) (hpPercentage * 100) + "%",
-									(float) (posX - 13), (float) (endPosY - hpHeight - 2),
-									Colors.getColor(255, 255, 255, 255));
-						}
-					}
-				}
-			}
-		}
-		GL11.glPopMatrix();
-		GlStateManager.enableBlend();
-		mc.entityRenderer.setupOverlayRendering();
-
+		EventRenderGui er = (EventRenderGui)event;
+        GlStateManager.pushMatrix();
+        ScaledResolution scaledRes = er.getResolution();
+        double twoDscale = (double)scaledRes.getScaleFactor() / Math.pow(scaledRes.getScaleFactor(), 2.0);
+        GlStateManager.scale(twoDscale, twoDscale, twoDscale);
+        for (Entity entity : this.entityConvertedPointsMap.keySet()) {
+            boolean shouldRender;
+            EntityPlayer ent = (EntityPlayer)entity;
+            double[] renderPositions = this.entityConvertedPointsMap.get(entity);
+            double[] renderPositionsBottom = new double[]{renderPositions[4], renderPositions[5], renderPositions[6]};
+            double[] renderPositionsX = new double[]{renderPositions[7], renderPositions[8], renderPositions[9]};
+            double[] renderPositionsX1 = new double[]{renderPositions[10], renderPositions[11], renderPositions[12]};
+            double[] renderPositionsZ = new double[]{renderPositions[13], renderPositions[14], renderPositions[15]};
+            double[] renderPositionsZ1 = new double[]{renderPositions[16], renderPositions[17], renderPositions[18]};
+            double[] renderPositionsTop1 = new double[]{renderPositions[19], renderPositions[20], renderPositions[21]};
+            double[] renderPositionsTop2 = new double[]{renderPositions[22], renderPositions[23], renderPositions[24]};
+            shouldRender = renderPositions[3] > 0.0 && renderPositions[3] <= 1.0 && renderPositionsBottom[2] > 0.0 && renderPositionsBottom[2] <= 1.0 && renderPositionsX[2] > 0.0 && renderPositionsX[2] <= 1.0 && renderPositionsX1[2] > 0.0 && renderPositionsX1[2] <= 1.0 && renderPositionsZ[2] > 0.0 && renderPositionsZ[2] <= 1.0 && renderPositionsZ1[2] > 0.0 && renderPositionsZ1[2] <= 1.0 && renderPositionsTop1[2] > 0.0 && renderPositionsTop1[2] <= 1.0 && renderPositionsTop2[2] > 0.0 && renderPositionsTop2[2] <= 1.0;
+            if ((double)mc.thePlayer.getDistanceToEntity(ent) < 2.5 && renderPositionsTop1[1] < 0.0) {
+                shouldRender = false;
+            }
+            if (!shouldRender) continue;
+            GlStateManager.pushMatrix();
+            if ((INVISIBLES.getValue() || !ent.isInvisible()) && ent instanceof EntityPlayer && !(ent instanceof EntityPlayerSP)) {
+                try {
+                    boolean hovering;
+                    GL11.glEnable((int)3042);
+                    GL11.glDisable((int)3553);
+                    RenderUtil.rectangle(0.0, 0.0, 0.0, 0.0, Colors.getColor(0, 0));
+                    double[] xValues = new double[]{renderPositions[0], renderPositionsBottom[0], renderPositionsX[0], renderPositionsX1[0], renderPositionsZ[0], renderPositionsZ1[0], renderPositionsTop1[0], renderPositionsTop2[0]};
+                    double[] yValues = new double[]{renderPositions[1], renderPositionsBottom[1], renderPositionsX[1], renderPositionsX1[1], renderPositionsZ[1], renderPositionsZ1[1], renderPositionsTop1[1], renderPositionsTop2[1]};
+                    double x = renderPositions[0];
+                    double y = renderPositions[1];
+                    double endx = renderPositionsBottom[0];
+                    double endy = renderPositionsBottom[1];
+                    for (double bdubs : xValues) {
+                        if (!(bdubs < x)) continue;
+                        x = bdubs;
+                    }
+                    for (double bdubs : xValues) {
+                        if (!(bdubs > endx)) continue;
+                        endx = bdubs;
+                    }
+                    for (double bdubs : yValues) {
+                        if (!(bdubs < y)) continue;
+                        y = bdubs;
+                    }
+                    for (double bdubs : yValues) {
+                        if (!(bdubs > endy)) continue;
+                        endy = bdubs;
+                    }
+                    if (BOX.getValue()) {
+                        int color = ColorManager.getEnemyVisible().getColorInt();
+                        if (FriendManager.isFriend(ent.getName())) {
+                            color = mc.thePlayer.canEntityBeSeen(ent) ? ColorManager.getFriendlyVisible().getColorInt() : ColorManager.getFriendlyInvisible().getColorInt();
+                        } else if (!mc.thePlayer.canEntityBeSeen(ent)) {
+                            color = ColorManager.getEnemyInvisible().getColorInt();
+                        }
+                        if (TEAM_BASED_COLORS.getValue()) {
+                            color = TeamUtils.isTeam(mc.thePlayer, ent) ? ColorManager.fTeam.getColorInt() : ColorManager.eTeam.getColorInt();
+                        }
+                        double xDiff = (endx - x) / 4.0;
+                        double x2Diff = (endx - x) / (double)(BOX_STYLE_MODE.getValue() == BoxMode.CornerB ? 4 : 3);
+                        double yDiff = BOX_STYLE_MODE.getValue() == BoxMode.CornerB ? xDiff : (endy - y) / 4.0;
+                        switch (BOX_STYLE_MODE.getModeAsString()) {
+                            case "Box": {
+                                RenderUtil.rectangleBordered(x + 0.5, y + 0.5, endx - 0.5, endy - 0.5, 1.0, Colors.getColor(0, 0, 0, 0), color);
+                                RenderUtil.rectangleBordered(x - 0.5, y - 0.5, endx + 0.5, endy + 0.5, 1.0, Colors.getColor(0, 0), Colors.getColor(0, 150));
+                                RenderUtil.rectangleBordered(x + 1.5, y + 1.5, endx - 1.5, endy - 1.5, 1.0, Colors.getColor(0, 0), Colors.getColor(0, 150));
+                                break;
+                            }
+                            case "Split": {
+                                RenderUtil.rectangle(x + 0.5, y + 0.5, x + 1.5, endy - 0.5, color);
+                                RenderUtil.rectangle(x - 0.5, y + 0.5, x + 0.5, endy - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.5, y + 2.5, x + 2.5, endy - 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.0, y + 0.5, x + xDiff, y + 1.5, color);
+                                RenderUtil.rectangle(x - 0.5, y - 0.5, x + xDiff, y + 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.5, y + 1.5, x + xDiff, y + 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + xDiff, y - 0.5, x + xDiff + 1.0, y + 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.0, endy - 0.5, x + xDiff, endy - 1.5, color);
+                                RenderUtil.rectangle(x - 0.5, endy + 0.5, x + xDiff, endy - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.5, endy - 1.5, x + xDiff, endy - 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + xDiff, endy + 0.5, x + xDiff + 1.0, endy - 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 0.5, y + 0.5, endx - 1.5, endy - 0.5, color);
+                                RenderUtil.rectangle(endx + 0.5, y + 0.5, endx - 0.5, endy - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.5, y + 2.5, endx - 2.5, endy - 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.0, y + 0.5, endx - xDiff, y + 1.5, color);
+                                RenderUtil.rectangle(endx + 0.5, y - 0.5, endx - xDiff, y + 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.5, y + 1.5, endx - xDiff, y + 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - xDiff, y - 0.5, endx - xDiff - 1.0, y + 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.0, endy - 0.5, endx - xDiff, endy - 1.5, color);
+                                RenderUtil.rectangle(endx + 0.5, endy + 0.5, endx - xDiff, endy - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.5, endy - 1.5, endx - xDiff, endy - 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - xDiff, endy + 0.5, endx - xDiff - 1.0, endy - 2.5, Colors.getColor(0, 150));
+                                break;
+                            }
+                            case "CornerA": 
+                            case "CornerB": {
+                                RenderUtil.rectangle(x + 0.5, y + 0.5, x + 1.5, y + yDiff + 0.5, color);
+                                RenderUtil.rectangle(x + 0.5, endy - 0.5, x + 1.5, endy - yDiff - 0.5, color);
+                                RenderUtil.rectangle(x - 0.5, y + 0.5, x + 0.5, y + yDiff + 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.5, y + 2.5, x + 2.5, y + yDiff + 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x - 0.5, y + yDiff + 0.5, x + 2.5, y + yDiff + 1.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x - 0.5, endy - 0.5, x + 0.5, endy - yDiff - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.5, endy - 2.5, x + 2.5, endy - yDiff - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x - 0.5, endy - yDiff - 0.5, x + 2.5, endy - yDiff - 1.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.0, y + 0.5, x + x2Diff, y + 1.5, color);
+                                RenderUtil.rectangle(x - 0.5, y - 0.5, x + x2Diff, y + 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.5, y + 1.5, x + x2Diff, y + 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + x2Diff, y - 0.5, x + x2Diff + 1.0, y + 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.0, endy - 0.5, x + x2Diff, endy - 1.5, color);
+                                RenderUtil.rectangle(x - 0.5, endy + 0.5, x + x2Diff, endy - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + 1.5, endy - 1.5, x + x2Diff, endy - 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(x + x2Diff, endy + 0.5, x + x2Diff + 1.0, endy - 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 0.5, y + 0.5, endx - 1.5, y + yDiff + 0.5, color);
+                                RenderUtil.rectangle(endx - 0.5, endy - 0.5, endx - 1.5, endy - yDiff - 0.5, color);
+                                RenderUtil.rectangle(endx + 0.5, y + 0.5, endx - 0.5, y + yDiff + 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.5, y + 2.5, endx - 2.5, y + yDiff + 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx + 0.5, y + yDiff + 0.5, endx - 2.5, y + yDiff + 1.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx + 0.5, endy - 0.5, endx - 0.5, endy - yDiff - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.5, endy - 2.5, endx - 2.5, endy - yDiff - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx + 0.5, endy - yDiff - 0.5, endx - 2.5, endy - yDiff - 1.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.0, y + 0.5, endx - x2Diff, y + 1.5, color);
+                                RenderUtil.rectangle(endx + 0.5, y - 0.5, endx - x2Diff, y + 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.5, y + 1.5, endx - x2Diff, y + 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - x2Diff, y - 0.5, endx - x2Diff - 1.0, y + 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.0, endy - 0.5, endx - x2Diff, endy - 1.5, color);
+                                RenderUtil.rectangle(endx + 0.5, endy + 0.5, endx - x2Diff, endy - 0.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - 1.5, endy - 1.5, endx - x2Diff, endy - 2.5, Colors.getColor(0, 150));
+                                RenderUtil.rectangle(endx - x2Diff, endy + 0.5, endx - x2Diff - 1.0, endy - 2.5, Colors.getColor(0, 150));
+                            }
+                        }
+                    }
+                    if (HEALTH_BAR.getValue()) {
+                        float health = ent.getHealth();
+                        float[] fractions = new float[]{0.0f, 0.5f, 1.0f};
+                        Color[] colors = new Color[]{Color.RED, Color.YELLOW, Color.GREEN};
+                        float progress = health / ent.getMaxHealth();
+                        Color customColor = health >= 0.0f ? blendColors(fractions, colors, progress).brighter() : Color.RED;
+                        double difference = y - endy + 0.5;
+                        double healthLocation = endy + difference * (double)progress;
+                        RenderUtil.rectangleBordered(x - 6.5, y - 0.5, x - 2.5, endy, 1.0, Colors.getColor(0, 100), Colors.getColor(0, 150));
+                        RenderUtil.rectangle(x - 5.5, endy - 1.0, x - 3.5, healthLocation, customColor.getRGB());
+                        if (-difference > 50.0) {
+                            for (int i = 1; i < 10; ++i) {
+                                double dThing = difference / 10.0 * (double)i;
+                                RenderUtil.rectangle(x - 6.5, endy - 0.5 + dThing, x - 2.5, endy - 0.5 + dThing - 1.0, Colors.getColor(0));
+                            }
+                        }
+                        if (HEALTH_NUMBER.getValue()) {
+                            GlStateManager.pushMatrix();
+                            GlStateManager.scale(2.0f, 2.0f, 2.0f);
+                            String nigger = (int)MathUtils.getIncremental(health * 5.0f, 1.0) + "HP";
+                            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(nigger, (float)(x - 6.0 - (double)(Minecraft.getMinecraft().fontRendererObj.getStringWidth(nigger) * 2.0f)) / 2.0f, ((float)((int)healthLocation) + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2.0f) / 2.0f, -1);
+                            GlStateManager.popMatrix();
+                        }
+                    }
+                    if (!Client.getModuleManager().getModuleByClass(Nametags.class).isEnabled() && TAGS.getValue()) {
+                        RenderUtil.rectangle(0.0, 0.0, 0.0, 0.0, Colors.getColor(0, 0));
+                        GlStateManager.pushMatrix();
+                        GlStateManager.scale(2.0f, 2.0f, 2.0f);
+                        String renderName = "\u00a7a" + (int)mc.thePlayer.getDistanceToEntity(ent) + "m \u00a7r\u00a7l" + (FriendManager.isFriend(ent.getName()) ? FriendManager.getAlias(ent.getName()) : ent.getName());
+                        FontRenderer font = Minecraft.getMinecraft().fontRendererObj;
+                        float meme2 = (float)((endx - x) / 2.0 - (double)(font.getStringWidth(renderName) / 1.0f));
+                        ColorObject temp = ColorManager.getFriendlyVisible();
+                        RenderUtil.drawOutlinedString(renderName, (float)(x + (double)meme2) / 2.0f, (float)(y - (double)(font.FONT_HEIGHT / 1.5f * 2.0f)) / 2.0f - 3.0f, FriendManager.isFriend(ent.getName()) ? Colors.getColor(temp.red, temp.green, temp.blue) : -1);
+                        GlStateManager.popMatrix();
+                    }
+                    if (ent.getCurrentEquippedItem() != null && ITEMS.getValue()) {
+                        GlStateManager.pushMatrix();
+                        GlStateManager.scale(2.0f, 2.0f, 2.0f);
+                        ItemStack stack = ent.getCurrentEquippedItem();
+                        String customName = REAL_ITEM_NAME.getValue() != false ? ent.getCurrentEquippedItem().getDisplayName() : ent.getCurrentEquippedItem().getItem().getItemStackDisplayName(stack);
+                        float meme5 = (float)((endx - x) / 2.0 - (double)(Minecraft.getMinecraft().fontRendererObj.getStringWidth(customName) / 1.0f));
+                        RenderUtil.drawOutlinedString(customName, (float)(x + (double)meme5) / 2.0f, (float)(endy + (double)(Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2.0f * 2.0f)) / 2.0f + 1.0f, -1);
+                        GlStateManager.popMatrix();
+                    }
+                    int mX = scaledRes.getScaledWidth();
+                    int mY = scaledRes.getScaledHeight();
+                    hovering = (double)mX > x - 15.0 && (double)mX < endx + 15.0 && (double)mY > y - 15.0 && (double)mY < endy + 15.0;
+                    if (ARMOR.getValue()) {
+                        ItemStack stack3;
+                        ItemStack stack2;
+                        ItemStack stack4;
+                        float var1 = (float)((endy - y) / 4.0);
+                        ItemStack stack = ent.getEquipmentInSlot(4);
+                        if (stack != null) {
+                            RenderUtil.rectangleBordered(endx + 1.0, y + 1.0, endx + 5.0, y + (double)var1, 1.0, Colors.getColor(28, 156, 179, 100), Colors.getColor(0, 150));
+                            float diff1 = (float)(y + (double)var1 - 1.0 - (y + 2.0));
+                            double percent = 1.0 - (double)stack.getItemDamage() / (double)stack.getMaxDamage();
+                            RenderUtil.rectangle(endx + 2.0, y + (double)var1 - 1.0, endx + 4.0, y + (double)var1 - 1.0 - (double)diff1 * percent, Colors.getColor(78, 206, 229));
+                            if (hovering) {
+                                RenderUtil.drawOutlinedString(stack.getMaxDamage() - stack.getItemDamage() + "", (float)endx + 22.0f, (float)(y + (double)var1 - 1.0 - (double)(diff1 / 2.0f)), -1);
+                                GlStateManager.pushMatrix();
+                                GlStateManager.translate(endx + 4.0, y + (double)var1 - 6.0 - (double)(diff1 / 2.0f), 0.0);
+                                RenderHelper.enableGUIStandardItemLighting();
+                                mc.getRenderItem().renderItemIntoGUI(stack, 0, 0);
+                                mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, stack, 0, 0);
+                                RenderHelper.disableStandardItemLighting();
+                                int pLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.protection.effectId, stack);
+                                int tLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack);
+                                int uLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
+                                int xOff = 0;
+                                if (pLevel > 0) {
+                                	String protectionString = "Protection " + this.getColor(pLevel) + pLevel;
+                                	RenderUtil.drawOutlinedString(protectionString, 40.0f, 5.0f, -1);
+                                    xOff += Minecraft.getMinecraft().fontRendererObj.getStringWidth(protectionString) + 4;
+                                }
+                                if (tLevel > 0) {
+                                	String tempString = "Thorns " + this.getColor(tLevel) + tLevel;
+                                	RenderUtil.drawOutlinedString("Thorns " + this.getColor(tLevel) + tLevel, 40 + xOff, 5.0f, -1);
+                                    xOff += Minecraft.getMinecraft().fontRendererObj.getStringWidth(tempString) + 4;
+                                }
+                                if (uLevel > 0) {
+                                	RenderUtil.drawOutlinedString("Unbreaking" + this.getColor(uLevel) + uLevel, 40 + xOff, 5.0f, -1);
+                                }
+                                GlStateManager.popMatrix();
+                            }
+                        }
+                        if ((stack2 = ent.getEquipmentInSlot(3)) != null) {
+                            RenderUtil.rectangleBordered(endx + 1.0, y + (double)var1, endx + 5.0, y + (double)(var1 * 2.0f), 1.0, Colors.getColor(28, 156, 179, 100), Colors.getColor(0, 150));
+                            float diff1 = (float)(y + (double)(var1 * 2.0f) - (y + (double)var1 + 2.0));
+                            double percent = 1.0 - (double)stack2.getItemDamage() * 1.0 / (double)stack2.getMaxDamage();
+                            RenderUtil.rectangle(endx + 2.0, y + (double)(var1 * 2.0f), endx + 4.0, y + (double)(var1 * 2.0f) - (double)diff1 * percent, Colors.getColor(78, 206, 229));
+                            if (hovering) {
+                            	RenderUtil.drawOutlinedString(stack2.getMaxDamage() - stack2.getItemDamage() + "", (float)endx + 22.0f, (float)(y + (double)(var1 * 2.0f) - (double)(diff1 / 2.0f)), -1);
+                                GlStateManager.pushMatrix();
+                                GlStateManager.translate(endx + 4.0, y + (double)(var1 * 2.0f) - 6.0 - (double)(diff1 / 2.0f), 0.0);
+                                RenderHelper.enableGUIStandardItemLighting();
+                                mc.getRenderItem().renderItemIntoGUI(stack2, 0, 0);
+                                mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, stack2, 0, 0);
+                                RenderHelper.disableStandardItemLighting();
+                                int pLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.protection.effectId, stack2);
+                                int tLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack2);
+                                int uLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack2);
+                                int xOff = 0;
+                                if (pLevel > 0) {
+                                	String protectionString = "Protection " + this.getColor(pLevel) + pLevel;
+                                	RenderUtil.drawOutlinedString(protectionString, 40.0f, 5.0f, -1);
+                                    xOff += Minecraft.getMinecraft().fontRendererObj.getStringWidth(protectionString) + 4;
+                                }
+                                if (tLevel > 0) {
+                                	String tempString = "Thorns " + this.getColor(tLevel) + tLevel;
+                                	RenderUtil.drawOutlinedString("Thorns " + this.getColor(tLevel) + tLevel, 40 + xOff, 5.0f, -1);
+                                    xOff += Minecraft.getMinecraft().fontRendererObj.getStringWidth(tempString) + 4;
+                                }
+                                if (uLevel > 0) {
+                                	RenderUtil.drawOutlinedString("Unbreaking" + this.getColor(uLevel) + uLevel, 40 + xOff, 5.0f, -1);
+                                }
+                                GlStateManager.popMatrix();
+                            }
+                        }
+                        if ((stack3 = ent.getEquipmentInSlot(2)) != null) {
+                            RenderUtil.rectangleBordered(endx + 1.0, y + (double)(var1 * 2.0f), endx + 5.0, y + (double)(var1 * 3.0f), 1.0, Colors.getColor(28, 156, 179, 100), Colors.getColor(0, 150));
+                            float diff1 = (float)(y + (double)(var1 * 3.0f) - (y + (double)(var1 * 2.0f) + 2.0));
+                            double percent = 1.0 - (double)stack3.getItemDamage() * 1.0 / (double)stack3.getMaxDamage();
+                            RenderUtil.rectangle(endx + 2.0, y + (double)(var1 * 3.0f), endx + 4.0, y + (double)(var1 * 3.0f) - (double)diff1 * percent, Colors.getColor(78, 206, 229));
+                            if (hovering) {
+                            	RenderUtil.drawOutlinedString(stack3.getMaxDamage() - stack3.getItemDamage() + "", (float)endx + 22.0f, (float)(y + (double)(var1 * 3.0f) - (double)(diff1 / 2.0f)), -1);
+                                GlStateManager.pushMatrix();
+                                GlStateManager.translate(endx + 4.0, y + (double)(var1 * 3.0f) - 6.0 - (double)(diff1 / 2.0f), 0.0);
+                                RenderHelper.enableGUIStandardItemLighting();
+                                mc.getRenderItem().renderItemIntoGUI(stack3, 0, 0);
+                                mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, stack3, 0, 0);
+                                RenderHelper.disableStandardItemLighting();
+                                int pLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.protection.effectId, stack3);
+                                int tLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack3);
+                                int uLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack3);
+                                int xOff = 0;
+                                if (pLevel > 0) {
+                                	String protectionString = "Protection " + this.getColor(pLevel) + pLevel;
+                                	RenderUtil.drawOutlinedString(protectionString, 40.0f, 5.0f, -1);
+                                    xOff += Minecraft.getMinecraft().fontRendererObj.getStringWidth(protectionString) + 4;
+                                }
+                                if (tLevel > 0) {
+                                	String tempString = "Thorns " + this.getColor(tLevel) + tLevel;
+                                	RenderUtil.drawOutlinedString("Thorns " + this.getColor(tLevel) + tLevel, 40 + xOff, 5.0f, -1);
+                                    xOff += Minecraft.getMinecraft().fontRendererObj.getStringWidth(tempString) + 4;
+                                }
+                                if (uLevel > 0) {
+                                	RenderUtil.drawOutlinedString("Unbreaking" + this.getColor(uLevel) + uLevel, 40 + xOff, 5.0f, -1);
+                                }
+                                GlStateManager.popMatrix();
+                            }
+                        }
+                        if ((stack4 = ent.getEquipmentInSlot(1)) != null) {
+                            RenderUtil.rectangleBordered(endx + 1.0, y + (double)(var1 * 3.0f), endx + 5.0, y + (double)(var1 * 4.0f), 1.0, Colors.getColor(28, 156, 179, 100), Colors.getColor(0, 150));
+                            float diff1 = (float)(y + (double)(var1 * 4.0f) - (y + (double)(var1 * 3.0f) + 2.0));
+                            double percent = 1.0 - (double)stack4.getItemDamage() * 1.0 / (double)stack4.getMaxDamage();
+                            RenderUtil.rectangle(endx + 2.0, y + (double)(var1 * 4.0f) - 1.0, endx + 4.0, y + (double)(var1 * 4.0f) - (double)diff1 * percent, Colors.getColor(78, 206, 229));
+                            if (hovering) {
+                            	RenderUtil.drawOutlinedString(stack4.getMaxDamage() - stack4.getItemDamage() + "", (float)endx + 22.0f, (float)(y + (double)(var1 * 4.0f) - (double)(diff1 / 2.0f)), -1);
+                                GlStateManager.pushMatrix();
+                                GlStateManager.translate(endx + 4.0, y + (double)(var1 * 4.0f) - 6.0 - (double)(diff1 / 2.0f), 0.0);
+                                RenderHelper.enableGUIStandardItemLighting();
+                                mc.getRenderItem().renderItemIntoGUI(stack4, 0, 0);
+                                mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, stack4, 0, 0);
+                                RenderHelper.disableStandardItemLighting();
+                                int pLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.protection.effectId, stack4);
+                                int tLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack4);
+                                int uLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack4);
+                                int xOff = 0;
+                                if (pLevel > 0) {
+                                	String protectionString = "Protection " + this.getColor(pLevel) + pLevel;
+                                	RenderUtil.drawOutlinedString(protectionString, 40.0f, 5.0f, -1);
+                                    xOff += Minecraft.getMinecraft().fontRendererObj.getStringWidth(protectionString) + 4;
+                                }
+                                if (tLevel > 0) {
+                                	String tempString = "Thorns " + this.getColor(tLevel) + tLevel;
+                                	RenderUtil.drawOutlinedString("Thorns " + this.getColor(tLevel) + tLevel, 40 + xOff, 5.0f, -1);
+                                    xOff += Minecraft.getMinecraft().fontRendererObj.getStringWidth(tempString) + 4;
+                                }
+                                if (uLevel > 0) {
+                                	RenderUtil.drawOutlinedString("Unbreaking" + this.getColor(uLevel) + uLevel, 40 + xOff, 5.0f, -1);
+                                }
+                                GlStateManager.popMatrix();
+                            }
+                        }
+                    }
+                }
+                catch (Exception xValues) {
+                    // empty catch block
+                }
+            }
+            GlStateManager.popMatrix();
+            GL11.glColor4f((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
+        }
+        GL11.glScalef((float)1.0f, (float)1.0f, (float)1.0f);
+        GL11.glColor4f((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
+        GlStateManager.popMatrix();
+        RenderUtil.rectangle(0.0, 0.0, 0.0, 0.0, -1);
 	}
+	
+    private String getColor(int level) {
+        if (level == 2) {
+            return "\u00a7a";
+        }
+        if (level == 3) {
+            return "\u00a73";
+        }
+        if (level == 4) {
+            return "\u00a74";
+        }
+        if (level >= 5) {
+            return "\u00a76";
+        }
+        return "\u00a7f";
+    }
 
-	public static void updateModel(EntityPlayer player, ModelPlayer model) {
-		modelRotations.put(player, new float[][] {
-				{ model.bipedHead.rotateAngleX, model.bipedHead.rotateAngleY, model.bipedHead.rotateAngleZ },
-				{ model.bipedRightArm.rotateAngleX, model.bipedRightArm.rotateAngleY,
-						model.bipedRightArm.rotateAngleZ },
-				{ model.bipedLeftArm.rotateAngleX, model.bipedLeftArm.rotateAngleY, model.bipedLeftArm.rotateAngleZ },
-				{ model.bipedRightLeg.rotateAngleX, model.bipedRightLeg.rotateAngleY,
-						model.bipedRightLeg.rotateAngleZ },
-				{ model.bipedLeftLeg.rotateAngleX, model.bipedLeftLeg.rotateAngleY,
-						model.bipedLeftLeg.rotateAngleZ } });
-	}
+    public static Color blendColors(float[] fractions, Color[] colors, float progress) {
+        if (fractions == null) throw new IllegalArgumentException("Fractions can't be null");
+        if (colors == null) throw new IllegalArgumentException("Colours can't be null");
+        if (fractions.length != colors.length) throw new IllegalArgumentException("Fractions and colours must have equal number of elements");
+        int[] indicies = getFractionIndicies(fractions, progress);
+        float[] range = new float[]{fractions[indicies[0]], fractions[indicies[1]]};
+        Color[] colorRange = new Color[]{colors[indicies[0]], colors[indicies[1]]};
+        float max = range[1] - range[0];
+        float value = progress - range[0];
+        float weight = value / max;
+        return blend(colorRange[0], colorRange[1], 1.0f - weight);
+    }
 
-	private void collectEntities() {
-		for (EntityPlayer entity : mc.theWorld.playerEntities) {
-			if (isValid(entity))
-				collectedEntities.add(entity);
-		}
-	}
+    public static int[] getFractionIndicies(float[] fractions, float progress) {
+        int startPoint;
+        int[] range = new int[2];
+        for (startPoint = 0; startPoint < fractions.length && fractions[startPoint] <= progress; ++startPoint) {
+        }
+        if (startPoint >= fractions.length) {
+            startPoint = fractions.length - 1;
+        }
+        range[0] = startPoint - 1;
+        range[1] = startPoint;
+        return range;
+    }
 
-	private double getArmorStrength(ItemStack itemStack) {
-		if (!(itemStack.getItem() instanceof ItemArmor)) {
-			return -1.0;
-		}
-		float damageReduction = ((ItemArmor) itemStack.getItem()).damageReduceAmount;
-		Map<Integer, Integer> enchantments = EnchantmentHelper.getEnchantments(itemStack);
-		return damageReduction;
-	}
-
-	private int getHealthColor(EntityLivingBase player) {
-		float f = player.getHealth();
-		float f1 = player.getMaxHealth();
-		float f2 = Math.max(0.0f, Math.min(f, f1) / f1);
-		return Color.HSBtoRGB(f2 / 3.0f, 1.0f, 1.0f) | -16777216;
-	}
-
-	private Vector3d project2D(ScaledResolution scaledResolution, double x, double y, double z) {
-		GL11.glGetFloat(2982, modelview);
-		GL11.glGetFloat(2983, projection);
-		GL11.glGetInteger(2978, viewport);
-		if (GLU.gluProject((float) x, (float) y, (float) z, modelview, projection, viewport, vector)) {
-			return new Vector3d(vector.get(0) / scaledResolution.getScaleFactor(),
-					(Display.getHeight() - vector.get(1)) / scaledResolution.getScaleFactor(), vector.get(2));
-		}
-		return null;
-	}
-
-	private boolean isValid(EntityPlayer entityLivingBase) {
-		return ((!localPlayer.getValue() || entityLivingBase != mc.thePlayer)) && !entityLivingBase.isDead
-				&& !entityLivingBase.isInvisible();
+    public static Color blend(Color color1, Color color2, double ratio) {
+        float r = (float)ratio;
+        float ir = 1.0f - r;
+        float[] rgb1 = new float[3];
+        float[] rgb2 = new float[3];
+        color1.getColorComponents(rgb1);
+        color2.getColorComponents(rgb2);
+        float red = rgb1[0] * r + rgb2[0] * ir;
+        float green = rgb1[1] * r + rgb2[1] * ir;
+        float blue = rgb1[2] * r + rgb2[2] * ir;
+        if (red < 0.0f) {
+            red = 0.0f;
+        } else if (red > 255.0f) {
+            red = 255.0f;
+        }
+        if (green < 0.0f) {
+            green = 0.0f;
+        } else if (green > 255.0f) {
+            green = 255.0f;
+        }
+        if (blue < 0.0f) {
+            blue = 0.0f;
+        } else if (blue > 255.0f) {
+            blue = 255.0f;
+        }
+        Color color = null;
+        try {
+            color = new Color(red, green, blue);
+        }
+        catch (IllegalArgumentException exp) {
+            NumberFormat nf = NumberFormat.getNumberInstance();
+            System.out.println(nf.format(red) + "; " + nf.format(green) + "; " + nf.format(blue));
+            exp.printStackTrace();
+        }
+        return color;
+    }
+    
+    private void updatePositions() {
+        this.entityConvertedPointsMap.clear();
+        float pTicks = mc.timer.renderPartialTicks;
+        for (Object e2 : mc.theWorld.getLoadedEntityList()) {
+            EntityPlayer ent;
+            if (!(e2 instanceof EntityPlayer) || (ent = (EntityPlayer)e2) == mc.thePlayer) continue;
+            double x = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)pTicks - mc.getRenderManager().viewerPosX + 0.36;
+            double y = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)pTicks - mc.getRenderManager().viewerPosY;
+            double z = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)pTicks - mc.getRenderManager().viewerPosZ + 0.36;
+            double topY = y += (double)ent.height + 0.15;
+            double[] convertedPoints = RenderUtil.convertTo2D(x, y, z);
+            double[] convertedPoints22 = RenderUtil.convertTo2D(x - 0.36, y, z - 0.36);
+            double xd = 0.0;
+            if (!(convertedPoints22[2] >= 0.0) || !(convertedPoints22[2] < 1.0)) continue;
+            x = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)pTicks - mc.getRenderManager().viewerPosX - 0.36;
+            z = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)pTicks - mc.getRenderManager().viewerPosZ - 0.36;
+            double[] convertedPointsBottom = RenderUtil.convertTo2D(x, y, z);
+            y = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)pTicks - mc.getRenderManager().viewerPosY - 0.05;
+            double[] convertedPointsx = RenderUtil.convertTo2D(x, y, z);
+            x = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)pTicks - mc.getRenderManager().viewerPosX - 0.36;
+            z = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)pTicks - mc.getRenderManager().viewerPosZ + 0.36;
+            double[] convertedPointsTop1 = RenderUtil.convertTo2D(x, topY, z);
+            double[] convertedPointsx1 = RenderUtil.convertTo2D(x, y, z);
+            x = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)pTicks - mc.getRenderManager().viewerPosX + 0.36;
+            z = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)pTicks - mc.getRenderManager().viewerPosZ + 0.36;
+            double[] convertedPointsz = RenderUtil.convertTo2D(x, y, z);
+            x = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)pTicks - mc.getRenderManager().viewerPosX + 0.36;
+            z = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)pTicks - mc.getRenderManager().viewerPosZ - 0.36;
+            double[] convertedPointsTop2 = RenderUtil.convertTo2D(x, topY, z);
+            double[] convertedPointsz1 = RenderUtil.convertTo2D(x, y, z);
+            this.entityConvertedPointsMap.put(ent, new double[]{convertedPoints[0], convertedPoints[1], xd, convertedPoints[2], convertedPointsBottom[0], convertedPointsBottom[1], convertedPointsBottom[2], convertedPointsx[0], convertedPointsx[1], convertedPointsx[2], convertedPointsx1[0], convertedPointsx1[1], convertedPointsx1[2], convertedPointsz[0], convertedPointsz[1], convertedPointsz[2], convertedPointsz1[0], convertedPointsz1[1], convertedPointsz1[2], convertedPointsTop1[0], convertedPointsTop1[1], convertedPointsTop1[2], convertedPointsTop2[0], convertedPointsTop2[1], convertedPointsTop2[2]});
+        }
+    }
+	
+	private enum BoxMode {
+		Box,
+		CornerA,
+		CornerB,
+		Split
 	}
 }
