@@ -3,6 +3,7 @@ package me.skidsense.module.collection.visual;
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender2D;
+import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
 import me.skidsense.management.ModManager;
@@ -51,7 +52,7 @@ extends Mod {
     }
 
     @Sub
-    private void renderHud(EventRender2D event) {
+    private void renderHud(EventRenderGui event) {
         if (!this.mc.gameSettings.showDebugInfo) {
             String name;
             String direction;
@@ -86,10 +87,16 @@ extends Mod {
             int y = 0;
             int rainbowTick = 0;
                 for (Mod m : sorted) {
+                    if (!m.isEnabled()) {
+                        m.translate.interpolate((float)event.getResolution().getScaledWidth(), -20.0F, 0.6F);
+                     }
                     name = m.getSuffix().isEmpty() ? m.getName() : String.format("%s\2477%s", m.getName(), m.getSuffix());
                     float x = RenderUtil.width() - Client_Font.getStringWidth(name);
                     Color rainbow = new Color(Color.HSBtoRGB((float)((double)this.mc.thePlayer.ticksExisted / 50.0 + Math.sin((double)rainbowTick / 50.0 * 1.6)) % 1.0f, 0.5f, 1.0f));
-                    Client_Font.drawStringWithShadow(name, x - 0.1f, y, this.rainbow.getValue() != false ? rainbow.getRGB() : m.getColor());
+                    if (m.isEnabled()) {
+                       m.translate.interpolate(x, (float)y, 0.40F);
+                    }
+                    Client_Font.drawStringWithShadow(name, m.translate.getX() - 0.1f, m.translate.getY(), this.rainbow.getValue() != false ? rainbow.getRGB() : m.getColor());
                     if (++rainbowTick > 50) {
                         rainbowTick = 0;
                     }
