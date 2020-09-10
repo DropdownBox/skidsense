@@ -97,6 +97,7 @@ public class Scaffold extends Mod {
    @Sub
    public void onPreUpdate(EventPreUpdate e) {
       slot = this.getSlot();
+      this.setSuffix(mode.getValue());
       this.isPlaceTick = keeprots.getValue() ? blockData != null && slot != -1 : blockData != null && slot != -1 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(0, -1, 0)).getBlock() == Blocks.air;
       if (getBlockCount() > 0 && slot == -1) {
          for (int i = 9; i < 36; ++i) {

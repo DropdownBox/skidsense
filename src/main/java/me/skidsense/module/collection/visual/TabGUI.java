@@ -88,7 +88,7 @@ public class TabGUI
 
     @Sub
     private void renderTabGUI(EventRender2D e) {
-        if (!Client.mc.gameSettings.showDebugInfo && Client.getModuleManager().getModuleByClass(HUD.class).isEnabled()) {
+        if (!Client.mc.gameSettings.showDebugInfo && Client.getModuleManager().getModuleByClass(HUD.class).isEnabled() && HUD.TABGUI.getValue()) {
             int categoryY = this.height;
             int moduleY = categoryY;
             int valueY = categoryY;

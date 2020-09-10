@@ -85,7 +85,6 @@ public class KillAura extends Mod {
 	;
 	public DecimalFormat format = new DecimalFormat("0.0");
 	public BlockPos AutoBlockPos = new BlockPos(-1, -1, -1);
-	public double animation = 0.0;
 	int attackSpeed;
 
 	public KillAura() {
@@ -109,52 +108,6 @@ public class KillAura extends Mod {
 			this.isBlocking = false;
 		}
 		target = null;
-	}
-
-	@Sub
-	public void onEvent(EventRender2D e) {
-		final ScaledResolution res = new ScaledResolution(KillAura.mc);
-		if (target != null &&
-				targetinfo.getValue()) {
-			double hpPercentage = target.getHealth() / target.getMaxHealth();
-			if (hpPercentage > 1)
-				hpPercentage = 1;
-			else if (hpPercentage < 0)
-				hpPercentage = 0;
-			final int x = res.getScaledWidth() / 2 + 300;
-			final int y = res.getScaledHeight() - 20;
-			Gui.drawRect(x/2+115, y/2+148, x/2+240, y/2+185, new Color(0,0,0,200).getRGB());
-			mc.fontRendererObj.drawStringWithShadow("Name: "+EnumChatFormatting.WHITE+KillAura.target.getName(), x/2+155, y/2+155, new Color(200,200,200).getRGB());
-			mc.fontRendererObj.drawStringWithShadow("Health: "+EnumChatFormatting.WHITE+(int)target.getHealth(), x/2+155, y/2+170, new Color(200,200,200).getRGB());
-			final EntityLivingBase player = (EntityLivingBase) KillAura.target;
-			GlStateManager.pushMatrix();
-			GlStateManager.enableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-			if(player instanceof EntityPlayer) {
-				final List var5 = GuiPlayerTabOverlay.field_175252_a.sortedCopy((Iterable)mc.thePlayer.sendQueue.getPlayerInfoMap());
-				for (final Object aVar5 : var5) {
-					final NetworkPlayerInfo var6 = (NetworkPlayerInfo)aVar5;
-					if (mc.theWorld.getPlayerEntityByUUID(var6.getGameProfile().getId()) == player) {
-						mc.getTextureManager().bindTexture(var6.getLocationSkin());
-						Gui.drawScaledCustomSizeModalRect(x/2+117, y/2+150, 8.0f, 8.0f, 8, 8, 32, 32, 64.0f, 64.0f);
-						if (((EntityPlayer)player).isWearing(EnumPlayerModelParts.HAT)) {
-							Gui.drawScaledCustomSizeModalRect(x/2+117,y/2+150, 40.0f, 8.0f, 8, 8, 32, 32, 64.0f, 64.0f);
-						}
-						GlStateManager.bindTexture(0);
-						break;
-					}
-				}
-
-			}
-			GlStateManager.popMatrix();
-			if(anima<=KillAura.target.getHealth()*6) {
-				anima+=2;
-			}if(anima>KillAura.target.getHealth()*6) {
-				anima-=2;
-			}
-			Gui.drawRect(x/2+115, y/2+187, x/2+120+(hpPercentage * 1.2) * 100, y/2+185, new Color(225,20,20).getRGB());
-		}
 	}
 
 	@Sub
@@ -217,7 +170,7 @@ public class KillAura extends Mod {
 
 		if (!this.getTargets(blockrange.getValue()).isEmpty() && this.canBlock() && !this.isBlocking  && autoBlock.getValue()) {
 			mc.thePlayer.sendQueue.addToSendQueue(
-					new C08PacketPlayerBlockPlacement(AutoBlockPos, 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+					new C08PacketPlayerBlockPlacement(AutoBlockPos, 255, mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}

@@ -40,7 +40,7 @@ extends GuiScreen {
 	public static String valuename;
     public Mod cheat;
     public Value value;
-    
+
     public ClickGUI() {
     	
     }

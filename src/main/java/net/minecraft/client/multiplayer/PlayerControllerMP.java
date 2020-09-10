@@ -1,7 +1,9 @@
 package net.minecraft.client.multiplayer;
 
+import me.skidsense.Client;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventAttack;
+import me.skidsense.module.collection.world.SpeedMine;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -164,7 +166,9 @@ public class PlayerControllerMP
             }
             else
             {
-                world.playAuxSFX(2001, pos, Block.getStateId(iblockstate));
+            	if(!Client.getModuleManager().getModuleByClass(SpeedMine.class).isEnabled()) {
+                    world.playAuxSFX(2001, pos, Block.getStateId(iblockstate));
+            	}
                 boolean flag = world.setBlockToAir(pos);
 
                 if (flag)

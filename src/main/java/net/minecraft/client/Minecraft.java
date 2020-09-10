@@ -18,6 +18,7 @@ import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventKey;
+import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -608,9 +609,8 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             this.gameSettings.enableVsync = false;
             this.gameSettings.saveOptions();
         }
-
-        this.renderGlobal.makeEntityOutlineShader();
         Client.instance.initiate();
+        this.renderGlobal.makeEntityOutlineShader();
     }
 
     private void registerMetadataSerializers()
@@ -1924,7 +1924,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             {
                 int k = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
                 KeyBinding.setKeyBindState(k, Keyboard.getEventKeyState());
-
+                if ((k == Keyboard.KEY_RSHIFT || k == Keyboard.KEY_INSERT ) && this.currentScreen == null) {
+                	this.displayGuiScreen(new ClickGUI());
+                 }
                 if (Keyboard.getEventKeyState())
                 {
                     KeyBinding.onTick(k);

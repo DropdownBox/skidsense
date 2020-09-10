@@ -1,6 +1,7 @@
 package me.skidsense.module.collection.visual;
 
 import java.awt.Color;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -90,43 +91,17 @@ public class Nametags
 		} else if(mc.thePlayer.getDistanceToEntity(entity) < 20) {
 			distance = " \247c" + (int)mc.thePlayer.getDistanceToEntity(entity) + "m \247r";
 		}
-		String ping = null;
-		if(this.getPing(entity) < 150) {
-			ping = "\247a\247l" + (int)this.getPing(entity) + "ms\247r";
-		} else if(this.getPing(entity) > 150 && this.getPing(entity) < 250) {
-			ping = "\2476\247l" + (int)this.getPing(entity) + "ms\247r";
-		} else if(this.getPing(entity) > 250) {
-			ping = "\247c\247l" + (int)this.getPing(entity) + "ms\247r";
-		}
-
-		String linehealth = null;
-		if(health >= 20) {
-			linehealth = ChatColor.GREEN + " ||||||||||";
-		} else if(health > 18) {
-			linehealth = ChatColor.GREEN + " |||||||||" + ChatColor.RED + "|";
-		} else if(health > 16) {
-			linehealth = ChatColor.GREEN + " ||||||||" + ChatColor.RED + "||";
-		} else if(health > 14) {
-			linehealth = ChatColor.GREEN + " |||||||" + ChatColor.RED + "|||";
-		} else if(health > 12) {
-			linehealth = ChatColor.GREEN + " ||||||" + ChatColor.RED + "||||";
-		} else if(health > 10) {
-			linehealth = ChatColor.GREEN + " |||||" + ChatColor.RED + "|||||";
-		} else if(health > 8) {
-			linehealth = ChatColor.GREEN + " ||||" + ChatColor.RED + "||||||";
-		} else if(health > 6) {
-			linehealth = ChatColor.GREEN + " |||" + ChatColor.RED + "|||||||";
-		} else if(health > 4) {
-			linehealth = ChatColor.GREEN + " ||" + ChatColor.RED + "||||||||";
-		} else if(health > 2) {
-			linehealth = ChatColor.GREEN + " |" + ChatColor.RED + "|||||||||";
-		} else if(health > 0) {
-			linehealth =  ChatColor.RED + " ||||||||||";
-		}
+		double hpPercentage = entity.getHealth() / entity.getMaxHealth();
+		if (hpPercentage > 1)
+			hpPercentage = 1;
+		else if (hpPercentage < 0)
+			hpPercentage = 0;
+		BigDecimal b = new BigDecimal(hpPercentage);
+		double f1 = b.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
+		String linehealth = " ❤" + (f1 * 100) +"%";
 
 		if (Math.floor(health) == health) {
 			StringBuilder allstring = new StringBuilder();
-			allstring.append(ping);
 			allstring.append(distance);
 			allstring.append(tag);
 			allstring.append(healthCol);

@@ -3,7 +3,6 @@ package me.skidsense.module.collection.visual;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.visual.clickgui.LAC.ClickUI;
 import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
 
 public class ClickGui extends Mod {
@@ -21,16 +20,12 @@ public class ClickGui extends Mod {
 			case "skidsense":
 				this.mc.displayGuiScreen(new ClickGUI());
 				break;
-			case "LAC":
-				this.mc.displayGuiScreen(new ClickUI());
-				break;
 		}
 		this.setEnabled(false);
 	}
 	
 	public static enum renderMode {
 		skidsense,
-		test,
-		LAC;
+		LAC
 	}
 }

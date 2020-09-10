@@ -47,7 +47,6 @@ public class SplashProgress {
     private static TextureManager ctm;
 
     // Font renderer
-    private static HyperiumFontRenderer raleway;
     private static HyperiumFontRenderer roboto;
 
     /**
@@ -140,7 +139,6 @@ public class SplashProgress {
             return;
 
         // Declare the font to be used
-        if (raleway == null) raleway = new HyperiumFontRenderer("Raleway", 20);
         if (roboto == null) roboto = new HyperiumFontRenderer("Roboto", 20);
 
         // Get the users screen width and height to apply
@@ -154,7 +152,7 @@ public class SplashProgress {
         Gui.drawRect(0, sr.getScaledHeight() - 35, sr.getScaledWidth(), sr.getScaledHeight(), new Color(0, 0, 0, 60).getRGB());
 
         // Draw the current splash text
-        raleway.drawString(CURRENT, 20, sr.getScaledHeight() - 25, 0xffffffff);
+        roboto.drawString(CURRENT, 20, sr.getScaledHeight() - 25, 0xffffffff);
 
         // Draw the current amount of progress / max amount of progress
         String s = PROGRESS + "/" + DEFAULT_MAX;
