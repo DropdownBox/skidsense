@@ -2,16 +2,21 @@ package me.skidsense.module.collection.visual;
 
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
+import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventRenderGui;
+import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.management.FriendManager;
 import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.TTFFontRenderer;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.util.MathUtil;
+import me.skidsense.util.MoveUtil;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
+import me.skidsense.util.SpeedCalculator;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -28,21 +33,25 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.optifine.util.MathUtils;
 
 public class HUD
 extends Mod {
     public TabGUI tabui;
+    public static Mode<Enum> mode = new Mode("ArrayPosition", "ArrayPosition", (Enum[])arrayPosition.values(), (Enum)arrayPosition.TopRight);
+    public static Option<Boolean> TABGUI = new Option<Boolean>("TabGui", "TabGui", true);
     private Option<Boolean> info = new Option<Boolean>("Information", "information", true);
     private Option<Boolean> rainbow = new Option<Boolean>("Rainbow", "rainbow", false);
     public static boolean shouldMove;
     private final TTFFontRenderer Client_Font = Client.fontManager.comfortaa18;
-    private String[] directions = new String[]{"S", "SW", "W", "NW", "N", "NE", "E", "SE"};
+    private final SpeedCalculator speedc = new SpeedCalculator();
 
     public HUD() {
         super("HUD", new String[]{"gui"}, ModuleType.Visual);
@@ -51,6 +60,11 @@ extends Mod {
         this.setRemoved(true);
     }
 
+    @Sub
+    public final void onUpdate(EventPreUpdate eventPreUpdate) {
+    	speedc.update();
+    }
+    
     @Sub
     private void renderHud(EventRenderGui event) {
         if (!this.mc.gameSettings.showDebugInfo) {
@@ -79,19 +93,20 @@ extends Mod {
             Client_Font.drawStringWithShadow(second, Client_Font.getStringWidth(first)+2, (float)2, new Color(255,255,255).getRGB());
             Client_Font.drawStringWithShadow("#001", Client_Font.getStringWidth(Client.clientName)+5, 2, new Color(180,180,180).getRGB());
             ArrayList<Mod> sorted = new ArrayList<Mod>();
+            boolean left = mode.getValue() == arrayPosition.TopLeft;
 			for (Mod m : ModManager.getMods()) {
                 if (!m.isEnabled() || m.wasRemoved()) continue;
                 sorted.add(m);
             }
                 sorted.sort((o1, o2) -> Client_Font.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName() : String.format("%s %s", o2.getName(), o2.getSuffix())) - Client_Font.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName() : String.format("%s %s", o1.getName(), o1.getSuffix())));
-            int y = 0;
+            int y = left ? (TABGUI.getValue() ? 75 : 12) : 0;
             int rainbowTick = 0;
                 for (Mod m : sorted) {
                     if (!m.isEnabled()) {
                         m.translate.interpolate((float)event.getResolution().getScaledWidth(), -20.0F, 0.6F);
                      }
                     name = m.getSuffix().isEmpty() ? m.getName() : String.format("%s\2477%s", m.getName(), m.getSuffix());
-                    float x = RenderUtil.width() - Client_Font.getStringWidth(name);
+                    float x = left ? 2.0F :RenderUtil.width() - Client_Font.getStringWidth(name);
                     Color rainbow = new Color(Color.HSBtoRGB((float)((double)this.mc.thePlayer.ticksExisted / 50.0 + Math.sin((double)rainbowTick / 50.0 * 1.6)) % 1.0f, 0.5f, 1.0f));
                     if (m.isEnabled()) {
                        m.translate.interpolate(x, (float)y, 0.40F);
@@ -102,15 +117,14 @@ extends Mod {
                     }
                     y += 9;
                 }
-            String text = (Object)((Object)EnumChatFormatting.GRAY) + "X" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posX) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Y" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posY) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Z" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posZ);
+            String text = (Object)(EnumChatFormatting.GRAY) + "X" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posX) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Y" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posY) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Z" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posZ) + (EnumChatFormatting.GRAY) + " FPS: " + (EnumChatFormatting.WHITE) + Minecraft.getDebugFPS();
                 int ychat;
                 int n = ychat = this.mc.ingameGUI.getChatGUI().getChatOpen() ? 25 : 10;
                 if (this.info.getValue().booleanValue()) {
-                    Client_Font.drawStringWithShadow(text, 4.0f, new ScaledResolution(this.mc).getScaledHeight() - ychat, new Color(11, 12, 17).getRGB());
-                    Client_Font.drawStringWithShadow((Object)((Object)EnumChatFormatting.GRAY) + "FPS: " + (Object)((Object)EnumChatFormatting.WHITE) + Minecraft.getDebugFPS(), 2.0f, shouldMove ? 90 : 75, -1);
-                    this.drawPotionStatus(new ScaledResolution(this.mc));
-                    direction = this.directions[RotationUtil.wrapAngleToDirection(this.mc.thePlayer.rotationYaw, this.directions.length)];
-                    Client_Font.drawStringWithShadow("[" + direction + "]", Client_Font.getStringWidth(String.valueOf("ETB") + " " + 0.6 + 2), shouldMove ? 15 : 2, new Color(102, 172, 255).getRGB());
+                    Client_Font.drawStringWithShadow(text,(event.getResolution().getScaledWidth() - Client_Font.getWidth(text)) / 2, BossStatus.statusBarTime > 0 ? 20 : 2, -788529153);
+                    String speedtextString = EnumChatFormatting.GRAY +""+ (MoveUtil.isMoving() ? MathUtil.round(speedc.getCurrentSpeed(), 2) : 0) +EnumChatFormatting.WHITE+ " m / sec";
+                    Client_Font.drawStringWithShadow(speedtextString ,(event.getResolution().getScaledWidth() - Client_Font.getWidth(speedtextString)) / 2, BossStatus.statusBarTime > 0 ? 20 : 2 + Client_Font.getHeight(speedc.getCurrentSpeed() + " m/s"), -788529153);
+                    this.drawPotionStatus(event.getResolution());
                 }
         }
     }
@@ -146,6 +160,11 @@ extends Mod {
                 Client_Font.drawStringWithShadow(PType, sr.getScaledWidth() - Client_Font.getStringWidth(PType) - 2, sr.getScaledHeight() - Client_Font.getHeight(PType) + y - 12 - ychat, potion.getLiquidColor());
             y -= 10;
         }
+    }
+    
+    public enum arrayPosition {
+    	TopRight,
+    	TopLeft
     }
 }
 
