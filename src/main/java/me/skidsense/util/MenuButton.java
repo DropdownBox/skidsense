@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiButton;
 import java.awt.*;
 
 import me.skidsense.Client;
-import me.skidsense.management.fontRenderer.FontLoaders;
 
 /**
 * @author Zane for PublicBase

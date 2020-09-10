@@ -91,4 +91,9 @@ public class MathUtils
             ASIN_TABLE[(int)(((double)j + 1.0D) * 32767.5D) & 65535] = (float)Math.asin((double)j);
         }
     }
+
+    public static double getIncremental(double val, double inc) {
+        double one = 1.0D / inc;
+        return (double)Math.round(val * one) / one;
+     }
 }

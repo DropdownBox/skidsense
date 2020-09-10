@@ -12,7 +12,6 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
-import me.skidsense.management.fontRenderer.FontLoaders;
 import me.skidsense.management.fontRenderer.UnicodeFontRenderer;
 import me.skidsense.util.RenderUtil;
 

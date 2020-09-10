@@ -17,8 +17,8 @@ public class FontManager {
 	public FontRenderer verdana20;
 	public FontRenderer sigmaarr;
 	public FontRenderer zeroarr;
-	public FontRenderer comfortaa18;
-	public FontRenderer comfortaa16;
+	public TTFFontRenderer comfortaa18;
+	public TTFFontRenderer comfortaa16;
 	public FontRenderer comfortaa14;
 	public FontRenderer comfortaa20;
 	public FontRenderer comfortaa34;
@@ -41,8 +41,8 @@ public class FontManager {
 		verdana20 = this.getFont("verdana", 20f);
 		sigmaarr = this.getFont("sigma", 8f);
 		zeroarr = this.getFont("comfortaa", 17f);
-		comfortaa18 = this.getFont("comfortaa", 18f);
-		comfortaa16 = this.getFont("comfortaa2", 18f);
+		comfortaa18 = new TTFFontRenderer(new Font("Comfortaa", 0, 18), true);
+		comfortaa16 =  new TTFFontRenderer(new Font("Comfortaa", 0, 16), true);
 		comfortaa14 = this.getFont("comfortaa", 14f);
 		comfortaa20 = this.getFont("comfortaa", 20f);
 		comfortaa34 = this.getFont("comfortaa", 34f);

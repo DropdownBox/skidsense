@@ -4,6 +4,7 @@
 package me.skidsense.util;
 
 import me.skidsense.Client;
+import me.skidsense.color.Colors;
 import me.skidsense.hooks.events.EventRender3D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -1268,5 +1269,14 @@ public class RenderUtil {
     public static double interpolate(double current, double old, double scale) {
         return old + (current - old) * scale;
     }
+
+    public static void drawOutlinedString(String str, float x, float y, int color) {
+        Minecraft mc = Minecraft.getMinecraft();
+        mc.fontRendererObj.drawString(str, x - 0.3F, y, Colors.getColor(0));
+        mc.fontRendererObj.drawString(str, x + 0.3F, y, Colors.getColor(0));
+        mc.fontRendererObj.drawString(str, x, y + 0.3F, Colors.getColor(0));
+        mc.fontRendererObj.drawString(str, x, y - 0.3F, Colors.getColor(0));
+        mc.fontRendererObj.drawString(str, x, y, color);
+     }
 }
 
