@@ -49,7 +49,7 @@ public class Disabler extends Mod {
                         if(ep.getPacket() instanceof C0FPacketConfirmTransaction) {
                         	C0FPacketConfirmTransaction c0fPacketConfirmTransaction = (C0FPacketConfirmTransaction) ep.getPacket();
                             if (c0fPacketConfirmTransaction.getUid() < 0 && c0fPacketConfirmTransaction.getWindowId() == 0) {
-                            	if(timerUtil.check(QuickMath.getRandom(500, 1000))) {
+                            	if(timerUtil.check(QuickMath.getRandom(500, 999))) {
                                 	Minecraft.getMinecraft().getNetHandler().sendpacketNoEvent(new C0FPacketConfirmTransaction(c0fPacketConfirmTransaction.getWindowId() , (short) -c0fPacketConfirmTransaction.getUid(),true));
                                 	timerUtil.reset();
                             	}
