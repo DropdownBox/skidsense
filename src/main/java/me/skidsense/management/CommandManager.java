@@ -1,85 +1,41 @@
-/*
- * Decompiled with CFR 0_132.
- */
 package me.skidsense.management;
 
-import me.skidsense.Client;
-import me.skidsense.SplashProgress;
-import me.skidsense.command.Command;
-import me.skidsense.command.commands.*;
-import me.skidsense.hooks.EventManager;
-import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventChatRecieve;
-import me.skidsense.hooks.events.EventChatSend;
+import java.util.Collection;
+import java.util.HashMap;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import me.skidsense.management.command.Command;
+import me.skidsense.management.command.impl.Bind;
+import me.skidsense.management.command.impl.Clear;
+import me.skidsense.management.command.impl.ClientName;
+import me.skidsense.management.command.impl.Damage;
+import me.skidsense.management.command.impl.Friend;
+import me.skidsense.management.command.impl.Help;
+import me.skidsense.management.command.impl.Say;
+import me.skidsense.management.command.impl.Toggle;
 
-public class CommandManager
-implements Manager {
-    private List<Command> commands;
-    public String PREFIX = ".";
-    @Override
-    public void init() {
-        SplashProgress.setProgress(2, "CommandManager Init");
-        this.commands = new ArrayList<>();
+public class CommandManager {
+   public static final HashMap<String, Command> commandMap = new HashMap<String, Command>();
 
-        this.commands.add(new Help());
-        this.commands.add(new AutoLTest());
-        this.commands.add(new Toggle());
-        this.commands.add(new Bind());
-        this.commands.add(new VClip());
-        this.commands.add(new Cheats());
-        this.commands.add(new Enchant());
-        this.commands.add(new ClientName());
-        EventManager.getOtherEventManager().register(this);
-        //EventBus.getInstance().register(this);
-    }
+   public void addCommand(String name, Command command) {
+      commandMap.put(name, command);
+   }
 
-    public List<Command> getCommands() {
-        return this.commands;
-    }
+   public Collection<Command> getCommands() {
+      return commandMap.values();
+   }
 
-    public Optional<Command> getCommandByName(String name) {
-        return this.commands.stream().filter(c2 -> {
-            boolean isAlias = false;
-            String[] arrstring = c2.getAlias();
-            int n = arrstring.length;
-            int n2 = 0;
-            while (n2 < n) {
-                String str = arrstring[n2];
-                if (str.equalsIgnoreCase(name)) {
-                    isAlias = true;
-                    break;
-                }
-                ++n2;
-            }
-            return c2.getName().equalsIgnoreCase(name) || isAlias;
-        }).findFirst();
-    }
+   public Command getCommand(String name) {
+      return (Command)commandMap.get(name.toLowerCase());
+   }
 
-    public void add(Command command) {
-        this.commands.add(command);
-    }
-
-    @Sub
-    private void onChat(EventChatSend e) {
-        if (e.getMessage().length() > 1 && e.getMessage().startsWith(PREFIX)) {
-            e.setCancelled(true);
-            String[] args = e.getMessage().trim().substring(PREFIX.length()).split(" ");
-            Optional<Command> possibleCmd = this.getCommandByName(args[0]);
-            if (possibleCmd.isPresent()) {
-                String result = possibleCmd.get().execute(args[0],Arrays.copyOfRange(args, 1, args.length));
-                if (result != null && !result.isEmpty()) {
-                    Client.sendMessage(result);
-                }
-            } else {
-            	Client.sendMessage(String.format("Command not found Try '%shelp'", PREFIX));
-            }
-        }
-    }
-
+   public void setup() {
+	  (new Help(new String[]{"help", "halp", "h"}, "Help for commands.")).register(this);
+      (new ClientName(new String[]{"clientname", "cn"}, "Change ClientName")).register(this);
+      (new Damage(new String[]{"damage","d", "dmg", "kys", "suicide", "amandatodd"}, "Kill yourself u worthless minecraft bloachxD!")).register(this);
+      (new Toggle(new String[]{"toggle", "t"}, "Toggles the module.")).register(this);
+      (new Say(new String[]{"say", "talk", "chat"}, "Send a message with your chat prefix.")).register(this);
+      (new Bind(new String[]{"bind", "key", "b"}, "Send a message with your chat prefix.")).register(this);
+      (new Friend(new String[]{"friend", "fr", "f"}, "Add and remove friends.")).register(this);
+      (new Clear(new String[]{"clear", "cl", "clr"}, "Clears chat for you.")).register(this);
+   }
 }
-

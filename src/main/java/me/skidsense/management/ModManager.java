@@ -104,12 +104,12 @@ implements Manager {
         addMod(new AutoTool());
         addMod(new SpeedMine());
         addMod(new Disabler());
-
+        addMod(new ChatCommands());
         this.readSettings();
-        for (Mod m : mods) {
-            m.makeCommand();
-        }
         EventManager.getOtherEventManager().register(this);
+        if(!Client.getModuleManager().getModuleByClass(ChatCommands.class).isEnabled()) {
+        	Client.getModuleManager().getModuleByClass(ChatCommands.class).setEnabled(true);
+        }
         //EventBus.getInstance().register(this);
     }
 

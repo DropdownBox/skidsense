@@ -1,7 +1,6 @@
 package me.skidsense.module;
 
 import me.skidsense.Client;
-import me.skidsense.command.Command;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -10,6 +9,7 @@ import me.skidsense.management.FileManager;
 import me.skidsense.management.ModManager;
 import me.skidsense.management.animation.Translate;
 import me.skidsense.management.notifications.Notifications;
+import me.skidsense.util.ChatUtil;
 import me.skidsense.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
@@ -160,159 +160,6 @@ public class Mod {
 	}
 
 	public void onDisable() {
-	}
-
-	public void makeCommand() {
-		if (this.values.size() > 0) {
-			StringBuilder options = new StringBuilder();
-			StringBuilder other = new StringBuilder();
-			Iterator var4 = this.values.iterator();
-
-			Value v;
-			while (var4.hasNext()) {
-				v = (Value) var4.next();
-				if (!(v instanceof Mode)) {
-					if (options.length() == 0) {
-						options.append(v.getName());
-					} else {
-						options.append(String.format(", %s", v.getName()));
-					}
-				}
-			}
-
-			var4 = this.values.iterator();
-
-			while (true) {
-				do {
-					if (!var4.hasNext()) {
-						Client.instance.getCommandManager().add(new Module$1(this,this.name, this.alias));
-						return;
-					}
-
-					v = (Value) var4.next();
-				} while (!(v instanceof Mode));
-
-				Mode mode = (Mode) v;
-				Enum[] modes;
-				int length = (modes = mode.getModes()).length;
-
-				for (int i = 0; i < length; ++i) {
-					Enum e = modes[i];
-					if (other.length() == 0) {
-						other.append(e.name().toLowerCase());
-					} else {
-						other.append(String.format(", %s", e.name().toLowerCase()));
-					}
-				}
-			}
-		}
-	}
-}
-
-class Module$1 extends Command {
-	private final Mod m;
-	final Mod this$0;
-	// FIXME
-	// TODO
-	// 建议大改ModCommand，见GitLab #4
-	// https://gitlab.com/Enteerman/exusiai_on_gitlab/-/issues/4
-	Module$1(Mod var1, String $anonymous0, String[] $anonymous1) {
-		super($anonymous0, $anonymous1);
-		this.this$0 = var1;
-		this.m = var1;
-	}
-
-	@Override
-	public String execute(String alias,String[] args) {
-		Option option;
-		if (args.length >= 2) {
-			option = null;
-			Numbers fuck = null;
-			Mode xd = null;
-			Iterator var6 = this.m.values.iterator();
-
-			Value v;
-			while (var6.hasNext()) {
-				v = (Value) var6.next();
-				if (v instanceof Option && v.getName().equalsIgnoreCase(args[0])) {
-					option = (Option) v;
-				}
-			}
-
-			if (option != null) {
-				option.setValue(Boolean.valueOf(!((Boolean) option.getValue()).booleanValue()));
-				Client.sendMessage(String.format("> %s has been set to %s", option.getName(), option.getValue()));
-			} else {
-				var6 = this.m.values.iterator();
-
-				while (var6.hasNext()) {
-					v = (Value) var6.next();
-					if (v instanceof Numbers && v.getName().equalsIgnoreCase(args[0])) {
-						fuck = (Numbers) v;
-					}
-				}
-
-				if (fuck != null) {
-					if (MathUtil.parsable(args[1], (byte) 4)) {
-						double v1 = MathUtil.round(Double.parseDouble(args[1]), 1);
-						fuck.setValue(Double.valueOf(v1 > fuck.getMaximum().doubleValue() ? fuck.getMaximum().doubleValue() : v1));
-						Client.sendMessage(String.format("> %s has been set to %s", fuck.getName(), fuck.getValue()));
-					} else {
-						Client.sendMessage("> " + args[1] + " is not a number");
-					}
-				}
-
-				var6 = this.m.values.iterator();
-
-				while (var6.hasNext()) {
-					v = (Value) var6.next();
-					if (args[0].equalsIgnoreCase(v.getDisplayName()) && v instanceof Mode) {
-						xd = (Mode) v;
-					}
-				}
-
-				if (xd != null) {
-					if (xd.isValid(args[1])) {
-						xd.setMode(args[1]);
-						Client.sendMessage(String.format("> %s set to %s", xd.getName(), xd.getModeAsString()));
-					} else {
-						Client.sendMessage("> " + args[1] + " is an invalid mode");
-					}
-				}
-			}
-
-			if (fuck == null && option == null && xd == null) {
-				this.syntaxError("Valid .<module> <setting> <mode if needed>");
-			}
-		} else if (args.length >= 1) {
-			option = null;
-			Iterator xd1 = this.m.values.iterator();
-
-			while (xd1.hasNext()) {
-				Value fuck1 = (Value) xd1.next();
-				if (fuck1 instanceof Option && fuck1.getName().equalsIgnoreCase(args[0])) {
-					option = (Option) fuck1;
-				}
-			}
-
-			if (option != null) {
-				option.setValue(Boolean.valueOf(!((Boolean) option.getValue()).booleanValue()));
-				String fuck2 = option.getName().substring(1);
-				String xd2 = option.getName().substring(0, 1).toUpperCase();
-				if (((Boolean) option.getValue()).booleanValue()) {
-					Client.sendMessage(String.format("> %s has been set to \u00a7a%s", xd2 + fuck2, option.getValue()));
-				} else {
-					Client.sendMessage(String.format("> %s has been set to \u00a7c%s", xd2 + fuck2, option.getValue()));
-				}
-			} else {
-				this.syntaxError("Valid .<module> <setting> <mode if needed>");
-			}
-		} else {
-			// FIXME
-			//Client.sendMessage(String.format("%s Values: \n %s", this.getName().substring(0, 1).toUpperCase() + this.getName().substring(1).toLowerCase() /*,this.getSyntax(), "false"*/));
-		}
-
-		return null;
 	}
 }
 

@@ -1,51 +1,42 @@
 package me.skidsense;
 
-import java.util.ArrayList;
-
 import me.skidsense.hooks.value.Value;
 import me.skidsense.management.AltManager;
 import me.skidsense.management.CommandManager;
 import me.skidsense.management.FileManager;
-import me.skidsense.management.FriendManager;
 import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.FontManager;
+import me.skidsense.management.friend.FriendManager;
 import me.skidsense.module.Mod;
 import me.skidsense.module.collection.visual.TabGUI;
-import me.skidsense.util.ChatUtil;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 
 public class Client {
 
 	public static Minecraft mc = Minecraft.getMinecraft();
-	public static String clientName = "Exusiai";
 	public static Client instance = new Client();
-	private static ModManager modulemanager;
-	private CommandManager commandmanager;
-	private AltManager altmanager;
-	private FriendManager friendmanager;
-	public static FontManager fontMgr;
-	public static FontManager fontManager;
-	private TabGUI tabui;
-	public static ResourceLocation CLIENT_CAPE = new ResourceLocation("skidsense/cape.png");
+	public static String clientName = "Exusiai";
+	public static ModManager modulemanager;
+	public CommandManager commandmanager;
+	public AltManager altmanager;
+	public FontManager fontManager;
+	public TabGUI tabui;
 	public static void renameClient(String s){
 		clientName = s;
 		Display.setTitle(String.format("%s [1.8.8]",s));
 	}
 	public void initiate() {
-		fontManager = fontMgr = new FontManager();
+		fontManager = new FontManager();
 		this.commandmanager = new CommandManager();
-		this.commandmanager.init();
-		this.friendmanager = new FriendManager();
-		this.friendmanager.init();
+		this.commandmanager.setup();
+		FriendManager.start();
 		this.tabui = new TabGUI();
 		this.tabui.init();
 		modulemanager = new ModManager();
@@ -131,21 +122,6 @@ public class Client {
 		}
 
 		return false;
-	}
-
-	public static void sendMessageOLD(String msg) {
-		Object[] arrobject = new Object[2];
-		arrobject[0] = (Object) ((Object) EnumChatFormatting.BLUE) + "skidsense" + (Object) ((Object) EnumChatFormatting.GRAY) + ": ";
-		arrobject[1] = msg;
-		mc.thePlayer.addChatMessage(new ChatComponentText(String.format("%s%s", arrobject)));
-	}
-
-	public static void sendMessage(String message) {
-		new ChatUtil.ChatMessageBuilder(true, true).appendText(message).setColor(EnumChatFormatting.GRAY).build().displayClientSided();
-	}
-
-	public static void sendMessageWithoutPrefix(String message) {
-		new ChatUtil.ChatMessageBuilder(false, true).appendText(message).setColor(EnumChatFormatting.GRAY).build().displayClientSided();
 	}
 
 	public static boolean onServer(String server) {

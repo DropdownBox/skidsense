@@ -98,5 +98,9 @@ public class ChatUtil {
         }
     }
 
+    public static void printChat(String text) {
+        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(text));
+     }
+
 }
 

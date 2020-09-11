@@ -11,7 +11,7 @@ import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.management.FriendManager;
+import me.skidsense.management.friend.FriendManager;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;

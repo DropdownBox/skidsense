@@ -24,7 +24,7 @@ public class NotificationRenderer implements INotificationRenderer {
          GL11.glScaled(0.9f, 0.9f, 0.9f);
          //Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(notification.getMessage(), 80.0F, notification.translate.getY(), Colors.getColor(255, (int)notification.opacity.getOpacity()));
          GL11.glPopMatrix();
-         Client.fontManager.comfortaa16.drawStringWithShadow(notification.getMessage(), 60.0F, notification.translate.getY(), Colors.getColor(255, (int)notification.opacity.getOpacity()));
+         Client.instance.fontManager.comfortaa16.drawStringWithShadow(notification.getMessage(), 60.0F, notification.translate.getY(), Colors.getColor(255, (int)notification.opacity.getOpacity()));
          y += 10;
          if (notification.checkTime() >= notification.getDisplayTime() + notification.getInitializeTime()) {
             notification.targetOpacity = 0;
