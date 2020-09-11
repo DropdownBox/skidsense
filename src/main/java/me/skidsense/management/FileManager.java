@@ -1,7 +1,7 @@
 package me.skidsense.management;
 
 import me.skidsense.SplashProgress;
-import me.skidsense.alt.Alt;
+import me.skidsense.management.alt.Alt;
 import me.skidsense.module.collection.world.AutoL;
 import me.skidsense.util.EncryptionUtil;
 import net.minecraft.client.Minecraft;

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0_132.
  */
-package me.skidsense.alt;
+package me.skidsense.management.alt;
 
 public class Alt {
     private String mask = "";

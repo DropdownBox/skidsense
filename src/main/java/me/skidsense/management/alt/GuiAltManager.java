@@ -6,7 +6,7 @@
  *  org.lwjgl.input.Mouse
  *  org.lwjgl.opengl.GL11
  */
-package me.skidsense.alt;
+package me.skidsense.management.alt;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,14 +21,19 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Session;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import me.skidsense.Client;
+import me.skidsense.color.Colors;
 import me.skidsense.management.AltManager;
 import me.skidsense.management.FileManager;
+import me.skidsense.util.IconButton;
+import me.skidsense.util.Panorama;
 import me.skidsense.util.RenderUtil;
 
 public class GuiAltManager
@@ -43,10 +48,19 @@ public class GuiAltManager
 	private AltLoginThread loginThread;
 	private int offset;
 	public Alt selectedAlt = null;
-	private String status = "\u00a7eWaiting...";
-
+	private String status = EnumChatFormatting.GRAY + "Waiting...";
+    private final Panorama panorama;
+    
 	public GuiAltManager() {
 		FileManager.saveAlts();
+		
+		panorama = new Panorama(this,
+				  new ResourceLocation("textures/gui/title/background/panorama_0.png"), 
+			      new ResourceLocation("textures/gui/title/background/panorama_1.png"), 
+			      new ResourceLocation("textures/gui/title/background/panorama_2.png"), 
+			      new ResourceLocation("textures/gui/title/background/panorama_3.png"), 
+			      new ResourceLocation("textures/gui/title/background/panorama_4.png"), 
+			      new ResourceLocation("textures/gui/title/background/panorama_5.png"));
 	}
 
 	@Override
@@ -77,7 +91,7 @@ public class GuiAltManager
 				}
 				Client.instance.getAltManager();
 				AltManager.getAlts().remove(this.selectedAlt);
-				this.status = "\u00a7cRemoved.";
+				this.status = "§cRemoved.";
 				this.selectedAlt = null;
 				FileManager.saveAlts();
 				break;
@@ -113,10 +127,10 @@ public class GuiAltManager
 				Alt lastAlt = AltManager.lastAlt;
 				if (lastAlt == null) {
 					if (this.loginThread == null) {
-						this.status = "?cThere is no last used alt!";
+						this.status = "§cThere is no last used alt!";
 						break;
 					}
-					this.loginThread.setStatus("?cThere is no last used alt!");
+					this.loginThread.setStatus("§cThere is no last used alt!");
 					break;
 				}
 				String user2 = lastAlt.getUsername();
@@ -129,7 +143,7 @@ public class GuiAltManager
 
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
-		this.drawDefaultBackground();
+		panorama.draw(par1, par2,  par3);
 		if (Mouse.hasWheel()) {
 			int wheel = Mouse.getDWheel();
 			if (wheel < 0) {
@@ -144,11 +158,11 @@ public class GuiAltManager
 				}
 			}
 		}
-		this.drawDefaultBackground();
 		Client.mc.fontRendererObj.drawStringWithShadow(GuiAltManager.mc.session.getUsername(), 10.0f, 10.0f, -7829368);
 		Client.instance.getAltManager();
 		Client.mc.fontRendererObj.drawCenteredString("Account Manager - " + AltManager.getAlts().size() + " alts", this.width / 2, 10, -1);
 		Client.mc.fontRendererObj.drawCenteredString(this.loginThread == null ? this.status : this.loginThread.getStatus(), this.width / 2, 20, -1);
+	    RenderUtil.rectangleBordered(50.0D, 33.0D, (double)(this.width - 50), (double)(this.height - 50), 1.0D, Colors.getColor(225, 50), Colors.getColor(160, 150));
 		GL11.glPushMatrix();
 		this.prepareScissorBox(0.0f, 33.0f, this.width, this.height - 50);
 		GL11.glEnable((int) 3089);
@@ -157,7 +171,7 @@ public class GuiAltManager
 		for (Alt alt : AltManager.getAlts()) {
 			if (!this.isAltInArea(y)) continue;
 			String name = alt.getMask().equals("") ? alt.getUsername() : alt.getMask();
-			String pass = alt.getPassword().equals("") ? "\u00a7cCracked" : alt.getPassword().replaceAll(".", "*");
+			String pass = alt.getPassword().equals("") ? EnumChatFormatting.RED + "Cracked" : EnumChatFormatting.GREEN + "Mojang";
 			if (alt == this.selectedAlt) {
 				if (this.isMouseOverAlt(par1, par2, y - this.offset) && Mouse.isButtonDown((int) 0)) {
 					RenderUtil.drawBorderedRect(52.0f, y - this.offset - 4, this.width - 52, y - this.offset + 20, 1.0f, -16777216, -2142943931);
@@ -194,6 +208,9 @@ public class GuiAltManager
 
 	@Override
 	public void initGui() {
+		
+		panorama.init();
+		
 		this.buttonList.add(new GuiButton(0, this.width / 2 + 4 + 76, this.height - 24, 75, 20, "Cancel"));
 		this.login = new GuiButton(1, this.width / 2 - 154, this.height - 48, 70, 20, "Login");
 		this.buttonList.add(this.login);
@@ -212,6 +229,11 @@ public class GuiAltManager
 		buttonList.add(new GuiButton(8, width - 104, 8, 98, 20, "Multiplayer"));
 	}
 
+	@Override
+    public void updateScreen() {
+        panorama.update();
+    }
+    
 	private boolean isAltInArea(int y) {
 		if (y - this.offset <= this.height - 50) {
 			return true;
@@ -253,21 +275,6 @@ public class GuiAltManager
 	public void prepareScissorBox(float x, float y, float x2, float y2) {
 		int factor = new ScaledResolution(mc).getScaleFactor();
 		GL11.glScissor((int) ((int) (x * (float) factor)), (int) ((int) (((float) new ScaledResolution(mc).getScaledHeight() - y2) * (float) factor)), (int) ((int) ((x2 - x) * (float) factor)), (int) ((int) ((y2 - y) * (float) factor)));
-	}
-
-	public void renderBackground(int par1, int par2) {
-		GL11.glDisable((int) 2929);
-		GL11.glDepthMask((boolean) false);
-		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-		GL11.glColor4f((float) 1.0f, (float) 1.0f, (float) 1.0f, (float) 1.0f);
-		GL11.glDisable((int) 3008);
-		this.drawDefaultBackground();
-		Tessellator var3 = Tessellator.instance;
-		var3.draw();
-		GL11.glDepthMask((boolean) true);
-		GL11.glEnable((int) 2929);
-		GL11.glEnable((int) 3008);
-		GL11.glColor4f((float) 1.0f, (float) 1.0f, (float) 1.0f, (float) 1.0f);
 	}
 }
 

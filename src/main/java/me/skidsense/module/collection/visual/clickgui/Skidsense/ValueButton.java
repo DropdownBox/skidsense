@@ -44,7 +44,7 @@ public class ValueButton {
 	public void render(int mouseX, int mouseY) {
 		if (!this.custom) {
 			if (mouseX > this.x - 7 && mouseX < this.x + 85 && mouseY > this.y - 6 && mouseY < this.y
-					+ ((UnicodeFontRenderer) Client.fontManager.zeroarr).getStringHeight(this.value.getName()) + 5) {
+					+ ((UnicodeFontRenderer) Client.instance.fontManager.zeroarr).getStringHeight(this.value.getName()) + 5) {
 				if (this.opacity + 10.0D < 200.0D) {
 					this.opacity += 10.0D;
 				} else {
@@ -92,9 +92,9 @@ public class ValueButton {
 				RenderUtil.drawRect((float) ((double) this.x + render +1D), this.y + 7,
 						(float) ((double) this.x + render + 7D), this.y + 10, (new Color(220,220,220)).getRGB());
 			}
-			Client.fontManager.zeroarr.drawStringWithShadow(this.value.getName(), this.x - 5, this.y - 2, -1);
+			Client.instance.fontManager.zeroarr.drawStringWithShadow(this.value.getName(), this.x - 5, this.y - 2, -1);
 			if (this.name != "") {
-				Client.fontManager.zeroarr.drawStringWithShadow(": " + this.name, this.x - 4 + Client.fontManager.zeroarr.getStringWidth(this.value.getName()),
+				Client.instance.fontManager.zeroarr.drawStringWithShadow(": " + this.name, this.x - 4 + Client.instance.fontManager.zeroarr.getStringWidth(this.value.getName()),
 						this.y - 2, -1);
 			}
 			}
@@ -108,7 +108,7 @@ public class ValueButton {
 
 	public void click(int mouseX, int mouseY, int button) {
 		if (!this.custom && mouseX > this.x - 7 && mouseX < this.x + 85 && mouseY > this.y - 4
-				&& mouseY < this.y + ((UnicodeFontRenderer) Client.fontManager.zeroarr).getStringHeight(this.value.getName()) + 2) {
+				&& mouseY < this.y + ((UnicodeFontRenderer) Client.instance.fontManager.zeroarr).getStringHeight(this.value.getName()) + 2) {
 			if (this.value instanceof Option) {
 				Option m1 = (Option) this.value;
 				m1.setValue(Boolean.valueOf(!((Boolean) m1.getValue()).booleanValue()));

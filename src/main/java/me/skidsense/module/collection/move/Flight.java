@@ -535,7 +535,7 @@ public class Flight extends Mod {
             mc.thePlayer.cameraYaw = 0.090909086f;
         }
         if(groundpacket.getValue()){
-            e.setOnGround(true);
+            e.setOnGround(isBlockUnder());
         }
 
         double speed = Math.max(3.0f, getBaseMoveSpeed());
@@ -670,6 +670,18 @@ public class Flight extends Mod {
         }
     }
 
+    private boolean isBlockUnder() {
+        if (mc.thePlayer.posY < 0)
+            return false;
+        for (int off = 0; off < (int) mc.thePlayer.posY + 2; off += 2) {
+            AxisAlignedBB offset = mc.thePlayer.boundingBox.offset(0, -off, 0);
+            if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, offset).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     @Sub
     private void onMove(EventMove e) {
 

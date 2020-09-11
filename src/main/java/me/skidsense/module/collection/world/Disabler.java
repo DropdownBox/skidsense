@@ -14,13 +14,17 @@ import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.QuickMath;
+import me.skidsense.util.TimerUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.*;
 
 import java.util.UUID;
 
+import com.ibm.icu.text.UFormat;
+
 public class Disabler extends Mod {
     public static Mode mode = new Mode("Mode", "Mode", (Enum[]) DisablerMode.values(), (Enum) DisablerMode.TimeOut);
-
+    public TimerUtil timerUtil = new TimerUtil();
     public Disabler() {
         super("Disabler", new String[]{"noac"}, ModuleType.World);
     }
@@ -42,7 +46,16 @@ public class Disabler extends Mod {
                 case "TimeOut":
                 case "SpoofSpectator": {
                     if (ep.getPacket() instanceof C0FPacketConfirmTransaction || ep.getPacket() instanceof C00PacketKeepAlive || ep.getPacket() instanceof C13PacketPlayerAbilities) {
-                        ep.setCancelled(true);
+                        if(ep.getPacket() instanceof C0FPacketConfirmTransaction) {
+                        	C0FPacketConfirmTransaction c0fPacketConfirmTransaction = (C0FPacketConfirmTransaction) ep.getPacket();
+                            if (c0fPacketConfirmTransaction.getUid() < 0 && c0fPacketConfirmTransaction.getWindowId() == 0) {
+                            	if(timerUtil.check(QuickMath.getRandom(500, 1000))) {
+                                	Minecraft.getMinecraft().getNetHandler().sendpacketNoEvent(new C0FPacketConfirmTransaction(c0fPacketConfirmTransaction.getWindowId() , (short) -c0fPacketConfirmTransaction.getUid(),true));
+                                	timerUtil.reset();
+                            	}
+                             }
+                        }
+                    	ep.setCancelled(true);
                     }
                     break;
                 }
@@ -65,7 +78,7 @@ public class Disabler extends Mod {
                     break;
                 }
                 case "SpoofSpectator": {
-                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C18PacketSpectate((UUID.randomUUID())));
+                    //mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C18PacketSpectate((UUID.randomUUID())));
                     break;
                 }
             }

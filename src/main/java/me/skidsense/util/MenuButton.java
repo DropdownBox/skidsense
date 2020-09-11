@@ -50,6 +50,6 @@ public class MenuButton extends GuiButton {
         int color = hovered ? new Color(112, 112, 112).getRGB() : new Color(65, 65, 65).getRGB();
         RenderUtil.drawGradientRect(x + 30, y, x + widthIn - 30, y + heightIn, new Color(35, 35, 35).getRGB(), new Color(27, 27, 27).getRGB());
         RenderUtil.drawOutline(x + 30, y, widthIn - 60, heightIn, .5, color);
-        Client.instance.fontMgr.tahomabold13.drawCenteredString(buttonText, x + widthIn / 2, y + heightIn / 2 - 4, new Color(166, 166, 166).getRGB());
+        Client.instance.fontManager.tahomabold13.drawCenteredString(buttonText, x + widthIn / 2, y + heightIn / 2 - 4, new Color(166, 166, 166).getRGB());
     }
 }

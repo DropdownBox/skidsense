@@ -6,9 +6,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import me.skidsense.Client;
-import me.skidsense.alt.GuiAltManager;
 import me.skidsense.color.ColorManager;
 import me.skidsense.color.Colors;
+import me.skidsense.management.alt.GuiAltManager;
 import me.skidsense.management.fontRenderer.FontManager;
 import me.skidsense.util.ColorCreator;
 import me.skidsense.util.Draw;
@@ -23,7 +23,6 @@ import org.lwjgl.opengl.GL11;
 public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 
     private final Panorama panorama;
-    private final ResourceLocation logoPath = new ResourceLocation("skidsense/mainmenu/logo/128x128.png");
     private int topButtonHeight;
 
     public GuiMainMenu() {
@@ -96,7 +95,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         int logoImgDimensions = 64;
 
         GlStateManager.color(1f, 1f, 1f);
-        //Draw.drawImg(logoPath, this.width / 2 - logoImgDimensions / 2, logoPositionY, logoImgDimensions, logoImgDimensions);
 
         int spacing = 110;
         if (spacing < 110)

@@ -62,7 +62,7 @@ extends GuiScreen {
          }
         
     	//TODO 字体
-    	FontRenderer font = Client.fontManager.zeroarr;
+    	FontRenderer font = Client.instance.fontManager.zeroarr;
         int x2 = 180;
         float valueY=this.startY;
         Gui.drawRect(startX, startY + 30, startX+50, startY+250,new Color(25,25,25).getRGB());

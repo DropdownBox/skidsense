@@ -1,4 +1,4 @@
-package me.skidsense.alt;
+package me.skidsense.management.alt;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatAllowedCharacters;

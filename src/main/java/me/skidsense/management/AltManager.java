@@ -1,13 +1,10 @@
-/*
- * Decompiled with CFR 0_132.
- */
 package me.skidsense.management;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.skidsense.SplashProgress;
-import me.skidsense.alt.Alt;
+import me.skidsense.management.alt.Alt;
 
 
 public class AltManager {

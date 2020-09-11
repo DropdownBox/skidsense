@@ -4,7 +4,7 @@
  * Could not load the following classes:
  *  org.lwjgl.input.Keyboard
  */
-package me.skidsense.alt;
+package me.skidsense.management.alt;
 
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.UserAuthentication;

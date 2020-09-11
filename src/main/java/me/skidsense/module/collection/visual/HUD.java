@@ -7,7 +7,6 @@ import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
-import me.skidsense.management.FriendManager;
 import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.TTFFontRenderer;
 import me.skidsense.module.Mod;
@@ -50,7 +49,7 @@ extends Mod {
     private Option<Boolean> info = new Option<Boolean>("Information", "information", true);
     private Option<Boolean> rainbow = new Option<Boolean>("Rainbow", "rainbow", false);
     public static boolean shouldMove;
-    private final TTFFontRenderer Client_Font = Client.fontManager.comfortaa18;
+    private final TTFFontRenderer Client_Font = Client.instance.fontManager.comfortaa18;
     private final SpeedCalculator speedc = new SpeedCalculator();
 
     public HUD() {
@@ -118,12 +117,10 @@ extends Mod {
                     y += 9;
                 }
             String text = (Object)(EnumChatFormatting.GRAY) + "X" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posX) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Y" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posY) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Z" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posZ) + (EnumChatFormatting.GRAY) + " FPS: " + (EnumChatFormatting.WHITE) + Minecraft.getDebugFPS();
-                int ychat;
-                int n = ychat = this.mc.ingameGUI.getChatGUI().getChatOpen() ? 25 : 10;
                 if (this.info.getValue().booleanValue()) {
                     Client_Font.drawStringWithShadow(text,(event.getResolution().getScaledWidth() - Client_Font.getWidth(text)) / 2, BossStatus.statusBarTime > 0 ? 20 : 2, -788529153);
                     String speedtextString = EnumChatFormatting.GRAY +""+ (MoveUtil.isMoving() ? MathUtil.round(speedc.getCurrentSpeed(), 2) : 0) +EnumChatFormatting.WHITE+ " m / sec";
-                    Client_Font.drawStringWithShadow(speedtextString ,(event.getResolution().getScaledWidth() - Client_Font.getWidth(speedtextString)) / 2, BossStatus.statusBarTime > 0 ? 20 : 2 + Client_Font.getHeight(speedc.getCurrentSpeed() + " m/s"), -788529153);
+                    Client_Font.drawStringWithShadow(speedtextString ,(event.getResolution().getScaledWidth() - Client_Font.getWidth(speedtextString)) / 2, BossStatus.statusBarTime > 0 ? 20 + Client_Font.getHeight(speedtextString) : 2 + Client_Font.getHeight(speedtextString), -788529153);
                     this.drawPotionStatus(event.getResolution());
                 }
         }
