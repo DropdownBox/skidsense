@@ -54,17 +54,15 @@ public class Scaffold extends Mod {
    //public TimerUtil towerTimer = new TimerUtil();
    public static Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) ScaffoldMode.values(), (Enum) ScaffoldMode.Hypixel);
    public static Option<Boolean> keeprots = new Option<Boolean>("KeepRotation", "KeepRotation", true);
-   public static Option<Boolean> tower = new Option<>("Tower","Tower",true);
-   public static Option<Boolean> towermove = new Option<>("Towermove","Towermove",true);
-   public static Option<Boolean> swing = new Option<>("Swing","Swing",false);
-   public static Option<Boolean> keepY = new Option<>("KeepY","KeepY",false);
+   public static Option<Boolean> tower = new Option<>("Tower", "Tower", true);
+   public static Option<Boolean> towermove = new Option<>("Towermove", "Towermove", true);
+   public static Option<Boolean> swing = new Option<>("Swing", "Swing", false);
+   public static Option<Boolean> keepY = new Option<>("KeepY", "KeepY", false);
    public static Option<Boolean> down = new Option<Boolean>("Downwards", "Downwards", true);
 
 
-
-
    public Scaffold() {
-      super("Scaffold",new String[]{"ScaffoldWalk"}, ModuleType.Player);
+      super("Scaffold", new String[]{"ScaffoldWalk"}, ModuleType.Player);
       //      targeting.add("Hypixel");
 //      targeting.add("NCP");
 //      Sight.instance.sm.rSetting(mode = new Setting("Mode", this, "Hypixel", targeting));
@@ -76,8 +74,8 @@ public class Scaffold extends Mod {
 //      Sight.instance.sm.rSetting(keepY = new Setting("KeepY", this, false));
    }
 
-   enum ScaffoldMode{
-      Hypixel,NCP
+   enum ScaffoldMode {
+      Hypixel, NCP
    }
 
    @Override
@@ -119,7 +117,6 @@ public class Scaffold extends Mod {
       }
 
 
-
       // tower and towermove
       if (mc.gameSettings.keyBindJump.isKeyDown() && tower.getValue() && (this.towermove.getValue() || !MoveUtil.isMoving()) && !mc.thePlayer.isPotionActive(Potion.jump)) {
          //mc.thePlayer.jump();
@@ -140,12 +137,10 @@ public class Scaffold extends Mod {
                     .round(mc.thePlayer.posY) + 1.0E-4) {
                e.setY(mc.thePlayer.motionY = 0.0);
             }
+         } else if (mc.thePlayer.motionY < 0.17D && mc.thePlayer.motionY > 0.169D) {
+            mc.thePlayer.motionY = -0.01f;
          } else {
-            if (mc.thePlayer.onGround) {
-               mc.thePlayer.motionY = 0.42f;
-            } else if (mc.thePlayer.motionY < 0.17D && mc.thePlayer.motionY > 0.16D) {
-               mc.thePlayer.motionY = -0.01f;
-            }
+            mc.thePlayer.motionY = 0.42f;
          }
       }
 
