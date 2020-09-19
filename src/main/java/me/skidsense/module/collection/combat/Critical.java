@@ -32,6 +32,8 @@ import java.awt.*;
 
 public class Critical extends Mod {
     private static Numbers<Double> delay = new Numbers<>("Delay", "Delay", 500.0, 0.0, 1000.0, 50.0);
+    private static Numbers<Double> ht = new Numbers<>("HurtTime", "HurtTime", 15.0, 1.0, 20.0, 1.0);
+
     private static TimerUtil timer = new TimerUtil();
     private EntityLivingBase lastTarget;
 
@@ -43,7 +45,7 @@ public class Critical extends Mod {
 
     @Sub
     public void onAttack(EventAttack ent) {
-        if (canCrit() && ent.targetEntity.hurtResistantTime <= 10 && ent.targetEntity.hurtResistantTime > 0) {
+        if (canCrit() && ent.targetEntity.hurtResistantTime <= ht.getValue() && ent.targetEntity.hurtResistantTime > 0) {
             doCrit();
         }
     }
@@ -71,13 +73,10 @@ public class Critical extends Mod {
     }
 
     public void doCrit() {
-        double[] offset = {0.03135642737949951, 0.0, 0.03135642737949951, 0.0};
+        double[] offset = {0.0624, -0.001500000013038516, 0.0010999999940395355};
         for (double d : offset) {
-            mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + d, mc.thePlayer.posZ, false));
+            mc.getNetHandler().sendpacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + d, mc.thePlayer.posZ, false));
         }
-        this.timer.reset();
-    }
-    enum CritMode {
-        Packet,
+        timer.reset();
     }
 }
