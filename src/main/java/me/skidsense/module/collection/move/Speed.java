@@ -214,7 +214,9 @@ public class Speed extends Mod {
                 if (this.stage >= 0 || this.collided) {
                     this.stage = 0;
                     if (this.stair == 0.0) {
-                        mc.thePlayer.jump();
+                        if(mc.thePlayer.ticksExisted % 8 == 0) {
+                            mc.thePlayer.jump();
+                        }
                         e.setY(mc.thePlayer.motionY = 0.40866666f + MoveUtil.getJumpEffect() * 0.1);
                     }
                     ++this.less;
@@ -236,7 +238,7 @@ public class Speed extends Mod {
             }
 
             if (this.lessSlow) {
-                this.speed *= 0.93D;
+                this.speed *= 0.95D;
             }
 
             if (PlayerUtil.isInLiquid()) {
@@ -244,10 +246,21 @@ public class Speed extends Mod {
             }
 
             if(MoveUtil.isMoving() && !AutoStrafe.canStrafe()) {
-                //mc.thePlayer.onGround = false;
-                fakeJump();
                 setMotion(e, speed);
                 ++stage;
+            }
+        }
+    }
+
+    @Sub
+    public void onHypixelUpdate(EventPreUpdate e){
+        if(mode.getValue() == SpeedMode.HypixelHop){
+            if (e.getY() % 0.015625 == 0.0) {
+                e.setY(e.getY() + 5.3424E-4);
+                e.setOnGround(false);
+            }
+            if (mc.thePlayer.motionY > 0.3) {
+                e.setOnGround(true);
             }
         }
     }
