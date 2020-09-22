@@ -1,7 +1,6 @@
 package me.skidsense;
 
 import me.skidsense.hooks.value.Value;
-import me.skidsense.management.AltManager;
 import me.skidsense.management.CommandManager;
 import me.skidsense.management.FileManager;
 import me.skidsense.management.ModManager;
@@ -25,13 +24,10 @@ public class Client {
 	public static String clientName = "Exusiai";
 	public static ModManager modulemanager;
 	public CommandManager commandmanager;
-	public AltManager altmanager;
 	public FontManager fontManager;
 	public TabGUI tabui;
-	public static void renameClient(String s){
-		clientName = s;
-		Display.setTitle(String.format("%s [1.8.8]",s));
-	}
+	private static me.skidsense.management.alt.FileManager fileManager;
+
 	public void initiate() {
 		fontManager = new FontManager();
 		this.commandmanager = new CommandManager();
@@ -41,9 +37,7 @@ public class Client {
 		this.tabui.init();
 		modulemanager = new ModManager();
 		modulemanager.init();
-		this.altmanager = new AltManager();
-		AltManager.init();
-		AltManager.setupAlts();
+		(fileManager = new me.skidsense.management.alt.FileManager()).loadFiles();
 		FileManager.init();
 	}
 
@@ -55,10 +49,11 @@ public class Client {
 		return this.commandmanager;
 	}
 
-	public AltManager getAltManager() {
-		return this.altmanager;
+	public static void renameClient(String s){
+		clientName = s;
+		Display.setTitle(String.format("%s [1.8.8]",s));
 	}
-
+	
 	public void shutDown() {
 		String values = "";
 		for (Mod m : ModManager.getMods()) {
@@ -134,6 +129,10 @@ public class Client {
 	public static void notif(String aaaaa) {
 		me.skidsense.notifications.Notification.SendNotification(aaaaa);
 
+	}
+
+	public static me.skidsense.management.alt.FileManager getFileManager() {
+		return fileManager;
 	}
 
 }

@@ -1,7 +1,6 @@
 package me.skidsense.management;
 
 import me.skidsense.SplashProgress;
-import me.skidsense.management.alt.Alt;
 import me.skidsense.module.collection.world.AutoL;
 import me.skidsense.util.EncryptionUtil;
 import net.minecraft.client.Minecraft;
@@ -35,88 +34,6 @@ public class FileManager
 		super();
 	}
 
-	public static void loadLastAlt() {
-		try {
-			if (!FileManager.LASTALT.exists()) {
-				LASTALT.createNewFile();
-				final PrintWriter printWriter = new PrintWriter(new FileWriter(FileManager.LASTALT));
-				printWriter.println();
-				printWriter.close();
-			}
-			else if (FileManager.LASTALT.exists()) {
-				final BufferedReader bufferedReader = new BufferedReader(new FileReader(FileManager.LASTALT));
-				String decrypted = EncryptionUtil.decrypt(bufferedReader.lines().collect(Collectors.joining("\n")));
-				String[] de;
-				if (decrypted != null) {
-					de = decrypted.split("\n")[0].split(":");
-					if(de.length == 2)
-						AltManager.lastAlt = new Alt(de[0],de[1]);
-				}
-
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void saveLastAlt() {
-		try {
-
-			final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
-			//Client.instance.getAltManager();
-			final Alt alt = AltManager.lastAlt;
-			String s = "\n";
-			if(alt != null)
-				s = String.format("%s:%s\n", alt.getUsername(), alt.getPassword());
-			printWriter.write(Objects.requireNonNull(EncryptionUtil.encrypt(s)));
-			printWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void loadAlts() {
-		try {
-			final BufferedReader bufferedReader = new BufferedReader(new FileReader(FileManager.ALT));
-			if (!FileManager.ALT.exists()) {
-				FileManager.ALT.createNewFile();
-				final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
-				printWriter.newLine();
-				printWriter.close();
-			}
-			else if (FileManager.ALT.exists()) {
-				String s = bufferedReader.lines().collect(Collectors.joining("\n"));
-				s = EncryptionUtil.decrypt(s);
-				String[] strings = new String[0];
-				if (s != null) {
-					strings = s.split("\n");
-				}
-				for (int i = 0; i < strings.length; i++) {
-					String[] strings1 = strings[i].split(":");
-					AltManager.alts.add(new Alt(strings1[0],strings1[1]));
-				}
-
-			}
-			bufferedReader.close();
-		}
-		catch (Exception ex) {}
-	}
-
-	public static void saveAlts() {
-		try {
-			StringBuilder stringBuffer = new StringBuilder();
-			final BufferedWriter printWriter = new BufferedWriter(new FileWriter(FileManager.ALT));
-			//Client.instance.getAltManager();
-			for (final Alt alt : AltManager.getAlts()) {
-				stringBuffer.append(String.format("%s:%s\n", alt.getUsername(), alt.getPassword()));
-			}
-			printWriter.write(Objects.requireNonNull(EncryptionUtil.encrypt(stringBuffer.toString())));
-			printWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public static File getConfigFile(final String name) {
 		final File file = new File(FileManager.dir, String.format("%s.txt", name));
 		if (!file.exists()) {
@@ -144,8 +61,6 @@ public class FileManager
 		if (!FileManager.dir.exists()) {
 			FileManager.dir.mkdir();
 		}
-		loadLastAlt();
-		loadAlts();
 		new Thread() {
 			@Override
 			public void run() {

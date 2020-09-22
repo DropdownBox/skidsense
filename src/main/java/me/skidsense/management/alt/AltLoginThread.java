@@ -1,77 +1,81 @@
-/*
- * Decompiled with CFR 0_132.
- */
 package me.skidsense.management.alt;
 
 import com.mojang.authlib.Agent;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.UserAuthentication;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 
 import me.skidsense.Client;
-import me.skidsense.management.FileManager;
 
+import java.io.IOException;
 import java.net.Proxy;
-import java.util.UUID;
-
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Session;
 
-public class AltLoginThread
-extends Thread {
-    private final Minecraft mc = Minecraft.getMinecraft();
-    private final String password;
-    private String status;
-    private final String username;
+public final class AltLoginThread extends Thread {
+   private Alt alt;
+   private String status;
+   private Minecraft mc = Minecraft.getMinecraft();
 
-    public AltLoginThread(String username, String password) {
-        super("Alt Login Thread");
-        this.username = username;
-        this.password = password;
-        this.status = "\u00a7eWaiting...";
-    }
+   public AltLoginThread(Alt alt) {
+      super("Alt Login Thread");
+      this.alt = alt;
+      this.status = EnumChatFormatting.GRAY + "Waiting...";
+   }
 
-    private final Session createSession(String username, String password) {
-        YggdrasilAuthenticationService service = new YggdrasilAuthenticationService(Proxy.NO_PROXY, "");
-        YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication)service.createUserAuthentication(Agent.MINECRAFT);
-        auth.setUsername(username);
-        auth.setPassword(password);
-        try {
-            auth.logIn();
-            return new Session(auth.getSelectedProfile().getName(), auth.getSelectedProfile().getId().toString(), auth.getAuthenticatedToken(), "mojang");
-        }
-        catch (AuthenticationException authenticationException) {
-            return null;
-        }
-    }
+   private Session createSession(String username, String password) {
+      YggdrasilAuthenticationService service = new YggdrasilAuthenticationService(Proxy.NO_PROXY, "");
+      YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication)service.createUserAuthentication(Agent.MINECRAFT);
+      auth.setUsername(username);
+      auth.setPassword(password);
+      long var5 = System.currentTimeMillis();
 
-    public String getStatus() {
-        return this.status;
-    }
+      try {
+         auth.logIn();
+         return new Session(auth.getSelectedProfile().getName(), auth.getSelectedProfile().getId().toString(), auth.getAuthenticatedToken(), "mojang");
+      } catch (AuthenticationException var8) {
+         var8.printStackTrace();
+         return null;
+      }
+   }
 
-    @Override
-    public void run() {
-        if (this.password.equals("")) {
-            this.mc.session = new Session(this.username, "", "", "mojang");
-            this.status = "\u00a7aLogged in. (" + this.username + " - offline name)";
-            return;
-        }
-        this.status = "\u00a7eLogging in...";
-        Session auth = this.createSession(this.username, this.password);
-        if (auth == null) {
-            this.status = "\u00a7cLogin failed!";
-        } else {
-            Client.instance.getAltManager().setLastAlt(new Alt(this.username, this.password));
-            FileManager.saveLastAlt();
-            this.status = "\u00a7aLogged in. (" + auth.getUsername() + ")";
+   public String getStatus() {
+      return this.status;
+   }
+
+   public void run() {
+      if (this.alt.getPassword().equals("")) {
+         this.mc.session = new Session(this.alt.getUsername(), "", "", "mojang");
+         this.status = EnumChatFormatting.GREEN + "Logged in. (" + this.alt.getUsername() + " - offline name)";
+      } else {
+         this.status = EnumChatFormatting.AQUA + "Logging in...";
+         Session auth = this.createSession(this.alt.getUsername(), this.alt.getPassword());
+         if (auth == null) {
+            this.status = EnumChatFormatting.RED + "Login failed!";
+            if (this.alt.getStatus().equals(Alt.Status.Unchecked)) {
+               this.alt.setStatus(Alt.Status.NotWorking);
+            }
+         } else {
+            AltManager.lastAlt = new Alt(this.alt.getUsername(), this.alt.getPassword());
+            this.status = EnumChatFormatting.GREEN + "Logged in. (" + auth.getUsername() + ")";
+            this.alt.setMask(auth.getUsername());
             this.mc.session = auth;
-        }
-    }
+            if (this.alt.getStatus().equals(Alt.Status.Unchecked)) {
+               this.alt.setStatus(Alt.Status.Working);
+            }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+            try {
+               Client.getFileManager().getFile(Alts.class).saveFile();
+            } catch (IOException var3) {
+               var3.printStackTrace();
+            }
+         }
+
+      }
+   }
+
+   public void setStatus(String status) {
+      this.status = status;
+   }
 }
-

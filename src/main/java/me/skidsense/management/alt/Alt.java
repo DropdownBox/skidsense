@@ -1,41 +1,69 @@
-/*
- * Decompiled with CFR 0_132.
- */
 package me.skidsense.management.alt;
 
-public class Alt {
-    private String mask = "";
-    private final String username;
-    private String password;
+public final class Alt {
+   private String mask;
+   private final String username;
+   private String password;
+   private Alt.Status status;
 
-    //public Alt(String username, String password) {
-     //   this(username, password, "");
-    //}
+   public Alt(String username, String password) {
+      this(username, password, Alt.Status.Unchecked);
+   }
 
-    public Alt(String username, String password) {
-        this.username = username;
-        this.password = password;
-        //this.mask = mask;
-    }
+   public Alt(String username, String password, Alt.Status status) {
+      this(username, password, "", status);
+   }
 
-    public String getMask() {
-        return this.mask;
-    }
+   public Alt(String username, String password, String mask, Alt.Status status) {
+      this.mask = "";
+      this.username = username;
+      this.password = password;
+      this.mask = mask;
+      this.status = status;
+   }
 
-    public String getPassword() {
-        return this.password;
-    }
+   public Alt.Status getStatus() {
+      return this.status;
+   }
 
-    public String getUsername() {
-        return this.username;
-    }
+   public String getMask() {
+      return this.mask;
+   }
 
-    public void setMask(String mask) {
-        this.mask = mask;
-    }
+   public String getPassword() {
+      return this.password;
+   }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+   public String getUsername() {
+      return this.username;
+   }
+
+   public void setStatus(Alt.Status status) {
+      this.status = status;
+   }
+
+   public void setMask(String mask) {
+      this.mask = mask;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
+   }
+
+   public static enum Status {
+      Working("§aWorking"),
+      Banned("§cBanned"),
+      Unchecked("§eUnchecked"),
+      NotWorking("§4Not Working");
+
+      private final String formatted;
+
+      private Status(String string) {
+         this.formatted = string;
+      }
+
+      public String toFormatted() {
+         return this.formatted;
+      }
+   }
 }
-
