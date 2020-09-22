@@ -23,7 +23,6 @@ import org.lwjgl.opengl.GL11;
 public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 
     private final Panorama panorama;
-    private int topButtonHeight;
 
     public GuiMainMenu() {
         panorama = new Panorama(this,
@@ -35,6 +34,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
                 new ResourceLocation("skidsense/mainmenu/main_menu/panorama/panorama_5.png"));
     }
 
+    @Override
     public void initGui() {
         super.initGui();
 
@@ -44,7 +44,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
                 new IconButton(1, this.width / 2 - 80,this.height / 3 + 40, 40, 40,
                         new ResourceLocation("skidsense/mainmenu/icon/person/single/1_white_32.png"), 16));
         this.buttonList.add(
-                new IconButton(2, this.width / 2 - 40, topButtonHeight = this.height / 3 + 40, 40, 40,
+                new IconButton(2, this.width / 2 - 40, this.height / 3 + 40, 40, 40,
                         new ResourceLocation("skidsense/mainmenu/icon/person/multiple/1_white_32.png"), 16));
 
         this.buttonList.add(
@@ -58,10 +58,12 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         this.mc.setConnectedToRealms(false);
     }
 
+    @Override
     public void updateScreen() {
         panorama.update();
     }
 
+    @Override
     protected void actionPerformed(GuiButton button) throws IOException {
 
         if (button.id == 999) {
@@ -80,6 +82,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
             this.mc.displayGuiScreen(new GuiMultiplayer(this));
         }
     }
+    
+    @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         panorama.draw(mouseX, mouseY, partialTicks);
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
@@ -90,10 +94,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         //drawGradientRect(0, 0, width, height, ColorCreator.createRainbowFromOffset(-6000, 10), new Color(0,0,0, 50).getRGB());
         drawGradientRect(0, 0, width, height, new Color(0,0,0, 0).getRGB(), ColorCreator.createRainbowFromOffset(-6000, 5));
         GlStateManager.popMatrix();
-
-        int logoPositionY = topButtonHeight - 70;
-        int logoImgDimensions = 64;
-
         GlStateManager.color(1f, 1f, 1f);
 
         int spacing = 110;
@@ -118,6 +118,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
     }
