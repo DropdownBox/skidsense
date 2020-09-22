@@ -14,6 +14,7 @@ import me.skidsense.util.ColorCreator;
 import me.skidsense.util.Draw;
 import me.skidsense.util.IconButton;
 import me.skidsense.util.Panorama;
+import me.skidsense.util.RenderUtil;
 
 import java.awt.*;
 import java.io.IOException;
@@ -23,7 +24,9 @@ import org.lwjgl.opengl.GL11;
 public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
 
     private final Panorama panorama;
-
+    
+    private boolean margeleStyle;
+    
     public GuiMainMenu() {
         panorama = new Panorama(this,
                 new ResourceLocation("skidsense/mainmenu/main_menu/panorama/panorama_0.png"),
@@ -39,7 +42,11 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         super.initGui();
 
         panorama.init();
-
+        
+        if(System.getProperty("user.name").contains("argel")) {
+        	margeleStyle = true;
+        }
+        
         this.buttonList.add(
                 new IconButton(1, this.width / 2 - 80,this.height / 3 + 40, 40, 40,
                         new ResourceLocation("skidsense/mainmenu/icon/person/single/1_white_32.png"), 16));
@@ -85,8 +92,12 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
     
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        panorama.draw(mouseX, mouseY, partialTicks);
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+    	if(margeleStyle) {
+            RenderUtil.drawImage(new ResourceLocation("pack.png"), (int)0, 0, sr.getScaledWidth(), sr.getScaledHeight());
+    	}else {
+    		panorama.draw(mouseX, mouseY, partialTicks);	
+		}
         GlStateManager.pushMatrix();
         GlStateManager.disableAlpha();
         GlStateManager.enableAlpha();
