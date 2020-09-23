@@ -7,7 +7,7 @@ import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventRender2D;
+import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.hooks.events.EventKey;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
@@ -87,7 +87,7 @@ public class TabGUI
     }
 
     @Sub
-    private void renderTabGUI(EventRender2D e) {
+    private void renderTabGUI(EventRenderGui e) {
         if (!Client.mc.gameSettings.showDebugInfo && Client.getModuleManager().getModuleByClass(HUD.class).isEnabled() && HUD.TABGUI.getValue()) {
             int categoryY = this.height;
             int moduleY = categoryY;

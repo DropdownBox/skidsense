@@ -3,7 +3,7 @@ package me.skidsense.module.collection.visual;
 import java.awt.Color;
 
 import me.skidsense.hooks.Sub;
-import me.skidsense.hooks.events.EventRender2D;
+import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
@@ -19,7 +19,7 @@ public class TargetHUD extends Mod {
     }
     
     @Sub
-    public final void onRenderGui(EventRender2D event) {
+    public final void onRenderGui(EventRenderGui event) {
     	FontRenderer fontRendererObj = this.mc.fontRendererObj;
         if (KillAura.target != null) {
             RenderUtil.drawBordered((float)(new ScaledResolution(this.mc).getScaledWidth() - 75), (double)(new ScaledResolution(this.mc).getScaledHeight() - 65), (double)(new ScaledResolution(this.mc).getScaledWidth() - 179), (double)(new ScaledResolution(this.mc).getScaledHeight() - 130), (float)1.0f, (int)new Color(35, 35, 35, 0).getRGB(), (int)new Color(35, 35, 35, 180).getRGB());

@@ -5,7 +5,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import me.skidsense.hooks.EventManager;
-import me.skidsense.hooks.events.EventRender2D;
 
 import java.util.Collection;
 import java.util.List;
@@ -367,7 +366,6 @@ public class GuiIngame extends Gui
         {
             this.overlayPlayerList.updatePlayerList(false);
         }
-        EventManager.postAll(new EventRender2D(partialTicks));
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.disableLighting();
         GlStateManager.enableAlpha();

@@ -1,9 +1,9 @@
 package me.skidsense.module.collection.visual;
 
 import me.skidsense.Client;
+import me.skidsense.color.Colors;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
-import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
@@ -110,7 +110,7 @@ extends Mod {
                     if (m.isEnabled()) {
                        m.translate.interpolate(x, (float)y, 0.40F);
                     }
-                    Client_Font.drawStringWithShadow(name, m.translate.getX() - 0.1f, m.translate.getY(), this.rainbow.getValue() != false ? rainbow.getRGB() : m.getColor());
+                    Client_Font.drawStringWithShadow(name, m.translate.getX() - 0.1f, m.translate.getY(), this.rainbow.getValue() != false ? rainbow.getRGB() : getCategoryColor(m));
                     if (++rainbowTick > 50) {
                         rainbowTick = 0;
                     }
@@ -157,6 +157,22 @@ extends Mod {
                 Client_Font.drawStringWithShadow(PType, sr.getScaledWidth() - Client_Font.getStringWidth(PType) - 2, sr.getScaledHeight() - Client_Font.getHeight(PType) + y - 12 - ychat, potion.getLiquidColor());
             y -= 10;
         }
+    }
+    
+    public int getCategoryColor(Mod m){
+    	switch (m.getType()){
+    	case Fight:
+    		return Colors.getColor(150, 53, 46);
+    	case Visual:
+    		return Colors.getColor(65, 118, 146);
+    	case World:
+    		return Colors.getColor(65, 155, 103);
+    	case Move:
+    		return Colors.getColor(200, 121, 0);  		
+    	case Player:
+    		return Colors.getColor(65, 134, 45);
+    	}
+    	return 0;
     }
     
     public enum arrayPosition {
