@@ -245,7 +245,7 @@ public class Speed extends Mod {
                 this.speed = 0.12D;
             }
 
-            if(MoveUtil.isMoving() && !AutoStrafe.canStrafe()) {
+            if(MoveUtil.isMoving() && (!Client.getModuleManager().getModuleByClass(AutoStrafe.class).isEnabled() || !AutoStrafe.canStrafe())) {
                 setMotion(e, speed);
                 ++stage;
             }
