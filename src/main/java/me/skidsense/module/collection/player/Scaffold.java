@@ -1,18 +1,24 @@
 package me.skidsense.module.collection.player;
 
 
+import me.skidsense.color.Colors;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.MoveUtil;
+import me.skidsense.util.RenderUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -23,8 +29,10 @@ import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class Scaffold extends Mod {
@@ -47,7 +55,7 @@ public class Scaffold extends Mod {
 //   private Setting swing;
 //   private Setting keepY;
 
-   public static boolean isPlaceTick = false;
+   public boolean isPlaceTick = false;
    int currentSlot;
    int slot;
    private double startY;
@@ -56,7 +64,7 @@ public class Scaffold extends Mod {
    public static Option<Boolean> keeprots = new Option<Boolean>("KeepRotation", "KeepRotation", true);
    public static Option<Boolean> tower = new Option<>("Tower", "Tower", true);
    public static Option<Boolean> towermove = new Option<>("Towermove", "Towermove", true);
-   public static Option<Boolean> swing = new Option<>("Swing", "Swing", false);
+   public Option<Boolean> swing = new Option<>("Swing", "Swing", false);
    public static Option<Boolean> keepY = new Option<>("KeepY", "KeepY", false);
    public static Option<Boolean> down = new Option<Boolean>("Downwards", "Downwards", true);
 
@@ -72,10 +80,6 @@ public class Scaffold extends Mod {
 //      Sight.instance.sm.rSetting(towermove = new Setting("TowerMove", this, true));
 //      Sight.instance.sm.rSetting(swing = new Setting("Swing", this, false));
 //      Sight.instance.sm.rSetting(keepY = new Setting("KeepY", this, false));
-   }
-
-   enum ScaffoldMode {
-      Hypixel, NCP
    }
 
    @Override
@@ -137,10 +141,12 @@ public class Scaffold extends Mod {
                     .round(mc.thePlayer.posY) + 1.0E-4) {
                e.setY(mc.thePlayer.motionY = 0.0);
             }
-         } else if (mc.thePlayer.motionY < 0.17D && mc.thePlayer.motionY > 0.169D) {
-            mc.thePlayer.motionY = -0.01f;
          } else {
-            mc.thePlayer.motionY = 0.42f;
+        	 if (mc.thePlayer.onGround) {
+        		 mc.thePlayer.motionY = 0.42f;	
+             } else if (mc.thePlayer.motionY < 0.17D && mc.thePlayer.motionY > 0.16D) {	
+                mc.thePlayer.motionY = -0.01f;
+        	 }
          }
       }
 
@@ -185,11 +191,6 @@ public class Scaffold extends Mod {
       }
    }
 
-   protected void swap(int slot, int hotbarNum) {
-      mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotbarNum, 2,
-              mc.thePlayer);
-   }
-
    @Sub
    public void onPostUpdate(EventPostUpdate e){
       currentSlot = mc.thePlayer.inventory.currentItem;
@@ -200,6 +201,24 @@ public class Scaffold extends Mod {
          }
          mc.thePlayer.inventory.currentItem = currentSlot;
       }
+   }
+   
+   @Sub
+   public void onRender(EventRenderGui e) {
+       int color = Colors.getColor(255, 0, 0, 150);
+       if (this.getBlockCount() >= 64 && 128 > this.getBlockCount()) {
+           color = Colors.getColor(255, 255, 0, 150);
+       } else if (this.getBlockCount() >= 128) {
+           color = Colors.getColor(0, 255, 0, 150);
+       }
+       GlStateManager.enableBlend();
+       RenderUtil.drawOutlinedString(String.valueOf(this.getBlockCount()), e.getResolution().getScaledWidth() / 2 - Scaffold.mc.fontRendererObj.getStringWidth(this.getBlockCount() + "") / 2, e.getResolution().getScaledHeight() / 2 + 10, color);
+       GlStateManager.disableBlend();
+   }
+   
+   protected void swap(int slot, int hotbarNum) {
+      mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, hotbarNum, 2,
+              mc.thePlayer);
    }
 
    private boolean getPlaceBlock(final BlockPos pos, final EnumFacing facing) {
@@ -319,5 +338,10 @@ public class Scaffold extends Mod {
          return this.blockPos;
       }
    }
+   
+   public enum ScaffoldMode {
+	      Hypixel, NCP
+   }
+
 }
 
