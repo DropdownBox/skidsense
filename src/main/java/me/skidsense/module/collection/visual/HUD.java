@@ -88,9 +88,9 @@ extends Mod {
             		second = "";
 	            }
             }
-            Client_Font.drawStringWithShadow(first, 4, (float)2, new Color(220,1,5).getRGB());
-            Client_Font.drawStringWithShadow(second, Client_Font.getStringWidth(first)+2, (float)2, new Color(255,255,255).getRGB());
-            Client_Font.drawStringWithShadow("#001", Client_Font.getStringWidth(Client.clientName)+5, 2, new Color(180,180,180).getRGB());
+            Client_Font.drawStringWithShadow(first, 2, (float)2, new Color(220,1,5).getRGB());
+            Client_Font.drawStringWithShadow(second, Client_Font.getStringWidth(first), (float)2, new Color(255,255,255).getRGB());
+            Client_Font.drawStringWithShadow("#001", Client_Font.getStringWidth(Client.clientName)+4, 2, new Color(180,180,180).getRGB());
             ArrayList<Mod> sorted = new ArrayList<Mod>();
             boolean left = mode.getValue() == arrayPosition.TopLeft;
 			for (Mod m : ModManager.getMods()) {
