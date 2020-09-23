@@ -5,8 +5,8 @@ import me.skidsense.SplashProgress;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventKey;
-import me.skidsense.hooks.events.EventRender2D;
 import me.skidsense.hooks.events.EventRender3D;
+import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -84,7 +84,7 @@ implements Manager {
         addMod(new Blink());
         addMod(new Scaffold());
         addMod(new AntiDesync());
-
+        
         addMod(new Animations());
         addMod(new ArmorStatus());
         addMod(new ClickGui());
@@ -105,6 +105,7 @@ implements Manager {
         addMod(new SpeedMine());
         addMod(new Disabler());
         addMod(new ChatCommands());
+        addMod(new LightningFinder());
         this.readSettings();
         EventManager.getOtherEventManager().register(this);
         if(!Client.getModuleManager().getModuleByClass(ChatCommands.class).isEnabled()) {
@@ -177,7 +178,7 @@ implements Manager {
     }
 
     @Sub
-    private void on2DRender(EventRender2D e) {
+    private void on2DRender(EventRenderGui e) {
         if (this.enabledNeededMod) {
             this.enabledNeededMod = false;
             for (Mod m : mods) {
