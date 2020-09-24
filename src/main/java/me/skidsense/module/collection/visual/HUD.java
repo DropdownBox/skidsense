@@ -21,10 +21,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.ScaledResolution;
@@ -47,6 +50,7 @@ extends Mod {
     public static Mode<Enum> mode = new Mode("ArrayPosition", "ArrayPosition", (Enum[])arrayPosition.values(), (Enum)arrayPosition.TopRight);
     public static Option<Boolean> TABGUI = new Option<Boolean>("TabGui", "TabGui", true);
     private Option<Boolean> info = new Option<Boolean>("Information", "information", true);
+    private Option<Boolean> animegirl = new Option<Boolean>("AnimeGirl", "AnimeGirl", false);
     private Option<Boolean> rainbow = new Option<Boolean>("Rainbow", "rainbow", false);
     public static boolean shouldMove;
     private final TTFFontRenderer Client_Font = Client.instance.fontManager.comfortaa18;
@@ -121,41 +125,53 @@ extends Mod {
                     Client_Font.drawStringWithShadow(text,(event.getResolution().getScaledWidth() - Client_Font.getWidth(text)) / 2, BossStatus.statusBarTime > 0 ? 20 : 2, -788529153);
                     String speedtextString = EnumChatFormatting.GRAY +""+ (MoveUtil.isMoving() ? MathUtil.round(speedc.getCurrentSpeed(), 2) : 0) +EnumChatFormatting.WHITE+ " m / sec";
                     Client_Font.drawStringWithShadow(speedtextString ,(event.getResolution().getScaledWidth() - Client_Font.getWidth(speedtextString)) / 2, BossStatus.statusBarTime > 0 ? 20 + Client_Font.getHeight(speedtextString) : 2 + Client_Font.getHeight(speedtextString), -788529153);
-                    this.drawPotionStatus(event.getResolution());
                 }
+                if(animegirl.getValue()) {
+                    RenderUtil.drawImage(new ResourceLocation("skidsense/AstolfoTrifasSprite.png"), RenderUtil.width() - 160, RenderUtil.height() - 70, 256, 256);	
+                }
+                this.drawPotionStatus(event.getResolution());
         }
     }
 
     private void drawPotionStatus(ScaledResolution sr) {
-        int y = 0;
-        for (PotionEffect effect : this.mc.thePlayer.getActivePotionEffects()) {
-            int ychat;
-            Potion potion = Potion.potionTypes[effect.getPotionID()];
-            String PType = I18n.format(potion.getName(), new Object[0]);
-            switch (effect.getAmplifier()) {
-                case 1: {
-                    PType = String.valueOf(PType) + " II";
-                    break;
-                }
-                case 2: {
-                    PType = String.valueOf(PType) + " III";
-                    break;
-                }
-                case 3: {
-                    PType = String.valueOf(PType) + " IV";
-                    break;
-                }
-            }
-            if (effect.getDuration() < 600 && effect.getDuration() > 300) {
-                PType = String.valueOf(PType) + "\u00a77:\u00a76 " + Potion.getDurationString(effect);
-            } else if (effect.getDuration() < 300) {
-                PType = String.valueOf(PType) + "\u00a77:\u00a7c " + Potion.getDurationString(effect);
-            } else if (effect.getDuration() > 600) {
-                PType = String.valueOf(PType) + "\u00a77:\u00a77 " + Potion.getDurationString(effect);
-            }
-            int n = ychat = this.mc.ingameGUI.getChatGUI().getChatOpen() ? 5 : -10;
-                Client_Font.drawStringWithShadow(PType, sr.getScaledWidth() - Client_Font.getStringWidth(PType) - 2, sr.getScaledHeight() - Client_Font.getHeight(PType) + y - 12 - ychat, potion.getLiquidColor());
-            y -= 10;
+        TTFFontRenderer font = Client.instance.fontManager.comfortaa18;
+        List<PotionEffect> potions = new ArrayList<PotionEffect>();
+        Iterator<PotionEffect> var3 = mc.thePlayer.getActivePotionEffects().iterator();
+
+        while(var3.hasNext()) {
+           Object o = var3.next();
+           potions.add((PotionEffect)o);
+        }
+
+        potions.sort(Comparator.comparingDouble((effectx) -> {
+           return (double)(-font.getWidth(I18n.format(Potion.potionTypes[effectx.getPotionID()].getName())));
+        }));
+        float pY = mc.currentScreen != null && mc.currentScreen instanceof GuiChat ? -25.0F : -2.0F;
+
+        for(Iterator<PotionEffect> var11 = potions.iterator(); var11.hasNext(); pY -= 9.0F) {
+           PotionEffect effect = (PotionEffect)var11.next();
+           Potion potion = Potion.potionTypes[effect.getPotionID()];
+           String name = I18n.format(potion.getName());
+           String PType = "";
+           if (effect.getAmplifier() == 1) {
+              name = name + " II";
+           } else if (effect.getAmplifier() == 2) {
+              name = name + " III";
+           } else if (effect.getAmplifier() == 3) {
+              name = name + " IV";
+           }
+
+           if (effect.getDuration() < 600 && effect.getDuration() > 300) {
+              PType = PType + "\2476 " + Potion.getDurationString(effect);
+           } else if (effect.getDuration() < 300) {
+              PType = PType + "\247c " + Potion.getDurationString(effect);
+           } else if (effect.getDuration() > 600) {
+              PType = PType + "\2477 " + Potion.getDurationString(effect);
+           }
+
+           Color c = new Color(potion.getLiquidColor());
+           font.drawStringWithShadow(name, (float)sr.getScaledWidth() - font.getWidth(name + PType), (float)(sr.getScaledHeight() - 9) + pY, Colors.getColor(c.getRed(), c.getGreen(), c.getBlue()));
+           font.drawStringWithShadow(PType, (float)sr.getScaledWidth() - font.getWidth(PType), (float)(sr.getScaledHeight() - 9) + pY, -1);
         }
     }
     
