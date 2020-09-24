@@ -15,6 +15,7 @@ import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.AntiBot;
 import me.skidsense.module.collection.combat.AutoArmor;
+import me.skidsense.module.collection.combat.AutoPotion;
 import me.skidsense.module.collection.combat.AutoSword;
 import me.skidsense.module.collection.combat.Critical;
 import me.skidsense.module.collection.combat.KillAura;
@@ -60,6 +61,7 @@ implements Manager {
     public void init() {
     	SplashProgress.setProgress(5, "ModuleManager Init");
         addMod(new AutoArmor());
+        addMod(new AutoPotion());
         addMod(new AntiBot());
         addMod(new AutoSword());
         addMod(new Critical());
@@ -89,7 +91,6 @@ implements Manager {
         addMod(new Animations());
         addMod(new ArmorStatus());
         addMod(new ClickGui());
-        addMod(new Xray());
         addMod(new Fullbright());
         addMod(new ItemEsp());
         addMod(new ESP());
