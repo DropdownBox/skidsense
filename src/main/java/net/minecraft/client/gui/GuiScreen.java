@@ -3,6 +3,8 @@ package net.minecraft.client.gui;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -16,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import me.skidsense.util.ColorCreator;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.stream.GuiTwitchUserMode;
@@ -674,7 +677,8 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     {
         if (this.mc.theWorld != null)
         {
-            net.minecraft.client.gui.Gui.drawRect(0, 0, this.width, this.height, RenderUtil.reAlpha(-4179669,0.23f));
+        	drawGradientRect(0, 0, width, height, new Color(0,0,0, 0).getRGB(), RenderUtil.reAlpha(-4179669,0.5f));
+            //net.minecraft.client.gui.Gui.drawRect(0, 0, this.width, this.height, RenderUtil.reAlpha(-4179669,0.23f));
             //this.drawGradientRect(0, 0, this.width, this.height, RenderUtil.reAlpha(-14057287,0.25f));
         }
         else
