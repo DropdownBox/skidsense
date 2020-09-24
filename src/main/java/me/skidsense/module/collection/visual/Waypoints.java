@@ -51,6 +51,8 @@ public class Waypoints extends Mod {
 	
 	@Sub
 	public void onRenderGui(EventRenderGui eventRenderGui) {
+		if(mc.getCurrentServerData() == null)
+			return;
 		GlStateManager.pushMatrix();
         ScaledResolution scaledRes = new ScaledResolution(mc);
         float radiusHeight = (float)(scaledRes.getScaledHeight() / 4);
