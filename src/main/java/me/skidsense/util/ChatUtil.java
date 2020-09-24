@@ -98,9 +98,13 @@ public class ChatUtil {
         }
     }
 
+    public static void printChatwithPrefix(String text) {
+        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText("§c[§fExusiai§c]§7 " + text));
+    }
+    
     public static void printChat(String text) {
         Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(text));
-     }
+    }
 
 }
 

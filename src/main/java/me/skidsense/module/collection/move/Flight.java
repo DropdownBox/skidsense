@@ -244,7 +244,7 @@ public class Flight extends Mod {
                     || e.getPacket() instanceof C0BPacketEntityAction || e.getPacket() instanceof C02PacketUseEntity) {
                 this.packets.add(e.getPacket());
                 e.setCancelled(true);
-                System.out.println("取消了数据包：" + e.getPacket());
+                System.out.println("取消了数据包：" + e.getPacket().getClass().getCanonicalName());
                 ++packetsconter;
             }
         }
@@ -476,10 +476,7 @@ public class Flight extends Mod {
         if(mode.getValue() == FlyMode.HypixelDamage) {
             for (Packet packet : this.packets) {
                 mc.thePlayer.sendQueue.addToSendQueue(packet);
-                System.out.println("发送了数据包: "+packet.getClass().getName());
-                if(packet instanceof C03PacketPlayer) {
-                    System.out.println("GroundState: "+((C03PacketPlayer) packet).onGround);
-                }
+                System.out.println("发送了数据包: "+packet.getClass().getCanonicalName());
             }
             packets.clear();
         }

@@ -6,6 +6,7 @@ import me.skidsense.management.FileManager;
 import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.FontManager;
 import me.skidsense.management.friend.FriendManager;
+import me.skidsense.management.waypoints.WaypointManager;
 import me.skidsense.module.Mod;
 import me.skidsense.module.collection.visual.TabGUI;
 
@@ -14,7 +15,11 @@ import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockPos;
+
+import javax.swing.text.html.parser.Entity;
+
 import org.lwjgl.opengl.Display;
 
 public class Client {
@@ -22,12 +27,15 @@ public class Client {
 	public static Minecraft mc = Minecraft.getMinecraft();
 	public static Client instance = new Client();
 	public static String clientName = "Exusiai";
+	public boolean authuser = false;
 	public static ModManager modulemanager;
 	public CommandManager commandmanager;
 	public FontManager fontManager;
 	public TabGUI tabui;
 	private static me.skidsense.management.alt.FileManager fileManager;
-
+	public EntityLivingBase viptarget;
+	public WaypointManager waypointManager;
+	
 	public void initiate() {
 		fontManager = new FontManager();
 		this.commandmanager = new CommandManager();
@@ -38,6 +46,7 @@ public class Client {
 		modulemanager = new ModManager();
 		modulemanager.init();
 		(fileManager = new me.skidsense.management.alt.FileManager()).loadFiles();
+		waypointManager = new WaypointManager();
 		FileManager.init();
 	}
 
