@@ -289,5 +289,18 @@ public class RotationUtil {
         c = Math.min(c, 360.0f - c);
         return c;
     }
+
+    public static float getNewAngle(float angle) {
+        angle %= 360.0F;
+        if (angle >= 180.0F) {
+           angle -= 360.0F;
+        }
+
+        if (angle < -180.0F) {
+           angle += 360.0F;
+        }
+
+        return angle;
+     }
 }
 

@@ -84,6 +84,7 @@ implements Manager {
         addMod(new Blink());
         addMod(new Scaffold());
         addMod(new AntiDesync());
+        addMod(new Teleport());
         
         addMod(new Animations());
         addMod(new ArmorStatus());
@@ -97,6 +98,7 @@ implements Manager {
         addMod(new Nametags());
         addMod(new TargetHUD());
         addMod(new KidFace());
+        addMod(new Waypoints());
         
         addMod(new AutoL());
         addMod(new ChestStealer());

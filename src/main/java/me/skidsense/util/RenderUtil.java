@@ -1278,5 +1278,36 @@ public class RenderUtil {
         mc.fontRendererObj.drawString(str, x, y - 0.3F, Colors.getColor(0));
         mc.fontRendererObj.drawString(str, x, y, color);
      }
+
+    public static void drawCircle(float cx, float cy, float r, int num_segments, int c) {
+        GL11.glPushMatrix();
+        cx *= 2.0F;
+        cy *= 2.0F;
+        float f = (float)(c >> 24 & 255) / 255.0F;
+        float f1 = (float)(c >> 16 & 255) / 255.0F;
+        float f2 = (float)(c >> 8 & 255) / 255.0F;
+        float f3 = (float)(c & 255) / 255.0F;
+        float theta = (float)(6.2831852D / (double)num_segments);
+        float p = (float)Math.cos((double)theta);
+        float s = (float)Math.sin((double)theta);
+        float x = r *= 2.0F;
+        float y = 0.0F;
+        enableGL2D();
+        GL11.glScalef(0.5F, 0.5F, 0.5F);
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glBegin(2);
+
+        for(int ii = 0; ii < num_segments; ++ii) {
+           GL11.glVertex2f(x + cx, y + cy);
+           float t = x;
+           x = p * x - s * y;
+           y = s * t + p * y;
+        }
+
+        GL11.glEnd();
+        GL11.glScalef(2.0F, 2.0F, 2.0F);
+        disableGL2D();
+        GL11.glPopMatrix();
+     }
 }
 

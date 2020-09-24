@@ -11,7 +11,9 @@ import me.skidsense.management.command.impl.Damage;
 import me.skidsense.management.command.impl.Friend;
 import me.skidsense.management.command.impl.Help;
 import me.skidsense.management.command.impl.Say;
+import me.skidsense.management.command.impl.Target;
 import me.skidsense.management.command.impl.Toggle;
+import me.skidsense.management.command.impl.Waypoint;
 
 public class CommandManager {
    public static final HashMap<String, Command> commandMap = new HashMap<String, Command>();
@@ -37,5 +39,7 @@ public class CommandManager {
       (new Bind(new String[]{"bind", "key", "b"}, "Send a message with your chat prefix.")).register(this);
       (new Friend(new String[]{"friend", "fr", "f"}, "Add and remove friends.")).register(this);
       (new Clear(new String[]{"clear", "cl", "clr"}, "Clears chat for you.")).register(this);
+	  (new Target(new String[]{"Target"}, "set vip target.")).register(this);
+      (new Waypoint(new String[]{"waypoint", "wp", "marker"}, "Waypoint command.")).register(this);
    }
 }
