@@ -1,6 +1,7 @@
 package me.skidsense.module.collection.visual;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRenderGui;
@@ -9,28 +10,135 @@ import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 public class TargetHUD extends Mod {
+	
+	float astolfoHelathAnim = 0f;
 	
     public TargetHUD() {
         super("Target Info", new String[]{"TargetInfo"}, ModuleType.Fight);
     }
     
+	@Override
+	public void onEnable() {
+		astolfoHelathAnim = 0f;
+		super.onEnable();
+	}
+	
     @Sub
     public final void onRenderGui(EventRenderGui event) {
-    	FontRenderer fontRendererObj = this.mc.fontRendererObj;
-        if (KillAura.target != null) {
-            RenderUtil.drawBordered((float)(new ScaledResolution(this.mc).getScaledWidth() - 75), (double)(new ScaledResolution(this.mc).getScaledHeight() - 65), (double)(new ScaledResolution(this.mc).getScaledWidth() - 179), (double)(new ScaledResolution(this.mc).getScaledHeight() - 130), (float)1.0f, (int)new Color(35, 35, 35, 0).getRGB(), (int)new Color(35, 35, 35, 180).getRGB());
-            fontRendererObj.drawString(KillAura.target.getName(), new ScaledResolution(this.mc).getScaledWidth() - 163, new ScaledResolution(this.mc).getScaledHeight() - 140, new Color(235, 0, 120, 200).getRGB());
-            fontRendererObj.drawString("\u00a7aHP: \u00a7c" + (int)((EntityLivingBase)KillAura.target).getHealth() + "/" + (int)((EntityLivingBase)KillAura.target).getMaxHealth(), (float)(new ScaledResolution(this.mc).getScaledWidth() - 118), (float)(new ScaledResolution(this.mc).getScaledHeight() - 116), 16777215);
-            fontRendererObj.drawString("\u00a7bHurt: " + (KillAura.target.hurtResistantTime > 0), (float)(new ScaledResolution(this.mc).getScaledWidth() - 118), (float)(new ScaledResolution(this.mc).getScaledHeight() - 108), 16777215);
-            fontRendererObj.drawString("\u00a7eReach: " + (int)Minecraft.getMinecraft().thePlayer.getDistanceToEntity(KillAura.target), (float)(new ScaledResolution(this.mc).getScaledWidth() - 118), (float)(new ScaledResolution(this.mc).getScaledHeight() - 94), 16777215);
-            fontRendererObj.drawString("X: " + (int)KillAura.target.posX, (float)(new ScaledResolution(this.mc).getScaledWidth() - 118), (float)(new ScaledResolution(this.mc).getScaledHeight() - 87), new Color(235, 0, 120, 200).getRGB());
-            fontRendererObj.drawString("Y: " + (int)KillAura.target.posY, (float)(new ScaledResolution(this.mc).getScaledWidth() - 118), (float)(new ScaledResolution(this.mc).getScaledHeight() - 80), new Color(235, 0, 120, 200).getRGB());
-            fontRendererObj.drawString("Z:" + (int)KillAura.target.posZ, (float)(new ScaledResolution(this.mc).getScaledWidth() - 118), (float)(new ScaledResolution(this.mc).getScaledHeight() - 73), new Color(235, 0, 120, 200).getRGB());
-            RenderUtil.drawEntityOnScreen((int)(new ScaledResolution(this.mc).getScaledWidth() - 148), (int)(new ScaledResolution(this.mc).getScaledHeight() - 66), (int)30, (float)2.0f, (float)15.0f, (EntityLivingBase)((EntityLivingBase)KillAura.target));
-        }
+		int x = event.getResolution().getScaledWidth() / 2 + 20;
+		int y = event.getResolution().getScaledHeight() / 2 - 30;
+		if (true) {
+			EntityLivingBase player = mc.thePlayer;
+			RenderUtil.pre();
+			GlStateManager.pushMatrix();
+
+			// BaseRect(black)
+			Gui.drawRect(x + 0.7f, y, x + 149.7f, y + 60, new Color(0, 0, 0, 100).getRGB());
+
+			// health color math
+			float health = player.getHealth();
+			float health2;
+			float[] fractions = new float[] { 0.0f, 0.2f, 0.7f };
+			Color[] colors = new Color[] { Color.RED, Color.YELLOW, Color.GREEN };
+			float progress = health / player.getMaxHealth();
+			Color customColor = health >= 0.0f ? ESP.blendColors(fractions, colors, progress).brighter()
+					: Color.RED;
+
+			customColor = customColor.darker();
+
+			// Player name
+			mc.fontRendererObj.drawStringWithShadow(player.getName(), x + 37, y + 8, -1);
+
+			// Player Health
+
+			GlStateManager.scale(1.5f, 1.5f, 1.5f);
+			mc.fontRendererObj.drawStringWithShadow((int) player.getHealth() + " ❤", (x + 37) / 1.5f,
+					(y + 20) / 1.5f, customColor.getRGB());
+
+			// health rect animation
+			double wdnmd = 150D;
+			if ((double) this.astolfoHelathAnim < wdnmd
+					* (double) (health2 = player.getHealth() / player.getMaxHealth())) {
+				if (wdnmd * (double) health2 - (double) this.astolfoHelathAnim < 1.0) {
+					this.astolfoHelathAnim = (float) (wdnmd * (double) health2);
+				}
+				this.astolfoHelathAnim = (float) ((double) this.astolfoHelathAnim + 4D);
+			}
+			if (wdnmd * (double) health2 - (double) this.astolfoHelathAnim > 1.0) {
+				this.astolfoHelathAnim = (float) (wdnmd * (double) health2);
+			}
+			this.astolfoHelathAnim = (float) ((double) this.astolfoHelathAnim - 4D);
+			if (astolfoHelathAnim < 0) {
+				astolfoHelathAnim = 0;
+			}
+
+			// health rect base
+			Gui.drawRect((x + 2.985f) / 1.5f, (y + 55) / 1.5f, (x + 148) / 1.5f, (y + 58) / 1.5f,
+					new Color(customColor.getRed(), customColor.getGreen(), customColor.getBlue(), 100).getRGB());
+
+			// health rect main
+			Gui.drawRect((x + 2.985f) / 1.5f, (y + 55) / 1.5f, (x + 2 + (astolfoHelathAnim)) / 1.5f,
+					(y + 58) / 1.5f, customColor.getRGB());
+
+			GlStateManager.popMatrix();
+			RenderUtil.post();
+
+			// Player Model
+			GlStateManager.color(1.0f, 1.0f, 1.0f);
+			RenderUtil.drawEntityOnScreen(x + 18,
+					(int) (y + (player.isSneaking() ? 38
+							: ((player instanceof EntityPlayer)
+									? (((EntityPlayer) player).inventory.armorInventory.length == 0 ? 44 : 46)
+									: 46))
+							+ (player.getEyeHeight() / 0.3f)),
+					24, player.rotationYaw, player.rotationPitch, player);
+
+			if (player instanceof EntityPlayer) {
+				GlStateManager.pushMatrix();
+				// Player Armor
+				EntityPlayer entityplayer = (EntityPlayer) player;
+				ArrayList<ItemStack> stuff = new ArrayList<ItemStack>();
+				int split = x + 20;
+				int y2 = y + 35;
+				int index = 3;
+				while (index >= 0) {
+					ItemStack armer = entityplayer.inventory.armorInventory[index];
+					if (armer != null) {
+						stuff.add(armer);
+					}
+					--index;
+				}
+		        if (mc.thePlayer.getCurrentEquippedItem() != null) {
+		            stuff.add(mc.thePlayer.getCurrentEquippedItem());
+		        }
+				for (ItemStack errything : stuff) {
+					if (Minecraft.getMinecraft().theWorld != null) {
+						RenderHelper.enableGUIStandardItemLighting();
+						split += 20;
+					}
+					GlStateManager.disableAlpha();
+					GlStateManager.clear(256);
+					mc.getRenderItem().zLevel = -150.0f;
+					mc.getRenderItem().renderItemAndEffectIntoGUI(errything, split, y2);
+					mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, errything, split, y2);
+					mc.getRenderItem().zLevel = 0.0f;
+					GlStateManager.disableBlend();
+					GlStateManager.scale(0.5, 0.5, 0.5);
+					GlStateManager.disableDepth();
+					GlStateManager.disableLighting();
+					GlStateManager.enableDepth();
+					GlStateManager.scale(2.0f, 2.0f, 2.0f);
+					GlStateManager.enableAlpha();
+				}
+				GlStateManager.popMatrix();
+			}
+		}
     }
 }
