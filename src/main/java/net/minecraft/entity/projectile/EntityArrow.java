@@ -32,7 +32,7 @@ public class EntityArrow extends Entity implements IProjectile
     private int zTile = -1;
     private Block inTile;
     private int inData;
-    private boolean inGround;
+    public boolean inGround;
 
     /** 1 if the player can pick up the arrow */
     public int canBePickedUp;

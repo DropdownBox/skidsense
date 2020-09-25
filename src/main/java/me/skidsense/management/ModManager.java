@@ -93,6 +93,7 @@ implements Manager {
         addMod(new Disabler());
         addMod(new ChatCommands());
         addMod(new LightningFinder());
+        addMod(new Projectiles());
         this.readSettings();
         EventManager.getOtherEventManager().register(this);
         if(!Client.getModuleManager().getModuleByClass(ChatCommands.class).isEnabled()) {
