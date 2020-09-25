@@ -302,5 +302,11 @@ public class RotationUtil {
 
         return angle;
      }
+
+    public static float getTrajAngleSolutionLow(float d3, float d1, float velocity) {
+        float g = 0.006F;
+        float sqrt = velocity * velocity * velocity * velocity - 0.006F * (0.006F * d3 * d3 + 2.0F * d1 * velocity * velocity);
+        return (float)Math.toDegrees(Math.atan(((double)(velocity * velocity) - Math.sqrt((double)sqrt)) / (double)(0.006F * d3)));
+    }
 }
 

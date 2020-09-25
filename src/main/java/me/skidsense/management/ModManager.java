@@ -17,6 +17,7 @@ import me.skidsense.module.collection.combat.AntiBot;
 import me.skidsense.module.collection.combat.AutoArmor;
 import me.skidsense.module.collection.combat.AutoPotion;
 import me.skidsense.module.collection.combat.AutoSword;
+import me.skidsense.module.collection.combat.BowAimBot;
 import me.skidsense.module.collection.combat.Critical;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.module.collection.move.*;
@@ -39,24 +40,6 @@ implements Manager {
     public static ArrayList<Mod> sortedModList = new ArrayList<Mod>();
     private boolean enabledNeededMod = true;
 
-    public void addMod(Mod mod){
-        for (Field field : mod.getClass().getDeclaredFields()) {
-            if(!field.isAccessible()){
-                field.setAccessible(true);
-            }
-            Object obj;
-            try {
-                if((obj = field.get(mod)) instanceof Value){
-
-                        mod.addValue((Value<?>) obj);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        EventManager.getInstance().register(mod);
-        mods.add(mod);
-    }
     @Override
     public void init() {
     	SplashProgress.setProgress(5, "ModuleManager Init");
@@ -67,6 +50,7 @@ implements Manager {
         addMod(new Critical());
         addMod(new KillAura());
         addMod(new AutoStrafe());
+        addMod(new BowAimBot());
         
         addMod(new Jesus());
         addMod(new Flight());
@@ -121,6 +105,25 @@ implements Manager {
         return mods;
     }
 
+    public void addMod(Mod mod){
+        for (Field field : mod.getClass().getDeclaredFields()) {
+            if(!field.isAccessible()){
+                field.setAccessible(true);
+            }
+            Object obj;
+            try {
+                if((obj = field.get(mod)) instanceof Value){
+
+                        mod.addValue((Value<?>) obj);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        EventManager.getInstance().register(mod);
+        mods.add(mod);
+    }
+    
     public Mod getModuleByClass(Class<? extends Mod> cls) {
         for (Mod m : mods) {
             if (m.getClass() != cls) continue;

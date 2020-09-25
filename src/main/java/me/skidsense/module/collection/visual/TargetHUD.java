@@ -34,8 +34,8 @@ public class TargetHUD extends Mod {
     public final void onRenderGui(EventRenderGui event) {
 		int x = event.getResolution().getScaledWidth() / 2 + 20;
 		int y = event.getResolution().getScaledHeight() / 2 - 30;
-		if (true) {
-			EntityLivingBase player = mc.thePlayer;
+		if (KillAura.target != null) {
+			EntityLivingBase player = KillAura.slowtarget;
 			RenderUtil.pre();
 			GlStateManager.pushMatrix();
 
