@@ -21,7 +21,7 @@ public class TargetHUD extends Mod {
 	float astolfoHelathAnim = 0f;
 	
     public TargetHUD() {
-        super("Target Info", new String[]{"TargetInfo"}, ModuleType.Fight);
+        super("Target Info", new String[]{"TargetInfo"}, ModuleType.Visual);
     }
     
 	@Override
