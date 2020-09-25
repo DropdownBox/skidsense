@@ -33,11 +33,7 @@ import net.minecraft.item.ItemBow;
 public class BowAimBot extends Mod {
 	
 	public Mode<AimPriority> priority = new Mode<AimPriority>("Priority", "Priority", AimPriority.values(), AimPriority.Crosshair);
-	public Option<Boolean> players = new Option<Boolean>("Players", "Players", true);
-	public Option<Boolean> mobs = new Option<Boolean>("Mobs", "Mobs", false);
-	public Option<Boolean> animals = new Option<Boolean>("Animals", "Animals", false);
 	public Option<Boolean> invis = new Option<Boolean>("Invisible", "Invisible", false);
-	public Option<Boolean> villager = new Option<Boolean>("Villager", "Villager", false);
 	public Option<Boolean> silent = new Option<Boolean>("Silent", "Silent", true);
 	public Numbers<Double> angle = new Numbers<Double>("FOV", "FOV", 360.0, 1.0, 360.0, 1.0);
 	
@@ -45,7 +41,7 @@ public class BowAimBot extends Mod {
 	private float velocity;
 	   
 	public BowAimBot() {
-		super("Bow Aim Bot", new String[] {"BowAimBot"}, ModuleType.Visual);	
+		super("Bow Aim Bot", new String[] {"BowAimBot"}, ModuleType.Fight);	
 	}
 
 	@Override
@@ -60,6 +56,12 @@ public class BowAimBot extends Mod {
 	
 	@Sub
 	public void onPreUpdate(EventPreUpdate eventPreUpdate) {
+        if(getTargets().size() != 0) {
+       	 target = getTargets().get(0); 
+        }else {
+			target = null;
+			return;
+        }
 		if (Minecraft.getMinecraft().thePlayer.rotationPitch <= -80.0F || Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem() == null || !(Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem().getItem() instanceof ItemBow)) {
             this.target = null;
             return;
@@ -70,11 +72,9 @@ public class BowAimBot extends Mod {
          if ((double)this.velocity < 0.1D) {
             return;
          }
-
          if (this.velocity > 1.0F) {
             this.velocity = 1.0F;
          }
-         target = getTargets().get(0);
          double distanceToEnt = (double)Minecraft.getMinecraft().thePlayer.getDistanceToEntity(this.target);
          double predictX = this.target.posX + (this.target.posX - this.target.lastTickPosX) * (distanceToEnt / (double)this.getVelocity() + 0.0D);
          double predictZ = this.target.posZ + (this.target.posZ - this.target.lastTickPosZ) * (distanceToEnt / (double)this.getVelocity() + 0.0D);
@@ -137,22 +137,17 @@ public class BowAimBot extends Mod {
 	
 	private boolean validEntity(EntityLivingBase entity) {
 		   	AntiBot ab = (AntiBot) Client.getModuleManager().getModuleByClass(AntiBot.class);
-		      boolean players = this.players.getValue();
-		      boolean animals = this.animals.getValue();
-		      boolean mobs = this.mobs.getValue();
-		      boolean villager = this.villager.getValue();
 		      boolean invis = this.invis.getValue();
 		      boolean teams = Client.getModuleManager().getModuleByClass(Teams.class).isEnabled();
 		      if (mc.thePlayer.getHealth() > 0.0F && entity.getHealth() > 0.0F && !entity.isDead) {
 		         if (mc.thePlayer.canEntityBeSeen(entity)) {
-		            if (entity instanceof EntityPlayer && players) {
+		            if (entity instanceof EntityPlayer) {
 		               if (!ab.isServerBot(entity) && !entity.isPlayerSleeping()) {
 		                  EntityPlayer ent = (EntityPlayer)entity;
 		                  return (!TeamUtils.isTeam(mc.thePlayer, ent) || !teams) && (!ent.isInvisible() || invis) && !FriendManager.isFriend(ent.getName());
 		               }
 		               return false;
 		            }
-		            return (entity instanceof EntityMob || entity instanceof EntitySlime) && mobs || entity instanceof EntityAnimal && animals || entity instanceof EntityVillager && villager;
 		         }
 		      }
 		      return false;
