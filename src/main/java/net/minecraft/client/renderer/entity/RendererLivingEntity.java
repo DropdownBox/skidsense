@@ -1,6 +1,13 @@
 package net.minecraft.client.renderer.entity;
 
 import com.google.common.collect.Lists;
+
+import me.skidsense.Client;
+import me.skidsense.management.friend.FriendManager;
+import me.skidsense.module.collection.visual.Chams;
+import me.skidsense.util.ColorCreator;
+import me.skidsense.util.RenderUtil;
+
 import java.nio.FloatBuffer;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -335,8 +342,12 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
      */
     protected void renderModel(T entitylivingbaseIn, float p_77036_2_, float p_77036_3_, float p_77036_4_, float p_77036_5_, float p_77036_6_, float scaleFactor)
     {
-        boolean flag = !entitylivingbaseIn.isInvisible();
-        boolean flag1 = !flag && !entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer);
+    	Chams chams = (Chams) Client.getModuleManager().getModuleByClass(Chams.class);
+    	
+        float[] rgba = RenderUtil.getRGBAs(ColorCreator.createRainbowFromOffset(-6000, 5));
+        
+        boolean flag = (!entitylivingbaseIn.isInvisible() && !((chams.invisibles.getValue() && chams.isEnabled())));
+        boolean flag1 = !flag && !(entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer)&& !((chams.invisibles.getValue() && chams.isEnabled())));
 
         if (flag || flag1)
         {
@@ -355,7 +366,37 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
                 GlStateManager.alphaFunc(516, 0.003921569F);
             }
 
-            this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+            if (Client.getModuleManager().getModuleByClass(Chams.class).isEnabled() && chams.isValid(entitylivingbaseIn)) {
+                if (chams.colored.getValue()) {
+                    GL11.glPushAttrib(1048575);
+                    GL11.glDisable(3008);
+                    GL11.glDisable(3553);
+                    GL11.glDisable(2896);
+                    GL11.glEnable(3042);
+                    GL11.glBlendFunc(770, 771);
+                    GL11.glLineWidth(1.5f);
+                    GL11.glEnable(2960);
+                    GL11.glDisable(GL11.GL_DEPTH_TEST);
+                    GL11.glDepthMask(false);
+                    GL11.glEnable(10754);
+                    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0f, 240.0f);
+                    GL11.glColor4f(FriendManager.isFriend(entitylivingbaseIn.getName()) ? 0.12F : (chams.rainbow.getValue() ? rgba[0] : chams.hiddenred.getValue().floatValue()), FriendManager.isFriend(entitylivingbaseIn.getName()) ? 0.5F : (chams.rainbow.getValue() ? rgba[1] : chams.hiddengreen.getValue().floatValue()), FriendManager.isFriend(entitylivingbaseIn.getName()) ? 1 : (chams.rainbow.getValue() ? rgba[2] : chams.hiddenblue.getValue().floatValue()), chams.alpha.getValue().floatValue());
+                    this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+                    GL11.glEnable(GL11.GL_DEPTH_TEST);
+                    GL11.glDepthMask(true);
+                    GL11.glColor4f(FriendManager.isFriend(entitylivingbaseIn.getName()) ? 0.12f : (chams.rainbow.getValue() ? rgba[0] : chams.visiblered.getValue().floatValue()), FriendManager.isFriend(entitylivingbaseIn.getName()) ? 0.5F : (chams.rainbow.getValue() ? rgba[1] : chams.visiblegreen.getValue().floatValue()), FriendManager.isFriend(entitylivingbaseIn.getName()) ? 1 : (chams.rainbow.getValue() ? rgba[2] : chams.visibleblue.getValue().floatValue()), chams.alpha.getValue().floatValue());
+                    this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+                    GL11.glEnable(3042);
+                    GL11.glEnable(2896);
+                    GL11.glEnable(3553);
+                    GL11.glEnable(3008);
+                    GL11.glPopAttrib();
+                } else {
+                	this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+                }
+            } else {
+            	this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+            }
 
             if (flag1)
             {

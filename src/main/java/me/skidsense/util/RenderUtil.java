@@ -1309,5 +1309,10 @@ public class RenderUtil {
         disableGL2D();
         GL11.glPopMatrix();
      }
+
+    public static float[] getRGBAs(int rgb) {
+        return new float[] { ((rgb >> 16) & 255) / 255F, ((rgb >> 8) & 255) / 255F, (rgb & 255) / 255F,
+                ((rgb >> 24) & 255) / 255F };
+    }
 }
 

@@ -1,10 +1,15 @@
 package net.minecraft.client.renderer.entity;
 
+import org.lwjgl.opengl.GL11;
+
 import com.google.common.eventbus.EventBus;
+
+import me.skidsense.Client;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventPostRenderPlayer;
 import me.skidsense.hooks.events.EventPreRenderPlayer;
 import me.skidsense.hooks.value.Event;
+import me.skidsense.module.collection.visual.Chams;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.model.ModelPlayer;
@@ -55,8 +60,13 @@ public class RenderPlayer extends RendererLivingEntity<AbstractClientPlayer>
      */
     public void doRender(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
+    	Chams chams = (Chams) Client.getModuleManager().getModuleByClass(Chams.class);
         EventPreRenderPlayer event = new EventPreRenderPlayer();
         EventManager.getInstance().postAll(event);
+        if (chams.isEnabled() && !chams.colored.getValue()) {
+            GL11.glEnable(32823);
+            GL11.glPolygonOffset(1.0f, -1100000.0f);
+        }
         if (!entity.isUser() || this.renderManager.livingPlayer == entity)
         {
             double d0 = y;
@@ -68,6 +78,10 @@ public class RenderPlayer extends RendererLivingEntity<AbstractClientPlayer>
 
             this.setModelVisibilities(entity);
             super.doRender(entity, x, d0, z, entityYaw, partialTicks);
+        }
+        if (chams.isEnabled() && !chams.colored.getValue()) {
+            GL11.glDisable(32823);
+            GL11.glPolygonOffset(1.0f, 1100000.0f);
         }
         EventPostRenderPlayer event2 = new EventPostRenderPlayer();
         EventManager.getInstance().postAll(event2);

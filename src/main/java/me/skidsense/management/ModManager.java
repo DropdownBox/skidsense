@@ -100,7 +100,7 @@ implements Manager {
         addMod(new TargetHUD());
         addMod(new KidFace());
         addMod(new Waypoints());
-        
+        addMod(new Chams());
         addMod(new AutoL());
         addMod(new ChestStealer());
         addMod(new NoRotate());

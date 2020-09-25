@@ -34,6 +34,9 @@ import org.lwjgl.opengl.GL11;
 
 import me.skidsense.Client;
 import me.skidsense.module.collection.visual.Animations;
+import me.skidsense.module.collection.visual.Chams;
+import me.skidsense.util.ColorCreator;
+import me.skidsense.util.RenderUtil;
 
 public class ItemRenderer
 {
@@ -487,7 +490,24 @@ public class ItemRenderer
         }
         else if (!entityplayersp.isInvisible())
         {
-            this.renderPlayerArm(entityplayersp, f, f1);
+        	Chams chams = (Chams) Client.getModuleManager().getModuleByClass(Chams.class);
+        	float[] rgba = RenderUtil.getRGBAs(ColorCreator.createRainbowFromOffset(-6000, 5));
+        	if (Client.getModuleManager().getModuleByClass(Chams.class).isEnabled() && chams.hands.getValue() && chams.colored.getValue()) {
+                GL11.glDisable(3008);
+                GL11.glDisable(3553);
+                GL11.glDisable(2896);
+                GL11.glEnable(3042);
+                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0f, 240.0f);
+                GL11.glColor4f(chams.rainbow.getValue() ? rgba[0]:chams.visiblered.getValue().floatValue(),chams.rainbow.getValue() ? rgba[1]:chams.visiblegreen.getValue().floatValue(),chams.rainbow.getValue() ? rgba[2]:chams.visibleblue.getValue().floatValue(),chams.alpha.getValue().floatValue());
+                this.renderPlayerArm(entityplayersp, f, f1);
+                GL11.glEnable(3042);
+                GL11.glEnable(2896);
+                GL11.glEnable(3553);
+                GL11.glEnable(3008);
+                GL11.glColor4f(1,1,1,1);
+            } else {
+                this.renderPlayerArm(entityplayersp, f, f1);
+            }
         }
 
         GlStateManager.popMatrix();
