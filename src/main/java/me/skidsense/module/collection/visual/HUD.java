@@ -50,6 +50,7 @@ extends Mod {
     public static Mode<Enum> mode = new Mode("ArrayPosition", "ArrayPosition", (Enum[])arrayPosition.values(), (Enum)arrayPosition.TopRight);
     public static Option<Boolean> TABGUI = new Option<Boolean>("TabGui", "TabGui", true);
     private Option<Boolean> info = new Option<Boolean>("Information", "information", true);
+    private Option<Boolean> hideRenderModule = new Option<Boolean>("HideRenderModule", "HideRenderModule", false);
     private Option<Boolean> animegirl = new Option<Boolean>("AnimeGirl", "AnimeGirl", false);
     private Option<Boolean> rainbow = new Option<Boolean>("Rainbow", "rainbow", false);
     public static boolean shouldMove;
@@ -99,7 +100,13 @@ extends Mod {
             boolean left = mode.getValue() == arrayPosition.TopLeft;
 			for (Mod m : ModManager.getMods()) {
                 if (!m.isEnabled() || m.wasRemoved()) continue;
-                sorted.add(m);
+                if(m.getType() == ModuleType.Visual) {
+                	if(!hideRenderModule.getValue()) {
+                		sorted.add(m);
+                	}
+                }else {
+                	sorted.add(m);
+				}
             }
                 sorted.sort((o1, o2) -> Client_Font.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName() : String.format("%s %s", o2.getName(), o2.getSuffix())) - Client_Font.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName() : String.format("%s %s", o1.getName(), o1.getSuffix())));
             int y = left ? (TABGUI.getValue() ? 75 : 12) : 0;
