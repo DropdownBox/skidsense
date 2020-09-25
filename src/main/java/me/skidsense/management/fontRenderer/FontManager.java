@@ -25,6 +25,7 @@ public class FontManager {
 	public TTFFontRenderer comfortaa20;
 	public TTFFontRenderer comfortaa34;
 	public FontRenderer roboto17;
+	public TTFFontRenderer roboto18;
 	public FontRenderer roboto19;
 	public TTFFontRenderer roboto20;
 	public FontRenderer tahomabold13;
@@ -51,6 +52,7 @@ public class FontManager {
 		comfortaa20 = new TTFFontRenderer(new Font("Comfortaa", 0, 20), true);
 		comfortaa34 =new TTFFontRenderer(new Font("Comfortaa", 0, 34), true);
 		roboto17 = this.getFont("roboto", 17f);
+		roboto18 = new TTFFontRenderer(new Font("Roboto", 0, 18), true);
 		roboto19 = this.getFont("roboto", 19f);
 		roboto20 = new TTFFontRenderer(new Font("Roboto", 0, 20), true);
 		tahomabold13 = this.getFont("tahomabold", 13f);

@@ -2,7 +2,9 @@ package me.skidsense.module.collection.visual;
 
 import me.skidsense.Client;
 import me.skidsense.color.Colors;
+import me.skidsense.gui.tabgui.TabMain;
 import me.skidsense.hooks.Sub;
+import me.skidsense.hooks.events.EventKey;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.hooks.value.Mode;
@@ -56,14 +58,25 @@ extends Mod {
     public static boolean shouldMove;
     private final TTFFontRenderer Client_Font = Client.instance.fontManager.comfortaa18;
     private final SpeedCalculator speedc = new SpeedCalculator();
-
+    private TabMain tabGUI;
+    
     public HUD() {
         super("HUD", new String[]{"gui"}, ModuleType.Visual);
-        this.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).getRGB());
         this.setEnabled(true);
         this.setRemoved(true);
     }
 
+    @Override
+    public void onEnable() {
+        tabGUI = new TabMain(2, 12);
+        tabGUI.init();
+    }
+
+    @Override
+    public void onDisable() {
+        tabGUI = null;
+    }
+    
     @Sub
     public final void onUpdate(EventPreUpdate eventPreUpdate) {
     	speedc.update();
@@ -93,6 +106,7 @@ extends Mod {
             		second = "";
 	            }
             }
+            if (TABGUI.getValue()) tabGUI.onRender(event.getResolution());
             Client_Font.drawStringWithShadow(first, 2, (float)2, new Color(220,1,5).getRGB());
             Client_Font.drawStringWithShadow(second, Client_Font.getStringWidth(first), (float)2, new Color(255,255,255).getRGB());
             Client_Font.drawStringWithShadow("#001", Client_Font.getStringWidth(Client.clientName)+4, 2, new Color(180,180,180).getRGB());
@@ -140,6 +154,11 @@ extends Mod {
         }
     }
 
+    @Sub
+    public void onKeyPress(EventKey event) {
+        if (TABGUI.getValue()) tabGUI.onKeypress(event.getKey());
+    }
+    
     private void drawPotionStatus(ScaledResolution sr) {
         TTFFontRenderer font = Client.instance.fontManager.comfortaa18;
         List<PotionEffect> potions = new ArrayList<PotionEffect>();

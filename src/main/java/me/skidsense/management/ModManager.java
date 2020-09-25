@@ -2,6 +2,7 @@ package me.skidsense.management;
 
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
+import me.skidsense.gui.tabgui.components.Component;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventKey;
@@ -230,6 +231,5 @@ implements Manager {
             }
         }
     }
-
 }
 

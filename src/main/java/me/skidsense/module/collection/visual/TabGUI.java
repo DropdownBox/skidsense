@@ -232,6 +232,7 @@ public class TabGUI
                             if (this.selectedValue instanceof Option) {
                                 this.selectedValue.setValue((Boolean)this.selectedValue.getValue() == false);
                             } else if (this.selectedValue instanceof Numbers) {
+                            	//Numbers 1
                                 Numbers value = (Numbers)this.selectedValue;
                                 double inc = (Double)value.getValue();
                                 inc += ((Double)value.getIncrement()).doubleValue();
@@ -280,6 +281,7 @@ public class TabGUI
                             if (this.selectedValue instanceof Option) {
                                 this.selectedValue.setValue((Boolean)this.selectedValue.getValue() == false);
                             } else if (this.selectedValue instanceof Numbers) {
+                            	//Numbers 2
                                 Numbers value = (Numbers)this.selectedValue;
                                 double inc = (Double)value.getValue();
                                 inc -= ((Double)value.getIncrement()).doubleValue();

@@ -1332,5 +1332,9 @@ public class RenderUtil {
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glEnable(2929);
     }
+
+    public static void drawBackRect(int x, int y, int x2, int y2, int c) {
+        drawRect(x, y, x2, y2, new Color(40, 40, 40, 50).getRGB());
+    }
 }
 

@@ -31,7 +31,6 @@ public class Client {
 	public static ModManager modulemanager;
 	public CommandManager commandmanager;
 	public FontManager fontManager;
-	public TabGUI tabui;
 	private static me.skidsense.management.alt.FileManager fileManager;
 	public EntityLivingBase viptarget;
 	public WaypointManager waypointManager;
@@ -41,8 +40,6 @@ public class Client {
 		this.commandmanager = new CommandManager();
 		this.commandmanager.setup();
 		FriendManager.start();
-		this.tabui = new TabGUI();
-		this.tabui.init();
 		modulemanager = new ModManager();
 		modulemanager.init();
 		(fileManager = new me.skidsense.management.alt.FileManager()).loadFiles();
