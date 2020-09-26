@@ -32,9 +32,7 @@ extends Mod {
 
     @Sub
     public void onRender(EventRender3D eventRender) {
-        Iterator var3;
-    	var3 = this.mc.theWorld.loadedTileEntityList.iterator();
-
+    	
     	for (int xd = 0; xd < mc.theWorld.loadedTileEntityList.size(); xd++) {
 			TileEntity b = mc.theWorld.loadedTileEntityList.get(xd);
 
@@ -67,7 +65,7 @@ extends Mod {
         }
         GL11.glPushMatrix();
         RenderUtil.pre3D();
-        ChestESP.mc.entityRenderer.setupCameraTransform(ChestESP.mc.timer.renderPartialTicks, 2);
+        mc.entityRenderer.setupCameraTransform(ChestESP.mc.timer.renderPartialTicks, 2);
         if (chest.getChestType() == 1) {
             GL11.glColor4d((double)0.7, (double)0.1, (double)0.1, (double)0.5);
         } else {
