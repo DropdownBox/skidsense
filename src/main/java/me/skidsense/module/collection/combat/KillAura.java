@@ -52,7 +52,6 @@ public class KillAura extends Mod {
 	public Option<Boolean> autodisable = new Option<Boolean>("AutoDisable", "AutoDisable", true);
 	public Numbers<Double> range = new Numbers<Double>("Range", "Range", 4.2, 3.5, 7.0, 0.1);
 	public Numbers<Double> cps = new Numbers<Double>("APS", "APS", 9.0, 1.0, 20.0, 1.0);
-	public Numbers<Double> hitswitch = new Numbers<Double>("HitSwitch", "HitSwitch", 3.0, 1.0, 20.0, 1.0);
 	public Numbers<Double> blockrange = new Numbers<Double>("BlockRange", "BlockRange", 8.0, 3.5, 8.0, 0.1);
 	public boolean isBlocking;
 	private int index;
@@ -116,6 +115,11 @@ public class KillAura extends Mod {
 		        this.index = 0;
 		    }
 		    target = (EntityLivingBase) this.loaded.get(this.index);
+			float[] array = rotateNCP(target);
+			eventMotion.setYaw(array[0]);
+			eventMotion.setPitch(array[1]);
+			mc.thePlayer.rotationYawHead = array[0];
+			mc.thePlayer.renderYawOffset = array[0];
 		}else {
 			target = null;
 		}
@@ -124,11 +128,6 @@ public class KillAura extends Mod {
 	@Sub
 	public void EventPostUpdate(me.skidsense.hooks.events.EventPostUpdate e) {
 		if (target != null && this.shouldAttack()) {
-			float[] array = rotateNCP(target);
-			e.setYaw(array[0]);
-			e.setPitch(array[1]);
-			mc.thePlayer.rotationYawHead = array[0];
-			mc.thePlayer.renderYawOffset = array[0];
 			this.attack();
 			timer.reset();
 		}
