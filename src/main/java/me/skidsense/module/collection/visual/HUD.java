@@ -13,49 +13,38 @@ import me.skidsense.management.ModManager;
 import me.skidsense.management.fontRenderer.TTFFontRenderer;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.util.ColorCreator;
+import me.skidsense.util.Draw;
 import me.skidsense.util.MathUtil;
 import me.skidsense.util.MoveUtil;
 import me.skidsense.util.RenderUtil;
-import me.skidsense.util.RotationUtil;
 import me.skidsense.util.SpeedCalculator;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.boss.BossStatus;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.optifine.util.MathUtils;
 
 public class HUD
 extends Mod {
     public TabGUI tabui;
     public static Mode<Enum> mode = new Mode("ArrayPosition", "ArrayPosition", (Enum[])arrayPosition.values(), (Enum)arrayPosition.TopRight);
     public static Option<Boolean> TABGUI = new Option<Boolean>("TabGui", "TabGui", true);
-    private Option<Boolean> info = new Option<Boolean>("Information", "information", true);
-    private Option<Boolean> hideRenderModule = new Option<Boolean>("HideRenderModule", "HideRenderModule", false);
-    private Option<Boolean> animegirl = new Option<Boolean>("AnimeGirl", "AnimeGirl", false);
-    private Option<Boolean> rainbow = new Option<Boolean>("Rainbow", "rainbow", false);
-    public static boolean shouldMove;
+    public Option<Boolean> info = new Option<Boolean>("Information", "information", true);
+    public Option<Boolean> hideRenderModule = new Option<Boolean>("HideRenderModule", "HideRenderModule", false);
+    public Option<Boolean> animegirl = new Option<Boolean>("AnimeGirl", "AnimeGirl", false);
+    public Option<Boolean> rainbow = new Option<Boolean>("Rainbow", "rainbow", false);
     private final TTFFontRenderer Client_Font = Client.instance.fontManager.comfortaa18;
     private final SpeedCalculator speedc = new SpeedCalculator();
     private TabMain tabGUI;
@@ -84,81 +73,142 @@ extends Mod {
     
     @Sub
     private void renderHud(EventRenderGui event) {
-        if (!this.mc.gameSettings.showDebugInfo) {
-            String name;
-            String direction;
-            HUD.shouldMove = false;
-	        String[] a;
-	        String first;
-	        String second;
-            if((a = Client.clientName.split("\\|")).length > 2){
-            	first = a[0];
-            	second = a[1];
-            } else {
-				try {
-					first = Client.clientName.substring(0, 1);
-				} catch (IndexOutOfBoundsException e){
-					first = "";
-				}
-            	try {
-		            second = Client.clientName.substring(1);
-	            } catch (IndexOutOfBoundsException e){
-            		second = "";
-	            }
+        if (!mc.gameSettings.showDebugInfo) {
+        	if(!this.isFlux()) {
+        		this.drawExusiaiWatermark(event);
+        		this.drawExusiaiArrayList(event);
+        		this.drawExusiaiTabGui(event);
+        	}else {
+        		this.drawFluxWatermark();
+        		this.drawFluxArrayList();
+        		this.drawFluxTabGui();
+			}
+            if (this.info.getValue().booleanValue()) {
+            	String text = (Object)(EnumChatFormatting.GRAY) + "X" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(mc.thePlayer.posX) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Y" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(mc.thePlayer.posY) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Z" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(mc.thePlayer.posZ) + (EnumChatFormatting.GRAY) + " FPS: " + (EnumChatFormatting.WHITE) + Minecraft.getDebugFPS();
+            	String speedtextString = EnumChatFormatting.GRAY +""+ (MoveUtil.isMoving() ? MathUtil.round(speedc.getCurrentSpeed(), 2) : 0) +EnumChatFormatting.WHITE+ " m / sec";
+                Client_Font.drawStringWithShadow(text,(event.getResolution().getScaledWidth() - Client_Font.getWidth(text)) / 2, BossStatus.statusBarTime > 0 ? 20 : 2, -788529153);
+                Client_Font.drawStringWithShadow(speedtextString ,(event.getResolution().getScaledWidth() - Client_Font.getWidth(speedtextString)) / 2, BossStatus.statusBarTime > 0 ? 20 + Client_Font.getHeight(speedtextString) : 2 + Client_Font.getHeight(speedtextString), -788529153);
             }
-            if (TABGUI.getValue()) tabGUI.onRender(event.getResolution());
-            Client_Font.drawStringWithShadow(first, 2, (float)2, new Color(220,1,5).getRGB());
-            Client_Font.drawStringWithShadow(second, Client_Font.getStringWidth(first), (float)2, new Color(255,255,255).getRGB());
-            Client_Font.drawStringWithShadow("#001", Client_Font.getStringWidth(Client.clientName)+4, 2, new Color(180,180,180).getRGB());
-            ArrayList<Mod> sorted = new ArrayList<Mod>();
-            boolean left = mode.getValue() == arrayPosition.TopLeft;
-			for (Mod m : ModManager.getMods()) {
-                if (!m.isEnabled() || m.wasRemoved()) continue;
-                if(m.getType() == ModuleType.Visual) {
-                	if(!hideRenderModule.getValue()) {
-                		sorted.add(m);
-                	}
-                }else {
-                	sorted.add(m);
-				}
+            if(animegirl.getValue()) {
+                RenderUtil.drawImage(new ResourceLocation("skidsense/AstolfoTrifasSprite.png"), RenderUtil.width() - 160, RenderUtil.height() - 70, 256, 256);	
             }
-                sorted.sort((o1, o2) -> Client_Font.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName() : String.format("%s %s", o2.getName(), o2.getSuffix())) - Client_Font.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName() : String.format("%s %s", o1.getName(), o1.getSuffix())));
-            int y = left ? (TABGUI.getValue() ? 75 : 12) : 0;
-            int rainbowTick = 0;
-                for (Mod m : sorted) {
-                    if (!m.isEnabled()) {
-                        m.translate.interpolate((float)event.getResolution().getScaledWidth(), -20.0F, 0.6F);
-                     }
-                    name = m.getSuffix().isEmpty() ? m.getName() : String.format("%s\2477%s", m.getName(), m.getSuffix());
-                    float x = left ? 2.0F :RenderUtil.width() - Client_Font.getStringWidth(name);
-                    Color rainbow = new Color(Color.HSBtoRGB((float)((double)this.mc.thePlayer.ticksExisted / 50.0 + Math.sin((double)rainbowTick / 50.0 * 1.6)) % 1.0f, 0.5f, 1.0f));
-                    if (m.isEnabled()) {
-                       m.translate.interpolate(x, (float)y, 0.40F);
-                    }
-                    Client_Font.drawStringWithShadow(name, m.translate.getX() - 0.1f, m.translate.getY(), this.rainbow.getValue() != false ? rainbow.getRGB() : getCategoryColor(m));
-                    if (++rainbowTick > 50) {
-                        rainbowTick = 0;
-                    }
-                    y += 9;
-                }
-            String text = (Object)(EnumChatFormatting.GRAY) + "X" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posX) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Y" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posY) + " " + (Object)((Object)EnumChatFormatting.GRAY) + "Z" + (Object)((Object)EnumChatFormatting.WHITE) + ": " + MathHelper.floor_double(this.mc.thePlayer.posZ) + (EnumChatFormatting.GRAY) + " FPS: " + (EnumChatFormatting.WHITE) + Minecraft.getDebugFPS();
-                if (this.info.getValue().booleanValue()) {
-                    Client_Font.drawStringWithShadow(text,(event.getResolution().getScaledWidth() - Client_Font.getWidth(text)) / 2, BossStatus.statusBarTime > 0 ? 20 : 2, -788529153);
-                    String speedtextString = EnumChatFormatting.GRAY +""+ (MoveUtil.isMoving() ? MathUtil.round(speedc.getCurrentSpeed(), 2) : 0) +EnumChatFormatting.WHITE+ " m / sec";
-                    Client_Font.drawStringWithShadow(speedtextString ,(event.getResolution().getScaledWidth() - Client_Font.getWidth(speedtextString)) / 2, BossStatus.statusBarTime > 0 ? 20 + Client_Font.getHeight(speedtextString) : 2 + Client_Font.getHeight(speedtextString), -788529153);
-                }
-                if(animegirl.getValue()) {
-                    RenderUtil.drawImage(new ResourceLocation("skidsense/AstolfoTrifasSprite.png"), RenderUtil.width() - 160, RenderUtil.height() - 70, 256, 256);	
-                }
-                this.drawPotionStatus(event.getResolution());
+            this.drawPotionStatus(event.getResolution());
         }
     }
 
     @Sub
     public void onKeyPress(EventKey event) {
-        if (TABGUI.getValue()) tabGUI.onKeypress(event.getKey());
+        if (TABGUI.getValue() && !this.isFlux()) tabGUI.onKeypress(event.getKey());
     }
     
+    public void drawExusiaiWatermark(EventRenderGui event) {
+    	String[] a;
+        String first;
+        String second;
+        if((a = Client.clientName.split("\\|")).length > 2){
+        	first = a[0];
+        	second = a[1];
+        } else {
+			try {
+				first = Client.clientName.substring(0, 1);
+			} catch (IndexOutOfBoundsException e){
+				first = "";
+			}
+        	try {
+	            second = Client.clientName.substring(1);
+            } catch (IndexOutOfBoundsException e){
+        		second = "";
+            }
+        }
+        Client_Font.drawStringWithShadow(first, 2, (float)2, new Color(220,1,5).getRGB());
+        Client_Font.drawStringWithShadow(second, Client_Font.getStringWidth(first), (float)2, new Color(255,255,255).getRGB());
+        Client_Font.drawStringWithShadow("#001", Client_Font.getStringWidth(Client.clientName)+4, 2, new Color(180,180,180).getRGB());
+	}
+
+    public void drawExusiaiTabGui(EventRenderGui event) {
+    	if (TABGUI.getValue()) tabGUI.onRender(event.getResolution());
+    }
+    
+    public void drawExusiaiArrayList(EventRenderGui event) {
+    	ArrayList<Mod> sorted = new ArrayList<Mod>();
+        boolean left = mode.getValue() == arrayPosition.TopLeft;
+		for (Mod m : ModManager.getMods()) {
+            if (!m.isEnabled() || m.wasRemoved()) continue;
+            if(m.getType() == ModuleType.Visual) {
+            	if(!hideRenderModule.getValue()) {
+            		sorted.add(m);
+            	}
+            }else {
+            	sorted.add(m);
+			}
+        }
+            sorted.sort((o1, o2) -> Client_Font.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName() : String.format("%s %s", o2.getName(), o2.getSuffix())) - Client_Font.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName() : String.format("%s %s", o1.getName(), o1.getSuffix())));
+        int y = left ? (TABGUI.getValue() ? 75 : 12) : 0;
+        int rainbowTick = 0;
+            for (Mod m : sorted) {
+                if (!m.isEnabled()) {
+                    m.translate.interpolate((float)event.getResolution().getScaledWidth(), -20.0F, 0.6F);
+                 }
+                String modname = m.getSuffix().isEmpty() ? m.getName() : String.format("%s\2477%s", m.getName(), m.getSuffix());
+                float x = left ? 2.0F :RenderUtil.width() - Client_Font.getStringWidth(modname);
+                Color rainbow = new Color(Color.HSBtoRGB((float)((double)mc.thePlayer.ticksExisted / 50.0 + Math.sin((double)rainbowTick / 50.0 * 1.6)) % 1.0f, 0.5f, 1.0f));
+                if (m.isEnabled()) {
+                   m.translate.interpolate(x, (float)y, 0.40F);
+                }
+                Client_Font.drawStringWithShadow(modname, m.translate.getX() - 0.1f, m.translate.getY(), this.rainbow.getValue() != false ? rainbow.getRGB() : getCategoryColor(m));
+                if (++rainbowTick > 50) {
+                    rainbowTick = 0;
+                }
+                y += 9;
+            }
+    }
+    
+    public void drawFluxWatermark() {
+		Client.instance.fontManager.arial25.drawStringWithShadow("Flux", 2, 3, ColorCreator.createRainbowFromOffset(-6000, 5));
+	}
+    
+	public void drawFluxArrayList() {
+		ArrayList<Mod> sorted = new ArrayList<Mod>();
+		for (Mod m : ModManager.getMods()) {
+            if (!m.isEnabled() || m.wasRemoved()) continue;
+            if(m.getType() == ModuleType.Visual) {
+            	if(!hideRenderModule.getValue()) {
+            		sorted.add(m);
+            	}
+            }else {
+            	sorted.add(m);
+			}
+        }
+        sorted.sort((o1, o2) -> Client.instance.fontManager.arialbold17.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName().replace(" ", "") : String.format("%s %s", o2.getName().replace(" ", ""), o2.getSuffix())) - Client.instance.fontManager.arialbold17.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName().replace(" ", "") : String.format("%s %s", o1.getName().replace(" ", ""), o1.getSuffix())));
+        int y = 3;
+        int rainbowTick = 0;
+            for (Mod m : sorted) {
+                String modname = m.getSuffix().isEmpty() ? m.getName().replace(" ", "") : String.format("%s§f%s", m.getName().replace(" ", ""), m.getSuffix());
+                float x = RenderUtil.width() - Client.instance.fontManager.arialbold17.getStringWidth(modname);
+                Color rainbow = new Color(Color.HSBtoRGB((float)((double)mc.thePlayer.ticksExisted / 50.0 + Math.sin((double)rainbowTick / 50.0 * 1.6)) % 1.0f, 0.5f, 1.0f));
+                Draw.drawRectangle(RenderUtil.width(), y, RenderUtil.width() - 2, y + 13,
+                		rainbow.getRGB());
+                Draw.drawRectangle(RenderUtil.width() - 2, y, x - 4.5, y + 13 , new Color(1, 1, 1, 150).getRGB());
+                Client.instance.fontManager.arialbold17.drawString(modname, x - 3, y + 3, rainbow.getRGB());
+                if (++rainbowTick > 50) {
+                    rainbowTick = 0;
+                }
+                y += 13;
+            }
+	}
+	
+	public void drawFluxTabGui() {
+		Draw.drawRectangle(3, 18, 58, 104, new Color(0,0,0,150).getRGB());
+		Draw.drawRectangle(4, 20, 5.5, 29, new Color(206,89,255,255).getRGB());
+		Client.instance.fontManager.arial18.drawStringWithShadow("§fCombat", 7, 20, -1);
+		Client.instance.fontManager.arial18.drawStringWithShadow("§7Movement", 7, 32, -1);
+		Client.instance.fontManager.arial18.drawStringWithShadow("§7Render", 7, 44, -1);
+		Client.instance.fontManager.arial18.drawStringWithShadow("§7Player", 7, 56, -1);
+		Client.instance.fontManager.arial18.drawStringWithShadow("§7World", 7, 68, -1);
+		Client.instance.fontManager.arial18.drawStringWithShadow("§7Ghost", 7, 80, -1);
+		Client.instance.fontManager.arial18.drawStringWithShadow("§7Misc", 7, 92, -1);
+	}
+	
     private void drawPotionStatus(ScaledResolution sr) {
         TTFFontRenderer font = Client.instance.fontManager.comfortaa18;
         List<PotionEffect> potions = new ArrayList<PotionEffect>();
@@ -200,7 +250,7 @@ extends Mod {
            font.drawStringWithShadow(PType, (float)sr.getScaledWidth() - font.getWidth(PType), (float)(sr.getScaledHeight() - 9) + pY, -1);
         }
     }
-    
+	
     public int getCategoryColor(Mod m){
     	switch (m.getType()){
     	case Fight:
@@ -215,6 +265,13 @@ extends Mod {
     		return Colors.getColor(65, 134, 45);
     	}
     	return 0;
+    }
+    
+    public boolean isFlux() {
+    	if("Flux".equalsIgnoreCase(Client.clientName) || "FluxClient".equalsIgnoreCase(Client.clientName)) {
+    		return true;
+    	}
+    	return false;
     }
     
     public enum arrayPosition {
