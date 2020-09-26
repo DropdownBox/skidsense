@@ -12,6 +12,7 @@ import java.util.Random;
 
 import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.management.notifications.Notifications;
+import me.skidsense.util.RenderUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -608,8 +609,13 @@ public class GuiIngame extends Gui
             int k = j1 - j * this.getFontRenderer().FONT_HEIGHT;
             int l = scaledRes.getScaledWidth() - k1 + 2;
             drawRect(l1 - 2, k, l, k + this.getFontRenderer().FONT_HEIGHT, 1342177280);
-            this.getFontRenderer().drawString(s1, l1, k, 553648127);
-            this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 553648127);
+            if(s1.contains("§ewww.hypixel.ne🎂§et")) {
+            	RenderUtil.renderStringWave("exusiai.today", l1, k, (float) 0.6);
+            }else {
+            	this.getFontRenderer().drawString(s1.replace("§ewww.hypixel.ne🎂§et", "§eexusiai.today"), l1, k, 553648127);
+			}
+            //System.out.println(s1);
+            //this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 553648127);
 
             if (j == collection.size())
             {

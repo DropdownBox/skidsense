@@ -60,6 +60,22 @@ public class RenderUtil {
         return new Color((float)MathUtil.randomDouble(min, max), (float)MathUtil.randomDouble(min, max), (float)MathUtil.randomDouble(min, max), alpha).getRGB();
     }
     
+    public static void renderStringWave(String s, float f, float yCount, float bright) {
+    	int updateX = (int) f;
+    	for(int i = 0; i < s.length(); i++) {
+    		String str = s.charAt(i) + "";
+           Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(str, updateX, yCount, effect(i * 3500000L, bright, 100).getRGB());
+    			updateX += Minecraft.getMinecraft().fontRendererObj.getStringWidth(String.valueOf(s.charAt(i)));
+    	}
+    }
+    
+	public static Color effect(long offset, float brightness, int speed) {
+		float hue = (float) (System.nanoTime() + (offset * speed)) / 1.0E10F % 1.0F;
+		long color = Long.parseLong(Integer.toHexString(Integer.valueOf(Color.HSBtoRGB(hue, brightness, 1F)).intValue()), 16);
+		Color c = new Color((int) color);
+		return new Color(c.getRed()/255.0F, c.getGreen()/255.0F, c.getBlue()/255.0F, c.getAlpha()/255.0F);
+	}
+	
     public static int withTransparency(int rgb, float alpha) {
         float r2 = (float)(rgb >> 16 & 255) / 255.0f;
         float g2 = (float)(rgb >> 8 & 255) / 255.0f;
