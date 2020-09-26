@@ -10,6 +10,10 @@ import net.minecraft.client.gui.FontRenderer;
 public class FontManager {
 	private HashMap<String, HashMap<Float, FontRenderer>> fonts = new HashMap<>();
 	//private HashMap<String, HashMap<Float, ChFontRenderer>> chFonts = new HashMap();
+	public TTFFontRenderer arial18;
+	public TTFFontRenderer arial20;
+	public TTFFontRenderer arial25;
+	public TTFFontRenderer arialbold17;
 	public TTFFontRenderer tahoma10;
 	public TTFFontRenderer verdana10;
 	public FontRenderer verdana12;
@@ -37,6 +41,10 @@ public class FontManager {
 	public FontRenderer kiona18;
 	
 	public FontManager() {
+		arial18 = new TTFFontRenderer(new Font("Arial", 0, 18), true);
+		arial20 = new TTFFontRenderer(new Font("Arial", 0, 20), true);
+		arial25 = new TTFFontRenderer(new Font("Arial", 0, 25), true);
+		arialbold17 = new TTFFontRenderer(new Font("Arial Bold",0, 17), true);
 		tahoma10 = new TTFFontRenderer(new Font("Tahoma", 0, 10), true);
 		verdana10 = new TTFFontRenderer(new Font("Verdana", 0, 10), true);
 		verdana12 = this.getFont("verdana", 12f);
