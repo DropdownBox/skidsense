@@ -10,7 +10,16 @@ public class ClientName extends Command {
 
    public void fire(String[] args) {
        if (args.length != 0) {
-           Client.clientName = args[0];
+    	   String nameString =new String();
+    	   for (int i = 0; i < args.length; i++) {
+    		   if(i == 0) {
+    			   nameString += args[i];
+    		   }else {
+    			   nameString += " " + args[i];
+    		   }
+    	   }
+           Client.clientName = nameString;
+           nameString =new String("");
        }
    }
    
