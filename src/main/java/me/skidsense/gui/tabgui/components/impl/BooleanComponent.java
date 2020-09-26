@@ -1,7 +1,5 @@
 package me.skidsense.gui.tabgui.components.impl;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
-
 import me.skidsense.gui.tabgui.components.Component;
 import me.skidsense.gui.tabgui.util.TabGuiUtil;
 import me.skidsense.hooks.value.Option;
@@ -11,11 +9,6 @@ import java.awt.Color;
 
 import org.lwjgl.input.Keyboard;
 
-/**
- * made by oHare for ETB Reloaded
- *
- * @since 6/28/2019
- **/
 public class BooleanComponent extends Component {
     private Option value;
     private ModuleComponent modulecomp;

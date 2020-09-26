@@ -1,7 +1,5 @@
 package me.skidsense.gui.tabgui.components.impl;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
-
 import me.skidsense.Client;
 import me.skidsense.gui.tabgui.TabMain;
 import me.skidsense.gui.tabgui.components.Component;
@@ -13,16 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.Color;
-import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
-/**
- * made by oHare for ETB Reloaded
- *
- * @since 6/28/2019
- **/
 public class CategoryComponent extends Component {
     private ModuleType category;
     private TabMain tabMain;

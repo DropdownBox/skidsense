@@ -14,11 +14,6 @@ import java.awt.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 
-/**
- * made by oHare for ETB Reloaded
- *
- * @since 6/28/2019
- **/
 public class EnumComponent extends Component {
     private Mode<Enum> value;
     private ModuleComponent modulecomp;

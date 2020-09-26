@@ -16,11 +16,6 @@ import me.skidsense.util.RenderUtil;
 import java.awt.Color;
 import java.util.ArrayList;
 
-/**
- * made by oHare for ETB Reloaded
- *
- * @since 6/28/2019
- **/
 public class ModuleComponent extends Component {
     private Mod module;
     private CategoryComponent categorycomp;

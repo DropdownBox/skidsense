@@ -3,11 +3,6 @@ package me.skidsense.gui.tabgui.components;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 
-/**
- * made by oHare for ETB Reloaded
- *
- * @since 6/28/2019
- **/
 public class Component {
     private float x, y, width, height;
     private String name;

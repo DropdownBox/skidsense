@@ -14,16 +14,11 @@ import me.skidsense.module.ModuleType;
 import java.awt.Color;
 import java.util.ArrayList;
 
-/**
- * made by oHare for ETB Reloaded
- *
- * @since 6/28/2019
- **/
 public class TabMain {
     public static Minecraft mc = Minecraft.getMinecraft();
     private float x, y;
     private ArrayList<Component> components = new ArrayList<>();
-    private ArrayList<ModuleType> categories = new ArrayList();
+    private ArrayList<ModuleType> categories = new ArrayList<ModuleType>();
     private ModuleType selectedCategory = ModuleType.Fight;
     private float largestString;
     private boolean extended, extendedvalue;
