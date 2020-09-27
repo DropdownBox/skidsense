@@ -5,6 +5,7 @@ import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -14,11 +15,14 @@ import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.player.Teams;
+import me.skidsense.util.GLUtil;
 import me.skidsense.util.MathUtil;
+import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
 import me.skidsense.util.TeamUtils;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -31,12 +35,16 @@ import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.*;
+
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.ToDoubleFunction;
+
+import org.lwjgl.opengl.GL11;
 
 public class KillAura extends Mod {
 	public Mode<AuraPriority> priority = new Mode<>("Priority", "Priority", AuraPriority.values(), AuraPriority.Angle);
@@ -52,9 +60,10 @@ public class KillAura extends Mod {
 	public Option<Boolean> autodisable = new Option<Boolean>("AutoDisable", "AutoDisable", true);
 	public Numbers<Double> range = new Numbers<Double>("Range", "Range", 4.2, 3.5, 7.0, 0.1);
 	public Numbers<Double> cps = new Numbers<Double>("APS", "APS", 9.0, 1.0, 20.0, 1.0);
-	public Numbers<Double> blockrange = new Numbers<Double>("BlockRange", "BlockRange", 8.0, 3.5, 8.0, 0.1);
+	public Numbers<Double> switchdelay = new Numbers<Double>("SwitchDelay", "SwitchDelay", 100.0, 0.0, 1000.0, 50.0);
 	public boolean isBlocking;
 	private int index;
+	TimerUtil switchtimer = new TimerUtil();
 	TimerUtil timer = new TimerUtil();
 	private List<EntityLivingBase> loaded = new CopyOnWriteArrayList<EntityLivingBase>();
 	public static EntityLivingBase target;
@@ -101,8 +110,9 @@ public class KillAura extends Mod {
 		this.loaded = this.sortList(this.getTargets());
 		if (!this.loaded.isEmpty()) {
 			if (this.loaded.size() > 1 && target != null && mode.getValue() == AuraMode.Switch) {
-		        if(target.hurtTime != 0) {
+		        if(target.hurtTime != 0 && switchtimer.hasReached(switchdelay.getValue())) {
 		            ++this.index;
+		            switchtimer.reset();
 		        }
 			}else if (mode.getValue() == AuraMode.Single) {
 			    if (target.getDistanceToEntity(mc.thePlayer) > range.getValue()) {
@@ -115,7 +125,7 @@ public class KillAura extends Mod {
 		        this.index = 0;
 		    }
 		    target = (EntityLivingBase) this.loaded.get(this.index);
-			float[] array = rotateNCP(target);
+			float[] array = getRotationsToEnt(target , Minecraft.getMinecraft().thePlayer);
 			eventMotion.setYaw(array[0]);
 			eventMotion.setPitch(array[1]);
 			mc.thePlayer.rotationYawHead = array[0];
@@ -138,6 +148,16 @@ public class KillAura extends Mod {
 		}
 	}
 
+	@Sub
+	public void onRender3D(EventRender3D eventRender3D) {
+		if (target != null) {
+            final double x = RenderUtil.interpolate(target.posX, target.lastTickPosX, eventRender3D.getPartialTicks());
+            final double y = RenderUtil.interpolate(target.posY, target.lastTickPosY, eventRender3D.getPartialTicks());
+            final double z = RenderUtil.interpolate(target.posZ, target.lastTickPosZ, eventRender3D.getPartialTicks());
+            drawEntityESP(x - Minecraft.getMinecraft().getRenderManager().renderPosX, y + target.height + 0.1 - target.height - Minecraft.getMinecraft().getRenderManager().renderPosY, z - Minecraft.getMinecraft().getRenderManager().renderPosZ, target.height, 0.65, new Color(target.hurtTime > 0 ? 0xE33726 : RenderUtil.getRainbow(4000, 0, 0.85f)));
+        }
+	}
+	
 	private boolean shouldAttack() {
 		return this.timer.hasReached(1000.0 / (this.cps.getValue() + MathUtil.randomDouble(0.0, 3.0)));
 	}
@@ -187,10 +207,9 @@ public class KillAura extends Mod {
 		      boolean invis = this.invis.getValue();
 		      boolean teams = Client.getModuleManager().getModuleByClass(Teams.class).isEnabled();
 		      float range = this.range.getValue().floatValue();
-		      float focusRange = (mc.thePlayer.canEntityBeSeen(entity) ? range : 3.5F) >= blockrange.getValue().floatValue() ? (mc.thePlayer.canEntityBeSeen(entity) ? range : 3.5F) : blockrange.getValue().floatValue();
 		      if (mc.thePlayer.getHealth() > 0.0F && entity.getHealth() > 0.0F && !entity.isDead) {
 		         boolean raytrace = walls.getValue() || mc.thePlayer.canEntityBeSeen(entity);
-		         if (mc.thePlayer.getDistanceToEntity(entity) <= focusRange && raytrace) {
+		         if (mc.thePlayer.getDistanceToEntity(entity) <= range && raytrace) {
 
 		            if (entity instanceof EntityPlayer && players) {
 		            	
@@ -225,6 +244,17 @@ public class KillAura extends Mod {
 		return list;
 	}
 
+    private float[] getRotationsToEnt(Entity ent, EntityPlayerSP playerSP) {
+        final double differenceX = ent.posX - playerSP.posX;
+        final double differenceY = (ent.posY + ent.height) - (playerSP.posY + playerSP.height);
+        final double differenceZ = ent.posZ - playerSP.posZ;
+        final float rotationYaw = (float) (Math.atan2(differenceZ, differenceX) * 180.0D / Math.PI) - 90.0f;
+        final float rotationPitch = (float) (Math.atan2(differenceY, playerSP.getDistanceToEntity(ent)) * 180.0D / Math.PI);
+        final float finishedYaw = playerSP.rotationYaw + MathHelper.wrapAngleTo180_float(rotationYaw - playerSP.rotationYaw);
+        final float finishedPitch = playerSP.rotationPitch + MathHelper.wrapAngleTo180_float(rotationPitch - playerSP.rotationPitch);
+        return new float[]{finishedYaw, -finishedPitch};
+    }
+    
 	public static float getDistanceBetweenAngles(float n, float n2) {
 		float n3 = Math.abs(n - n2) % 360.0f;
 		if (n3 > 180.0f) {
@@ -233,6 +263,24 @@ public class KillAura extends Mod {
 		return n3;
 	}
 
+    private void drawEntityESP(double x, double y, double z, double height, double width, Color color) {
+        GL11.glPushMatrix();
+        GLUtil.setGLCap(3042, true);
+        GLUtil.setGLCap(3553, false);
+        GLUtil.setGLCap(2896, false);
+        GLUtil.setGLCap(2929, false);
+        GL11.glDepthMask(false);
+        GL11.glLineWidth(1.8f);
+        GL11.glBlendFunc(770, 771);
+        GLUtil.setGLCap(2848, true);
+        GL11.glDepthMask(true);
+        RenderUtil.BB(new AxisAlignedBB(x - width + 0.25, y, z - width + 0.25, x + width - 0.25, y + height, z + width - 0.25), new Color(color.getRed(), color.getGreen(), color.getBlue(), 120).getRGB());
+        RenderUtil.OutlinedBB(new AxisAlignedBB(x - width + 0.25, y, z - width + 0.25, x + width - 0.25, y + height, z + width - 0.25), 1, color.getRGB());
+        GLUtil.revertAllCaps();
+        GL11.glPopMatrix();
+        GL11.glColor4f(1, 1, 1, 1);
+    }
+    
 	private static int Health(Entity entity, Entity entity2) {
 		return (int) (((EntityLivingBase) entity).getHealth() - ((EntityLivingBase) entity2).getHealth());
 	}
