@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.GLU;
 
@@ -14,6 +15,7 @@ import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -43,166 +45,99 @@ public class Projectiles extends Mod{
 
 	@Sub
 	public void onRender3D(EventRender3D eventRender3D) {
-		double renderPosX = mc.thePlayer.lastTickPosX
-				+ (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * eventRender3D.getPartialTicks();
-		double renderPosY = mc.thePlayer.lastTickPosY
-				+ (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * eventRender3D.getPartialTicks();
-		double renderPosZ = mc.thePlayer.lastTickPosZ
-				+ (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * eventRender3D.getPartialTicks();
-		Minecraft.getMinecraft().entityRenderer.setupCameraTransform(Minecraft.getMinecraft().timer.renderPartialTicks, 2);
-		ItemStack stack;
-		Item item;
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        Minecraft.getMinecraft().entityRenderer.orientCamera(eventRender3D.getPartialTicks());
+        GL11.glTranslated(-Minecraft.getMinecraft().getRenderManager().renderPosX, -Minecraft.getMinecraft().getRenderManager().renderPosY, -Minecraft.getMinecraft().getRenderManager().renderPosZ);
 
-		if (mc.thePlayer.getHeldItem() != null && mc.gameSettings.thirdPersonView == 0) {
-			if (!isValidPotion(mc.thePlayer.getHeldItem(), mc.thePlayer.getHeldItem().getItem())
-					&& mc.thePlayer.getHeldItem().getItem() != Items.experience_bottle
-					&& !(mc.thePlayer.getHeldItem().getItem() instanceof ItemFishingRod)
-					&& !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBow)
-					&& !(mc.thePlayer.getHeldItem().getItem() instanceof ItemSnowball)
-					&& !(mc.thePlayer.getHeldItem().getItem() instanceof ItemEnderPearl)
-					&& !(mc.thePlayer.getHeldItem().getItem() instanceof ItemEgg))
-				return;
-			stack = mc.thePlayer.getHeldItem();
-			item = mc.thePlayer.getHeldItem().getItem();
-		} else
-			return;
-		if ((mc.thePlayer.getHeldItem().getItem() instanceof ItemBow) && (!mc.thePlayer.isUsingItem()))
-			return;
-		double posX = renderPosX - MathHelper.cos(mc.thePlayer.rotationYaw / 180.0F * (float) Math.PI) * 0.16F;
-		double posY = renderPosY + mc.thePlayer.getEyeHeight() - 0.1000000014901161D;
-		double posZ = renderPosZ - MathHelper.sin(mc.thePlayer.rotationYaw / 180.0F * (float) Math.PI) * 0.16F;
+        final EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+        if (Minecraft.getMinecraft().thePlayer.getHeldItem() != null && isThrowable(Minecraft.getMinecraft().thePlayer.getHeldItem().getItem())) {
+            double x = player.lastTickPosX
+                    + (player.posX - player.lastTickPosX)
+                    * (double) eventRender3D.getPartialTicks()
+                    - (double) (MathHelper.cos((float) Math.toRadians((double) player.rotationYaw)) * 0.16F);
+            double y = player.lastTickPosY
+                    + (player.posY - player.lastTickPosY) * (double) eventRender3D.getPartialTicks()
+                    + (double) player.getEyeHeight() - 0.100149011612D;
+            double z = player.lastTickPosZ
+                    + (player.posZ - player.lastTickPosZ)
+                    * (double) eventRender3D.getPartialTicks()
+                    - (double) (MathHelper.sin((float) Math.toRadians((double) player.rotationYaw)) * 0.16F);
+            float con = 1.0F;
+            if (!(player.inventory.getCurrentItem().getItem() instanceof ItemBow)) {
+                con = 0.4F;
+            }
 
-		double motionX = -MathHelper.sin(mc.thePlayer.rotationYaw / 180.0F * (float) Math.PI)
-				* MathHelper.cos(mc.thePlayer.rotationPitch / 180.0F * (float) Math.PI)
-				* (item instanceof ItemBow ? 1.0D : 0.4D);
-		double motionY = -MathHelper.sin(mc.thePlayer.rotationPitch / 180.0F * (float) Math.PI)
-				* (item instanceof ItemBow ? 1.0D : 0.4D);
-		double motionZ = MathHelper.cos(mc.thePlayer.rotationYaw / 180.0F * (float) Math.PI)
-				* MathHelper.cos(mc.thePlayer.rotationPitch / 180.0F * (float) Math.PI)
-				* (item instanceof ItemBow ? 1.0D : 0.4D);
+            double motionX = (double) (-MathHelper.sin((float) Math.toRadians((double) player.rotationYaw))
+                    * MathHelper.cos((float) Math.toRadians((double) player.rotationPitch)) * con);
+            double motionZ = (double) (MathHelper.cos((float) Math.toRadians((double) player.rotationYaw))
+                    * MathHelper.cos((float) Math.toRadians((double) player.rotationPitch)) * con);
+            double motionY = (double) (-MathHelper.sin((float) Math.toRadians((double) player.rotationPitch)) * con);
+            double ssum = Math.sqrt(motionX * motionX
+                    + motionY * motionY + motionZ
+                    * motionZ);
 
-		int var6 = 72000 - mc.thePlayer.getItemInUseCount();
-		float power = (float) (var6 / 20.0F);
-		power = (power * power + power * 2.0F) / 3.0F;
+            motionX /= ssum;
+            motionY /= ssum;
+            motionZ /= ssum;
 
-		if (power < 0.1D)
-			return;
+            GL11.glColor4d(1.0f, 0f, 0f, .5);
 
-		if (power > 1.0F)
-			power = 1.0F;
+            if (player.inventory.getCurrentItem().getItem() instanceof ItemBow) {
+                float pow = (float) (72000 - player.getItemInUseCount()) / 20.0F;
+                pow = (pow * pow + pow * 2.0F) / 3.0F;
 
-		float distance = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ);
+                if (pow > 1.0F) {
+                    pow = 1.0F;
+                }
 
-		motionX /= distance;
-		motionY /= distance;
-		motionZ /= distance;
+                if (pow <= 0.1F) {
+                    pow = 1.0F;
+                }
 
-		float pow = (item instanceof ItemBow ? power * 2.0F
-				: isValidPotion(stack, item) ? 0.325F
-						: item instanceof ItemFishingRod ? 1.25F
-								: mc.thePlayer.getHeldItem().getItem() == Items.experience_bottle ? 0.9F : 1.0F);
+                pow *= 2.0F;
+                pow *= 1.5F;
+                motionX *= (double) pow;
+                motionY *= (double) pow;
+                motionZ *= (double) pow;
+            } else {
+                motionX *= 1.5D;
+                motionY *= 1.5D;
+                motionZ *= 1.5D;
+            }
 
-		motionX *= pow * (item instanceof ItemFishingRod ? 0.75F
-				: mc.thePlayer.getHeldItem().getItem() == Items.experience_bottle ? 0.75F : 1.5F);
-		motionY *= pow * (item instanceof ItemFishingRod ? 0.75F
-				: mc.thePlayer.getHeldItem().getItem() == Items.experience_bottle ? 0.75F : 1.5F);
-		motionZ *= pow * (item instanceof ItemFishingRod ? 0.75F
-				: mc.thePlayer.getHeldItem().getItem() == Items.experience_bottle ? 0.75F : 1.5F);
+            GL11.glPushMatrix();
+            enableDefaults();
+            GL11.glLineWidth(1.5F);
 
-		RenderUtil.startDrawing();
-		if (power > 0.6F) {
-			GlStateManager.color(0.0F, 1.0F, 0.0F, 0.15F);
-		} else if (power > 0.3F) {
-			GlStateManager.color(0.8F, 0.5F, 0.0F, 0.15F);
-		} else {
-			GlStateManager.color(1.0F, 0.0F, 0.0F, 0.15F);
-		}
-		Tessellator tessellator = Tessellator.getInstance();
-		WorldRenderer renderer = tessellator.getWorldRenderer();
-		renderer.begin(3, DefaultVertexFormats.POSITION);
-		if (!(item instanceof ItemBow))
-			GL11.glColor4d(0, 0.9, 1, 0.75);
-		renderer.pos(posX - renderPosX, posY + 0.01 - renderPosY, posZ - renderPosZ);
+            GL11.glBegin(GL11.GL_LINE_STRIP);
+            double gravity = this.getGravity(player.inventory.getCurrentItem().getItem());
 
-		float size = (float) (item instanceof ItemBow ? 0.3D : 0.25D);
-		boolean hasLanded = false;
-		Entity landingOnEntity = null;
-		MovingObjectPosition landingPosition = null;
-		while (!hasLanded && posY > 0.0D) {
-			Vec3 present = new Vec3(posX, posY, posZ);
-			Vec3 future = new Vec3(posX + motionX, posY + motionY, posZ + motionZ);
+            for (int q = 0; q < 1000; ++q) {
+                double rx = x * 1.0D;
+                double ry = y * 1.0D;
+                double rz = z * 1.0D;
 
-			MovingObjectPosition possibleLandingStrip = mc.theWorld.rayTraceBlocks(present, future, false, true, false);
-			if (possibleLandingStrip != null
-					&& possibleLandingStrip.typeOfHit != MovingObjectPosition.MovingObjectType.MISS) {
-				landingPosition = possibleLandingStrip;
-				hasLanded = true;
-			}
+                GL11.glColor3d(1, 0, 0);
+                GL11.glVertex3d(rx, ry, rz);
 
-			AxisAlignedBB arrowBox = new AxisAlignedBB(posX - size, posY - size, posZ - size, posX + size, posY + size,
-					posZ + size);
-			List<Entity> entities = getEntitiesWithinAABB(
-					arrowBox.addCoord(motionX, motionY, motionZ).expand(1.0D, 1.0D, 1.0D));
-			for (Object entity : entities) {
-				Entity boundingBox = (Entity) entity;
-				if ((boundingBox.canBeCollidedWith()) && (boundingBox != mc.thePlayer)) {
-					float var11 = 0.3F;
-					AxisAlignedBB var12 = boundingBox.getEntityBoundingBox().expand(var11, var11, var11);
-					MovingObjectPosition possibleEntityLanding = var12.calculateIntercept(present, future);
-					if (possibleEntityLanding != null) {
-						hasLanded = true;
-						landingOnEntity = boundingBox;
-						landingPosition = possibleEntityLanding;
-					}
-				}
-			}
+                x += motionX;
+                y += motionY;
+                z += motionZ;
+                motionX *= 0.99D;
+                motionY *= 0.99D;
+                motionZ *= 0.99D;
+                motionY -= gravity;
+            }
 
-			posX += motionX;
-			posY += motionY;
-			posZ += motionZ;
-			float motionAdjustment = 0.99F;
-			motionX *= motionAdjustment;
-			motionY *= motionAdjustment;
-			motionZ *= motionAdjustment;
-			motionY -= (item instanceof ItemBow ? 0.05D : 0.03D);
-			renderer.pos(posX - renderPosX, posY - renderPosY, posZ - renderPosZ);
-		}
-		tessellator.draw();
+            GL11.glEnd();
 
-		if (landingPosition != null && landingPosition.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-			GlStateManager.translate(posX - renderPosX, posY - renderPosY, posZ - renderPosZ);
+            GL11.glPopMatrix();
+            disableDefaults();
+        }
+        GL11.glTranslated(Minecraft.getMinecraft().getRenderManager().renderPosX, Minecraft.getMinecraft().getRenderManager().renderPosY, Minecraft.getMinecraft().getRenderManager().renderPosZ);
+        GL11.glPopMatrix();
 
-			int side = landingPosition.sideHit.getIndex();
-
-			if (side == 2) {
-				GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-			} else if (side == 3) {
-				GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-			} else if (side == 4) {
-				GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
-			} else if (side == 5) {
-				GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
-			}
-
-			Cylinder c = new Cylinder();
-
-			GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-			c.setDrawStyle(GLU.GLU_LINE);
-
-			if (landingOnEntity != null) {
-				GL11.glColor4d(0.9, 1, 0, 0.15);
-			}
-			if (!(item instanceof ItemBow))
-				GL11.glColor4d(0, 0.9, 1, 1);
-			c.draw(0.5F, 0.5F, 0.0F, 4, 1);
-			if (!(item instanceof ItemBow)) {
-				GL11.glColor4d(0, 0.9, 1, 0.15);
-				c.draw(0.0f, 0.5F, 0.0F, 4, 100);
-			} else {
-				c.draw(0.0f, 0.5F, 0.0F, 4, 27);
-			}
-		}
-		RenderUtil.stopDrawing();
 	}
 	
 	private final List<double[]> positions = new ArrayList<double[]>();
@@ -299,19 +234,6 @@ public class Projectiles extends Mod{
                 Projectiles.disableRender3D(true);
 		}
 	}
-	
-	private boolean isValidPotion(ItemStack stack, Item item) {
-		if (item != null && item instanceof ItemPotion) {
-			ItemPotion potion = (ItemPotion) item;
-			if (!ItemPotion.isSplash(stack.getItemDamage()))
-				return false;
-
-			if (potion.getEffects(stack) != null) {
-				return true;
-			}
-		}
-		return false;
-	}
 
     public void drawBox(AxisAlignedBB bb2) {
         GL11.glBegin(7);
@@ -342,15 +264,6 @@ public class Projectiles extends Mod{
         GL11.glEnd();
     }
 
-    @Override
-    public void setColor(int colorHex) {
-        float alpha = (float)(colorHex >> 24 & 255) / 255.0f;
-        float red = (float)(colorHex >> 16 & 255) / 255.0f;
-        float green = (float)(colorHex >> 8 & 255) / 255.0f;
-        float blue = (float)(colorHex & 255) / 255.0f;
-        GL11.glColor4f(red, green, blue, alpha == 0.0f ? 1.0f : alpha);
-    }
-
     public static void enableRender3D(boolean disableDepth) {
         if (disableDepth) {
             GL11.glDepthMask(false);
@@ -377,19 +290,37 @@ public class Projectiles extends Mod{
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
     
-	private List<Entity> getEntitiesWithinAABB(AxisAlignedBB bb) {
-		ArrayList<Entity> list = new ArrayList<Entity>();
-		int chunkMinX = MathHelper.floor_double((bb.minX - 2.0D) / 16.0D);
-		int chunkMaxX = MathHelper.floor_double((bb.maxX + 2.0D) / 16.0D);
-		int chunkMinZ = MathHelper.floor_double((bb.minZ - 2.0D) / 16.0D);
-		int chunkMaxZ = MathHelper.floor_double((bb.maxZ + 2.0D) / 16.0D);
-		for (int x = chunkMinX; x <= chunkMaxX; x++) {
-			for (int z = chunkMinZ; z <= chunkMaxZ; z++) {
-				if (mc.theWorld.getChunkProvider().chunkExists(x, z)) {
-					mc.theWorld.getChunkFromChunkCoords(x, z).getEntitiesWithinAABBForEntity(mc.thePlayer, bb, list, null);
-				}
-			}
-		}
-		return list;
-	}
+    private void enableDefaults() {
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glEnable(2929);
+        GL11.glEnable(GL13.GL_MULTISAMPLE);
+        GL11.glDepthMask(false);
+    }
+
+    private void disableDefaults() {
+        GL11.glDisable(3042);
+        GL11.glEnable(3553);
+        GL11.glEnable(2929);
+        GL11.glDisable(GL13.GL_MULTISAMPLE);
+        GL11.glDepthMask(true);
+        GL11.glDisable(GL11.GL_LINE_SMOOTH);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+    }
+
+    private double getGravity(Item item) {
+        return item instanceof ItemBow ? 0.05D : 0.03D;
+    }
+
+    private boolean isThrowable(Item item) {
+        return item instanceof ItemBow || item instanceof ItemSnowball
+                || item instanceof ItemEgg || item instanceof ItemEnderPearl;
+    }
 }
