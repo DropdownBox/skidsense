@@ -15,6 +15,7 @@ import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.hooks.value.Value;
 import me.skidsense.management.ModManager;
+import me.skidsense.management.fontRenderer.TTFFontRenderer;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.RenderUtil;
@@ -62,7 +63,7 @@ extends GuiScreen {
          }
         
     	//TODO 字体
-    	FontRenderer font = Client.instance.fontManager.zeroarr;
+    	TTFFontRenderer font = Client.instance.fontManager.comfortaa17;
         int x2 = 180;
         float valueY=this.startY;
         Gui.drawRect(startX, startY + 30, startX+50, startY+250,new Color(25,25,25).getRGB());
