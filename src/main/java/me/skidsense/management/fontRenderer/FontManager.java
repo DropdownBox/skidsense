@@ -16,7 +16,7 @@ public class FontManager {
 	public TTFFontRenderer arialbold17;
 	public TTFFontRenderer tahoma10;
 	public TTFFontRenderer verdana10;
-	public TTFFontRenderer comfortaa17;
+	public FontRenderer comfortaa17;
 	public TTFFontRenderer comfortaa18;
 	public TTFFontRenderer comfortaa16;
 	public TTFFontRenderer comfortaa14;
@@ -31,9 +31,9 @@ public class FontManager {
 		arialbold17 = new TTFFontRenderer(new Font("Arial Bold",0, 17), true);
 		tahoma10 = new TTFFontRenderer(new Font("Tahoma", 0, 10), true);
 		verdana10 = new TTFFontRenderer(new Font("Verdana", 0, 10), true);
-		comfortaa17 = new TTFFontRenderer(new Font("Comfortaa", 0, 17), true);
 		comfortaa14 = new TTFFontRenderer(new Font("Comfortaa", 0, 14), true);
 		comfortaa16 =  new TTFFontRenderer(new Font("Comfortaa", 0, 16), true);
+		comfortaa17 = this.getFont("comfortaa", 17);
 		comfortaa18 = new TTFFontRenderer(new Font("Comfortaa", 0, 18), true);
 		comfortaa20 = new TTFFontRenderer(new Font("Comfortaa", 0, 20), true);
 		comfortaa34 =new TTFFontRenderer(new Font("Comfortaa", 0, 34), true);
