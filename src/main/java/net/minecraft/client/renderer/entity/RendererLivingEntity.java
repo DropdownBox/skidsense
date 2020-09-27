@@ -371,7 +371,9 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
                     GL11.glPushAttrib(1048575);
                     GL11.glDisable(3008);
                     GL11.glDisable(3553);
-                    GL11.glDisable(2896);
+                    if(chams.flat.getValue()) {
+                        GL11.glDisable(2896);
+                    }
                     GL11.glEnable(3042);
                     GL11.glBlendFunc(770, 771);
                     GL11.glLineWidth(1.5f);
@@ -387,7 +389,9 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
                     GL11.glColor4f(FriendManager.isFriend(entitylivingbaseIn.getName()) ? 0.12f : (chams.rainbow.getValue() ? rgba[0] : chams.visiblered.getValue().floatValue()), FriendManager.isFriend(entitylivingbaseIn.getName()) ? 0.5F : (chams.rainbow.getValue() ? rgba[1] : chams.visiblegreen.getValue().floatValue()), FriendManager.isFriend(entitylivingbaseIn.getName()) ? 1 : (chams.rainbow.getValue() ? rgba[2] : chams.visibleblue.getValue().floatValue()), chams.alpha.getValue().floatValue());
                     this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
                     GL11.glEnable(3042);
-                    GL11.glEnable(2896);
+                    if(chams.flat.getValue()) {
+                    	GL11.glEnable(2896);
+                    }
                     GL11.glEnable(3553);
                     GL11.glEnable(3008);
                     GL11.glPopAttrib();

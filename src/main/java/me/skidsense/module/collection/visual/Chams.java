@@ -34,6 +34,7 @@ public class Chams extends Mod {
 	public Option<Boolean> passives = new Option<Boolean>("Passives", "Passives", false);
 	public Option<Boolean> colored = new Option<Boolean>("Colored", "Colored", false);
 	public Option<Boolean> hands = new Option<Boolean>("Hands", "Hands", false);
+	public Option<Boolean> flat = new Option<Boolean>("Flat", "Flat", true);
 	public Option<Boolean> rainbow = new Option<Boolean>("Rainbow", "Rainbow", false);
 					
 	public Numbers<Double> visiblered = new Numbers<Double>("VisibleRed", "VisibleRed", 1.0, 0.001, 1.0, 0.001);
