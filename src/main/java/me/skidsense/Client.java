@@ -4,6 +4,7 @@ import me.skidsense.hooks.value.Value;
 import me.skidsense.management.CommandManager;
 import me.skidsense.management.FileManager;
 import me.skidsense.management.ModManager;
+import me.skidsense.management.authentication.AuthUser;
 import me.skidsense.management.fontRenderer.FontManager;
 import me.skidsense.management.friend.FriendManager;
 import me.skidsense.management.waypoints.WaypointManager;
@@ -27,7 +28,7 @@ public class Client {
 	public static Minecraft mc = Minecraft.getMinecraft();
 	public static Client instance = new Client();
 	public static String clientName = "Exusiai";
-	public boolean authuser = false;
+	public AuthUser authuser;
 	public static ModManager modulemanager;
 	public CommandManager commandmanager;
 	public FontManager fontManager;

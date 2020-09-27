@@ -18,6 +18,7 @@ import me.skidsense.Client;
 import me.skidsense.SplashProgress;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventKey;
+import me.skidsense.management.authentication.GuiLoginMenu;
 import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
 
 import java.awt.image.BufferedImage;
@@ -1005,7 +1006,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         {
             this.currentScreen.onGuiClosed();
         }
-
+        
+        if (Client.instance.authuser == null && guiScreenIn instanceof GuiMainMenu)
+        {
+            guiScreenIn = new GuiLoginMenu();
+        }
+        
         if (guiScreenIn == null && this.theWorld == null)
         {
             guiScreenIn = new GuiMainMenu();
@@ -1926,7 +1932,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                 KeyBinding.setKeyBindState(k, Keyboard.getEventKeyState());
                 if ((k == Keyboard.KEY_RSHIFT || k == Keyboard.KEY_INSERT ) && this.currentScreen == null) {
                 	this.displayGuiScreen(new ClickGUI());
-                 }
+                }
                 if (Keyboard.getEventKeyState())
                 {
                     KeyBinding.onTick(k);
