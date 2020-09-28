@@ -7,13 +7,17 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerCapabilities;
+import net.minecraft.init.Blocks;
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction;
 import net.minecraft.network.play.client.C13PacketPlayerAbilities;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 import net.minecraft.stats.StatList;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovementInput;
 
 import java.awt.*;
@@ -24,13 +28,14 @@ public class Speed extends Mod {
     private Mode<Enum> mode = new Mode("Mode", "mode", SpeedMode.values(), SpeedMode.HypixelHop);
     private Option<Boolean> setback = new Option("Setback", "Setback", false);
     private Option<Boolean> disabler = new Option<>("Disabaler","Disabler",false);
-
+    private int voidTicks;
     private int stage;
     private double movementSpeed;
     private double distance;
     private double speed, speedvalue;
     private double lastDist;
     public static int aacCount;
+	public static boolean strafeDirection;
     boolean collided, lessSlow, shouldslow = false;
     double less, stair;
     TimerUtil lastCheck = new TimerUtil();
@@ -93,10 +98,64 @@ public class Speed extends Mod {
 
     }
 
+    public boolean inVoid() {
+        for (int i = (int) Math.ceil(Minecraft.getMinecraft().thePlayer.posY); i >= 0; i--) {
+            if (Minecraft.getMinecraft().theWorld.getBlockState(new BlockPos(Minecraft.getMinecraft().thePlayer.posX, i, Minecraft.getMinecraft().thePlayer.posZ)).getBlock() != Blocks.air) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private void setMoveSpeed(final EventMove event, final double speed) {
+        voidTicks++;
+        if (KillAura.target != null) {
+            if (inVoid() && voidTicks > 4) {
+                voidTicks = 0;
+                strafeDirection = !strafeDirection;
+            }
+        }
+        AutoStrafe target_strafemod = (AutoStrafe) Client.getModuleManager().getModuleByClass(AutoStrafe.class);
+        boolean shouldStrafe = Client.getModuleManager().getModuleByClass(AutoStrafe.class).isEnabled() && target_strafemod.indexPos != null && target_strafemod.target != null && !(!Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown() && target_strafemod.OnSpace.getValue());
+        double forward = shouldStrafe ? ((Math.abs(Minecraft.getMinecraft().thePlayer.movementInput.moveForward) > 0 || Math.abs(Minecraft.getMinecraft().thePlayer.movementInput.moveStrafe) > 0) ? 1 : 0) : Minecraft.getMinecraft().thePlayer.movementInput.moveForward;
+        double strafe = shouldStrafe ? 0 : Minecraft.getMinecraft().thePlayer.movementInput.moveStrafe;
+        float yaw = shouldStrafe ? getRotationFromPosition(target_strafemod.indexPos.xCoord, target_strafemod.indexPos.zCoord) : Minecraft.getMinecraft().thePlayer.rotationYaw;
+        if (forward == 0.0 && strafe == 0.0) {
+            event.setX(0.0);
+            event.setZ(0.0);
+        } else {
+            if (forward != 0.0) {
+                if (strafe > 0.0) {
+                    yaw += ((forward > 0.0) ? -45 : 45);
+                } else if (strafe < 0.0) {
+                    yaw += ((forward > 0.0) ? 45 : -45);
+                }
+                strafe = 0.0;
+                if (forward > 0.0) {
+                    forward = 1.0;
+                } else if (forward < 0.0) {
+                    forward = -1.0;
+                }
+            }
+            event.setX(forward * speed * -Math.sin(Math.toRadians(yaw)) + strafe * speed * Math.cos(Math.toRadians(yaw)));
+            event.setZ(forward * speed * Math.cos(Math.toRadians(yaw)) - strafe * speed * -Math.sin(Math.toRadians(yaw)));
+        }
+    }
+    
     private void setMotion(final EventMove em, final double speed) {
-        double forward = MovementInput.moveForward;
-        double strafe = MovementInput.moveStrafe;
-        float yaw = mc.thePlayer.rotationYaw;
+        voidTicks++;
+        if (KillAura.target != null) {
+            if (inVoid() && voidTicks > 4) {
+                voidTicks = 0;
+                strafeDirection = !strafeDirection;
+            }
+        }
+        
+        AutoStrafe target_strafemodmod = (AutoStrafe) Client.getModuleManager().getModuleByClass(AutoStrafe.class);
+        boolean shouldStrafe = target_strafemodmod.isEnabled() && target_strafemodmod.indexPos != null && target_strafemodmod.target != null && !(!Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown() && target_strafemodmod.OnSpace.getValue());
+        double forward = shouldStrafe ? ((Math.abs(Minecraft.getMinecraft().thePlayer.movementInput.moveForward) > 0 || Math.abs(Minecraft.getMinecraft().thePlayer.movementInput.moveStrafe) > 0) ? 1 : 0) : Minecraft.getMinecraft().thePlayer.movementInput.moveForward;
+        double strafe = shouldStrafe ? 0 : Minecraft.getMinecraft().thePlayer.movementInput.moveStrafe;
+        float yaw = shouldStrafe ? getRotationFromPosition(target_strafemodmod.indexPos.xCoord, target_strafemodmod.indexPos.zCoord) : Minecraft.getMinecraft().thePlayer.rotationYaw;
         if (forward == 0.0 && strafe == 0.0) {
             em.setX(0.0);
             em.setZ(0.0);
@@ -117,12 +176,18 @@ public class Speed extends Mod {
                     forward = -1.0;
                 }
             }
-            em.setX(mc.thePlayer.motionX = forward * speed * Math.cos(Math.toRadians(yaw + 88.0)) + strafe * speed * Math.sin(Math.toRadians(yaw + 87.9000815258789)));
-            em.setZ(mc.thePlayer.motionZ = forward * speed * Math.sin(Math.toRadians(yaw + 88.0)) - strafe * speed * Math.cos(Math.toRadians(yaw + 87.9000815258789)));
+            em.setX(forward * speed * -Math.sin(Math.toRadians(yaw)) + strafe * speed * Math.cos(Math.toRadians(yaw)));
+            em.setZ(forward * speed * Math.cos(Math.toRadians(yaw)) - strafe * speed * -Math.sin(Math.toRadians(yaw)));
         }
     }
 
 
+    public float getRotationFromPosition(final double x, final double z) {
+        final double xDiff = x - Minecraft.getMinecraft().thePlayer.posX;
+        final double zDiff = z - Minecraft.getMinecraft().thePlayer.posZ;
+        return (float) (Math.atan2(zDiff, xDiff) * 180.0D / Math.PI) - 90.0f;
+    }
+    
     @Override
     public void onEnable() {
         boolean isCollidedHorizontally;
@@ -245,8 +310,8 @@ public class Speed extends Mod {
                 this.speed = 0.12D;
             }
 
-            if(MoveUtil.isMoving() && (!Client.getModuleManager().getModuleByClass(AutoStrafe.class).isEnabled() || !AutoStrafe.canStrafe())) {
-                setMotion(e, speed);
+            if(MoveUtil.isMoving()) {
+            	setMoveSpeed(e, speed);
                 ++stage;
             }
         }

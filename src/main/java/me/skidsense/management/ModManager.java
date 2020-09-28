@@ -60,6 +60,7 @@ implements Manager {
         addMod(new SafeWalk());
         addMod(new Sprint());
         addMod(new Speed());
+        addMod(new Speed2());
         addMod(new NoSlow());
 
         addMod(new AntiFall());
@@ -85,6 +86,7 @@ implements Manager {
         addMod(new TargetHUD());
         addMod(new KidFace());
         addMod(new Waypoints());
+        
         addMod(new Chams());
         addMod(new AutoL());
         addMod(new ChestStealer());
