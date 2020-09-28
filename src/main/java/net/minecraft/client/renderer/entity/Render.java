@@ -25,6 +25,9 @@ import net.optifine.entity.model.IEntityRenderer;
 import net.optifine.shaders.Shaders;
 import org.lwjgl.opengl.GL11;
 
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventNametagRender;
+
 public abstract class Render<T extends Entity> implements IEntityRenderer
 {
     private static final ResourceLocation shadowTextures = new ResourceLocation("textures/misc/shadow.png");
@@ -362,7 +365,13 @@ public abstract class Render<T extends Entity> implements IEntityRenderer
     protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance)
     {
         double d0 = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
-
+        if(entityIn instanceof EntityPlayer) {
+        	EventNametagRender eventNametagRender = new EventNametagRender();
+        	EventManager.getInstance().postAll(eventNametagRender);
+        	if(eventNametagRender.isCancelled()) {
+        		return;
+        	}
+        }
         if (d0 <= (double)(maxDistance * maxDistance))
         {
             FontRenderer fontrenderer = this.getFontRendererFromRenderManager();

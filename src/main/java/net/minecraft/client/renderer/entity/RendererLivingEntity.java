@@ -3,6 +3,8 @@ package net.minecraft.client.renderer.entity;
 import com.google.common.collect.Lists;
 
 import me.skidsense.Client;
+import me.skidsense.hooks.EventManager;
+import me.skidsense.hooks.events.EventNametagRender;
 import me.skidsense.management.friend.FriendManager;
 import me.skidsense.module.collection.visual.Chams;
 import me.skidsense.util.ColorCreator;
@@ -689,6 +691,11 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
 
                     if (entity.isSneaking())
                     {
+                    	EventNametagRender eventNametagRender = new EventNametagRender();
+                    	EventManager.getInstance().postAll(eventNametagRender);
+                    	if(eventNametagRender.isCancelled()) {
+                    		return;
+                    	}
                         FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
                         GlStateManager.pushMatrix();
                         GlStateManager.translate((float)x, (float)y + entity.height + 0.5F - (entity.isChild() ? entity.height / 2.0F : 0.0F), (float)z);

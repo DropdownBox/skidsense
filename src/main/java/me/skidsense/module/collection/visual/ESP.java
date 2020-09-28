@@ -25,10 +25,12 @@ import me.skidsense.color.ColorManager;
 import me.skidsense.color.ColorObject;
 import me.skidsense.color.Colors;
 import me.skidsense.hooks.Sub;
+import me.skidsense.hooks.events.EventNametagRender;
 import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
+import me.skidsense.management.fontRenderer.TTFFontRenderer;
 import me.skidsense.management.friend.FriendManager;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
@@ -55,6 +57,13 @@ public class ESP extends Mod {
 	@Sub
 	public void onRender3D(EventRender3D e) {
 		this.updatePositions();
+	}
+	
+	@Sub
+	public void onNametagRender(EventNametagRender eventNametagRender) {
+		if(TAGS.getValue()) {
+			eventNametagRender.setCancelled(true);
+		}
 	}
 	
 	@Sub
@@ -209,30 +218,58 @@ public class ESP extends Mod {
                         }
                         if (HEALTH_NUMBER.getValue()) {
                             GlStateManager.pushMatrix();
-                            GlStateManager.scale(2.0f, 2.0f, 2.0f);
-                            String nigger = (int)MathUtils.getIncremental(health * 5.0f, 1.0) + "HP";
-                            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(nigger, (float)(x - 6.0 - (double)(Minecraft.getMinecraft().fontRendererObj.getStringWidth(nigger) * 2.0f)) / 2.0f, ((float)((int)healthLocation) + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2.0f) / 2.0f, -1);
+                            float scale = 1.0f / (Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity) / 10f);
+                            if (scale < 0.85f)
+                                scale = 1.0f;
+                            if (scale > 1.0f)
+                                scale = 1.0f;
+
+                            GlStateManager.scale(scale, scale, scale);
+                            String nigger = (int)MathUtils.getIncremental(health, 1.0) + "§c❤";
+                            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(nigger,((float)(x - (double)( Minecraft.getMinecraft().fontRendererObj.getStringWidth(nigger))) / scale) - 8, (((float)((int)healthLocation) + Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT) / scale) - 11, -1);
                             GlStateManager.popMatrix();
                         }
                     }
                     if (!Client.getModuleManager().getModuleByClass(Nametags.class).isEnabled() && TAGS.getValue()) {
-                        RenderUtil.rectangle(0.0, 0.0, 0.0, 0.0, Colors.getColor(0, 0));
                         GlStateManager.pushMatrix();
+
+                        float scale = 1.0f / (Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity) / 10f);
+                        if (scale < 0.85f)
+                            scale = 0.85f;
+                        if (scale > 1.0f)
+                            scale = 1.0f;
+
+                        GlStateManager.scale(scale, scale, scale);
+
+                        ColorObject temp = ColorManager.getFriendlyVisible();
+                        String renderName = "\u00a7a" + (int)mc.thePlayer.getDistanceToEntity(ent) + "m \u00a7r\u00a7l" + (FriendManager.isFriend(ent.getName()) ? FriendManager.getAlias(ent.getName()) : ent.getName());
+                        float meme2 = (float)((endx - x) - (double)(Minecraft.getMinecraft().fontRendererObj.getStringWidth(renderName) / 1.0f));
+                        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(renderName, (float)((x + (meme2 / 2)) / scale),(float)(((y) / scale) - 10),FriendManager.isFriend(ent.getName()) ? Colors.getColor(temp.red, temp.green, temp.blue) : -1);
+                        GlStateManager.popMatrix();
+                    	/*GlStateManager.pushMatrix();
                         GlStateManager.scale(2.0f, 2.0f, 2.0f);
                         String renderName = "\u00a7a" + (int)mc.thePlayer.getDistanceToEntity(ent) + "m \u00a7r\u00a7l" + (FriendManager.isFriend(ent.getName()) ? FriendManager.getAlias(ent.getName()) : ent.getName());
-                        FontRenderer font = Minecraft.getMinecraft().fontRendererObj;
-                        float meme2 = (float)((endx - x) / 2.0 - (double)(font.getStringWidth(renderName) / 1.0f));
+                        TTFFontRenderer font = Client.instance.fontManager.tahoma10;
+                        float meme2 = (float)((endx - x) / 2.0 - (double)(font.getWidth(renderName) / 1.0f));
                         ColorObject temp = ColorManager.getFriendlyVisible();
-                        RenderUtil.drawOutlinedString(renderName, (float)(x + (double)meme2) / 2.0f, (float)(y - (double)(font.FONT_HEIGHT / 1.5f * 2.0f)) / 2.0f - 3.0f, FriendManager.isFriend(ent.getName()) ? Colors.getColor(temp.red, temp.green, temp.blue) : -1);
-                        GlStateManager.popMatrix();
+                        font.drawStringWithShadow(renderName, (float)(x + (double)meme2) / 2.0f, (float)(y - (double)(font.getHeight(renderName) / 1.5f * 2.0f)) / 2.0f - 3.0f, FriendManager.isFriend(ent.getName()) ? Colors.getColor(temp.red, temp.green, temp.blue) : -1);
+                        GlStateManager.popMatrix();*/
                     }
                     if (ent.getCurrentEquippedItem() != null && ITEMS.getValue()) {
-                        GlStateManager.pushMatrix();
-                        GlStateManager.scale(2.0f, 2.0f, 2.0f);
+                    	GlStateManager.pushMatrix();
+                        float scale = 1.0f / (Minecraft.getMinecraft().thePlayer.getDistanceToEntity(entity) / 10f);
+                        if (scale < 0.85f)
+                            scale = 0.85f;
+                        if (scale > 1.0f)
+                            scale = 1.0f;
+
+                        GlStateManager.scale(scale, scale, scale);
                         ItemStack stack = ent.getCurrentEquippedItem();
-                        String customName = REAL_ITEM_NAME.getValue() != false ? ent.getCurrentEquippedItem().getDisplayName() : ent.getCurrentEquippedItem().getItem().getItemStackDisplayName(stack);
-                        float meme5 = (float)((endx - x) / 2.0 - (double)(Minecraft.getMinecraft().fontRendererObj.getStringWidth(customName) / 1.0f));
-                        RenderUtil.drawOutlinedString(customName, (float)(x + (double)meme5) / 2.0f, (float)(endy + (double)(Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / 2.0f * 2.0f)) / 2.0f + 1.0f, -1);
+                        String customName = REAL_ITEM_NAME.getValue() ? ent.getCurrentEquippedItem().getDisplayName() : ent.getCurrentEquippedItem().getItem().getItemStackDisplayName(stack);
+                        float meme2 = (float)((endx - x) - (double)(Minecraft.getMinecraft().fontRendererObj.getStringWidth(customName) / 1.0f));
+                        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(customName, (float)((x + (meme2 / 2)) / scale),(float)(((endy) / scale) + 5),-1);
+                        /*float meme5 = (float)((endx - x) / scale - (double)(Minecraft.getMinecraft().fontRendererObj.getStringWidth(customName) / scale));
+                        Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(customName, (float)(x + (double)meme5) / scale, (float)(endy + (double)(Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT / scale * 2.0f)) / scale, -1);*/
                         GlStateManager.popMatrix();
                     }
                     int mX = scaledRes.getScaledWidth();
