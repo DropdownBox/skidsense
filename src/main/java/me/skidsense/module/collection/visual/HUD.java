@@ -25,7 +25,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
@@ -167,6 +171,51 @@ extends Mod {
 		Client.instance.fontManager.arial25.drawStringWithShadow("Flux", 2, 3, ColorCreator.createRainbowFromOffset(-6000, 5));
 	}
     
+    public void drawLBV4Watermark() {
+    	FontRenderer fr = mc.fontRendererObj;
+        ScaledResolution s = new ScaledResolution(mc);
+        GL11.glPushMatrix();
+        GL11.glScalef(2, 2, 2);
+        boolean left = mode.getValue() == arrayPosition.TopLeft;
+        if (left)
+        {
+            fr.drawStringWithShadow("LBV4" + "§c!", 2, 4, 0xffffff);
+        }
+        else
+        {
+            fr.drawStringWithShadow("LBV4" + "§c!", (s.getScaledWidth() - 58) / 2, 4, 0xffffff);
+        }
+
+        GL11.glPopMatrix();
+	}
+    
+	public void drawLBV4ArrayList(EventRenderGui eventRenderGui) {
+		boolean left = mode.getValue() == arrayPosition.TopLeft;
+		ArrayList<Mod> sorted = new ArrayList<Mod>();
+		int y = 32;
+		for (Mod m : ModManager.getMods()) {
+            if (!m.isEnabled() || m.wasRemoved()) continue;
+            if(m.getType() == ModuleType.Visual) {
+            	if(!hideRenderModule.getValue()) {
+            		sorted.add(m);
+            	}
+            }else {
+            	sorted.add(m);
+			}
+            sorted.sort(new Comparator<Mod>()
+            {
+                public int compare(Mod o1, Mod o2)
+                {
+                    return Minecraft.getMinecraft().fontRendererObj.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName().replace(" ", "") : String.format("%s %s", o2.getName().replace(" ", ""), o2.getSuffix())) - Minecraft.getMinecraft().fontRendererObj.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName().replace(" ", "") : String.format("%s %s", o1.getName().replace(" ", ""), o1.getSuffix()));
+                }
+            });
+            //sorted.sort((o1, o2) -> Minecraft.getMinecraft().fontRendererObj.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName().replace(" ", "") : String.format("%s %s", o2.getName().replace(" ", ""), o2.getSuffix())) - Minecraft.getMinecraft().fontRendererObj.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName().replace(" ", "") : String.format("%s %s", o1.getName().replace(" ", ""), o1.getSuffix())));
+            String modname = m.getSuffix().isEmpty() ? m.getName().replace(" ", "") : String.format("%s§f%s", m.getName().replace(" ", ""), m.getSuffix());
+            Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(modname, left ? 4 : eventRenderGui.getResolution().getScaledWidth() - (Minecraft.getMinecraft().fontRendererObj.getStringWidth(m.getName()) + 4), y, rainbow.getValue() ? rainbowModuleList(5000, 15 * y) : -1);
+            y += 9;
+		}
+	}
+	
 	public void drawFluxArrayList() {
 		ArrayList<Mod> sorted = new ArrayList<Mod>();
 		for (Mod m : ModManager.getMods()) {
@@ -196,8 +245,9 @@ extends Mod {
                 y += 13;
             }
 	}
-	
+    
 	public void drawFluxTabGui() {
+		if (!TABGUI.getValue()) return;
 		Draw.drawRectangle(3, 18, 58, 104, new Color(0,0,0,150).getRGB());
 		Draw.drawRectangle(4, 20, 5.5, 29, new Color(206,89,255,255).getRGB());
 		Client.instance.fontManager.arial18.drawStringWithShadow("§fCombat", 7, 20, -1);
@@ -272,6 +322,12 @@ extends Mod {
     		return true;
     	}
     	return false;
+    }
+    
+    private int rainbowModuleList(int speed, int offset) {
+        float color = (System.currentTimeMillis() + offset) % speed;
+        color /= speed;
+        return Color.getHSBColor(color, 1f, 1f).getRGB();
     }
     
     public enum arrayPosition {
