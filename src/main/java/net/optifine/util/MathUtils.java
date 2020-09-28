@@ -1,5 +1,9 @@
 package net.optifine.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+
 import net.minecraft.util.MathHelper;
 
 public class MathUtils
@@ -96,4 +100,13 @@ public class MathUtils
         double one = 1.0D / inc;
         return (double)Math.round(val * one) / one;
      }
+
+    public static double roundToPlace(final double value, final int places) {
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 }

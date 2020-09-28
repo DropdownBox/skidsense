@@ -559,10 +559,10 @@ public class GuiIngame extends Gui
         }
     }
 
-    public void renderStreamIndicator(ScaledResolution scaledRes)
+    /*public void renderStreamIndicator(ScaledResolution scaledRes)
     {
         this.streamIndicator.render(scaledRes.getScaledWidth() - 10, 10);
-    }
+    }*/
 
     private void renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes)
     {
@@ -612,7 +612,7 @@ public class GuiIngame extends Gui
             if(s1.contains("§ewww.hypixel.ne🎂§et")) {
             	RenderUtil.renderStringWave("exusiai.today", l1, k, (float) 0.6);
             }else {
-            	this.getFontRenderer().drawString(s1.replace("§ewww.hypixel.ne🎂§et", "§eexusiai.today"), l1, k, 553648127);
+            	this.getFontRenderer().drawString(s1, l1, k, 553648127);
 			}
             //System.out.println(s1);
             //this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 553648127);

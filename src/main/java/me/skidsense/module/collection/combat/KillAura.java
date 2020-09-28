@@ -65,6 +65,7 @@ public class KillAura extends Mod {
 	private int index;
 	TimerUtil switchtimer = new TimerUtil();
 	TimerUtil timer = new TimerUtil();
+	private float[] serverAngles = new float[2];
 	private List<EntityLivingBase> loaded = new CopyOnWriteArrayList<EntityLivingBase>();
 	public static EntityLivingBase target;
 	public static EntityLivingBase slowtarget;
@@ -126,8 +127,10 @@ public class KillAura extends Mod {
 		    }
 		    target = (EntityLivingBase) this.loaded.get(this.index);
 			float[] array = getRotationsToEnt(target , Minecraft.getMinecraft().thePlayer);
-			eventMotion.setYaw(array[0]);
-			eventMotion.setPitch(array[1]);
+            final float[] srcAngle = new float[]{serverAngles[0], serverAngles[1]};
+            serverAngles = smoothAngle(array, srcAngle);
+            eventMotion.setYaw(serverAngles[0]);
+            eventMotion.setPitch(serverAngles[1]);
 			mc.thePlayer.rotationYawHead = array[0];
 			mc.thePlayer.renderYawOffset = array[0];
 		}else {
@@ -198,6 +201,16 @@ public class KillAura extends Mod {
 		return mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword;
 	}
 
+    private float[] smoothAngle(float[] dst, float[] src) {
+        float[] smoothedAngle = new float[2];
+        smoothedAngle[0] = (src[0] - dst[0]);
+        smoothedAngle[1] = (src[1] - dst[1]);
+        smoothedAngle = MathUtil.constrainAngle(smoothedAngle);
+        smoothedAngle[0] = (src[0] - smoothedAngle[0] / 100 * MathUtil.getRandomInRange(10, 20));
+        smoothedAngle[1] = (src[1] - smoothedAngle[1] / 100 * MathUtil.getRandomInRange(0, 15));
+        return smoothedAngle;
+    }
+    
 	   private boolean validEntity(EntityLivingBase entity) {
 		   	AntiBot ab = (AntiBot) Client.getModuleManager().getModuleByClass(AntiBot.class);
 		      boolean players = this.players.getValue();

@@ -1352,5 +1352,47 @@ public class RenderUtil {
     public static void drawBackRect(int x, int y, int x2, int y2, int c) {
         drawRect(x, y, x2, y2, new Color(40, 40, 40, 50).getRGB());
     }
+
+	public static int getRainbow(int speed, int offset, float s) {
+        float hue = (System.currentTimeMillis() + offset) % speed;
+        hue /= speed;
+        return Color.getHSBColor(hue, s, 1f).getRGB();
+	}
+
+    public static void OutlinedBB(AxisAlignedBB bb, float width, int color) {
+        enable3D();
+        glLineWidth(width);
+        color(color);
+        drawOutlinedBoundingBox(bb);
+        disable3D();
+    }
+
+    public static void BB(AxisAlignedBB bb, int color) {
+        enable3D();
+        color(color);
+        drawBoundingBox(bb);
+        disable3D();
+    }
+    
+    public static void enable3D() {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_LINE_SMOOTH);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(false);
+    }
+
+    public static void disable3D() {
+        glDisable(GL_LINE_SMOOTH);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(true);
+        glDisable(GL_BLEND);
+    }
+
+    public static void color(int color) {
+        GL11.glColor4f((color >> 16 & 0xFF) / 255f, (color >> 8 & 0xFF) / 255f, (color & 0xFF) / 255f, (color >> 24 & 0xFF) / 255f);
+    }
 }
 
