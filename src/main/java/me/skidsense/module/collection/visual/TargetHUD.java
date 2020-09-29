@@ -3,6 +3,7 @@ package me.skidsense.module.collection.visual;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import me.skidsense.gui.util.GuiUtil;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.module.Mod;
@@ -40,7 +41,7 @@ public class TargetHUD extends Mod {
 			GlStateManager.pushMatrix();
 
 			// BaseRect(black)
-			Gui.drawRect(x + 0.7f, y, x + 149.7f, y + 60, new Color(0, 0, 0, 100).getRGB());
+			GuiUtil.drawBorderedRect(x + 0.7f, y, x + 149.7f, y + 60,1, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
 
 			// health color math
 			float health = player.getHealth();

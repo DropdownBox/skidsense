@@ -3,7 +3,7 @@ package me.skidsense.gui.tabgui.components.impl;
 import me.skidsense.Client;
 import me.skidsense.gui.tabgui.TabMain;
 import me.skidsense.gui.tabgui.components.Component;
-import me.skidsense.gui.tabgui.util.TabGuiUtil;
+import me.skidsense.gui.util.GuiUtil;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import net.minecraft.client.gui.ScaledResolution;
@@ -49,10 +49,10 @@ public class CategoryComponent extends Component {
     public void onRender(ScaledResolution sr) {
         super.onRender(sr);
         if (tabMain.getSelectedCategory() == category)
-            TabGuiUtil.drawRect(getX(), getY(), getWidth(), getHeight(), new Color(0xff4d4c).getRGB());
+            GuiUtil.drawRect(getX(), getY(), getWidth(), getHeight(), new Color(0xff4d4c).getRGB());
         mc.fontRendererObj.drawStringWithShadow(getName(), tabMain.getSelectedCategory() == category ? 7 : 5, getY() + 2, tabMain.getSelectedCategory() == category ? -1 : new Color(180, 180, 180).getRGB());
         if (tabMain.getSelectedCategory() == category && tabMain.isExtended()) {
-            TabGuiUtil.drawBorderedRect(getX() + getWidth() + 5, getY() - 1, largestString + 20, (Client.instance.getModuleManager().getModulesInType(category).size() * 12) + 2, 1, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
+            GuiUtil.drawBorderedRect(getX() + getWidth() + 5, getY() - 1, largestString + 20, (Client.instance.getModuleManager().getModulesInType(category).size() * 12) + 2, 1, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
             components.forEach(component -> component.onRender(sr));
         }
     }

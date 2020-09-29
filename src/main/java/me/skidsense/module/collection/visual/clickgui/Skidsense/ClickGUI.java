@@ -123,10 +123,10 @@ extends GuiScreen {
                	drawy=Mouse.getDWheel();  
            	if(drawy!=0) {
            		if(drawy==120) {
-           			animawheely+=11; 
+           			animawheely+=15; 
            		} 
            		if(drawy==-120) {
-           			animawheely-=11; 
+           			animawheely-=15; 
            		} 
            	//Helper.sendMessage("滚动数值为"+drawy+" "+animawheely+"  "+wheely);
            	}
@@ -140,7 +140,7 @@ extends GuiScreen {
             GL11.glPushMatrix();
             GL11.glEnable(3089);
             RenderUtil.doGlScissor((int) (this.startX+54), (int) (this.startY+27) , 120, 250);
-            RenderUtil.drawRoundRect(startX+64, y2+3+wheely, startX+150, y2+27+wheely,new Color(20,20,20,200).getRGB());
+            RenderUtil.drawRoundRect(startX+64, y2+3+wheely, startX+150, y2+27+wheely,new Color(15,15,15,200).getRGB());
             RenderUtil.drawRoundRect(startX+69, y2+wheely+14, startX+73, y2+wheely+18, cheat.isEnabled()?new Color(230,41,41).getRGB():new Color(180,180,180).getRGB());
             font.drawStringWithShadow(this.cheat.name, (int) (startX+77), (int) (y2+wheely+11), new Color(220,220,220).getRGB());
                  
@@ -184,20 +184,20 @@ extends GuiScreen {
 		RenderUtil.drawRoundRect(startX+250+render, valueY+valuewheely+22, startX+255+render, valueY+valuewheely+27, new Color(205,205,205,255).getRGB());
 		font.drawStringWithShadow(this.valuename, (int) (startX+286-font.getStringWidth(this.valuename)), (int) (valueY+valuewheely+10), -1);
         if(mouseX > this.startX+250 && mouseX < startX+370 && mouseY > valueY+valuewheely+22 && mouseY < valueY+valuewheely+27 && Mouse.isButtonDown(0)) {
-            render = (int) v1.getMinimum().doubleValue();
-             double max = v1.getMaximum().doubleValue();
-             double min = v1.getIncrement().doubleValue();
-             double valAbs = mouseX-(this.startX+250);
-             double perc = valAbs / 77.2D;
-             perc = Math.min(Math.max(0.0D, perc), 1.0D);
-             double valRel = (max - render) * perc;
-             double val = render + valRel;
-             val = (double)Math.round(val * (1.0D / min)) / (1.0D / min);
-             v1.setValue(Double.valueOf(val));
+			render = (int) v1.getMinimum().doubleValue();
+			double max = v1.getMaximum().doubleValue();
+			double min = v1.getIncrement().doubleValue();
+			double valAbs = mouseX - (this.startX + 250);
+			double perc = valAbs / 68D;
+			perc = Math.min(Math.max(0.0D, perc), 1.0D);
+			double valRel = (max - render) * perc;
+			double val = render + valRel;
+			val = (double) Math.round(val * (1.0D / min)) / (1.0D / min);
+			v1.setValue(Double.valueOf(val));
           }
 	}
 	if(this.value instanceof Mode) {
-		Gui.drawRect(startX+249, valueY+valuewheely+7, startX+371, valueY+valuewheely+30, new Color(220,40,40,150).getRGB());
+	Gui.drawRect(startX+249, valueY+valuewheely+7, startX+371, valueY+valuewheely+30, new Color(220,40,40,150).getRGB());
 	Gui.drawRect(startX+250, valueY+valuewheely+8, startX+370, valueY+valuewheely+29, new Color(40,40,40).getRGB());
 	font.drawStringWithShadow(this.valuename, (int)startX+255, (int)valueY+valuewheely+14, new Color(180,180,180).getRGB());
 	}

@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11;
 
 import me.skidsense.gui.tabgui.components.Component;
 import me.skidsense.gui.tabgui.components.impl.CategoryComponent;
-import me.skidsense.gui.tabgui.util.TabGuiUtil;
+import me.skidsense.gui.util.GuiUtil;
 import me.skidsense.module.ModuleType;
 
 import java.awt.Color;
@@ -48,7 +48,7 @@ public class TabMain {
     }
 
     public void onRender(ScaledResolution sr) {
-    	TabGuiUtil.drawBorderedRect(x, y, largestString + 20, (ModuleType.values().length * 12) + 2, 1, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
+    	GuiUtil.drawBorderedRect(x, y, largestString + 20, (ModuleType.values().length * 12) + 2, 1, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
         components.forEach(component -> component.onRender(sr));
     }
 

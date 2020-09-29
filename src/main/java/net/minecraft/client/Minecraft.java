@@ -16,6 +16,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 
 import me.skidsense.Client;
 import me.skidsense.SplashProgress;
+import me.skidsense.gui.newclickgui.MaterialUI;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventKey;
 import me.skidsense.management.authentication.GuiLoginMenu;
@@ -191,6 +192,7 @@ import org.lwjgl.util.glu.GLU;
 
 public class Minecraft implements IThreadListener, IPlayerUsage
 {
+	private MaterialUI materialUI = null;
     private static final Logger logger = LogManager.getLogger();
     private static final ResourceLocation locationMojangPng = new ResourceLocation("textures/gui/title/mojang.png");
     public static final boolean isRunningOnMac = Util.getOSType() == Util.EnumOS.OSX;
@@ -1931,7 +1933,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
                 int k = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
                 KeyBinding.setKeyBindState(k, Keyboard.getEventKeyState());
                 if ((k == Keyboard.KEY_RSHIFT || k == Keyboard.KEY_INSERT ) && this.currentScreen == null) {
-                	this.displayGuiScreen(new ClickGUI());
+                    materialUI = new MaterialUI();
+                    materialUI.initializedUI();
+                	this.displayGuiScreen(materialUI);
                 }
                 if (Keyboard.getEventKeyState())
                 {

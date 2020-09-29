@@ -13,6 +13,9 @@ public class FontManager {
 	public TTFFontRenderer arial18;
 	public TTFFontRenderer arial20;
 	public TTFFontRenderer arial25;
+	public TTFFontRenderer clickGuiTitleFont;
+	public TTFFontRenderer clickGuiFont;
+	public TTFFontRenderer clickGuiSmallFont;
 	public TTFFontRenderer arialbold17;
 	public TTFFontRenderer tahoma10;
 	public TTFFontRenderer verdana10;
@@ -23,11 +26,15 @@ public class FontManager {
 	public TTFFontRenderer comfortaa20;
 	public TTFFontRenderer comfortaa34;
 	public FontRenderer tahomabold13;
+	public TTFFontRenderer clickGuiIconFont;
 	
 	public FontManager() {
 		arial18 = new TTFFontRenderer(new Font("Arial", 0, 18), true);
 		arial20 = new TTFFontRenderer(new Font("Arial", 0, 20), true);
 		arial25 = new TTFFontRenderer(new Font("Arial", 0, 25), true);
+		clickGuiTitleFont = new TTFFontRenderer(new Font("Arial Bold", 0, 24), true);
+		clickGuiFont = new TTFFontRenderer(new Font("Arial", 0, 18), true);
+		clickGuiSmallFont = new TTFFontRenderer(new Font("Arial", 0, 12), true);
 		arialbold17 = new TTFFontRenderer(new Font("Arial Bold",0, 17), true);
 		tahoma10 = new TTFFontRenderer(new Font("Tahoma", 0, 10), true);
 		verdana10 = new TTFFontRenderer(new Font("Verdana", 0, 10), true);
@@ -38,6 +45,17 @@ public class FontManager {
 		comfortaa20 = new TTFFontRenderer(new Font("Comfortaa", 0, 20), true);
 		comfortaa34 =new TTFFontRenderer(new Font("Comfortaa", 0, 34), true);
 		tahomabold13 = this.getFont("tahomabold", 13f);
+		InputStream istream = this.getClass().getResourceAsStream("/assets/minecraft/skidsense/Icon-Font.ttf");
+	      Font myFont = null;
+
+	      try {
+	         myFont = Font.createFont(0, istream);
+	         myFont = myFont.deriveFont(0, 36.0F);
+	         clickGuiIconFont = new TTFFontRenderer(myFont, true);
+	      } catch (Exception var4) {
+	         var4.printStackTrace();
+	         clickGuiIconFont = new TTFFontRenderer(new Font("Impact", 0, 36), true);
+	      }
 	}
 
 

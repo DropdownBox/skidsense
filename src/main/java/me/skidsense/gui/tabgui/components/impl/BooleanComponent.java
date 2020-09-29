@@ -1,7 +1,7 @@
 package me.skidsense.gui.tabgui.components.impl;
 
 import me.skidsense.gui.tabgui.components.Component;
-import me.skidsense.gui.tabgui.util.TabGuiUtil;
+import me.skidsense.gui.util.GuiUtil;
 import me.skidsense.hooks.value.Option;
 import net.minecraft.client.gui.ScaledResolution;
 
@@ -33,7 +33,7 @@ public class BooleanComponent extends Component {
             }
         }
         if (modulecomp.getSelectedValue() == value)
-            TabGuiUtil.drawRect(getX(), getY(), largestString + 18, getHeight(), new Color(0xff4d4c).getRGB());
+            GuiUtil.drawRect(getX(), getY(), largestString + 18, getHeight(), new Color(0xff4d4c).getRGB());
         mc.fontRendererObj.drawStringWithShadow(getName(), modulecomp.getSelectedValue() == value ? getX() + 4 : getX() + 2, getY() + 2, (boolean) value.getValue() ? new Color(0xFF8A80).getRGB() : 11184810);
     }
 

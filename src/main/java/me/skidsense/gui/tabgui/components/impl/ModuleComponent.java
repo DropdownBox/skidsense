@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.input.Keyboard;
 
 import me.skidsense.gui.tabgui.components.Component;
-import me.skidsense.gui.tabgui.util.TabGuiUtil;
+import me.skidsense.gui.util.GuiUtil;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -49,10 +49,10 @@ public class ModuleComponent extends Component {
     public void onRender(ScaledResolution sr) {
         super.onRender(sr);
         if (categorycomp.getSelectedModule() == module)
-        	TabGuiUtil.drawRect(getX(), getY(), getWidth(), getHeight(), new Color(0xff4d4c).getRGB());
+        	GuiUtil.drawRect(getX(), getY(), getWidth(), getHeight(), new Color(0xff4d4c).getRGB());
         mc.fontRendererObj.drawStringWithShadow(getName(), categorycomp.getSelectedModule() == module ? getX() + 4 : getX() + 2, getY() + 2, module.isEnabled() ? -1 : 11184810);
         if (!module.getValues().isEmpty())
-        	TabGuiUtil.drawRect(getX() + getWidth() - 1, getY() + 1, 1, getHeight() - 2, new Color(219, 85, 84).getRGB());
+        	GuiUtil.drawRect(getX() + getWidth() - 1, getY() + 1, 1, getHeight() - 2, new Color(219, 85, 84).getRGB());
         if (categorycomp.getSelectedModule() == module && categorycomp.getTabMain().isExtendedValue() && !module.getValues().isEmpty()) {
             float largestString = mc.fontRendererObj.getStringWidth(module.getValues().get(0).getName() + (module.getValues().get(0) instanceof Option ? "" : ": " + module.getValues().get(0).getValue().toString()));
             for (int i = 0; i < module.getValues().size(); i++) {
@@ -60,7 +60,7 @@ public class ModuleComponent extends Component {
                     largestString = mc.fontRendererObj.getStringWidth(module.getValues().get(i).getName() + (module.getValues().get(i) instanceof Option ? "" : ": " + module.getValues().get(i).getValue().toString()));
                 }
             }
-            TabGuiUtil.drawBorderedRect(getX() + getWidth() + 5, getY() - 1, largestString + 20, (module.getValues().size() * 12) + 2, 1, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
+            GuiUtil.drawBorderedRect(getX() + getWidth() + 5, getY() - 1, largestString + 20, (module.getValues().size() * 12) + 2, 1, new Color(0, 0, 0, 130).getRGB(), new Color(0, 0, 0, 180).getRGB());
             components.forEach(component -> component.onRender(sr));
         }
     }

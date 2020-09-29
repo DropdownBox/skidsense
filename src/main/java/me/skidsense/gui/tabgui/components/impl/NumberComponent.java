@@ -3,7 +3,7 @@ package me.skidsense.gui.tabgui.components.impl;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import me.skidsense.gui.tabgui.components.Component;
-import me.skidsense.gui.tabgui.util.TabGuiUtil;
+import me.skidsense.gui.util.GuiUtil;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.util.MathUtil;
@@ -39,7 +39,7 @@ public class NumberComponent extends Component {
             }
         }
         if (modulecomp.getSelectedValue() == value)
-        	TabGuiUtil.drawRect(getX(), getY(), largestString + 18, getHeight(), new Color(0xff4d4c).getRGB());
+        	GuiUtil.drawRect(getX(), getY(), largestString + 18, getHeight(), new Color(0xff4d4c).getRGB());
         mc.fontRendererObj.drawStringWithShadow(getName() + ": " + ChatFormatting.GRAY + value.getValue().toString(), modulecomp.getSelectedValue() == value ? getX() + 4 : getX() + 2, getY() + 2, -1);
     }
 
