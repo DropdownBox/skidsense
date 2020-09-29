@@ -8,10 +8,13 @@ import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.module.collection.combat.KillAura;
+import me.skidsense.util.ChatUtil;
 import me.skidsense.util.MathUtil;
 import me.skidsense.util.MoveUtil;
 import me.skidsense.util.QuickMath;
 import me.skidsense.util.TimerUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.PlayerCapabilities;
@@ -63,10 +66,7 @@ public class Flight extends Mod {
     TimerUtil BoostTimer = new TimerUtil();
     RandomUtils random = new RandomUtils();
     private double flyHeight;
-    private boolean dragoncrea = false;
     private int packetsconter;
-    private int zoom;
-    private int packetCounter;
     private TimerUtil deactivationDelay = new TimerUtil();
     double moveSpeed, lastDist;
     boolean b2;
@@ -77,6 +77,7 @@ public class Flight extends Mod {
     private int boostHypixelState;
     private int stage, groundtick;
     private boolean jumped;
+    private int motion;
     private ArrayList<Packet> packets = new ArrayList<>();
 
 
@@ -216,7 +217,6 @@ public class Flight extends Mod {
     public void onPacket(EventPacketRecieve ep) {
         if (this.lagcheck.getValue().booleanValue()) {
             if (ep.getPacket() instanceof S08PacketPlayerPosLook && this.deactivationDelay.delay(2000F)) {
-                ++this.packetCounter;
                 S08PacketPlayerPosLook pac = (S08PacketPlayerPosLook) ep.getPacket();
                 pac.yaw = mc.thePlayer.rotationYaw;
                 pac.pitch = mc.thePlayer.rotationPitch;
@@ -258,7 +258,6 @@ public class Flight extends Mod {
     @Sub
     private void onPacket(EventPacketSend event) {
         final Packet packet = event.getPacket();
-
         if (packet instanceof C03PacketPlayer) {
             final C03PacketPlayer packetPlayer = (C03PacketPlayer) packet;
             if (this.mode.getValue() == FlyMode.HypixelDamage) {
@@ -308,13 +307,11 @@ public class Flight extends Mod {
             fast = false;
         else
             fast = true;
-        this.zoom = (int) (this.zoomboost.getValue() * 10);
-        float forward = MovementInput.moveForward;
-        float strafe = MovementInput.moveStrafe;
         damaged = false;
         if (this.mode.getValue() != FlyMode.HypixelDamage)
             damaged = true;
         if (this.mode.getValue() == FlyMode.HypixelDamage) {
+        	this.motion = 0;
 //			if (this.UHC.getValue()) {
 //				this.damagePlayer(2);
 //			} else {
@@ -385,7 +382,6 @@ public class Flight extends Mod {
         }
 
         level = 1;
-        dragoncrea = false;
         moveSpeed = 0.1D;
         b2 = true;
         lastDist = 0.0D;
@@ -534,7 +530,16 @@ public class Flight extends Mod {
         if(groundpacket.getValue()){
             e.setOnGround(isBlockUnder());
         }
-
+        
+        if(this.mode.getValue() == FlyMode.HypixelDamage) {
+            ++motion;
+            if (motion % 20 == 0) {
+                PlayerCapabilities playerCapabilities = new PlayerCapabilities();
+                playerCapabilities.allowFlying = true;
+                playerCapabilities.isFlying = true;
+                mc.thePlayer.sendQueue.addToSendQueue(new C13PacketPlayerAbilities(playerCapabilities));
+            }
+        }
         double speed = Math.max(3.0f, getBaseMoveSpeed());
         if (this.mode.getValue() == FlyMode.Motion) {
             mc.thePlayer.onGround = false;
@@ -701,7 +706,7 @@ public class Flight extends Mod {
 
             switch (boostHypixelState) {
                 case 1:
-                    moveSpeed = (mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 1.56 : 2.034) * baseSpeed;
+                	moveSpeed = (mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 1.46 + ((new Random()).nextBoolean() ? new Random().nextDouble() / 1000 : -(new Random().nextDouble() / 1000)) : 1.945 + ((new Random()).nextBoolean() ? new Random().nextDouble() / 1000 : -(new Random().nextDouble() / 1000))) * baseSpeed;
                     boostHypixelState = 2;
                     break;
                 case 2:
@@ -709,8 +714,10 @@ public class Flight extends Mod {
                     boostHypixelState = 3;
                     break;
                 case 3:
-                    moveSpeed = lastDistance
-                            - (mc.thePlayer.ticksExisted % 2 == 0 ? 0.0103D : 0.0123D) * (lastDistance - baseSpeed);
+                	moveSpeed = lastDistance
+                    - (mc.thePlayer.ticksExisted % 2 == 0
+                    ? (0.2743D + ((new Random()).nextBoolean() ? new Random().nextDouble() / 10000 : -(new Random().nextDouble() / 10000)))
+                    : (0.2633D + ((new Random()).nextBoolean() ? new Random().nextDouble() / 8900 : -(new Random().nextDouble() / 8900)))) * (lastDistance - baseSpeed);
 
                     boostHypixelState = 4;
                     break;
