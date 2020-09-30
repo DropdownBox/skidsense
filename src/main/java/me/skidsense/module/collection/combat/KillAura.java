@@ -51,7 +51,6 @@ public class KillAura extends Mod {
 	public Option<Boolean> autodisable = new Option<Boolean>("AutoDisable", "AutoDisable", true);
 	public static Numbers<Double> range = new Numbers<Double>("Range", "Range", 4.2, 3.5, 7.0, 0.1);
 	public Numbers<Double> cps = new Numbers<Double>("APS", "APS", 9.0, 1.0, 20.0, 1.0);
-	public Numbers<Double> blockrange = new Numbers<Double>("BlockRange", "BlockRange", 8.0, 3.5, 8.0, 0.1);
 	public Numbers<Double> switchdelay = new Numbers<Double>("SwitchDelay", "SwitchDelay", 500.0, 100.0, 1000.0, 100.0);
 
 	public boolean isBlocking;
@@ -123,13 +122,13 @@ public class KillAura extends Mod {
 			lastRotations[1] = eventMotion.getPitch();
 			target = this.loaded.get(this.index);
 			float[] rot = getRotations(target);
-			float Yaw = MathHelper.clamp_float((float) (getYawChangeGiven(target.posX, target.posZ, rot[0]) + QuickMath.getRandomInRange(-3d, 3d)), -180.0f, 180.0f);
-			lastRotations = fixSensitivity(new float[]{(float) ((lastRotations[0] += Yaw / 1.2f) + QuickMath.getRandomInRange(-10d, 10d)), (float) (rot[1] / 1.2f + QuickMath.getRandomInRange(-3d, 3d))});
-			eventMotion.setYaw(lastRotations[0]);
-			mc.thePlayer.rotationYawHead = eventMotion.getYaw();
-			mc.thePlayer.renderYawOffset = eventMotion.getYaw();
+			float Yaw = MathHelper.clamp_float((float) (getYawChangeGiven(target.posX, target.posZ, rot[0]) + QuickMath.getRandomInRange(-1d, 1d)), -180.0f, 180.0f);
+			lastRotations = fixSensitivity(new float[]{(float) ((lastRotations[0] += Yaw / 1.2f) + QuickMath.getRandomInRange(-1d, 1d)), (float) (rot[1] / 1.2f + QuickMath.getRandomInRange(-3d, 3d))});
+			eventMotion.setYaw(rot[0]);
+			mc.thePlayer.rotationYawHead = rot[0];
+			mc.thePlayer.renderYawOffset = rot[0];
 			eventMotion.setPitch(lastRotations[1]);
-			System.out.println(lastRotations[0] + " , " + lastRotations[1]);
+			//System.out.println(lastRotations[0] + " , " + lastRotations[1]);
 		}else {
 			target = null;
 		}
@@ -153,7 +152,7 @@ public class KillAura extends Mod {
 	public static float[] getRotations(Entity ent) {
 		double x = ent.posX;
 		double z = ent.posZ;
-		double y = ent.posY + (double) (ent.getEyeHeight() / 2.0f);
+		double y = ent.posY + (double) (ent.getEyeHeight() / 2.5f);
 		return RotationUtil.getRotationFromPosition(x, z, y);
 	}
 
@@ -221,10 +220,9 @@ public class KillAura extends Mod {
 		boolean invis = this.invis.getValue();
 		boolean teams = Client.getModuleManager().getModuleByClass(Teams.class).isEnabled();
 		float range = this.range.getValue().floatValue();
-		float focusRange = (mc.thePlayer.canEntityBeSeen(entity) ? range : 3.5F) >= blockrange.getValue().floatValue() ? (mc.thePlayer.canEntityBeSeen(entity) ? range : 3.5F) : blockrange.getValue().floatValue();
 		if (mc.thePlayer.getHealth() > 0.0F && entity.getHealth() > 0.0F && !entity.isDead) {
 			boolean raytrace = walls.getValue() || mc.thePlayer.canEntityBeSeen(entity);
-			if (mc.thePlayer.getDistanceToEntity(entity) <= focusRange && raytrace) {
+			if (mc.thePlayer.getDistanceToEntity(entity) <= range && raytrace) {
 
 				if (entity instanceof EntityPlayer && players) {
 
