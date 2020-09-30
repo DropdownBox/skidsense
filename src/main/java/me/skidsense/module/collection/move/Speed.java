@@ -282,7 +282,7 @@ public class Speed extends Mod {
                         if(mc.thePlayer.ticksExisted % 8 == 0) {
                             mc.thePlayer.jump();
                         }
-                        e.setY(mc.thePlayer.motionY = 0.40866666f + MoveUtil.getJumpEffect() * 0.1);
+                        e.setY(mc.thePlayer.motionY = 0.40966666f + MoveUtil.getJumpEffect() * 0.1);
                     }
                     ++this.less;
                     boolean bl = this.lessSlow = this.less > 1.0D && !this.lessSlow;
@@ -322,10 +322,6 @@ public class Speed extends Mod {
         if(mode.getValue() == SpeedMode.HypixelHop){
             if (e.getY() % 0.015625 == 0.0) {
                 e.setY(e.getY() + 5.3424E-4);
-                e.setOnGround(false);
-            }
-            if (mc.thePlayer.motionY > 0.3) {
-                e.setOnGround(true);
             }
         }
     }
@@ -338,8 +334,8 @@ public class Speed extends Mod {
 
     private double getHypixelSpeed(final int stage) {
         double value = MoveUtil.defaultSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;
-        final double firstvalue = 0.4145 + MoveUtil.getSpeedEffect() / 12.5;
-        final double thirdvalue = 0.4045 + MoveUtil.getSpeedEffect() / 12.5;
+        final double firstvalue = 0.4125 + MoveUtil.getSpeedEffect() / 12.0;
+        final double thirdvalue = 0.4075 + MoveUtil.getSpeedEffect() / 12.0;
         final double decr = stage / 500.0 * 3.0;
         if (stage == 0) {
             if (timer.isDelayComplete((long) 300.0)) {

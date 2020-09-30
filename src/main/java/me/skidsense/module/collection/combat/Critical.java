@@ -73,9 +73,10 @@ public class Critical extends Mod {
     }
 
     public void doCrit() {
-        double[] offset = {0.0624, -0.001500000013038516, 0.0010999999940395355};
-        for (double d : offset) {
-            mc.getNetHandler().sendpacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + d, mc.thePlayer.posZ, false));
+        double[] offsets = new double[]{0.0004999999595806003 ,
+                mc.thePlayer.ticksExisted % 60 == 0 ? 0.0000009999995958 : 0.0000008999995958, 0.0003999999595806003};
+        for (int i = 0; i < offsets.length; ++i) {
+            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY+ offsets[i], mc.thePlayer.posZ ,false));
         }
         timer.reset();
     }
