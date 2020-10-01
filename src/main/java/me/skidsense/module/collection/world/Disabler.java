@@ -15,6 +15,7 @@ import me.skidsense.hooks.value.Numbers;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
+import me.skidsense.module.collection.move.Flight;
 import me.skidsense.util.QuickMath;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
@@ -37,6 +38,7 @@ public class Disabler extends Mod {
 
     @Override
     public void onEnable(){
+        delta = 0;
         super.onEnable();
     }
 
@@ -61,15 +63,26 @@ public class Disabler extends Mod {
     }
 
     @Sub
-    private void onUpdate(EventPreUpdate e){
-        ++delta;
-        if(delta % 20 == 0){
-            PlayerCapabilities playerCapabilities = new PlayerCapabilities();
-            playerCapabilities.allowFlying = true;
-            playerCapabilities.isFlying = true;
-            mc.thePlayer.sendQueue.addToSendQueue(new C13PacketPlayerAbilities(playerCapabilities));
+    private void onUpdate(EventPreUpdate e) {
+        if (!Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
+            delta = 0;
+        } else {
+            ++delta;
         }
-    }
+            if (delta % 20 == 0 && Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
+                PlayerCapabilities playerCapabilities = new PlayerCapabilities();
+                playerCapabilities.allowFlying = true;
+                playerCapabilities.isFlying = true;
+                mc.thePlayer.sendQueue.addToSendQueue(new C13PacketPlayerAbilities(playerCapabilities));
+            }
+                final C13PacketPlayerAbilities c13PacketPlayerAbilities = new C13PacketPlayerAbilities();
+                c13PacketPlayerAbilities.setInvulnerable(false);
+                c13PacketPlayerAbilities.setCreativeMode(false);
+                c13PacketPlayerAbilities.setFlying(false);
+                c13PacketPlayerAbilities.setAllowFlying(false);
+                c13PacketPlayerAbilities.setFlySpeed(1.0E8f);
+                c13PacketPlayerAbilities.setWalkSpeed(1.0E8f);
+        }
 
     @Sub
     private void onPacketReceive(EventPacketRecieve ep) {

@@ -238,16 +238,16 @@ public class Flight extends Mod {
 //        }
 
 
-        if(mode.getValue() == FlyMode.HypixelDamage) {
-            if (jumped && e.getPacket() instanceof C03PacketPlayer
-                    || e.getPacket() instanceof C08PacketPlayerBlockPlacement || e.getPacket() instanceof C0APacketAnimation
-                    || e.getPacket() instanceof C0BPacketEntityAction || e.getPacket() instanceof C02PacketUseEntity) {
-                this.packets.add(e.getPacket());
-                e.setCancelled(true);
-                System.out.println("取消了数据包：" + e.getPacket().getClass().getCanonicalName());
-                ++packetsconter;
-            }
-        }
+//        if(mode.getValue() == FlyMode.HypixelDamage) {
+//            if (jumped && e.getPacket() instanceof C03PacketPlayer
+//                    || e.getPacket() instanceof C08PacketPlayerBlockPlacement || e.getPacket() instanceof C0APacketAnimation
+//                    || e.getPacket() instanceof C0BPacketEntityAction || e.getPacket() instanceof C02PacketUseEntity) {
+//                this.packets.add(e.getPacket());
+//                e.setCancelled(true);
+//                System.out.println("取消了数据包：" + e.getPacket().getClass().getCanonicalName());
+//                ++packetsconter;
+//            }
+//        }
     }
 
     private void fakeJump() {
@@ -469,13 +469,13 @@ public class Flight extends Mod {
         zboost = 1;
         mc.thePlayer.motionX = 0.0;
         mc.thePlayer.motionZ = 0.0;
-        if(mode.getValue() == FlyMode.HypixelDamage) {
-            for (Packet packet : this.packets) {
-                mc.thePlayer.sendQueue.addToSendQueue(packet);
-                System.out.println("发送了数据包: "+packet.getClass().getCanonicalName());
-            }
-            packets.clear();
-        }
+//        if(mode.getValue() == FlyMode.HypixelDamage) {
+//            for (Packet packet : this.packets) {
+//                mc.thePlayer.sendQueue.addToSendQueue(packet);
+//                System.out.println("发送了数据包: "+packet.getClass().getCanonicalName());
+//            }
+//            packets.clear();
+//        }
     }
 
     public void updateFlyHeight() {
