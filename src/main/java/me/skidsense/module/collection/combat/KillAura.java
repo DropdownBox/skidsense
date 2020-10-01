@@ -1,10 +1,12 @@
 package me.skidsense.module.collection.combat;
 
 import me.skidsense.Client;
+import me.skidsense.color.Colors;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventAttack;
 import me.skidsense.hooks.events.EventPreUpdate;
+import me.skidsense.hooks.events.EventRender3D;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
 import me.skidsense.hooks.value.Option;
@@ -12,58 +14,73 @@ import me.skidsense.management.friend.FriendManager;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.module.collection.combat.AntiBot;
 import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.player.Teams;
-import me.skidsense.util.*;
+import me.skidsense.util.RenderUtil;
+import me.skidsense.util.RotationUtil;
+import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityBat;
+import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.util.*;
-import org.lwjgl.Sys;
+import net.minecraft.potion.Potion;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MathHelper;
+import org.lwjgl.opengl.GL11;
 
-import javax.vecmath.Vector2f;
+import java.awt.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.ToDoubleFunction;
 
 public class KillAura extends Mod {
+	public static float anima;
 	public Mode<AuraPriority> priority = new Mode<>("Priority", "Priority", AuraPriority.values(), AuraPriority.Angle);
 	public Mode<AuraMode> mode = new Mode<>("Mode", "Mode", AuraMode.values(), AuraMode.Switch);
 	public Option<Boolean> players = new Option<Boolean>("Players", "Players", true);
 	public Option<Boolean> mobs = new Option<Boolean>("Mobs", "Mobs", false);
 	public Option<Boolean> animals = new Option<Boolean>("Animals", "Animals", false);
 	public Option<Boolean> invis = new Option<Boolean>("Invisible", "Invisible", false);
-	public Option<Boolean> villager = new Option<Boolean>("Villager", "Villager", false);
-	public Option<Boolean> autoBlock = new Option<Boolean>("AutoBlock", "AutoBlock", true);
-	public Option<Boolean> walls = new Option<Boolean>("ThroughWalls", "ThroughWalls", true);
-	public Option<Boolean> autodisable = new Option<Boolean>("AutoDisable", "AutoDisable", true);
+	public static Option<Boolean> autoBlock = new Option<Boolean>("AutoBlock", "AutoBlock", true);
 	public static Numbers<Double> range = new Numbers<Double>("Range", "Range", 4.2, 3.5, 7.0, 0.1);
 	public Numbers<Double> cps = new Numbers<Double>("APS", "APS", 9.0, 1.0, 20.0, 1.0);
-	public Numbers<Double> switchdelay = new Numbers<Double>("SwitchDelay", "SwitchDelay", 500.0, 100.0, 1000.0, 100.0);
-
+	public Numbers<Double> hitswitch = new Numbers<Double>("HitSwitch", "HitSwitch", 3.0, 1.0, 20.0, 1.0);
+	public Option<Boolean> walls = new Option<Boolean>("ThroughWalls", "ThroughWalls", true);
+	public Option<Boolean> autodisable = new Option<Boolean>("AutoDisable", "AutoDisable", true);
+	public static Numbers<Double> blockrange = new Numbers<Double>("BlockRange", "BlockRange", 8.0, 3.5, 8.0, 0.1);
 	public boolean isBlocking;
-	private TimerUtil switchDelay = new TimerUtil();
-	private int index;
-
 	TimerUtil timer = new TimerUtil();
+	int hit;
+	public static float yaw;
+	public float[] rotation;
 	private List<EntityLivingBase> loaded = new CopyOnWriteArrayList<EntityLivingBase>();
+	private List<EntityLivingBase> attacktargets = new CopyOnWriteArrayList<EntityLivingBase>();
 	public static EntityLivingBase target;
+	public static EntityLivingBase attacktarget;
 	public static EntityLivingBase slowtarget;
-	public float[] lastRotations = new float[] { 0.0f, 0.0f };
+	public float[] lastRotations = new float[]{0.0f, 0.0f};
+	;
+	public DecimalFormat format = new DecimalFormat("0.0");
+	public BlockPos AutoBlockPos = new BlockPos(-1, -1, -1);
+	int attackSpeed;
 
 	public KillAura() {
 		super("Kill Aura", new String[] { "Aura","KillAura" }, ModuleType.Fight);
@@ -73,7 +90,7 @@ public class KillAura extends Mod {
 
 	@Override
 	public void onEnable() {
-
+		this.rotation = new float[] { this.mc.thePlayer.rotationYaw, this.mc.thePlayer.rotationPitch };
 	}
 
 	@Override
@@ -81,112 +98,62 @@ public class KillAura extends Mod {
 		super.onDisable();
 		if (this.isBlocking) {
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-1,-1,-1), EnumFacing.DOWN));
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
 			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
 		target = null;
 	}
 
-
-
-	private boolean e() {
-		if ((double)mc.thePlayer.getDistanceToEntity(target) <= (Double)range.getValue() && target != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) {
-			return !loaded.isEmpty();
-		} else {
-			return false;
-		}
-	}
-
 	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
-		if (Client.getModuleManager().getModuleByClass(Flight.class).isEnabled() && Flight.mode.getValue() == Flight.FlyMode.HypixelDamage) {
+		if(Client.getModuleManager().getModuleByClass(Flight.class).isEnabled() && Flight.mode.getValue() == Flight.FlyMode.HypixelDamage){
 			Notifications.getManager().post("KillAura is not compatible with Flight.");
 			setEnabled(false);
 		}
-		if (target != null) {
+		if(target != null) {
 			slowtarget = target;
 		}
-		if (!mc.thePlayer.isEntityAlive() && this.autodisable.getValue()) {
+		if (!this.mc.thePlayer.isEntityAlive() && this.autodisable.getValue()) {
 			this.setEnabled(false);
 		}
 		this.setSuffix(mode.getValue());
 		if (autoBlock.getValue() && this.canBlock() && this.isBlocking) {
 			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-1, -1, -1), EnumFacing.DOWN));
-			mc.thePlayer.clearItemInUse();
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
+			this.mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
-		this.loaded = this.sortList(this.getTargets());
-		if (!this.loaded.isEmpty()) {
-			this.lastRotations = new float[]{eventMotion.yaw, eventMotion.pitch};
-			if (this.loaded.size() > 1 && target != null && mode.getValue() == AuraMode.Switch) {
-				if (target.hurtTime != 0 && switchDelay.hasReached(switchdelay.getValue())) {
-					++this.index;
-					switchDelay.reset();
-				}
-			} else if (mode.getValue() == AuraMode.Single) {
-				if (target.getDistanceToEntity(mc.thePlayer) > range.getValue()) {
-					++index;
-				} else if (target.isDead) {
-					++index;
-				}
-			}
-			if (this.index >= this.loaded.size()) {
-				this.index = 0;
-			}
-			target = this.loaded.get(this.index);
-			eventMotion.yaw = getRotation(target)[0];
-			eventMotion.pitch = getRotation(target)[1];
-		} else {
+		List<EntityLivingBase> sortList = this.sortList(this.getTargets(range.getValue()));
+		if (sortList.isEmpty() && !this.attacktargets.isEmpty()) {
+			this.attacktargets.clear();
+		}
+		this.loaded = this.sortList(this.getTargets(range.getValue()));
+		if (this.loaded.isEmpty()) {
 			target = null;
+			this.attackSpeed = 0;
 			if (this.isBlocking) {
 				C07PacketPlayerDigging.Action release_USE_ITEM2 = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
-				mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM2, new BlockPos(-1, -1, -1), EnumFacing.DOWN));
+				mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM2, AutoBlockPos, EnumFacing.DOWN));
 				this.mc.thePlayer.clearItemInUse();
 				this.isBlocking = false;
 			}
-		}
-	}
-	public static float[] getRotation(final Entity a1) {
-		if (a1 == null) {
-			return null;
-		}
-		final double v1 = a1.posX - Minecraft.getMinecraft().thePlayer.posX;
-		final double v2 = a1.posY + a1.getEyeHeight() * 0.9 - (Minecraft.getMinecraft().thePlayer.posY + Minecraft.getMinecraft().thePlayer.getEyeHeight());
-		final double v3 = a1.posZ - Minecraft.getMinecraft().thePlayer.posZ;
-		final double v4 = MathHelper.ceiling_float_int((float) (v1 * v1 + v3 * v3));
-		final float v5 = (float)(Math.atan2(v3, v1) * 180.0 / 3.141592653589793) - 90.0f;
-		final float v6 = (float)(-(Math.atan2(v2, v4) * 180.0 / 3.141592653589793));
-		return new float[] { Minecraft.getMinecraft().thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(v5 - Minecraft.getMinecraft().thePlayer.rotationYaw), Minecraft.getMinecraft().thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(v6 - Minecraft.getMinecraft().thePlayer.rotationPitch) };
-	}
-
-	public static float getYawChangeGiven(double posX, double posZ, float yaw) {
-		double deltaX = posX - Minecraft.getMinecraft().thePlayer.posX;
-		double deltaZ = posZ - Minecraft.getMinecraft().thePlayer.posZ;
-		double yawToEntity;
-		if (deltaZ < 0.0D && deltaX < 0.0D) {
-			yawToEntity = 90.0D + Math.toDegrees(Math.atan(deltaZ / deltaX));
-		} else if (deltaZ < 0.0D && deltaX > 0.0D) {
-			yawToEntity = -90.0D + Math.toDegrees(Math.atan(deltaZ / deltaX));
 		} else {
-			yawToEntity = Math.toDegrees(-Math.atan(deltaX / deltaZ));
+			EntityLivingBase target;
+			if (!sortList.isEmpty() && this.attacktargets == sortList.get(0) && this.loaded.size() > 1) {
+				target = this.loaded.get(1);
+			} else {
+				target = this.loaded.get(0);
+			}
+			this.target = target;
+			float[] array = rotateNCP(this.target);
+			eventMotion.yaw = array[0];
+			eventMotion.pitch = array[1];
+			KillAura.yaw = array[0];
+			mc.thePlayer.rotationYawHead = array[0];
+			mc.thePlayer.renderYawOffset = array[0];
 		}
-
-		return MathHelper.wrapAngleTo180_float(-(yaw - (float)yawToEntity));
-	}
-
-	public static float[] getRotations(Entity ent) {
-		double x = ent.posX;
-		double z = ent.posZ;
-		double y = ent.posY + (double) (ent.getEyeHeight() / 2.5f);
-		return RotationUtil.getRotationFromPosition(x, z, y);
-	}
-
-	public float[] fixSensitivity(float[] rot) {
-		float f = mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
-		float f1 = f * f * f * 1.2F;
-		return new float[]{rot[0] - (rot[0] % f1), rot[1] - (rot[1] % f1)};
+		this.lastRotations = new float[] { eventMotion.yaw, eventMotion.pitch };
 	}
 
 	@Sub
@@ -196,44 +163,104 @@ public class KillAura extends Mod {
 			timer.reset();
 		}
 
-		if (target != null && this.canBlock() && !this.isBlocking  && autoBlock.getValue()) {
+		if (!this.getTargets(blockrange.getValue()).isEmpty() && this.canBlock() && !this.isBlocking  && autoBlock.getValue()) {
 			mc.thePlayer.sendQueue.addToSendQueue(
-					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+					new C08PacketPlayerBlockPlacement(AutoBlockPos, 255, mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
+	}
 
-		if (this.canBlock() && !this.isBlocking && autoBlock.getValue() && target!=null) {
-			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(
-					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
-			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
-			this.isBlocking = true;
+	@Sub
+	private void render(EventRender3D e) {
+		int hurtcolor;
+		boolean setcolor = target != null && target.hurtResistantTime <= 0;
+		if(target != null && setcolor) {
+			hurtcolor = Colors.getColor(new Color(254, 255, 255,255));
+			drawESP2(hurtcolor);
+		}else{
+			hurtcolor = Colors.getColor(new Color(255, 0, 0,255));
+			drawESP2(hurtcolor);
+		}
+	}
+
+	public void drawESP2(int color) {
+		if(target != null) {
+			double attackDelay;
+			double var31 = this.target.posX - this.target.prevPosX;
+			double var32 = this.target.posZ - this.target.prevPosZ;
+			attackDelay = this.target.posX + var31;
+			double var33 = attackDelay - mc.getRenderManager().renderPosX;
+			double var34 = this.target.posY + 1.0D;
+			double y = var34 - mc.getRenderManager().renderPosY;
+			double var39 = this.target.posZ + var32;
+			double var42 = var39 - mc.getRenderManager().renderPosZ;
+			double sin = Math.sin((double)System.currentTimeMillis() / 500.0D) * 50.0D;
+			double xA = sin / 100.0D;
+			double zA = sin / 100.0D;
+			double yA = sin / 100.0D;
+			RenderUtil.pre3D();
+			mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 2);
+			RenderUtil.glColor(color);
+			GL11.glLineWidth(3.0F);
+			if(this.target.hurtTime <= 0) {
+				RenderUtil.drawOutlinedBoundingBox(new AxisAlignedBB(var33 - xA, y - yA - 0.1D, var42 - xA, var33 + zA, y + yA + 0.1D, var42 + zA));
+			} else {
+				RenderUtil.drawOutlinedBoundingBox(new AxisAlignedBB(var33 - 0.2D, y - yA - 0.1D, var42 - 0.2D, var33 + 0.2D, y + yA + 0.2D, var42 + 0.2D));
+			}
+			GL11.glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+			RenderUtil.post3D();
 		}
 	}
 
 	private boolean shouldAttack() {
-		return this.timer.hasReached(1000.0 / (this.cps.getValue() + MathUtil.randomDouble(0.0, 3.0)));
+		return this.timer.hasReached((int) (1000 / this.cps.getValue().intValue()));
 	}
 
 	public void attack() {
-		mc.thePlayer.swingItem();
-		mc.thePlayer.sendQueue.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+		float modifierForCreature = EnchantmentHelper.getModifierForCreature(this.mc.thePlayer.getHeldItem(),
+				EnumCreatureAttribute.UNDEFINED);
+		if (this.mc.thePlayer.fallDistance > 0.0f && !this.mc.thePlayer.onGround && !this.mc.thePlayer.isOnLadder()
+				&& !this.mc.thePlayer.isInWater() && !this.mc.thePlayer.isPotionActive(Potion.blindness)
+				&& this.mc.thePlayer.ridingEntity == null) {
+		}
+		if (this.isBlocking && this.canBlock()) {
+			NetworkManager networkManager = this.mc.thePlayer.sendQueue.getNetworkManager();
+			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
+			networkManager.sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, AutoBlockPos, EnumFacing.DOWN));
+			mc.thePlayer.clearItemInUse();
+			this.isBlocking = false;
+		}
+		++this.attackSpeed;
+		EventAttack ent = new EventAttack(target);
+		EventManager.postAll(ent);
+		if(ent.isCancelled())
+			return;
+		this.mc.thePlayer.swingItem();
+		this.mc.thePlayer.sendQueue
+				.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
+		if (this.mode.getValue() == AuraMode.Switch) {
+			++this.hit;
+			if (this.hit >= this.hitswitch.getValue()) {
+				this.attacktargets.add(target);
+				attacktarget = target;
+				this.hit = 0;
+			}
+		}
 		if (this.canBlock() && !this.isBlocking && autoBlock.getValue()) {
 			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(
-					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+					new C08PacketPlayerBlockPlacement(AutoBlockPos, 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
 			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
 	}
 
-	private List<EntityLivingBase> getTargets() {
+	private List<EntityLivingBase> getTargets(double n) {
 		ArrayList<EntityLivingBase> list = new ArrayList<EntityLivingBase>();
-		Iterator<Entity> loadedentity = mc.theWorld.getLoadedEntityList().iterator();
-		while(loadedentity.hasNext()) {
-			Object o = loadedentity.next();
-			if (o instanceof EntityLivingBase) {
-				EntityLivingBase entityLivingBase = (EntityLivingBase)o;
-				if (validEntity(entityLivingBase))
+		for (Entity entity : mc.thePlayer.getEntityWorld().loadedEntityList) {
+			if (entity instanceof EntityLivingBase) {
+				EntityLivingBase entityLivingBase = (EntityLivingBase) entity;
+				if (isValidEntity(entityLivingBase, n))
 					list.add(entityLivingBase);
 			}
 		}
@@ -241,37 +268,44 @@ public class KillAura extends Mod {
 	}
 
 	public boolean canBlock() {
-		return mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword;
+		boolean b = this.mc.thePlayer.getHeldItem() != null && this.mc.thePlayer.getHeldItem().getItem() instanceof ItemSword;
+		return b;
 	}
 
-	private boolean validEntity(EntityLivingBase entity) {
+	private boolean isValidEntity(Entity ent, double reach) {
 		AntiBot ab = (AntiBot) Client.getModuleManager().getModuleByClass(AntiBot.class);
-		boolean players = this.players.getValue();
-		boolean animals = this.animals.getValue();
-		boolean mobs = this.mobs.getValue();
-		boolean villager = this.villager.getValue();
-		boolean invis = this.invis.getValue();
-		boolean teams = Client.getModuleManager().getModuleByClass(Teams.class).isEnabled();
-		float range = this.range.getValue().floatValue();
-		if (mc.thePlayer.getHealth() > 0.0F && entity.getHealth() > 0.0F && !entity.isDead) {
-			boolean raytrace = walls.getValue() || mc.thePlayer.canEntityBeSeen(entity);
-			if (mc.thePlayer.getDistanceToEntity(entity) <= range && raytrace) {
-
-				if (entity instanceof EntityPlayer && players) {
-
-					if (!ab.isServerBot(entity) && !entity.isPlayerSleeping()) {
-						EntityPlayer ent = (EntityPlayer)entity;
-						return (!TeamUtils.isTeam(mc.thePlayer, ent) || !teams) && (!ent.isInvisible() || invis) && !FriendManager.isFriend(ent.getName());
+		boolean b;
+		if (ent == null) {
+			b = false;
+		} else {
+			if (ent == mc.thePlayer) {
+				b = false;
+			} else if (ent instanceof EntityPlayer && !this.players.getValue()) {
+				b = false;
+			} else if ((ent instanceof EntityAnimal || ent instanceof EntitySquid) && !this.animals.getValue()) {
+				b = false;
+			} else if ((ent instanceof EntityMob || ent instanceof EntityVillager || ent instanceof EntityBat)
+					&& !this.mobs.getValue()) {
+				b = false;
+			} else {
+				if (mc.thePlayer.getDistanceToEntity(ent) > reach) {
+					b = false;
+				} else if (ent instanceof EntityPlayer && FriendManager.isFriend(ent.getName())) {
+					b = false;
+				} else if (!ent.isDead && ((EntityLivingBase) ent).getHealth() > 0.0f) {
+					if (ent.isInvisible() && !this.invis.getValue()) {
+						b = false;
+					} else if (ab.isServerBot(ent)) {
+						b = false;
+					} else {
+						b = (!mc.thePlayer.isDead && (!(ent instanceof EntityPlayer) || !Teams.isOnSameTeam(ent)));
 					}
-
-					return false;
+				} else {
+					b = false;
 				}
-
-				return (entity instanceof EntityMob || entity instanceof EntitySlime) && mobs || entity instanceof EntityAnimal && animals || entity instanceof EntityVillager && villager;
 			}
 		}
-
-		return false;
+		return b;
 	}
 
 	private List<EntityLivingBase> sortList(List<EntityLivingBase> list) {
@@ -282,7 +316,7 @@ public class KillAura extends Mod {
 			list.sort(Comparator.comparingDouble((ToDoubleFunction<? super Entity>) this::Fov));
 		}
 		if (this.priority.getValue() == AuraPriority.Angle) {
-			list.sort(Comparator.comparingDouble((o) -> {return (double)RotationUtil.getRotations(o)[0];}));
+			list.sort(this::Angle);
 		}
 		if (this.priority.getValue() == AuraPriority.Health) {
 			list.sort(KillAura::Health);
@@ -302,11 +336,14 @@ public class KillAura extends Mod {
 		return (int) (((EntityLivingBase) entity).getHealth() - ((EntityLivingBase) entity2).getHealth());
 	}
 
-	private double Fov(Entity entity) {
-		return getDistanceBetweenAngles(mc.thePlayer.rotationPitch, rotateNCP(entity)[0]);
+	private int Angle(Entity entity, Entity entity2) {
+		return Float.compare(RotationUtil.angleDifference(rotateNCP(entity)[0], this.lastRotations[0]),
+				RotationUtil.angleDifference(rotateNCP(entity2)[0], this.lastRotations[0]));
 	}
 
-
+	private double Fov(Entity entity) {
+		return getDistanceBetweenAngles(this.mc.thePlayer.rotationPitch, rotateNCP(entity)[0]);
+	}
 
 	public static float[] rotateNCP(Entity a1) {
 		if (a1 == null) {
@@ -315,11 +352,32 @@ public class KillAura extends Mod {
 			double v1 = a1.posX - Minecraft.getMinecraft().thePlayer.posX;
 			double v3 = a1.posY + (double)a1.getEyeHeight() * 0.9D - (Minecraft.getMinecraft().thePlayer.posY + (double)Minecraft.getMinecraft().thePlayer.getEyeHeight());
 			double v5 = a1.posZ - Minecraft.getMinecraft().thePlayer.posZ;
-			double v7 = (double)MathHelper.ceiling_float_int((float) (v1 * v1 + v5 * v5));
+			double v7 = (double) MathHelper.ceiling_float_int((float) (v1 * v1 + v5 * v5));
 			float v9 = (float)(Math.atan2(v5, v1) * 180.0D / 3.141592653589793D) - 90.0F;
 			float v10 = (float)(-(Math.atan2(v3, v7) * 180.0D / 3.141592653589793D));
 			return new float[]{Minecraft.getMinecraft().thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(v9 - Minecraft.getMinecraft().thePlayer.rotationYaw), Minecraft.getMinecraft().thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(v10 - Minecraft.getMinecraft().thePlayer.rotationPitch)};
 		}
+	}
+
+	private float[] rotateNCP_backup(Entity entity) {
+		double diffX = entity.posX - mc.thePlayer.posX;
+		double diffY = entity.posY + (double)entity.getEyeHeight() * 0.9D - (mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight());
+		double diffZ = entity.posZ - mc.thePlayer.posZ;
+		double dist = (double)MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
+		float yaw = (float)(Math.atan2(diffZ, diffX) * 180.0D / 3.141592653589793D) - 90.0F;
+		float pitch = (float)(-(Math.atan2(diffY, dist) * 180.0D / 3.141592653589793D));
+		float[] neededRotations = new float[]{RotationUtil.yaw() + MathHelper.wrapAngleTo180_float(yaw - RotationUtil.yaw()), RotationUtil.pitch() + MathHelper.wrapAngleTo180_float(pitch - RotationUtil.pitch())};
+		float[] rlyneed = (float[])neededRotations.clone();
+		float d0 = 0.0F - RotationUtil.yaw();
+		float d0y = neededRotations[0] + d0;
+		boolean rotateRight = d0y > 0.0F;
+		if(rotateRight) {
+			neededRotations[0] = (RotationUtil.yaw()) + Math.min(Math.abs(0.0F - d0y), 25f);
+		} else {
+			neededRotations[0] = (RotationUtil.yaw()) - Math.min(Math.abs(0.0F - d0y), 35f);
+		}
+
+		return neededRotations;
 	}
 
 	private int DistanceToEntity(Entity entity, Entity entity2) {

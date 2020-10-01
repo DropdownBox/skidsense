@@ -531,15 +531,15 @@ public class Flight extends Mod {
             e.setOnGround(isBlockUnder());
         }
         
-        if(this.mode.getValue() == FlyMode.HypixelDamage) {
-            ++motion;
-            if (motion % 20 == 0) {
-                PlayerCapabilities playerCapabilities = new PlayerCapabilities();
-                playerCapabilities.allowFlying = true;
-                playerCapabilities.isFlying = true;
-                mc.thePlayer.sendQueue.addToSendQueue(new C13PacketPlayerAbilities(playerCapabilities));
-            }
-        }
+//        if(this.mode.getValue() == FlyMode.HypixelDamage) {
+//            ++motion;
+//            if (motion % 20 == 0) {
+//                PlayerCapabilities playerCapabilities = new PlayerCapabilities();
+//                playerCapabilities.allowFlying = true;
+//                playerCapabilities.isFlying = true;
+//                mc.thePlayer.sendQueue.addToSendQueue(new C13PacketPlayerAbilities(playerCapabilities));
+//            }
+//        }
         double speed = Math.max(3.0f, getBaseMoveSpeed());
         if (this.mode.getValue() == FlyMode.Motion) {
             mc.thePlayer.onGround = false;
