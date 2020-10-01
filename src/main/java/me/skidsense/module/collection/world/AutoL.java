@@ -37,13 +37,14 @@ public class AutoL extends Mod {
 	@Sub
 	private void onLChat(EventChatRecieve e) {
 		if(kids != null){
-			if(e.getMessage().contains(Minecraft.getMinecraft().thePlayer.getName()) && e.getMessage().contains(kids.getName())){
-				if(kids.getName().toLowerCase().contains("tw")) {
-					ChatUtil.sendChat_NoFilter(String.format("我就在台北，你他媽的坐捷运來打我啊？,%s", kids.getName()));
-					kids = null;
-				}else {
-					RD.nextInt(knm.length);
-					Minecraft.getMinecraft().getNetHandler().sendpacketNoEvent(new C01PacketChatMessage(String.format(fuckTextArrayList.get(new Random(System.nanoTime()).nextInt(fuckTextArrayList.size())), kids.getName())));
+			if(e.getMessage().contains(mc.thePlayer.getName()) && e.getMessage().contains(kids.getName())){
+				{
+					if (kids.getName().toLowerCase().contains("tw")) {
+						ChatUtil.sendChat_NoFilter(String.format("我就在台北，你他媽的坐捷运來打我啊？,%s", kids.getName()));
+					} else {
+						RD.nextInt(knm.length);
+						Minecraft.getMinecraft().getNetHandler().sendpacketNoEvent(new C01PacketChatMessage(String.format(fuckTextArrayList.get(new Random(System.nanoTime()).nextInt(fuckTextArrayList.size())), kids.getName())));
+					}
 					kids = null;
 				}
 			}
