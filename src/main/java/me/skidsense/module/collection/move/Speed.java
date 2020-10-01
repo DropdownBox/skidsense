@@ -279,9 +279,6 @@ public class Speed extends Mod {
                 if (this.stage >= 0 || this.collided) {
                     this.stage = 0;
                     if (this.stair == 0.0) {
-                        if(mc.thePlayer.ticksExisted % 8 == 0) {
-                            mc.thePlayer.jump();
-                        }
                         e.setY(mc.thePlayer.motionY = 0.40866666f + MoveUtil.getJumpEffect() * 0.1);
                     }
                     ++this.less;
@@ -334,7 +331,7 @@ public class Speed extends Mod {
 
     private double getHypixelSpeed(final int stage) {
         double value = MoveUtil.defaultSpeed() + 0.028 * MoveUtil.getSpeedEffect() + MoveUtil.getSpeedEffect() / 15.0;
-        final double firstvalue = 0.4125 + MoveUtil.getSpeedEffect() / 12.0;
+        final double firstvalue = 0.4225 + MoveUtil.getSpeedEffect() / 12.0;
         final double thirdvalue = 0.4075 + MoveUtil.getSpeedEffect() / 12.0;
         final double decr = stage / 500.0 * 3.0;
         if (stage == 0) {

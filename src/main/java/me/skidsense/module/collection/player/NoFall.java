@@ -22,7 +22,7 @@ public class NoFall extends Mod {
     private void onEventPreUpdate(EventPreUpdate e){
         if (mc.thePlayer.fallDistance > 2.0f) {
             mc.thePlayer.onGround = false;
-            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(true));
+            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(true));
             mc.thePlayer.fall(1,0);
         }else if (mc.thePlayer.isCollidedVertically) {
             mc.thePlayer.fallDistance = 0.0f;
