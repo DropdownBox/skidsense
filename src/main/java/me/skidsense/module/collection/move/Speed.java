@@ -282,7 +282,7 @@ public class Speed extends Mod {
                         if(mc.thePlayer.ticksExisted % 8 == 0) {
                             mc.thePlayer.jump();
                         }
-                        e.setY(mc.thePlayer.motionY = 0.40966666f + MoveUtil.getJumpEffect() * 0.1);
+                        e.setY(mc.thePlayer.motionY = 0.40866666f + MoveUtil.getJumpEffect() * 0.1);
                     }
                     ++this.less;
                     boolean bl = this.lessSlow = this.less > 1.0D && !this.lessSlow;

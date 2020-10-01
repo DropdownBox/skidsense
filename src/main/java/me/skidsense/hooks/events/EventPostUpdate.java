@@ -4,8 +4,8 @@ import me.skidsense.hooks.value.Event;
 
 public class EventPostUpdate
 extends Event {
-    private float yaw;
-    private float pitch;
+    public float yaw;
+    public float pitch;
 
     public EventPostUpdate(float yaw, float pitch) {
         this.yaw = yaw;

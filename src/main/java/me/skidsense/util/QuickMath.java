@@ -33,7 +33,7 @@ public class QuickMath {
 	public static double getRandom(final double floor, final double cap) {
 		return floor + QuickMath.rng.nextInt((int) (cap - floor + 1));
 	}
-	public static double getRandomInRange(double min, double max) {
+	public static double getRandomDoubleInRange(double min, double max) {
 		Random random = new Random();
 		double range = max - min;
 		double scaled = random.nextDouble() * range;
@@ -41,7 +41,7 @@ public class QuickMath {
 		return shifted;
 	}
 
-	public static float getRandomInRange(float min, float max) {
+	public static float getRandomFloatInRange(float min, float max) {
 		Random random = new Random();
 		float range = max - min;
 		float scaled = random.nextFloat() * range;
@@ -49,7 +49,7 @@ public class QuickMath {
 		return shifted;
 	}
 
-	public static int getRandomInRange(int min, int max) {
+	public static int getRandomIntInRange(int min, int max) {
 		Random rand = new Random();
 		int randomNum = rand.nextInt((max - min) + 1) + min;
 

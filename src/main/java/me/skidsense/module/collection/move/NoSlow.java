@@ -23,14 +23,8 @@ extends Mod {
 
     @Sub
     private void onPreUpdate(EventPreUpdate e) {
-        if (mc.thePlayer.isUsingItem() && mc.thePlayer.isBlocking() && KillAura.target == null && MoveUtil.isMoving()) {
-            mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
-        }
-    }
-    @Sub
-    private void onPostUpdate(EventPreUpdate e) {
-        if (mc.thePlayer.isUsingItem() && mc.thePlayer.isBlocking() && KillAura.target == null && MoveUtil.isMoving()) {
-            mc.thePlayer.sendQueue.addToSendQueue((Packet)new C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()));
+        if (mc.thePlayer.isBlocking() && MoveUtil.isMoving()) {
+            mc.thePlayer.sendQueue.addToSendQueue((Packet)new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
         }
     }
 }

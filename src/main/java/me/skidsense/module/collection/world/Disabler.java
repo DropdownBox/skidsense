@@ -74,7 +74,7 @@ public class Disabler extends Mod {
         if (mc.theWorld != null && mc.thePlayer != null && !Client.getModuleManager().getModuleByClass(KillAura.class).isEnabled()) {
             switch (mode.getValue().toString()) {
                 case "SpamTransaction": {
-                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C0FPacketConfirmTransaction(0, (short) QuickMath.getRandomInRange(-32767, 32767), false));
+                    mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C0FPacketConfirmTransaction(0, (short) QuickMath.getRandomIntInRange(-32767, 32767), false));
                     break;
                 }
                 case "SpoofSpectator": {

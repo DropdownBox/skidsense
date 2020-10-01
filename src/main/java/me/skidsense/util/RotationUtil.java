@@ -308,5 +308,6 @@ public class RotationUtil {
         float sqrt = velocity * velocity * velocity * velocity - 0.006F * (0.006F * d3 * d3 + 2.0F * d1 * velocity * velocity);
         return (float)Math.toDegrees(Math.atan(((double)(velocity * velocity) - Math.sqrt((double)sqrt)) / (double)(0.006F * d3)));
     }
+
 }
 

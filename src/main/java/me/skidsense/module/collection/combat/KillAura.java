@@ -16,6 +16,7 @@ import me.skidsense.module.collection.move.Flight;
 import me.skidsense.module.collection.player.Teams;
 import me.skidsense.util.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -27,6 +28,7 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C02PacketUseEntity;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.util.*;
 import org.lwjgl.Sys;
 
@@ -51,7 +53,6 @@ public class KillAura extends Mod {
 	public Option<Boolean> autodisable = new Option<Boolean>("AutoDisable", "AutoDisable", true);
 	public static Numbers<Double> range = new Numbers<Double>("Range", "Range", 4.2, 3.5, 7.0, 0.1);
 	public Numbers<Double> cps = new Numbers<Double>("APS", "APS", 9.0, 1.0, 20.0, 1.0);
-	public Numbers<Double> blockrange = new Numbers<Double>("BlockRange", "BlockRange", 8.0, 3.5, 8.0, 0.1);
 	public Numbers<Double> switchdelay = new Numbers<Double>("SwitchDelay", "SwitchDelay", 500.0, 100.0, 1000.0, 100.0);
 
 	public boolean isBlocking;
@@ -62,7 +63,7 @@ public class KillAura extends Mod {
 	private List<EntityLivingBase> loaded = new CopyOnWriteArrayList<EntityLivingBase>();
 	public static EntityLivingBase target;
 	public static EntityLivingBase slowtarget;
-	public float[] lastRotations = new float[]{0.0F, 0.0F};
+	public float[] lastRotations = new float[] { 0.0f, 0.0f };
 
 	public KillAura() {
 		super("Kill Aura", new String[] { "Aura","KillAura" }, ModuleType.Fight);
@@ -79,19 +80,31 @@ public class KillAura extends Mod {
 	public void onDisable() {
 		super.onDisable();
 		if (this.isBlocking) {
-			mc.playerController.onStoppedUsingItem(mc.thePlayer);
+			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-1,-1,-1), EnumFacing.DOWN));
+			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
 		target = null;
 	}
 
+
+
+	private boolean e() {
+		if ((double)mc.thePlayer.getDistanceToEntity(target) <= (Double)range.getValue() && target != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemSword) {
+			return !loaded.isEmpty();
+		} else {
+			return false;
+		}
+	}
+
 	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
-		if(Client.getModuleManager().getModuleByClass(Flight.class).isEnabled() && Flight.mode.getValue() == Flight.FlyMode.HypixelDamage){
+		if (Client.getModuleManager().getModuleByClass(Flight.class).isEnabled() && Flight.mode.getValue() == Flight.FlyMode.HypixelDamage) {
 			Notifications.getManager().post("KillAura is not compatible with Flight.");
 			setEnabled(false);
 		}
-		if(target != null) {
+		if (target != null) {
 			slowtarget = target;
 		}
 		if (!mc.thePlayer.isEntityAlive() && this.autodisable.getValue()) {
@@ -99,17 +112,20 @@ public class KillAura extends Mod {
 		}
 		this.setSuffix(mode.getValue());
 		if (autoBlock.getValue() && this.canBlock() && this.isBlocking) {
-			mc.playerController.onStoppedUsingItem(mc.thePlayer);
+			C07PacketPlayerDigging.Action release_USE_ITEM = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM, new BlockPos(-1, -1, -1), EnumFacing.DOWN));
+			mc.thePlayer.clearItemInUse();
 			this.isBlocking = false;
 		}
 		this.loaded = this.sortList(this.getTargets());
 		if (!this.loaded.isEmpty()) {
+			this.lastRotations = new float[]{eventMotion.yaw, eventMotion.pitch};
 			if (this.loaded.size() > 1 && target != null && mode.getValue() == AuraMode.Switch) {
-				if(target.hurtTime != 0 && switchDelay.hasReached(switchdelay.getValue())) {
+				if (target.hurtTime != 0 && switchDelay.hasReached(switchdelay.getValue())) {
 					++this.index;
 					switchDelay.reset();
 				}
-			}else if (mode.getValue() == AuraMode.Single) {
+			} else if (mode.getValue() == AuraMode.Single) {
 				if (target.getDistanceToEntity(mc.thePlayer) > range.getValue()) {
 					++index;
 				} else if (target.isDead) {
@@ -119,20 +135,30 @@ public class KillAura extends Mod {
 			if (this.index >= this.loaded.size()) {
 				this.index = 0;
 			}
-			lastRotations[0] = eventMotion.yaw;
-			lastRotations[1] = eventMotion.getPitch();
 			target = this.loaded.get(this.index);
-			float[] rot = getRotations(target);
-			float Yaw = MathHelper.clamp_float((float) (getYawChangeGiven(target.posX, target.posZ, rot[0]) + QuickMath.getRandomInRange(-3d, 3d)), -180.0f, 180.0f);
-			lastRotations = fixSensitivity(new float[]{(float) ((lastRotations[0] += Yaw / 1.2f) + QuickMath.getRandomInRange(-10d, 10d)), (float) (rot[1] / 1.2f + QuickMath.getRandomInRange(-3d, 3d))});
-			eventMotion.setYaw(lastRotations[0]);
-			mc.thePlayer.rotationYawHead = eventMotion.getYaw();
-			mc.thePlayer.renderYawOffset = eventMotion.getYaw();
-			eventMotion.setPitch(lastRotations[1]);
-			System.out.println(lastRotations[0] + " , " + lastRotations[1]);
-		}else {
+			eventMotion.yaw = getRotation(target)[0];
+			eventMotion.pitch = getRotation(target)[1];
+		} else {
 			target = null;
+			if (this.isBlocking) {
+				C07PacketPlayerDigging.Action release_USE_ITEM2 = C07PacketPlayerDigging.Action.RELEASE_USE_ITEM;
+				mc.thePlayer.sendQueue.getNetworkManager().sendPacket(new C07PacketPlayerDigging(release_USE_ITEM2, new BlockPos(-1, -1, -1), EnumFacing.DOWN));
+				this.mc.thePlayer.clearItemInUse();
+				this.isBlocking = false;
+			}
 		}
+	}
+	public static float[] getRotation(final Entity a1) {
+		if (a1 == null) {
+			return null;
+		}
+		final double v1 = a1.posX - Minecraft.getMinecraft().thePlayer.posX;
+		final double v2 = a1.posY + a1.getEyeHeight() * 0.9 - (Minecraft.getMinecraft().thePlayer.posY + Minecraft.getMinecraft().thePlayer.getEyeHeight());
+		final double v3 = a1.posZ - Minecraft.getMinecraft().thePlayer.posZ;
+		final double v4 = MathHelper.ceiling_float_int((float) (v1 * v1 + v3 * v3));
+		final float v5 = (float)(Math.atan2(v3, v1) * 180.0 / 3.141592653589793) - 90.0f;
+		final float v6 = (float)(-(Math.atan2(v2, v4) * 180.0 / 3.141592653589793));
+		return new float[] { Minecraft.getMinecraft().thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(v5 - Minecraft.getMinecraft().thePlayer.rotationYaw), Minecraft.getMinecraft().thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(v6 - Minecraft.getMinecraft().thePlayer.rotationPitch) };
 	}
 
 	public static float getYawChangeGiven(double posX, double posZ, float yaw) {
@@ -153,7 +179,7 @@ public class KillAura extends Mod {
 	public static float[] getRotations(Entity ent) {
 		double x = ent.posX;
 		double z = ent.posZ;
-		double y = ent.posY + (double) (ent.getEyeHeight() / 2.0f);
+		double y = ent.posY + (double) (ent.getEyeHeight() / 2.5f);
 		return RotationUtil.getRotationFromPosition(x, z, y);
 	}
 
@@ -170,8 +196,17 @@ public class KillAura extends Mod {
 			timer.reset();
 		}
 
-		if (target != null && this.canBlock() && !this.isBlocking && autoBlock.getValue()) {
-			mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem());
+		if (target != null && this.canBlock() && !this.isBlocking  && autoBlock.getValue()) {
+			mc.thePlayer.sendQueue.addToSendQueue(
+					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
+			this.isBlocking = true;
+		}
+
+		if (this.canBlock() && !this.isBlocking && autoBlock.getValue() && target!=null) {
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(
+					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
 	}
@@ -181,15 +216,12 @@ public class KillAura extends Mod {
 	}
 
 	public void attack() {
-		if (this.isBlocking && this.canBlock()) {
-			mc.playerController.onStoppedUsingItem(mc.thePlayer);
-			mc.thePlayer.clearItemInUse();
-			this.isBlocking = false;
-		}
 		mc.thePlayer.swingItem();
 		mc.thePlayer.sendQueue.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
 		if (this.canBlock() && !this.isBlocking && autoBlock.getValue()) {
-			mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, mc.thePlayer.inventory.getCurrentItem());
+			mc.thePlayer.sendQueue.getNetworkManager().sendPacket(
+					new C08PacketPlayerBlockPlacement(new BlockPos(-1,-1,-1), 255, this.mc.thePlayer.getHeldItem(), 0.0f, 0.0f, 0.0f));
+			mc.thePlayer.setItemInUse(mc.thePlayer.getHeldItem(), 999);
 			this.isBlocking = true;
 		}
 	}
@@ -221,10 +253,9 @@ public class KillAura extends Mod {
 		boolean invis = this.invis.getValue();
 		boolean teams = Client.getModuleManager().getModuleByClass(Teams.class).isEnabled();
 		float range = this.range.getValue().floatValue();
-		float focusRange = (mc.thePlayer.canEntityBeSeen(entity) ? range : 3.5F) >= blockrange.getValue().floatValue() ? (mc.thePlayer.canEntityBeSeen(entity) ? range : 3.5F) : blockrange.getValue().floatValue();
 		if (mc.thePlayer.getHealth() > 0.0F && entity.getHealth() > 0.0F && !entity.isDead) {
 			boolean raytrace = walls.getValue() || mc.thePlayer.canEntityBeSeen(entity);
-			if (mc.thePlayer.getDistanceToEntity(entity) <= focusRange && raytrace) {
+			if (mc.thePlayer.getDistanceToEntity(entity) <= range && raytrace) {
 
 				if (entity instanceof EntityPlayer && players) {
 

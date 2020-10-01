@@ -15,7 +15,6 @@ import me.skidsense.hooks.value.Option;
 import me.skidsense.management.friend.FriendManager;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.combat.KillAura.AuraPriority;
 import me.skidsense.module.collection.player.Teams;
 import me.skidsense.util.RotationUtil;
 import me.skidsense.util.TeamUtils;

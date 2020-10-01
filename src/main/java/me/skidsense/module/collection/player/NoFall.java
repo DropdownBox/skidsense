@@ -20,8 +20,12 @@ public class NoFall extends Mod {
     }
     @Sub
     private void onEventPreUpdate(EventPreUpdate e){
-        if(mc.thePlayer.fallDistance >2.55f){
-            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(mc.thePlayer.ticksExisted % ThreadLocalRandom.current().nextInt(45, 75) != 0));
+        if (mc.thePlayer.fallDistance > 2.0f) {
+            mc.thePlayer.onGround = false;
+            mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(true));
+            mc.thePlayer.fall(1,0);
+        }else if (mc.thePlayer.isCollidedVertically) {
+            mc.thePlayer.fallDistance = 0.0f;
         }
     }
 }
