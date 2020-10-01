@@ -82,7 +82,7 @@ public class Teleport extends Mod {
 			double lastY = mc.thePlayer.posY, downY = 0;
 			for (CustomVec3 vec3 : PathfindingUtils.computePath(
 					new CustomVec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ),
-					new CustomVec3(Client.instance.viptarget.posX, Client.instance.viptarget.posY + 0.01, Client.instance.viptarget.posZ))) {
+					new CustomVec3(0, 180, 0))) {
 				if (vec3.getY() < lastY) {
 					downY += (lastY - vec3.getY());
 				}
