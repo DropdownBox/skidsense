@@ -32,6 +32,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.potion.Potion;
@@ -280,11 +281,11 @@ extends Mod {
            String name = I18n.format(potion.getName());
            String PType = "";
            if (effect.getAmplifier() == 1) {
-              name = name + " II";
+              name = name + " 2";
            } else if (effect.getAmplifier() == 2) {
-              name = name + " III";
+              name = name + " 3";
            } else if (effect.getAmplifier() == 3) {
-              name = name + " IV";
+              name = name + " 4";
            }
 
            if (effect.getDuration() < 600 && effect.getDuration() > 300) {
@@ -294,7 +295,7 @@ extends Mod {
            } else if (effect.getDuration() > 600) {
               PType = PType + "\2477 " + Potion.getDurationString(effect);
            }
-
+           
            Color c = new Color(potion.getLiquidColor());
            font.drawStringWithShadow(name, (float)sr.getScaledWidth() - font.getWidth(name + PType), (float)(sr.getScaledHeight() - 9) + pY, Colors.getColor(c.getRed(), c.getGreen(), c.getBlue()));
            font.drawStringWithShadow(PType, (float)sr.getScaledWidth() - font.getWidth(PType), (float)(sr.getScaledHeight() - 9) + pY, -1);
