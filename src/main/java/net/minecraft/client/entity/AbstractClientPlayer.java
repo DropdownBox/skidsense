@@ -27,6 +27,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 {
     private NetworkPlayerInfo playerInfo;
     private ResourceLocation locationOfCape = null;
+    private ResourceLocation clientCape = new ResourceLocation("skidsense/cape.png");
     private long reloadCapeTimeMs = 0L;
     private boolean elytraOfCape = false;
     private String nameClear = null;
@@ -99,18 +100,16 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         }
         else
         {
-            if (this.reloadCapeTimeMs != 0L && System.currentTimeMillis() > this.reloadCapeTimeMs)
-            {
+            if (this.reloadCapeTimeMs != 0L && System.currentTimeMillis() > this.reloadCapeTimeMs){
                 CapeUtils.reloadCape(this);
                 this.reloadCapeTimeMs = 0L;
             }
-
-            if (this.locationOfCape != null)
-            {
-                return this.locationOfCape;
+            if(true) {
+                return clientCape;
             }
-            else
-            {
+            if (this.locationOfCape != null){
+                return this.locationOfCape;
+            }else{
                 NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
                 return networkplayerinfo == null ? null : networkplayerinfo.getLocationCape();
             }
