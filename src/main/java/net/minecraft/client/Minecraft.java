@@ -26,6 +26,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -488,6 +490,17 @@ public class Minecraft implements IThreadListener, IPlayerUsage
      */
     private void startGame() throws LWJGLException, IOException
     {
+    	String line = System.getProperty("sun.java.command");
+    	RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
+    	List<String> aList = bean.getInputArguments();
+    	for (int i = 0; i < aList.size(); i++) {
+        	if(aList.get(i).contains("noverify") || aList.get(i).contains("xboot")) {
+        		Runtime.getRuntime().exit(33635);
+        	}
+    	}
+    	if(line.contains("noverify") || line.contains("xboot") || line.contains("javaagent")) {
+    		Runtime.getRuntime().exit(33635);
+    	}
         this.gameSettings = new GameSettings(this, this.mcDataDir);
         this.defaultResourcePacks.add(this.mcDefaultResourcePack);
         this.startTimerHackThread();
