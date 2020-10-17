@@ -12,7 +12,7 @@ public class MaterialUI extends GuiScreen {
 
     public void initializedUI() {
         if (mainPlane == null) {
-            mainPlane = new MainPlane("Sigma",50.0F,50.0F,325,325);
+            mainPlane = new MainPlane("Sigma",50.0F,50.0F,325,270);
             mainPlane.initializePlane();
         }
     }

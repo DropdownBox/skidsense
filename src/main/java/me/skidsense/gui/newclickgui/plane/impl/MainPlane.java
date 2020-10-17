@@ -65,7 +65,7 @@ public class MainPlane extends Plane {
         }
         GuiUtil.drawRoundedRect(getPosX(), getPosY(), getWidth(), getHeight(), 3, new Color(45, 45, 45, 255).getRGB());
         //GuiUtil.drawImage(new ResourceLocation("textures/client/logo.png"), getPosX() + 5.5f, getPosY() + 6, 32, 32);
-        GuiUtil.drawUnfilledCircle(getPosX() + 5f, getPosY() + 5f, 33, new Color(45, 45, 45, 255).getRGB());
+        //GuiUtil.drawUnfilledCircle(getPosX() + 5f, getPosY() + 5f, 33, new Color(45, 45, 45, 255).getRGB());
         float categoryOffsetY = getPosY() + 55;
         for (ModuleType category : ModuleType.values()) {
             if (getSelectedCategory() == category) {
