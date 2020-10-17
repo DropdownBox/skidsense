@@ -66,7 +66,7 @@ public class MainPlane extends Plane {
         GuiUtil.drawRoundedRect(getPosX(), getPosY(), getWidth(), getHeight(), 3, new Color(45, 45, 45, 255).getRGB());
         //GuiUtil.drawImage(new ResourceLocation("textures/client/logo.png"), getPosX() + 5.5f, getPosY() + 6, 32, 32);
         //GuiUtil.drawUnfilledCircle(getPosX() + 5f, getPosY() + 5f, 33, new Color(45, 45, 45, 255).getRGB());
-        float categoryOffsetY = getPosY() + 55;
+        float categoryOffsetY = getPosY() + 13;
         for (ModuleType category : ModuleType.values()) {
             if (getSelectedCategory() == category) {
                 GuiUtil.drawRect(getPosX(), categoryOffsetY - (Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f) / 4 - 4, 42.5f, Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f, new Color(35, 35, 35, 255).getRGB());
@@ -97,7 +97,7 @@ public class MainPlane extends Plane {
                 setLastPosY(getPosY() - mouseY);
                 setDragging(true);
             }
-            float categoryOffsetY = getPosY() + 55;
+            float categoryOffsetY = getPosY() + 13;
             for (ModuleType category : ModuleType.values()) {
                 if (MouseUtil.mouseWithinBounds(mouseX, mouseY, getPosX(), categoryOffsetY - (Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f) / 4 - 4, 42.5f, Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f))
                     setSelectedCategory(category);
