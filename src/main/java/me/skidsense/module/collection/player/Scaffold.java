@@ -123,14 +123,12 @@ public class Scaffold extends Mod {
       if (Math.abs(Minecraft.getMinecraft().thePlayer.motionX) > 0 && Math.abs(Minecraft.getMinecraft().thePlayer.motionZ) > 0) {
           blockBelow = new BlockPos(Minecraft.getMinecraft().thePlayer.posX, NoigaY - 1.0, Minecraft.getMinecraft().thePlayer.posZ);
       }
-      if (Minecraft.getMinecraft().theWorld.getBlockState(blockBelow).getBlock() == Blocks.air) {
     	  if(Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode()) && !mc.gameSettings.keyBindJump.isKeyDown() && down.getValue() && mc.thePlayer.onGround) {
     		  KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), false);
     		  this.blockData = this.getBlockData();
     	  }else {
         	  this.blockData = this.getBlockData2(blockBelow);
 		}
-      }
       if (this.blockData == null) {
          return;
       }

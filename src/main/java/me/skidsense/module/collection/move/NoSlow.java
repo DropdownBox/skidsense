@@ -23,8 +23,8 @@ extends Mod {
 
     @Sub
     private void onPreUpdate(EventPreUpdate e) {
-        if (mc.thePlayer.isBlocking() && MoveUtil.isMoving()) {
-            mc.thePlayer.sendQueue.addToSendQueue((Packet)new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+        if (mc.thePlayer.isBlocking() && MoveUtil.isMoving() && KillAura.target !=null) {
+            mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
         }
     }
 }

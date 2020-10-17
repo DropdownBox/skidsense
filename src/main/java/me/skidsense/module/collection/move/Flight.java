@@ -38,7 +38,7 @@ public class Flight extends Mod {
     public static Mode mode = new Mode("Mode", "Mode", (Enum[]) FlyMode.values(), (Enum) FlyMode.Vanilla);
     public Mode DMode = new Mode("DamageMode", "DamageMode", (Enum[]) DamageMode.values(), (Enum) DamageMode.Semi);
     private Option<Boolean> lagcheck = new Option<Boolean>("LagCheck", "LagCheck", true);
-    //private Option<Boolean> disabler = new Option<Boolean>("Disabler", "Disabler", true);
+    private Option<Boolean> blink = new Option<Boolean>("Blink", "Blink", true);
     private Option<Boolean> Watting = new Option<Boolean>("Waitting", "Waitting", false);
     private static Numbers<Double> WattingTime = new Numbers<Double>("WaittingTime", "WaittingTime", 2.1, 1.0, 5.0,
             0.1);
@@ -84,37 +84,6 @@ public class Flight extends Mod {
     public Flight() {
         super("Flight", new String[] { "fly", "angel" }, ModuleType.Move);
     }
-//    //Disabler
-//    @Sub
-//    public void DisablerUpdate(EventPreUpdate e){
-//        if(disabler.getValue() && mode.getValue() == FlyMode.HypixelDamage){
-//            PlayerCapabilities pc = new PlayerCapabilities();
-//            pc.isCreativeMode = true;
-//            pc.allowFlying = true;
-//            pc.isFlying = true;
-//            pc.disableDamage = true;
-////            mc.thePlayer.sendQueue.sendpacketNoEvent(
-////                    new C0FPacketConfirmTransaction(65536, (short) 32767, true));
-//        }
-//    }
-//
-//    @Sub
-//    public void onDisablerPacketSend(EventPacketSend e){
-//        if(disabler.getValue() && mode.getValue() == FlyMode.HypixelDamage){
-//            if (e.getPacket() instanceof C0FPacketConfirmTransaction) {
-//                e.setCancelled(true);
-//            }
-//        }
-//    }
-//
-//    @Sub
-//    public void onDisablerPacketReceive(EventPacketRecieve e){
-//        if(disabler.getValue() && mode.getValue() == FlyMode.HypixelDamage){
-//            if(e.getPacket() instanceof S32PacketConfirmTransaction) {
-//                e.setCancelled(true);
-//            }
-//        }
-//    }
 
     public void damagePlayerNew2() {
         if (this.mc.thePlayer.onGround) {
@@ -238,21 +207,23 @@ public class Flight extends Mod {
 //        }
 
 
-//        if(mode.getValue() == FlyMode.HypixelDamage) {
-//            if (jumped && e.getPacket() instanceof C03PacketPlayer
-//                    || e.getPacket() instanceof C08PacketPlayerBlockPlacement || e.getPacket() instanceof C0APacketAnimation
-//                    || e.getPacket() instanceof C0BPacketEntityAction || e.getPacket() instanceof C02PacketUseEntity) {
-//                this.packets.add(e.getPacket());
-//                e.setCancelled(true);
-//                System.out.println("取消了数据包：" + e.getPacket().getClass().getCanonicalName());
-//                ++packetsconter;
-//            }
-//        }
-    }
-
-    private void fakeJump() {
-        mc.thePlayer.isAirBorne = true;
-        mc.thePlayer.triggerAchievement(StatList.jumpStat);
+        if(mode.getValue() == FlyMode.HypixelDamage && blink.getValue()) {
+            if (jumped && e.getPacket() instanceof C03PacketPlayer
+                    || e.getPacket() instanceof C08PacketPlayerBlockPlacement || e.getPacket() instanceof C0APacketAnimation
+                    || e.getPacket() instanceof C0BPacketEntityAction || e.getPacket() instanceof C02PacketUseEntity) {
+                this.packets.add(e.getPacket());
+                e.setCancelled(true);
+                System.out.println("取消了数据包：" + e.getPacket().getClass().getCanonicalName());
+                ++packetsconter;
+            }
+        }
+        if (e.getPacket() instanceof C02PacketUseEntity && packets.size() > 8 && blink.getValue()) {
+            for (Packet packet : this.packets) {
+                mc.thePlayer.sendQueue.addToSendQueue(packet);
+                System.out.println("发送了数据包: "+packet.getClass().getCanonicalName());
+            }
+            packets.clear();
+        }
     }
 
     @Sub
@@ -311,7 +282,7 @@ public class Flight extends Mod {
         if (this.mode.getValue() != FlyMode.HypixelDamage)
             damaged = true;
         if (this.mode.getValue() == FlyMode.HypixelDamage) {
-        	this.motion = 0;
+            this.motion = 0;
 //			if (this.UHC.getValue()) {
 //				this.damagePlayer(2);
 //			} else {
@@ -469,13 +440,13 @@ public class Flight extends Mod {
         zboost = 1;
         mc.thePlayer.motionX = 0.0;
         mc.thePlayer.motionZ = 0.0;
-//        if(mode.getValue() == FlyMode.HypixelDamage) {
-//            for (Packet packet : this.packets) {
-//                mc.thePlayer.sendQueue.addToSendQueue(packet);
-//                System.out.println("发送了数据包: "+packet.getClass().getCanonicalName());
-//            }
-//            packets.clear();
-//        }
+        if(mode.getValue() == FlyMode.HypixelDamage && blink.getValue()) {
+            for (Packet packet : this.packets) {
+                mc.thePlayer.sendQueue.addToSendQueue(packet);
+                System.out.println("发送了数据包: "+packet.getClass().getCanonicalName());
+            }
+            packets.clear();
+        }
     }
 
     public void updateFlyHeight() {
@@ -530,16 +501,6 @@ public class Flight extends Mod {
         if(groundpacket.getValue()){
             e.setOnGround(isBlockUnder());
         }
-        
-//        if(this.mode.getValue() == FlyMode.HypixelDamage) {
-//            ++motion;
-//            if (motion % 20 == 0) {
-//                PlayerCapabilities playerCapabilities = new PlayerCapabilities();
-//                playerCapabilities.allowFlying = true;
-//                playerCapabilities.isFlying = true;
-//                mc.thePlayer.sendQueue.addToSendQueue(new C13PacketPlayerAbilities(playerCapabilities));
-//            }
-//        }
         double speed = Math.max(3.0f, getBaseMoveSpeed());
         if (this.mode.getValue() == FlyMode.Motion) {
             mc.thePlayer.onGround = false;
@@ -683,7 +644,7 @@ public class Flight extends Mod {
         }
         return false;
     }
-    
+
     @Sub
     private void onMove(EventMove e) {
 
@@ -706,7 +667,7 @@ public class Flight extends Mod {
 
             switch (boostHypixelState) {
                 case 1:
-                	moveSpeed = (mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 1.46 + ((new Random()).nextBoolean() ? new Random().nextDouble() / 1000 : -(new Random().nextDouble() / 1000)) : 1.945 + ((new Random()).nextBoolean() ? new Random().nextDouble() / 1000 : -(new Random().nextDouble() / 1000))) * baseSpeed;
+                    moveSpeed = (mc.thePlayer.isPotionActive(Potion.moveSpeed) ? 1.46 + ((new Random()).nextBoolean() ? new Random().nextDouble() / 1000 : -(new Random().nextDouble() / 1000)) : 1.945 + ((new Random()).nextBoolean() ? new Random().nextDouble() / 1000 : -(new Random().nextDouble() / 1000))) * baseSpeed;
                     boostHypixelState = 2;
                     break;
                 case 2:
@@ -714,10 +675,10 @@ public class Flight extends Mod {
                     boostHypixelState = 3;
                     break;
                 case 3:
-                	moveSpeed = lastDistance
-                    - (mc.thePlayer.ticksExisted % 2 == 0
-                    ? (0.2743D + ((new Random()).nextBoolean() ? new Random().nextDouble() / 10000 : -(new Random().nextDouble() / 10000)))
-                    : (0.2633D + ((new Random()).nextBoolean() ? new Random().nextDouble() / 8900 : -(new Random().nextDouble() / 8900)))) * (lastDistance - baseSpeed);
+                    moveSpeed = lastDistance
+                            - (mc.thePlayer.ticksExisted % 2 == 0
+                            ? (0.2743D + ((new Random()).nextBoolean() ? new Random().nextDouble() / 10000 : -(new Random().nextDouble() / 10000)))
+                            : (0.2633D + ((new Random()).nextBoolean() ? new Random().nextDouble() / 8900 : -(new Random().nextDouble() / 8900)))) * (lastDistance - baseSpeed);
 
                     boostHypixelState = 4;
                     break;

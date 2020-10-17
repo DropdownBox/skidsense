@@ -107,10 +107,10 @@ public class KillAura extends Mod {
 
 	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
-//		if(Client.getModuleManager().getModuleByClass(Flight.class).isEnabled() && Flight.mode.getValue() == Flight.FlyMode.HypixelDamage){
-//			Notifications.getManager().post("KillAura is not compatible with Flight.");
-//			setEnabled(false);
-//		}
+		if(Client.getModuleManager().getModuleByClass(Flight.class).isEnabled() && Flight.mode.getValue() == Flight.FlyMode.HypixelDamage){
+			Notifications.getManager().post("Flying with killaura enabled will cause bans.");
+			setEnabled(false);
+		}
 		if(target != null) {
 			slowtarget = target;
 		}

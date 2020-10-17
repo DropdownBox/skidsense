@@ -58,7 +58,6 @@ public class AntiBot extends Mod {
 					}
 
 					ent.setInvisible(false);
-					Notifications.getManager().post("Removed Bot :" + ent.getName());
 					Minecraft.getMinecraft().theWorld.removeEntity(ent);
 				}
 			}

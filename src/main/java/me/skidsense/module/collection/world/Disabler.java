@@ -12,10 +12,12 @@ import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Numbers;
+import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.module.collection.move.Flight;
+import me.skidsense.module.collection.move.Speed;
 import me.skidsense.util.QuickMath;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
@@ -23,23 +25,24 @@ import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
 
+import java.util.Random;
 import java.util.UUID;
 
 import com.ibm.icu.text.UFormat;
 import net.minecraft.network.play.server.S00PacketKeepAlive;
 
 public class Disabler extends Mod {
+
     public TimerUtil timerUtil = new TimerUtil();
-    private int delta;
-    public Numbers<Double> ticks = new Numbers<Double>("Ticks", "Ticks", 4.0,2.0,16.0,2.0);
     public Disabler() {
         super("Disabler", new String[]{"noac"}, ModuleType.World);
     }
+    private int delta;
 
     @Override
     public void onEnable(){
-        delta = 0;
         super.onEnable();
+        delta = 0;
     }
 
     @Override
@@ -49,47 +52,44 @@ public class Disabler extends Mod {
 
     @Sub
     private void onPacketSend(EventPacketSend ep) {
-        if (mc.theWorld != null) {
-            if (ep.getPacket() instanceof C00PacketKeepAlive) {
+//        if (ep.getPacket() instanceof C0FPacketConfirmTransaction) {
+//            C0FPacketConfirmTransaction packetConfirmTransaction = (C0FPacketConfirmTransaction) ep.getPacket();
+//            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C0FPacketConfirmTransaction(Integer.MAX_VALUE, packetConfirmTransaction.getUid(), false));
+//            ep.setCancelled(true);
+//        }
+//
+//        if (ep.getPacket() instanceof C00PacketKeepAlive) {
+//            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C00PacketKeepAlive(Integer.MIN_VALUE + (new Random()).nextInt(100)));
+//            ep.setCancelled(true);
+//        }
+        if (ep.getPacket() instanceof C00PacketKeepAlive || ep.getPacket() instanceof C13PacketPlayerAbilities) {
+            ep.setCancelled(true);
+        }
+        if (ep.getPacket() instanceof C0FPacketConfirmTransaction) {
+            final C0FPacketConfirmTransaction c0FPacketConfirmTransaction = (C0FPacketConfirmTransaction) ep.getPacket();
+            if (c0FPacketConfirmTransaction.getUid() < 0 && c0FPacketConfirmTransaction.getWindowId() == 0) {
                 ep.setCancelled(true);
-            }
-            if (ep.getPacket() instanceof C0FPacketConfirmTransaction) {
-                final C0FPacketConfirmTransaction c0FPacketConfirmTransaction = (C0FPacketConfirmTransaction) ep.getPacket();
-                if (c0FPacketConfirmTransaction.getUid() < 0 && c0FPacketConfirmTransaction.getWindowId() == 0) {
-                    c0FPacketConfirmTransaction.setUid((short) (-c0FPacketConfirmTransaction.getUid()));
-                }
+                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C0FPacketConfirmTransaction(Integer.MAX_VALUE, (short) -(c0FPacketConfirmTransaction.getUid()), false));
             }
         }
     }
 
     @Sub
     private void onUpdate(EventPreUpdate e) {
-        if (!Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
-            delta = 0;
-        } else {
-            ++delta;
+        ++delta;
+        if(delta % 2 == 0 && (Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) || Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()){
+            PlayerCapabilities playerCapabilities = new PlayerCapabilities();
+            playerCapabilities.allowFlying = true;
+            playerCapabilities.isFlying = true;
+            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(playerCapabilities));
         }
-            if (delta % 20 == 0 && Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
-                PlayerCapabilities playerCapabilities = new PlayerCapabilities();
-                playerCapabilities.allowFlying = true;
-                playerCapabilities.isFlying = true;
-                mc.thePlayer.sendQueue.addToSendQueue(new C13PacketPlayerAbilities(playerCapabilities));
-            }
-                final C13PacketPlayerAbilities c13PacketPlayerAbilities = new C13PacketPlayerAbilities();
-                c13PacketPlayerAbilities.setInvulnerable(false);
-                c13PacketPlayerAbilities.setCreativeMode(false);
-                c13PacketPlayerAbilities.setFlying(false);
-                c13PacketPlayerAbilities.setAllowFlying(false);
-                c13PacketPlayerAbilities.setFlySpeed(1.0E8f);
-                c13PacketPlayerAbilities.setWalkSpeed(1.0E8f);
-        }
+    }
 
     @Sub
     private void onPacketReceive(EventPacketRecieve ep) {
         if (mc.theWorld != null) {
             if (ep.getPacket() instanceof S00PacketKeepAlive) {
                 ep.setCancelled(true);
-                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C00PacketKeepAlive());
             }
         }
     }

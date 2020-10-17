@@ -111,7 +111,6 @@ public class Speed2 extends Mod {
                 break;
         }
         moveSpeed = Math.max(moveSpeed, getBaseMoveSpeed());
-        setMoveSpeed(event, moveSpeed);
         ++stage;
     }
     
@@ -144,41 +143,6 @@ public class Speed2 extends Mod {
             }
         }
         return true;
-    }
-    
-    private void setMoveSpeed(final EventMove event, final double speed) {
-        voidTicks++;
-        if (KillAura.target != null) {
-            if (inVoid() && voidTicks > 4) {
-                voidTicks = 0;
-                strafeDirection = !strafeDirection;
-            }
-        }
-        AutoStrafe target_strafemod = (AutoStrafe) Client.getModuleManager().getModuleByClass(AutoStrafe.class);
-        boolean shouldStrafe = Client.getModuleManager().getModuleByClass(AutoStrafe.class).isEnabled() && target_strafemod.indexPos != null && target_strafemod.target != null && !(!Minecraft.getMinecraft().gameSettings.keyBindJump.isKeyDown() && target_strafemod.OnSpace.getValue());
-        double forward = shouldStrafe ? ((Math.abs(Minecraft.getMinecraft().thePlayer.movementInput.moveForward) > 0 || Math.abs(Minecraft.getMinecraft().thePlayer.movementInput.moveStrafe) > 0) ? 1 : 0) : Minecraft.getMinecraft().thePlayer.movementInput.moveForward;
-        double strafe = shouldStrafe ? 0 : Minecraft.getMinecraft().thePlayer.movementInput.moveStrafe;
-        float yaw = shouldStrafe ? getRotationFromPosition(target_strafemod.indexPos.xCoord, target_strafemod.indexPos.zCoord) : Minecraft.getMinecraft().thePlayer.rotationYaw;
-        if (forward == 0.0 && strafe == 0.0) {
-            event.setX(0.0);
-            event.setZ(0.0);
-        } else {
-            if (forward != 0.0) {
-                if (strafe > 0.0) {
-                    yaw += ((forward > 0.0) ? -45 : 45);
-                } else if (strafe < 0.0) {
-                    yaw += ((forward > 0.0) ? 45 : -45);
-                }
-                strafe = 0.0;
-                if (forward > 0.0) {
-                    forward = 1.0;
-                } else if (forward < 0.0) {
-                    forward = -1.0;
-                }
-            }
-            event.setX(forward * speed * -Math.sin(Math.toRadians(yaw)) + strafe * speed * Math.cos(Math.toRadians(yaw)));
-            event.setZ(forward * speed * Math.cos(Math.toRadians(yaw)) - strafe * speed * -Math.sin(Math.toRadians(yaw)));
-        }
     }
 }
 

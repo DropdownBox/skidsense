@@ -7,25 +7,30 @@ import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.util.MoveUtil;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
 import java.awt.*;
 
 public class NoFall extends Mod {
-    double fall;
-
+    float lastFall;
+    int times;
+    boolean showed;
     public NoFall() {
         super("No Fall", new String[]{"Nofalldamage", "NoFall"}, ModuleType.Player);
         setColor(new Color(242, 137, 73).getRGB());
     }
+
     @Sub
-    private void onEventPreUpdate(EventPreUpdate e){
-        if (mc.thePlayer.fallDistance > 2.0f) {
-            mc.thePlayer.onGround = false;
-            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(true));
-            mc.thePlayer.fall(1,0);
-        }else if (mc.thePlayer.isCollidedVertically) {
-            mc.thePlayer.fallDistance = 0.0f;
+    private void onEventPreUpdate(EventPreUpdate e) {
+        float falldis = 0.825f + (float) MoveUtil.getJumpEffect();
+        if (mc.thePlayer.fallDistance - this.lastFall >= falldis) {
+            this.lastFall = mc.thePlayer.fallDistance;
+            mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(true));
+        } else if (mc.thePlayer.isCollidedVertically) {
+            this.lastFall = 0f;
+            this.times = 0;
+            this.showed = false;
         }
     }
 }
