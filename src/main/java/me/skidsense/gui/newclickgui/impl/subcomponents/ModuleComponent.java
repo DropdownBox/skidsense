@@ -1,5 +1,6 @@
 package me.skidsense.gui.newclickgui.impl.subcomponents;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import me.skidsense.Client;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 
 public class ModuleComponent extends Component {
     private Mod module;
+	private boolean binding;
     private ArrayList<Component> components = new ArrayList<>();
     private boolean extended;
     private CategoryComponent categoryComponent;
@@ -90,7 +92,7 @@ public class ModuleComponent extends Component {
             if (getScrollY() - 6 < -(getComponentHeight() - getCategoryComponent().getHeight()))
                 setScrollY((int) -(getComponentHeight() - getCategoryComponent().getHeight()));
         } else if (getScrollY() < 0) setScrollY(0);
-        Client.instance.fontManager.clickGuiFont.drawStringWithShadow(getLabel(), getPosX(), getPosY(), module.isEnabled() ? new Color(229, 229, 223, 255).getRGB() : new Color(167, 167, 161, 255).getRGB());
+        Client.instance.fontManager.clickGuiFont.drawStringWithShadow(binding ? "KeyBinding..." : getLabel(), getPosX(), getPosY(), module.isEnabled() ? new Color(229, 229, 223, 255).getRGB() : new Color(167, 167, 161, 255).getRGB());
         if (!getComponents().isEmpty())
             Client.instance.fontManager.clickGuiFont.drawStringWithShadow("...", getPosX() + getWidth() - Client.instance.fontManager.clickGuiFont.getStringWidth("..."), getPosY() - 2, module.isEnabled() ? new Color(229, 229, 223, 255).getRGB() : new Color(167, 167, 161, 255).getRGB());
         if (isExtended()) {
@@ -118,6 +120,10 @@ public class ModuleComponent extends Component {
             getCategoryComponent().getComponents().stream().filter(component -> component instanceof ModuleComponent && component != this).forEach(component -> ((ModuleComponent) component).setExtended(false));
             setExtended(!isExtended());
         }
+        if(button == 2 && MouseUtil.mouseWithinBounds(mouseX, mouseY, getPosX(), getPosY() - 4, getWidth(), getHeight() - 8)) {
+        	this.binding = true;
+        	System.out.println("2");
+        }
         if (isExtended()) {
             for (Component component : getComponents()) {
                 if (component.isHidden()) continue;
@@ -140,6 +146,15 @@ public class ModuleComponent extends Component {
     @Override
     public void onKeyTyped(char character, int keyCode) {
         super.onKeyTyped(character, keyCode);
+        if (this.binding) {
+			if (keyCode == Keyboard.KEY_DELETE) {
+				getModule().setKey(0);
+			} else {
+				getModule().setKey(keyCode);
+
+			}
+			this.binding = false;
+		}
         if (isExtended()) {
             for (Component component : getComponents()) {
                 if (component.isHidden()) continue;
