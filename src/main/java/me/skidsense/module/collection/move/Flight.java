@@ -219,7 +219,7 @@ public class Flight extends Mod {
         }
         if (e.getPacket() instanceof C02PacketUseEntity && packets.size() > 8 && blink.getValue()) {
             for (Packet packet : this.packets) {
-                mc.thePlayer.sendQueue.addToSendQueue(packet);
+                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet);
                 System.out.println("发送了数据包: "+packet.getClass().getCanonicalName());
             }
             packets.clear();
@@ -442,7 +442,7 @@ public class Flight extends Mod {
         mc.thePlayer.motionZ = 0.0;
         if(mode.getValue() == FlyMode.HypixelDamage && blink.getValue()) {
             for (Packet packet : this.packets) {
-                mc.thePlayer.sendQueue.addToSendQueue(packet);
+                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(packet);
                 System.out.println("发送了数据包: "+packet.getClass().getCanonicalName());
             }
             packets.clear();

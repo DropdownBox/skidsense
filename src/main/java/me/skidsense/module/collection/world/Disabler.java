@@ -68,8 +68,7 @@ public class Disabler extends Mod {
         if (ep.getPacket() instanceof C0FPacketConfirmTransaction) {
             final C0FPacketConfirmTransaction c0FPacketConfirmTransaction = (C0FPacketConfirmTransaction) ep.getPacket();
             if (c0FPacketConfirmTransaction.getUid() < 0 && c0FPacketConfirmTransaction.getWindowId() == 0) {
-                ep.setCancelled(true);
-                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C0FPacketConfirmTransaction(Integer.MAX_VALUE, (short) -(c0FPacketConfirmTransaction.getUid()), false));
+                c0FPacketConfirmTransaction.setUid((short) (-c0FPacketConfirmTransaction.getUid()));
             }
         }
     }
@@ -77,20 +76,11 @@ public class Disabler extends Mod {
     @Sub
     private void onUpdate(EventPreUpdate e) {
         ++delta;
-        if(delta % 2 == 0 && (Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) || Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()){
+        if(delta % 4 == 0 && Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()){
             PlayerCapabilities playerCapabilities = new PlayerCapabilities();
             playerCapabilities.allowFlying = true;
             playerCapabilities.isFlying = true;
             mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(playerCapabilities));
-        }
-    }
-
-    @Sub
-    private void onPacketReceive(EventPacketRecieve ep) {
-        if (mc.theWorld != null) {
-            if (ep.getPacket() instanceof S00PacketKeepAlive) {
-                ep.setCancelled(true);
-            }
         }
     }
 }
