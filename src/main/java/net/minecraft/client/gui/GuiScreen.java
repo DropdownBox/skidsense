@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import me.skidsense.management.animation.AnimationUtil;
 import me.skidsense.util.ColorCreator;
 import me.skidsense.util.RenderUtil;
 import net.minecraft.client.Minecraft;
@@ -677,7 +678,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     {
         if (this.mc.theWorld != null)
         {
-        	drawGradientRect(0, 0, width, height, new Color(0,0,0, 0).getRGB(), RenderUtil.reAlpha(-4179669,0.5f));
+        	drawGradientRect(0, 0, width,height, new Color(0,0,0, 0).getRGB(), RenderUtil.reAlpha(0,0.6f));
             //net.minecraft.client.gui.Gui.drawRect(0, 0, this.width, this.height, RenderUtil.reAlpha(-4179669,0.23f));
             //this.drawGradientRect(0, 0, this.width, this.height, RenderUtil.reAlpha(-14057287,0.25f));
         }

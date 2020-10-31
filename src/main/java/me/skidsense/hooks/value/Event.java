@@ -3,6 +3,9 @@
  */
 package me.skidsense.hooks.value;
 
+import me.skidsense.Client;
+import me.skidsense.management.authentication.AuthUser;
+
 //import org.greenrobot.eventbus.EventBus;
 
 public abstract class Event {
@@ -10,7 +13,7 @@ public abstract class Event {
     public byte type;
 
     public boolean isCancelled() {
-        return this.cancelled;
+        return Client.instance.authuser != null ? this.cancelled : true ;
     }
 
     public void setCancelled(boolean cancelled) {

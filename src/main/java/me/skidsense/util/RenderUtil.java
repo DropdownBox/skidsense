@@ -1394,5 +1394,11 @@ public class RenderUtil {
     public static void color(int color) {
         GL11.glColor4f((color >> 16 & 0xFF) / 255f, (color >> 8 & 0xFF) / 255f, (color & 0xFF) / 255f, (color >> 24 & 0xFF) / 255f);
     }
+
+    public static void prepareScissorBox(float x, float y, float x2, float y2) {
+        ScaledResolution scale = new ScaledResolution(Minecraft.getMinecraft());
+        int factor = scale.getScaleFactor();
+        GL11.glScissor((int) (x * factor), (int) ((scale.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
+    }
 }
 

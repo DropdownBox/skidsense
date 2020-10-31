@@ -57,9 +57,16 @@ public class HWID {
 		return true;
 	}
 
-	public static String LocalHWID(){
-		return asd.SHA256(getCPUSerialNumber() + getHardDiskSerialNumber());
-	}
+	public static String getHWID() {
+		try {
+        final String main = getHardDiskSerialNumber()+getHardDiskSerialNumber().trim();
+
+        return asd.SHA256(main);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        return "Error";
+    }
 	
 	public static boolean LocalAuth(){
 		return authorized.contains(asd.SHA256(getCPUSerialNumber() + getHardDiskSerialNumber())) && security();

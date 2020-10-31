@@ -10,7 +10,7 @@ import me.skidsense.util.FileUtils;
 import net.minecraft.util.Vec3;
 
 public class WaypointManager {
-   private List waypoints = new CopyOnWriteArrayList();
+   private List<Waypoint> waypoints = new CopyOnWriteArrayList<Waypoint>();
    private final File WAYPOINT_DIR = FileUtils.getConfigFile("Waypoints");
 
    public WaypointManager() {
@@ -67,7 +67,7 @@ public class WaypointManager {
       this.saveWaypoints();
    }
 
-   public List getWaypoints() {
+   public List<Waypoint> getWaypoints() {
       return this.waypoints;
    }
 

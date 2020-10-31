@@ -1,6 +1,8 @@
 package me.skidsense.management.command.impl;
 
 import me.skidsense.Client;
+import me.skidsense.gui.notification.NotificationPublisher;
+import me.skidsense.gui.notification.NotificationType;
 import me.skidsense.management.command.Command;
 import me.skidsense.management.notifications.Notifications;
 import me.skidsense.module.Mod;
@@ -24,9 +26,10 @@ public class Bind extends Command {
                   m.setKey(k);
                   Object[] arrobject = new Object[2];
                   arrobject[0] = m.getName();
-                  arrobject[1] = k == 0 ? "none" : args[1].toUpperCase();
+                  arrobject[1] = k == 0 ? "None" : args[1].toUpperCase();
                   //Notifications.getManager().post(String.format("> Bound %s to %s", arrobject));
                   ChatUtil.printChat(Command.chatPrefix + String.format("Set %s to %s",arrobject));
+                  NotificationPublisher.queue("Bind", arrobject[0] + " is now bound to \"" + arrobject[1] + "\".", NotificationType.SUCCESS);
                   //Client.sendMessage(String.format("> Bound %s to %s", arrobject));
               } else {
                   //Notifications.getManager().post("> Invalid module name, double check spelling.");

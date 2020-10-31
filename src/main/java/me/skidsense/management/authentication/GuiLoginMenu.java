@@ -25,7 +25,7 @@ import net.minecraft.util.ResourceLocation;
 public class GuiLoginMenu extends GuiScreen {
    private transient PasswordField password;
    private transient GuiTextField username;
-   private transient GuiLoginMenu.Status status;
+   private transient Status status;
    private Encrypt myshitEncrypt = new Encrypt();
    private Panorama panorama;
    
@@ -65,10 +65,10 @@ public class GuiLoginMenu extends GuiScreen {
         	  this.status = GuiLoginMenu.Status.Authenticating;
               Object one = this.getCrypted(this.username.getText());
               Object two = this.getCrypted(this.password.getText());
-        	  Client.instance.authuser = new AuthUser((String)one, (String)two , myshitEncrypt.SHA512(this.password.getText()) ,HWID.LocalHWID());
-        	  Minecraft.getMinecraft().displayGuiScreen(new GuiMainMenu());
-        	  LoginUtil.saveLogin((String)one, (String)two);
-        	  this.status = GuiLoginMenu.Status.Success;
+        	  Client.instance.authuser = new AuthUser(username.getText(), myshitEncrypt.SHA256(this.password.getText()) ,HWID.getHWID());
+        		LoginUtil.saveLogin((String)one, (String)two);
+          	  	this.status = GuiLoginMenu.Status.Success;
+        		Minecraft.getMinecraft().displayGuiScreen(new GuiMainMenu());
           } else {
        	   		this.status = GuiLoginMenu.Status.Failed;
           }     
@@ -156,7 +156,7 @@ public class GuiLoginMenu extends GuiScreen {
 	return str;
    }
 	   
-   static enum Status {
+   public static enum Status {
       Idle,
       Authenticating,
       Success,

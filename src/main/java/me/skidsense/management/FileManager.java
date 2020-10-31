@@ -1,6 +1,5 @@
 package me.skidsense.management;
 
-import me.skidsense.SplashProgress;
 import me.skidsense.module.collection.world.AutoL;
 import me.skidsense.util.EncryptionUtil;
 import net.minecraft.client.Minecraft;
@@ -57,7 +56,6 @@ public class FileManager
 	}
 
 	public static void init() {
-		SplashProgress.setProgress(7, "Initializing FileManager...");
 		if (!FileManager.dir.exists()) {
 			FileManager.dir.mkdir();
 		}

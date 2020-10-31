@@ -42,12 +42,16 @@ public class BooleanComponent extends Component {
         switch (key) {
             case Keyboard.KEY_RIGHT:
                 if (modulecomp.getSelectedValue() == value && modulecomp.getCategorycomp().getSelectedModule() == modulecomp.getModule()) {
-                	value.setValue(!(Boolean)value.getValue());
+                	if(value instanceof Option) {
+                    	value.setValue(!(Boolean)value.getValue());
+                	}
                 }
                 break;
             case Keyboard.KEY_LEFT:
                 if (modulecomp.getSelectedValue() == value && modulecomp.getCategorycomp().getTabMain().getSelectedCategory() == modulecomp.getCategorycomp().getTabMain().getSelectedCategory() && modulecomp.getCategorycomp().getSelectedModule() == modulecomp.getModule()) {
-                    value.setValue(!(Boolean)value.getValue());
+                	if(value instanceof Option) {
+                		value.setValue(!(Boolean)value.getValue());
+                	}
                 }
                 break;
         }

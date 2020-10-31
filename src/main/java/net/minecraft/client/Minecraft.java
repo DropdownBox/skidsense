@@ -15,11 +15,12 @@ import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 
 import me.skidsense.Client;
-import me.skidsense.SplashProgress;
 import me.skidsense.gui.newclickgui.MaterialUI;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventKey;
 import me.skidsense.management.authentication.GuiLoginMenu;
+import me.skidsense.management.authentication.GuiLoginMenu.Status;
+import me.skidsense.management.authentication.Margele;
 import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
 
 import java.awt.image.BufferedImage;
@@ -82,6 +83,7 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -923,9 +925,9 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     private void drawSplashScreen(TextureManager textureManagerInstance) throws LWJGLException
     {
-        SplashProgress.setProgress(0,"Start Game...");
-    	SplashProgress.drawSplash(textureManagerInstance);
-        /*ScaledResolution scaledresolution = new ScaledResolution(this);
+        //SplashProgress.setProgress(0,"Start Game...");
+    	//SplashProgress.drawSplash(textureManagerInstance);
+        ScaledResolution scaledresolution = new ScaledResolution(this);
         int i = scaledresolution.getScaleFactor();
         Framebuffer framebuffer = new Framebuffer(scaledresolution.getScaledWidth() * i, scaledresolution.getScaledHeight() * i, true);
         framebuffer.bindFramebuffer(false);
@@ -974,7 +976,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         framebuffer.framebufferRender(scaledresolution.getScaledWidth() * i, scaledresolution.getScaledHeight() * i);
         GlStateManager.enableAlpha();
         GlStateManager.alphaFunc(516, 0.1F);
-        this.updateDisplay();*/
+        this.updateDisplay();
     }
 
     /**
@@ -1024,10 +1026,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         
         if (Client.instance.authuser == null && guiScreenIn instanceof GuiMainMenu)
         {
-            guiScreenIn = new GuiLoginMenu();
+        	guiScreenIn = new GuiLoginMenu();
         }
         
-        if (guiScreenIn == null && this.theWorld == null)
+        if (Client.instance.authuser != null && guiScreenIn == null && this.theWorld == null)
         {
             guiScreenIn = new GuiMainMenu();
         }
@@ -1059,7 +1061,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             this.setIngameFocus();
         }
     }
-
+    
     /**
      * Checks for an OpenGL error. If there is one, prints the error ID and error string.
      */

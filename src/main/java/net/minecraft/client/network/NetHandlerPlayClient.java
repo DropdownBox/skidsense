@@ -14,9 +14,13 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import me.skidsense.Client;
+import me.skidsense.gui.notification.NotificationPublisher;
+import me.skidsense.gui.notification.NotificationType;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.events.EventChatRecieve;
 import me.skidsense.hooks.events.EventPacketSend;
+import me.skidsense.management.waypoints.Waypoint;
 import net.minecraft.block.Block;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -290,6 +294,16 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         this.gameController.thePlayer.setReducedDebug(packetIn.isReducedDebugInfo());
         this.gameController.playerController.setGameType(packetIn.getGameType());
         this.gameController.gameSettings.sendSettingsToServer();
+        if(Client.instance.waypointManager.getWaypoints().size() > 0) {
+        	int wpsize = Client.instance.waypointManager.getWaypoints().size();
+            for (Waypoint wp : Client.instance.waypointManager.getWaypoints()) {
+            	if(wp.getName().toLowerCase().contains("lightning")) {
+            		Client.instance.waypointManager.deleteWaypoint(wp);
+            	}
+    		}
+        	NotificationPublisher.queue("Lightning Waypoint", "Removed " + wpsize +  " Waypoint", NotificationType.INFO);
+        	wpsize = 0;
+        }
         this.netManager.sendPacket(new C17PacketCustomPayload("MC|Brand", (new PacketBuffer(Unpooled.buffer())).writeString(ClientBrandRetriever.getClientModName())));
     }
 
@@ -1074,6 +1088,14 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             this.gameController.loadWorld(this.clientWorldController);
             this.gameController.thePlayer.dimension = packetIn.getDimensionID();
             this.gameController.displayGuiScreen(new GuiDownloadTerrain(this));
+            int wpsize = Client.instance.waypointManager.getWaypoints().size();
+            for (Waypoint wp : Client.instance.waypointManager.getWaypoints()) {
+            	if(wp.getName().toLowerCase().contains("lightning")) {
+            		Client.instance.waypointManager.deleteWaypoint(wp);
+            	}
+			}
+        	NotificationPublisher.queue("Lightning Waypoint", "Removed " + wpsize + " Lightning Waypoint", NotificationType.INFO);
+        	wpsize = 0;
         }
 
         this.gameController.setDimensionAndSpawnPlayer(packetIn.getDimensionID());
