@@ -66,25 +66,26 @@ public class Critical extends Mod {
     }
 
     @Sub
-    private void onUpdate(EventPreUpdate e){
-        if (mc.thePlayer.motionY < 0 && isBlockUnder() && canCritWithoutTimer()) {
-            e.setOnGround(false);
-            if (FallStack >= 0 && FallStack < 0.1 && mc.thePlayer.ticksExisted % 2 == 0) {
-                double value = 0.0624 + QuickMath.getRandomDoubleInRange(1E-8, 1E-7);
-                FallStack += value;
-                e.setY(mc.thePlayer.posY + value);
-            } else {
-                //event.setY(getMc().thePlayer.posY + MathUtils.getRandomInRange(1E-11, 1E-10));
-                e.setY(mc.thePlayer.posY + 1E-8);
-                if (FallStack < 0) {
-                    FallStack = 0;
-                    e.setOnGround(true);
-                    e.setY(mc.thePlayer.posY);
+    private void onUpdate(EventPreUpdate e) {
+        if (mode.getValue() == modes.HvH) {
+            if (mc.thePlayer.motionY < 0 && isBlockUnder() && canCritWithoutTimer()) {
+                e.setOnGround(false);
+                if (FallStack >= 0 && FallStack < 0.1 && mc.thePlayer.ticksExisted % 2 == 0) {
+                    double value = 0.0624 + QuickMath.getRandomDoubleInRange(1E-8, 1E-7);
+                    FallStack += value;
+                    e.setY(mc.thePlayer.posY + value);
+                } else {
+                    //event.setY(getMc().thePlayer.posY + MathUtils.getRandomInRange(1E-11, 1E-10));
+                    e.setY(mc.thePlayer.posY + 1E-8);
+                    if (FallStack < 0) {
+                        FallStack = 0;
+                        e.setOnGround(true);
+                        e.setY(mc.thePlayer.posY);
+                    }
                 }
+            } else {
+                FallStack = -1;
             }
-        }
-        else {
-            FallStack = -1;
         }
     }
 
