@@ -29,6 +29,7 @@ public class FontManager {
 	public TTFFontRenderer comfortaa14;
 	public TTFFontRenderer comfortaa20;
 	public TTFFontRenderer comfortaa34;
+	public TTFFontRenderer tahomabold11;
 	public FontRenderer tahomabold13;
 	public TTFFontRenderer clickGuiIconFont;
 	
@@ -44,6 +45,7 @@ public class FontManager {
 		tahoma16 = new TTFFontRenderer(new Font("Tahoma", 0, 16), true);
 		tahoma18 = new TTFFontRenderer(new Font("Tahoma", 0, 18), true);
 		tahoma20 = new TTFFontRenderer(new Font("Tahoma", 0, 20), true);
+		tahomabold11 = new TTFFontRenderer(new Font("Tahoma Bold", 0, 11), true);
 		verdana10 = new TTFFontRenderer(new Font("Verdana", 0, 10), true);
 		comfortaa14 = new TTFFontRenderer(new Font("Comfortaa", 0, 14), true);
 		comfortaa16 =  new TTFFontRenderer(new Font("Comfortaa", 0, 16), true);
