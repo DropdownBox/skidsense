@@ -17,7 +17,7 @@ import java.awt.*;
 public class Sprint
         extends Mod {
     private Option<Boolean> omni = new Option<Boolean>("Omni", "Omni", true);
-    private Option<Boolean> keepsprint = new Option<Boolean>("KeepSprint", "keepsprint", true);
+    public Option<Boolean> keepsprint = new Option<Boolean>("KeepSprint", "keepsprint", true);
 
     public Sprint() {
         super("Auto Sprint", new String[]{"run", "sprint", "autosprint"}, ModuleType.Move);
