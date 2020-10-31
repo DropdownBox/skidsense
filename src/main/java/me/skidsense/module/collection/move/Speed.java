@@ -366,6 +366,10 @@ public class Speed
                     final double motY = 0.41999998688698 + MoveUtil.getJumpEffect() * 0.1;
                     final double JellomotY = 0.4074196 + MoveUtil.getJumpEffect() * 0.1;
                     if (this.stair == 0.0) {
+                        PlayerCapabilities playerCapabilities = new PlayerCapabilities();
+                        playerCapabilities.allowFlying = true;
+                        playerCapabilities.isFlying = true;
+                        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(playerCapabilities));
                         if(this.Jello.getValue()) {
                             e.setY(mc.thePlayer.motionY = JellomotY);
                         }else {
@@ -408,7 +412,6 @@ public class Speed
                 }
             }
             ++Speed.stage;
-
         }
         if (this.mode.getValue() == SpeedMode.Hypixel) {
             if (mc.thePlayer.isCollidedHorizontally) {
