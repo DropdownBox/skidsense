@@ -1,7 +1,6 @@
 package me.skidsense.management;
 
 import me.skidsense.Client;
-import me.skidsense.SplashProgress;
 import me.skidsense.gui.tabgui.components.Component;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
@@ -43,7 +42,6 @@ implements Manager {
 
     @Override
     public void init() {
-    	SplashProgress.setProgress(5, "ModuleManager Init");
         addMod(new AutoArmor());
         addMod(new AutoPotion());
         addMod(new AntiBot());

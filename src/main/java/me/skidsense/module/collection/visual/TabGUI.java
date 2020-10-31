@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.List;
 
 import me.skidsense.Client;
-import me.skidsense.SplashProgress;
 import me.skidsense.hooks.EventManager;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRenderGui;
@@ -43,7 +42,6 @@ public class TabGUI
 
     @Override
     public void init() {
-        SplashProgress.setProgress(4, "TabGui Init");
         ModuleType[] arrmoduleType = ModuleType.values();
         int n = arrmoduleType.length;
         int n2 = 0;

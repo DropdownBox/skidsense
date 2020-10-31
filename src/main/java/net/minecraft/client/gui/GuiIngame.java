@@ -4,11 +4,14 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import me.skidsense.gui.notification.NotificationPublisher;
 import me.skidsense.hooks.EventManager;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+
+import org.lwjgl.opengl.GL11;
 
 import me.skidsense.hooks.events.EventRenderGui;
 import me.skidsense.management.notifications.Notifications;
@@ -252,6 +255,7 @@ public class GuiIngame extends Gui
         {
             this.overlayDebug.renderDebugInfo(scaledresolution);
         }
+        NotificationPublisher.publish();
         Notifications.getManager().updateAndRender();
         if (this.recordPlayingUpFor > 0)
         {
@@ -599,7 +603,6 @@ public class GuiIngame extends Gui
         int k1 = 3;
         int l1 = scaledRes.getScaledWidth() - i - k1;
         int j = 0;
-
         for (Score score1 : collection)
         {
             ++j;

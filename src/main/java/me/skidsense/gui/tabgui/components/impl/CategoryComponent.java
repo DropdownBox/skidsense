@@ -35,7 +35,7 @@ public class CategoryComponent extends Component {
                 largestString = mc.fontRendererObj.getStringWidth(StringUtils.capitalize((Client.instance.getModuleManager().getModulesInType(category).get(i).getName() != null ? Client.instance.getModuleManager().getModulesInType(category).get(i).getName() : Client.instance.getModuleManager().getModulesInType(category).get(i).getName())));
             }
         }
-        ArrayList<Mod> mods = new ArrayList(Client.instance.getModuleManager().getModulesInType(category));
+        ArrayList<Mod> mods = new ArrayList<Mod>(Client.instance.getModuleManager().getModulesInType(category));
         mods.sort(Comparator.comparing(m -> m.getName()));
         for (Mod module : mods) {
             components.add(new ModuleComponent(this, module, StringUtils.capitalize(module.getName()), getX() + getWidth() + 6, moduleY, largestString + 18, 12));

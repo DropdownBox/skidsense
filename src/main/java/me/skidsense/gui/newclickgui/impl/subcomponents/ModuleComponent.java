@@ -6,6 +6,8 @@ import org.lwjgl.input.Mouse;
 import me.skidsense.Client;
 import me.skidsense.gui.newclickgui.component.Component;
 import me.skidsense.gui.newclickgui.impl.CategoryComponent;
+import me.skidsense.gui.notification.NotificationPublisher;
+import me.skidsense.gui.notification.NotificationType;
 import me.skidsense.gui.util.GuiUtil;
 import me.skidsense.gui.util.MouseUtil;
 import me.skidsense.hooks.value.Mode;
@@ -150,6 +152,7 @@ public class ModuleComponent extends Component {
 			if (keyCode == Keyboard.KEY_DELETE) {
 				getModule().setKey(0);
 			} else {
+				NotificationPublisher.queue("Bind", getModule().getName() + " is now bound to \"" + Keyboard.getKeyName(keyCode) + "\".", NotificationType.SUCCESS);
 				getModule().setKey(keyCode);
 
 			}
