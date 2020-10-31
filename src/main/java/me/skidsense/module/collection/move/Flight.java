@@ -7,6 +7,7 @@ import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MoveUtil;
+import me.skidsense.util.QuickMath;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.PlayerCapabilities;
@@ -21,12 +22,13 @@ public class Flight extends Mod {
     private double moveSpeed, lastDist, boostTimerSpeed, timerDelValue, y;
     private boolean start = true;
     private boolean prepare = false;
+    PlayerCapabilities playerCapabilities = new PlayerCapabilities();
 
-    private Option<Boolean> blink = new Option<>("Blink","Blink", true);
-    private Option<Boolean> blinkAttack = new Option<>("BlinkAttack","BlinkAttack", false);
-    private Numbers<Double> speed = new Numbers<>("Speed","Speed", 0.32, 0.2, 0.4, 0.01);
-    private Numbers<Double> timerSpeed = new Numbers<>("Boost Timer","Boost Timer", 1.8, 1.0, 5.0, 0.1);
-    private Numbers<Double> boostTime = new Numbers<>("Boost Time","Boost Time", 4.0, 1.0, 10.0, 1.0);
+    private Option<Boolean> blink = new Option<>("Blink", "Blink", true);
+    private Option<Boolean> blinkAttack = new Option<>("BlinkAttack", "BlinkAttack", false);
+    private Numbers<Double> speed = new Numbers<>("Speed", "Speed", 0.32, 0.2, 0.4, 0.01);
+    private Numbers<Double> timerSpeed = new Numbers<>("Boost Timer", "Boost Timer", 1.8, 1.0, 5.0, 0.1);
+    private Numbers<Double> boostTime = new Numbers<>("Boost Time", "Boost Time", 4.0, 1.0, 10.0, 1.0);
 
     private final List<Packet<?>> packets = new ArrayList<>();
 
@@ -67,7 +69,6 @@ public class Flight extends Mod {
     }
 
     private void sendBlinkPacket() {
-        PlayerCapabilities playerCapabilities = new PlayerCapabilities();
         playerCapabilities.allowFlying = true;
         playerCapabilities.isFlying = true;
         playerCapabilities.isCreativeMode = true;
@@ -76,15 +77,15 @@ public class Flight extends Mod {
         playerCapabilities.setPlayerWalkSpeed(Float.MAX_EXPONENT);
         playerCapabilities.allowEdit = true;
         for (Packet<?> p : packets) {
-            if(p instanceof C03PacketPlayer && (((C03PacketPlayer) p).isMoving() || !((C03PacketPlayer) p).onGround)){
-                    ((C03PacketPlayer) p).setMoving(false);
-                    ((C03PacketPlayer) p).onGround = true;
-                    mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(playerCapabilities));
-                    mc.thePlayer.sendQueue.sendpacketNoEvent(p);
-                    System.out.println("Spoofed.");
-                }else {
-                    mc.thePlayer.sendQueue.sendpacketNoEvent(p);
-                }
+            if (p instanceof C03PacketPlayer && (((C03PacketPlayer) p).isMoving() || !((C03PacketPlayer) p).onGround)) {
+                ((C03PacketPlayer) p).setMoving(false);
+                ((C03PacketPlayer) p).onGround = true;
+                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(playerCapabilities));
+                mc.thePlayer.sendQueue.sendpacketNoEvent(p);
+                System.out.println("Spoofed.");
+            } else {
+                mc.thePlayer.sendQueue.sendpacketNoEvent(p);
+            }
         }
         packets.clear();
     }
@@ -94,7 +95,6 @@ public class Flight extends Mod {
         if (blink.getValue() && !packets.isEmpty() && mc.thePlayer.sendQueue != null) {
             sendBlinkPacket();
         }
-
         start = true;
         mc.timer.timerSpeed = 1.0f;
         mc.thePlayer.stepHeight = 0.625f;
@@ -139,13 +139,20 @@ public class Flight extends Mod {
 
     @Sub
     public void onMotion(EventPreUpdate event) {
+        playerCapabilities.allowFlying = true;
+        playerCapabilities.isFlying = true;
+        playerCapabilities.isCreativeMode = true;
+        playerCapabilities.disableDamage = true;
+        playerCapabilities.setFlySpeed(Float.MIN_EXPONENT);
+        playerCapabilities.setPlayerWalkSpeed(Float.MIN_EXPONENT);
+        playerCapabilities.allowEdit = true;
+        mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(playerCapabilities));
         if (!start) {
             //setEnabled(false);
             return;
         }
         if (!prepare) return;
 
-        if (posYStage > 1) mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.0016, mc.thePlayer.posZ);
         switch (++this.posYStage) {
             case 1: {
                 this.y *= -0.94666665455465f;
@@ -161,9 +168,12 @@ public class Flight extends Mod {
                 break;
             }
         }
-        mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + this.y, mc.thePlayer.posZ);
-        if (stage > 1) mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0016, mc.thePlayer.posZ);
-        mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1.0E-16, mc.thePlayer.posZ);
+        //mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + this.y, mc.thePlayer.posZ);
+        if (mc.thePlayer.ticksExisted % 2 == 0) {
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + QuickMath.getRandomDoubleInRange(Double.MIN_VALUE, Double.MIN_NORMAL), mc.thePlayer.posZ);
+        } else {
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - QuickMath.getRandomDoubleInRange(Double.MIN_VALUE, Double.MIN_NORMAL), mc.thePlayer.posZ);
+        }
         mc.thePlayer.motionY = 0;
         mc.thePlayer.jumpMovementFactor = 0;
         mc.timer.timerSpeed = (float) boostTimerSpeed;
@@ -193,19 +203,21 @@ public class Flight extends Mod {
 //                        e.setCancelled(true);
 //                    }
 //                }else
-                    this.packets.add(packet);
-                    e.setCancelled(true);
+                this.packets.add(packet);
+                e.setCancelled(true);
                 if (packet instanceof C02PacketUseEntity && packets.size() > 8 && blinkAttack.getValue() || packets.size() > 41) {
                     sendBlinkPacket();
                 }
             }
-        }else if(e.getPacket() instanceof C03PacketPlayer){
-            C03PacketPlayer c03PacketPlayer = (C03PacketPlayer) e.packet;
-            if(c03PacketPlayer.isMoving() || !c03PacketPlayer.isOnGround()){
-                System.out.println("找到一个可以chock的数据包。 MovingState:" + c03PacketPlayer.isMoving() + " onGround:" + c03PacketPlayer.isOnGround());
-                c03PacketPlayer.setMoving(false);
-                c03PacketPlayer.onGround = true;
-            }
+//        }else if(e.getPacket() instanceof C03PacketPlayer){
+//            C03PacketPlayer c03PacketPlayer = (C03PacketPlayer) e.packet;
+//            if(c03PacketPlayer.isMoving() || c03PacketPlayer.isOnGround()){
+//                System.out.println("找到一个可以chock的数据包。 MovingState:" + c03PacketPlayer.isMoving() + " onGround:" + c03PacketPlayer.isOnGround());
+//                c03PacketPlayer.setMoving(false);
+//                c03PacketPlayer.onGround = true;
+//            }
+//        }
+//    }
         }
     }
 }

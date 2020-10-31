@@ -1,7 +1,6 @@
 package me.skidsense.module.collection.player;
 
 
-import io.netty.util.internal.ThreadLocalRandom;
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPreUpdate;
@@ -12,6 +11,7 @@ import me.skidsense.util.MoveUtil;
 import net.minecraft.network.play.client.C03PacketPlayer;
 
 import java.awt.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class NoFall extends Mod {
     float lastFall;
@@ -25,16 +25,9 @@ public class NoFall extends Mod {
 
     @Sub
     private void onEventPreUpdate(EventPreUpdate e) {
-        float falldis = 0.825f + (float) MoveUtil.getJumpEffect();
         if (!Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
-            if (mc.thePlayer.fallDistance - this.lastFall >= falldis) {
-                this.lastFall = mc.thePlayer.fallDistance;
-                mc.thePlayer.sendQueue.getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(true));
-            } else if (mc.thePlayer.isCollidedVertically) {
-                this.lastFall = 0f;
-                this.times = 0;
-                this.showed = false;
-            }
+            if(mc.thePlayer.fallDistance > 3.0f)
+                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(mc.thePlayer.ticksExisted % ThreadLocalRandom.current().nextInt(45, 75) != 0));
         }
     }
 }
