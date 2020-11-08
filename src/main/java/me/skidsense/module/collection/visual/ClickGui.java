@@ -4,6 +4,8 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
+import me.skidsense.module.collection.visual.clickgui.paste.ClickGuiScreen;
+import me.skidsense.module.collection.visual.clickgui.tabgui.ClickUi;
 
 public class ClickGui extends Mod {
     public Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])renderMode.values(), (Enum)renderMode.skidsense);
@@ -18,7 +20,7 @@ public class ClickGui extends Mod {
 	public void onEnable() {
 		switch (this.mode.getValue().toString()) {
 			case "skidsense":
-				this.mc.displayGuiScreen(new ClickGUI());
+				this.mc.displayGuiScreen(new ClickGuiScreen());
 				break;
 		}
 		this.setEnabled(false);
