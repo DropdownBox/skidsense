@@ -20,6 +20,8 @@ import me.skidsense.module.collection.player.Teams;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.RotationUtil;
 import me.skidsense.util.TimerUtil;
+import me.skidsense.util.tojatta.api.utilities.angle.AngleUtility;
+import me.skidsense.util.tojatta.api.utilities.vector.impl.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -43,7 +45,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 
-import java.awt.*;
+import java.awt.Color;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -146,7 +148,7 @@ public class KillAura extends Mod {
 				target = this.loaded.get(0);
 			}
 			this.target = target;
-			float[] array = rotateNCP(this.target);
+			float[] array = TojattaRotation(this.target);
 			eventMotion.yaw = array[0];
 			eventMotion.pitch = array[1];
 			KillAura.yaw = array[0];
@@ -272,6 +274,15 @@ public class KillAura extends Mod {
 		return b;
 	}
 
+    public float[] TojattaRotation(EntityLivingBase target) {
+        AngleUtility angleUtility = new AngleUtility(6, 60, 3, 30);
+        Vector3<Double> targetCoords = new Vector3<>(target.posX, target.posY, target.posZ);
+        Vector3<Double> selfCoords = new Vector3<>(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
+        me.skidsense.util.tojatta.api.utilities.angle.Angle dstAngle = angleUtility.calculateAngle(targetCoords, selfCoords);
+        me.skidsense.util.tojatta.api.utilities.angle.Angle smoothedAngle1 = angleUtility.smoothAngle(dstAngle, dstAngle);
+        return new float[] { smoothedAngle1.getYaw(), smoothedAngle1.getPitch() };
+    }
+    
 	private boolean isValidEntity(Entity ent, double reach) {
 		AntiBot ab = (AntiBot) Client.getModuleManager().getModuleByClass(AntiBot.class);
 		boolean b;
