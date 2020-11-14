@@ -47,6 +47,10 @@ public class KillAura extends Mod {
 	public EntityLivingBase curtarget;
 	public static EntityLivingBase target = null;
 	private List<EntityLivingBase> targets = new ArrayList<EntityLivingBase>(0);
+	private TimerUtil AttackTimer = new TimerUtil();
+	private TimerUtil SwitchTimer = new TimerUtil();
+	private int index;
+	private boolean isBlocking;
 	
 	public static Numbers<Double> Range = new Numbers<Double>("Range", "Range", 4.5, 1.0, 10.0, 0.1);
 	private Numbers<Double> Cps = new Numbers<Double>("Cps", "Cps", 10.0, 1.0, 20.0, 0.50);
@@ -54,23 +58,18 @@ public class KillAura extends Mod {
 	private Numbers<Double> Existed = new Numbers<Double>("Existed", "Existed", 30.0, 0.0, 100.0, 1.0);
 	private Option<Boolean> Autoblock = new Option<Boolean>("AutoBlock", "AutoBlock", true);
 	private Option<Boolean> Players = new Option<Boolean>("Players", "Players", true);
-	private Option<Boolean> Animals = new Option<Boolean>("Animals", "Animals", true);
+	private Option<Boolean> Animals = new Option<Boolean>("Animals", "Animals", false);
 	private Option<Boolean> Mobs = new Option<Boolean>("Mobs", "Mobs", false);
 	private Option<Boolean> Invis = new Option<Boolean>("Invisibles", "Invisibles", false);
 	private Option<Boolean> Raycast = new Option<Boolean>("Raycast", "Raycast", false);
 	private Option<Boolean> Rot = new Option<Boolean>("Rotation", "Rotation", true);
-	private Mode<EventMode> attackmode = new Mode<EventMode>("EventMode", "EventMode",EventMode.values(), EventMode.Pre);
-	private Mode<AuraMode> Mode = new Mode<AuraMode>("Mode", "Mode", AuraMode.values(), AuraMode.Switch);
-	private Mode<Priority> priority = new Mode<Priority>("Priority", "Priority", Priority.values(), Priority.Angle);
-	private Mode<SwitchMode> SwitchMod = new Mode<SwitchMode>("SwitchMode", "SwitchMode", SwitchMode.values(), SwitchMode.HurtTime);
-	
-	private TimerUtil AttackTimer = new TimerUtil();
-	private TimerUtil SwitchTimer = new TimerUtil();
-	private int index;
-	private boolean isBlocking;
+	private Mode<EventEnum> attackmode = new Mode<EventEnum>("EventEnum", "EventEnum",EventEnum.values(), EventEnum.Pre);
+	private Mode<ModeEnum> Mode = new Mode<ModeEnum>("Mode", "Mode", ModeEnum.values(), ModeEnum.Switch);
+	private Mode<PriorityEnum> priority = new Mode<PriorityEnum>("Priority", "Priority", PriorityEnum.values(), PriorityEnum.Angle);
+	private Mode<SwitchEnum> SwitchMode = new Mode<SwitchEnum>("SwitchMode", "SwitchMode", SwitchEnum.values(), SwitchEnum.HurtTime);
 
 	public KillAura() {
-		super("KillAura", new String[]{"ka", "aura", "killa"}, ModuleType.Fight);
+		super("Kill Aura", new String[]{"ka", "aura", "killaura"}, ModuleType.Fight);
 	}
 
 	@Override
@@ -78,11 +77,11 @@ public class KillAura extends Mod {
 		this.curtarget = null;
 		this.targets.clear();
 		if (this.Autoblock.getValue().booleanValue() && this.hasSword() && mc.thePlayer.isBlocking()) {
-			if (attackmode.getValue() == EventMode.Post) {
+			if (attackmode.getValue() == EventEnum.Post) {
 				this.UnBlock();
 			}
 		}
-		if (attackmode.getValue() == EventMode.Pre) {
+		if (attackmode.getValue() == EventEnum.Pre) {
 			this.PreUnBlock();
 		}
 	}
@@ -105,28 +104,28 @@ public class KillAura extends Mod {
 
 
 	private void sortList() {
-		if (this.priority.getValue() == Priority.Armor) {
+		if (this.priority.getValue() == PriorityEnum.Armor) {
 			targets.sort(Comparator.comparingInt((o) -> {
 				return o instanceof EntityPlayer ? ((EntityPlayer) o).inventory.getTotalArmorValue()
 						: (int) o.getHealth();
 			}));
 		}
 
-		if (this.priority.getValue() == Priority.Range) {
+		if (this.priority.getValue() == PriorityEnum.Range) {
 			targets.sort((o1, o2) -> (int) (o1.getDistanceToEntity(mc.thePlayer) - o2.getDistanceToEntity(mc.thePlayer)));
 		}
-		if (this.priority.getValue() == Priority.Fov) {
+		if (this.priority.getValue() == PriorityEnum.Fov) {
 			targets.sort(Comparator.comparingDouble(o -> RotationUtil.getDistanceBetweenAngles(mc.thePlayer.rotationPitch,
 					KillAura.getRotationToEntity(o)[0])));
 		}
-		if (this.priority.getValue() == Priority.Angle) {
+		if (this.priority.getValue() == PriorityEnum.Angle) {
 			targets.sort((o1, o2) -> {
 				float[] rot1 = getRotationToEntity(o1);
 				float[] rot2 = getRotationToEntity(o2);
 				return (int) (mc.thePlayer.rotationYaw - rot1[0] - (mc.thePlayer.rotationYaw - rot2[0]));
 			});
 		}
-		if (this.priority.getValue() == Priority.Slowly) {
+		if (this.priority.getValue() == PriorityEnum.Slowly) {
 			targets.sort((ent1, ent2) -> {
 				float f2 = 0.0F;
 				float e1 = RotationUtil.getRotations((Entity) ent1)[0];
@@ -135,7 +134,7 @@ public class KillAura extends Mod {
 
 			});
 		}
-		if (this.priority.getValue() == Priority.Health) {
+		if (this.priority.getValue() == PriorityEnum.Health) {
 			targets.sort((o1, o2) -> (int) (o1.getHealth() - o2.getHealth()));
 		}
 	}
@@ -205,29 +204,29 @@ public class KillAura extends Mod {
 		this.setSuffix(this.attackmode.getValue());
 		if (curtarget == null && Autoblock.getValue()) {
 			if (hasSword()) {
-				if (attackmode.getValue() == EventMode.Pre) {
+				if (attackmode.getValue() == EventEnum.Pre) {
 					PreUnBlock();
 				}
 			}
 		}
 		if (hasSword() && curtarget != null && Autoblock.getValue() && !isBlocking) {
-			if (attackmode.getValue() == EventMode.Pre) {
+			if (attackmode.getValue() == EventEnum.Pre) {
 				Preblock();
 			}
 		}
 		this.targets = this.getTargets();
 		sortList();
-		if (this.targets.size() > 1 && this.Mode.getValue() == AuraMode.Switch) {
-			if (SwitchMod.getValue() == SwitchMode.Delay && SwitchTimer.delay(SwitchDelay.getValue().longValue())) {
+		if (this.targets.size() > 1 && this.Mode.getValue() == ModeEnum.Switch) {
+			if (SwitchMode.getValue() == SwitchEnum.Delay && SwitchTimer.delay(SwitchDelay.getValue().longValue())) {
 				++this.index;
 				SwitchTimer.reset();
-			} else if (SwitchMod.getValue() == SwitchMode.HurtTime && curtarget != null) {
+			} else if (SwitchMode.getValue() == SwitchEnum.HurtTime && curtarget != null) {
 				if (curtarget.hurtTime != 0) {
 					++this.index;
 				}
 			}
 		}
-		if (mc.thePlayer.ticksExisted % SwitchDelay.getValue().intValue() == 0 && this.targets.size() > 1 && this.Mode.getValue() == AuraMode.Single) {
+		if (mc.thePlayer.ticksExisted % SwitchDelay.getValue().intValue() == 0 && this.targets.size() > 1 && this.Mode.getValue() == ModeEnum.Single) {
 			if (curtarget.getDistanceToEntity(mc.thePlayer) > Range.getValue()) {
 				++index;
 			} else if (curtarget.isDead) {
@@ -252,7 +251,7 @@ public class KillAura extends Mod {
 				}
 			}
 		}
-		if (attackmode.getValue() == EventMode.Pre)
+		if (attackmode.getValue() == EventEnum.Pre)
 			if (curtarget != null && shouldAttack()) {
 				attack(curtarget);
 			}
@@ -263,18 +262,18 @@ public class KillAura extends Mod {
 		if (curtarget != null) {
 			if (this.shouldAttack()) {
 				if (this.hasSword() && mc.thePlayer.isBlocking() && this.CanAttack(this.curtarget)) {
-					if (attackmode.getValue() == EventMode.Post) {
+					if (attackmode.getValue() == EventEnum.Post) {
 						UnBlock();
 					}
 				}
-				if (attackmode.getValue() == EventMode.Post)
+				if (attackmode.getValue() == EventEnum.Post)
 					if (curtarget != null && shouldAttack()) {
 						attack(curtarget);
 					}
 				this.AttackTimer.reset();
 			}
 			if (!mc.thePlayer.isBlocking() && this.hasSword() && Autoblock.getValue().booleanValue()) {
-				if (attackmode.getValue() == EventMode.Post) {
+				if (attackmode.getValue() == EventEnum.Post) {
 					block();
 				}
 				mc.thePlayer.itemInUseCount = mc.thePlayer.getHeldItem().getMaxItemUseDuration();
@@ -414,20 +413,20 @@ public class KillAura extends Mod {
 		GL11.glPopMatrix();
 	}
 
-	private enum SwitchMode {
+	private enum SwitchEnum {
 		Delay,
 		HurtTime;
 	}
 
-	private enum Priority {
+	private enum PriorityEnum {
 		Range, Fov, Angle, Health, Armor, Slowly;
 	}
 
-	private enum EventMode {
+	private enum EventEnum {
 		Pre, Post;
 	}
 	
-	private enum AuraMode {
+	private enum ModeEnum {
 		Switch,
 		Single,
 	}
