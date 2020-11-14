@@ -49,10 +49,10 @@ public class KillAura extends Mod {
 	private List<EntityLivingBase> targets = new ArrayList<EntityLivingBase>(0);
 	
 	public static Numbers<Double> Range = new Numbers<Double>("Range", "Range", 4.5, 1.0, 10.0, 0.1);
-	private Numbers<Double> Cps = new Numbers<Double>("Cps", "Cps", Double.valueOf(10.0D), Double.valueOf(1.0D), Double.valueOf(20.0D), Double.valueOf(0.5D));
+	private Numbers<Double> Cps = new Numbers<Double>("Cps", "Cps", 10.0, 1.0, 20.0, 0.50);
 	private Numbers<Double> SwitchDelay = new Numbers<Double>("SwitchDelay", "SwitchDelay", 100.0, 0.0, 1000.0, 25.0);
 	private Numbers<Double> Existed = new Numbers<Double>("Existed", "Existed", 30.0, 0.0, 100.0, 1.0);
-	private Option<Boolean> Autoblock = new Option<Boolean>("Autoblock", "Autoblock", true);
+	private Option<Boolean> Autoblock = new Option<Boolean>("AutoBlock", "AutoBlock", true);
 	private Option<Boolean> Players = new Option<Boolean>("Players", "Players", true);
 	private Option<Boolean> Animals = new Option<Boolean>("Animals", "Animals", true);
 	private Option<Boolean> Mobs = new Option<Boolean>("Mobs", "Mobs", false);
@@ -60,33 +60,18 @@ public class KillAura extends Mod {
 	private Option<Boolean> Raycast = new Option<Boolean>("Raycast", "Raycast", false);
 	private Option<Boolean> Rot = new Option<Boolean>("Rotation", "Rotation", true);
 	private Mode<EventMode> attackmode = new Mode<EventMode>("EventMode", "EventMode",EventMode.values(), EventMode.Pre);
-	private Mode<AuraMode> Mode = new Mode<AuraMode>("Mode", "Mode", AuraMode.values(), AuraMode.Single);
-	private Mode<Priority> priority = new Mode<Priority>("Priority", "Priority", Priority.values(), Priority.Health);
-	private Mode<SwitchMode> SwitchMod = new Mode<SwitchMode>("SwitchMode", "SwitchMode", SwitchMode.values(), SwitchMode.Delay);
+	private Mode<AuraMode> Mode = new Mode<AuraMode>("Mode", "Mode", AuraMode.values(), AuraMode.Switch);
+	private Mode<Priority> priority = new Mode<Priority>("Priority", "Priority", Priority.values(), Priority.Angle);
+	private Mode<SwitchMode> SwitchMod = new Mode<SwitchMode>("SwitchMode", "SwitchMode", SwitchMode.values(), SwitchMode.HurtTime);
 	
-	private Comparator<Entity> angleComparator = Comparator.comparingDouble(e2 -> e2.getDistanceToEntity(mc.thePlayer));
 	private TimerUtil AttackTimer = new TimerUtil();
 	private TimerUtil SwitchTimer = new TimerUtil();
 	private int index;
 	private boolean isBlocking;
 
-	static enum SwitchMode {
-		Delay,
-		HurtTime
-	}
-
-	static enum Priority {
-		Range, Fov, Angle, Health, Armor, Slowly;
-	}
-
-	public static enum EventMode {
-		Pre, Post;
-	}
-
 	public KillAura() {
 		super("KillAura", new String[]{"ka", "aura", "killa"}, ModuleType.Fight);
 	}
-
 
 	@Override
 	public void onDisable() {
@@ -119,30 +104,30 @@ public class KillAura extends Mod {
 	}
 
 
-	private void sortList(List<EntityLivingBase> weed) {
+	private void sortList() {
 		if (this.priority.getValue() == Priority.Armor) {
-			weed.sort(Comparator.comparingInt((o) -> {
+			targets.sort(Comparator.comparingInt((o) -> {
 				return o instanceof EntityPlayer ? ((EntityPlayer) o).inventory.getTotalArmorValue()
 						: (int) o.getHealth();
 			}));
 		}
 
 		if (this.priority.getValue() == Priority.Range) {
-			weed.sort((o1, o2) -> (int) (o1.getDistanceToEntity(mc.thePlayer) - o2.getDistanceToEntity(mc.thePlayer)));
+			targets.sort((o1, o2) -> (int) (o1.getDistanceToEntity(mc.thePlayer) - o2.getDistanceToEntity(mc.thePlayer)));
 		}
 		if (this.priority.getValue() == Priority.Fov) {
-			weed.sort(Comparator.comparingDouble(o -> RotationUtil.getDistanceBetweenAngles(mc.thePlayer.rotationPitch,
+			targets.sort(Comparator.comparingDouble(o -> RotationUtil.getDistanceBetweenAngles(mc.thePlayer.rotationPitch,
 					KillAura.getRotationToEntity(o)[0])));
 		}
 		if (this.priority.getValue() == Priority.Angle) {
-			weed.sort((o1, o2) -> {
+			targets.sort((o1, o2) -> {
 				float[] rot1 = getRotationToEntity(o1);
 				float[] rot2 = getRotationToEntity(o2);
 				return (int) (mc.thePlayer.rotationYaw - rot1[0] - (mc.thePlayer.rotationYaw - rot2[0]));
 			});
 		}
 		if (this.priority.getValue() == Priority.Slowly) {
-			weed.sort((ent1, ent2) -> {
+			targets.sort((ent1, ent2) -> {
 				float f2 = 0.0F;
 				float e1 = RotationUtil.getRotations((Entity) ent1)[0];
 				float e2 = RotationUtil.getRotations((Entity) ent2)[0];
@@ -151,7 +136,7 @@ public class KillAura extends Mod {
 			});
 		}
 		if (this.priority.getValue() == Priority.Health) {
-			weed.sort((o1, o2) -> (int) (o1.getHealth() - o2.getHealth()));
+			targets.sort((o1, o2) -> (int) (o1.getHealth() - o2.getHealth()));
 		}
 	}
 
@@ -218,9 +203,6 @@ public class KillAura extends Mod {
 	@Sub
 	private void onUpdate(EventPreUpdate event) {
 		this.setSuffix(this.attackmode.getValue());
-
-		sortList(targets);
-
 		if (curtarget == null && Autoblock.getValue()) {
 			if (hasSword()) {
 				if (attackmode.getValue() == EventMode.Pre) {
@@ -234,9 +216,7 @@ public class KillAura extends Mod {
 			}
 		}
 		this.targets = this.getTargets();
-
-		targets.sort(this.angleComparator);
-
+		sortList();
 		if (this.targets.size() > 1 && this.Mode.getValue() == AuraMode.Switch) {
 			if (SwitchMod.getValue() == SwitchMode.Delay && SwitchTimer.delay(SwitchDelay.getValue().longValue())) {
 				++this.index;
@@ -247,7 +227,6 @@ public class KillAura extends Mod {
 				}
 			}
 		}
-
 		if (mc.thePlayer.ticksExisted % SwitchDelay.getValue().intValue() == 0 && this.targets.size() > 1 && this.Mode.getValue() == AuraMode.Single) {
 			if (curtarget.getDistanceToEntity(mc.thePlayer) > Range.getValue()) {
 				++index;
@@ -255,7 +234,6 @@ public class KillAura extends Mod {
 				++index;
 			}
 		}
-
 		if (curtarget != null) {
 			curtarget = null;
 		}
@@ -436,6 +414,19 @@ public class KillAura extends Mod {
 		GL11.glPopMatrix();
 	}
 
+	private enum SwitchMode {
+		Delay,
+		HurtTime;
+	}
+
+	private enum Priority {
+		Range, Fov, Angle, Health, Armor, Slowly;
+	}
+
+	private enum EventMode {
+		Pre, Post;
+	}
+	
 	private enum AuraMode {
 		Switch,
 		Single,
