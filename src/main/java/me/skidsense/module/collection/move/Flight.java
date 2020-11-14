@@ -1,5 +1,6 @@
 package me.skidsense.module.collection.move;
 
+import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.*;
 import me.skidsense.hooks.value.Mode;
@@ -44,7 +45,7 @@ public class Flight extends Mod {
     private double lastDistance;
     private int boostHypixelState;
     double thisY;
-    boolean hurtted = false;
+    public static boolean hurtted = false;
 
     public Flight() {
         super("Flight", new String[] { "Fly" }, ModuleType.Move);
@@ -110,7 +111,6 @@ public class Flight extends Mod {
 
     }
 
-
     @Sub
     public void onPreUpdate(EventPreUpdate event) {
         if (mode.getValue() == FlightMode.Motion || mode.getValue() == FlightMode.NewMotion) {
@@ -140,7 +140,7 @@ public class Flight extends Mod {
 
             mc.thePlayer.lastReportedPosY = 0;
             mc.thePlayer.jumpMovementFactor = 0;
-
+            if (posYStage > 1) mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 0.0016, mc.thePlayer.posZ);
             switch (++this.posYStage) {
                 case 1: {
                     this.y *= -0.94666665455465f;
@@ -157,12 +157,27 @@ public class Flight extends Mod {
                 }
             }
             mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + this.y, mc.thePlayer.posZ);
+            if (boostHypixelState > 1) mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0016, mc.thePlayer.posZ);
+            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1.0E-16, mc.thePlayer.posZ);
 
             mc.timer.timerSpeed = (float)(1.0+TimerSpeed/currentSpeed);
             currentSpeed = Math.max(currentSpeed + 1, TimerSpeed);
             if (!failedStart)
                 mc.thePlayer.motionY = 0D;
         }
+    }
+
+    @Sub
+    private void onPacketSend(EventPacketSend e){
+//        if(e.getPacket() instanceof C03PacketPlayer){
+//            C03PacketPlayer packetPlayer = (C03PacketPlayer)e.getPacket();
+//            if (!packetPlayer.isMoving()) {
+//                packetPlayer.onGround = true;
+//            } else {
+//                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(true));
+//            }
+//            ++chocked;
+//        }
     }
 
     @Override

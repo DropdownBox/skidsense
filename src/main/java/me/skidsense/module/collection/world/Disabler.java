@@ -92,7 +92,7 @@ public class Disabler extends Mod {
 
     @Sub
     private void onUpdate(EventPreUpdate e) {
-        if (Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
+        if (Client.getModuleManager().getModuleByClass(Flight.class).isEnabled() || Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()) {
             if (disableDelay.hasReached(250)) {
                 PlayerCapabilities playerCapabilities = new PlayerCapabilities();
                 playerCapabilities.allowFlying = true;
@@ -101,12 +101,11 @@ public class Disabler extends Mod {
                 System.out.println("a");
                 disableDelay.reset();
             }
-            if (updateDelay.hasReached(100)) {
+            if ((Client.getModuleManager().getModuleByClass(Flight.class).isEnabled() && Flight.hurtted) || Client.getModuleManager().getModuleByClass(Speed.class).isEnabled()) {
                 mc.getNetHandler().sendpacketNoEvent(new C0FPacketConfirmTransaction(0, (short) (-1), false));
                 mc.getNetHandler().sendpacketNoEvent(new C0CPacketInput(Integer.MAX_VALUE, Integer.MAX_VALUE, true, true));
                 mc.getNetHandler().sendpacketNoEvent(new C00PacketKeepAlive(0));
                 System.out.println("b");
-                updateDelay.reset();
             }
         }
     }

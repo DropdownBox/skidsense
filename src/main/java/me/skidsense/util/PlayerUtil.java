@@ -332,7 +332,7 @@ public class PlayerUtil {
 		float var11 = 1.0f;
 		AxisAlignedBB a2 = mc.thePlayer.getEntityBoundingBox().addCoord(var9.xCoord - var7.xCoord, var9.yCoord - var7.yCoord, var9.zCoord - var7.zCoord).expand(var11, var11, var11);
 		List<Entity> var12 = PlayerUtil.mc.theWorld.getEntitiesWithinAABBExcludingEntity(var2, a2);
-		double var13 = KillAura.range.getValue() + 0.5;
+		double var13 = KillAura.Range.getValue() + 0.5;
 		Entity b2 = null;
 		int var15 = 0;
 		while (var15 < var12.size()) {
