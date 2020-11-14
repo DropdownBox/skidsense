@@ -30,11 +30,13 @@ import java.util.UUID;
 
 import com.ibm.icu.text.UFormat;
 import net.minecraft.network.play.server.S00PacketKeepAlive;
+import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 import net.minecraft.network.play.server.S32PacketConfirmTransaction;
 
 public class Disabler extends Mod {
 
-    public TimerUtil timerUtil = new TimerUtil();
+    public TimerUtil disableDelay = new TimerUtil();
+    public TimerUtil updateDelay = new TimerUtil();
 
     public Disabler() {
         super("Disabler", new String[]{"noac"}, ModuleType.World);
@@ -65,22 +67,15 @@ public class Disabler extends Mod {
 
     @Sub
     private void onPacketSend(EventPacketSend e) {
-//        if (ep.getPacket() instanceof C0FPacketConfirmTransaction) {
-//            C0FPacketConfirmTransaction packetConfirmTransaction = (C0FPacketConfirmTransaction) ep.getPacket();
-//            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C0FPacketConfirmTransaction(Integer.MAX_VALUE, packetConfirmTransaction.getUid(), false));
-//            ep.setCancelled(true);
-//        }
-//
-//        if (ep.getPacket() instanceof C00PacketKeepAlive) {
-//            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C00PacketKeepAlive(Integer.MIN_VALUE + (new Random()).nextInt(100)));
-//            ep.setCancelled(true);
-//        }
-        if (e.getPacket() instanceof C00PacketKeepAlive || e.getPacket() instanceof C13PacketPlayerAbilities) {
+        if (e.getPacket() instanceof C00PacketKeepAlive) {
             e.setCancelled(true);
         }
         if (e.getPacket() instanceof C0FPacketConfirmTransaction) {
             final C0FPacketConfirmTransaction c0FPacketConfirmTransaction = (C0FPacketConfirmTransaction) e.getPacket();
-            c0FPacketConfirmTransaction.setUid((short) (-c0FPacketConfirmTransaction.getUid()));
+            if (c0FPacketConfirmTransaction.getUid() < 0 && c0FPacketConfirmTransaction.getWindowId() == 0) {
+                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C0FPacketConfirmTransaction(-Integer.MAX_VALUE, c0FPacketConfirmTransaction.getUid(), false));
+                e.setCancelled(true);
+            }
         }
 
 //    @Sub
@@ -93,6 +88,27 @@ public class Disabler extends Mod {
 //            mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(playerCapabilities));
 //        }
 //    }
+    }
+
+    @Sub
+    private void onUpdate(EventPreUpdate e) {
+        if (Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
+            if (disableDelay.hasReached(250)) {
+                PlayerCapabilities playerCapabilities = new PlayerCapabilities();
+                playerCapabilities.allowFlying = true;
+                playerCapabilities.isFlying = true;
+                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C13PacketPlayerAbilities(playerCapabilities));
+                System.out.println("a");
+                disableDelay.reset();
+            }
+            if (updateDelay.hasReached(100)) {
+                mc.getNetHandler().sendpacketNoEvent(new C0FPacketConfirmTransaction(0, (short) (-1), false));
+                mc.getNetHandler().sendpacketNoEvent(new C0CPacketInput(Integer.MAX_VALUE, Integer.MAX_VALUE, true, true));
+                mc.getNetHandler().sendpacketNoEvent(new C00PacketKeepAlive(0));
+                System.out.println("b");
+                updateDelay.reset();
+            }
+        }
     }
 }
 

@@ -5,7 +5,6 @@ import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.module.collection.visual.clickgui.Skidsense.ClickGUI;
 import me.skidsense.module.collection.visual.clickgui.paste.ClickGuiScreen;
-import me.skidsense.module.collection.visual.clickgui.tabgui.ClickUi;
 
 public class ClickGui extends Mod {
     public Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])renderMode.values(), (Enum)renderMode.skidsense);

@@ -109,10 +109,6 @@ public class KillAura extends Mod {
 
 	@Sub
 	public void onPreMotion(EventPreUpdate eventMotion) {
-		if(Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()){
-			Notifications.getManager().post("Flying with killaura enabled will cause bans.");
-			setEnabled(false);
-		}
 		if(target != null) {
 			slowtarget = target;
 		}

@@ -3,6 +3,7 @@ package me.skidsense.module.collection.player;
 
 import me.skidsense.Client;
 import me.skidsense.hooks.Sub;
+import me.skidsense.hooks.events.EventPacketSend;
 import me.skidsense.hooks.events.EventPreUpdate;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
@@ -24,10 +25,14 @@ public class NoFall extends Mod {
     }
 
     @Sub
-    private void onEventPreUpdate(EventPreUpdate e) {
-        if (!Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()) {
-            if(mc.thePlayer.fallDistance > 3.0f)
-                mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer(mc.thePlayer.ticksExisted % ThreadLocalRandom.current().nextInt(45, 75) != 0));
+    private void onPacketSend(EventPacketSend e){
+        if(e.getPacket() instanceof C03PacketPlayer && mc.thePlayer.fallDistance > 3.0F && !Client.getModuleManager().getModuleByClass(Flight.class).isEnabled()){
+            C03PacketPlayer packetPlayer = (C03PacketPlayer)e.getPacket();
+            if (!packetPlayer.isMoving()) {
+                packetPlayer.onGround = true;
+            } else {
+                mc.getNetHandler().getNetworkManager().sendPacketNoEvent(new C03PacketPlayer(true));
+            }
         }
     }
 }
