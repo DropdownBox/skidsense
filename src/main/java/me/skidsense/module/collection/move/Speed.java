@@ -363,7 +363,7 @@ public class Speed
                 this.collided = mc.thePlayer.isCollidedHorizontally;
                 if (Speed.stage >= 0 || this.collided) {
                     Speed.stage = 0;
-                    final double motY = 0.41999998688698 + MoveUtil.getJumpEffect() * 0.1;
+                    final double motY = 0.399999986886975 + MoveUtil.getJumpEffect() * 0.1;
                     final double JellomotY = 0.4074196 + MoveUtil.getJumpEffect() * 0.1;
                     if (this.stair == 0.0) {
                         PlayerCapabilities playerCapabilities = new PlayerCapabilities();
