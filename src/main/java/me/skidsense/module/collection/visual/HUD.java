@@ -32,7 +32,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.potion.Potion;
@@ -44,7 +43,7 @@ import net.minecraft.util.ResourceLocation;
 public class HUD
 extends Mod {
     public TabGUI tabui;
-    public static Mode<Enum> mode = new Mode("ArrayPosition", "ArrayPosition", (Enum[])arrayPosition.values(), (Enum)arrayPosition.TopRight);
+    public static Mode<arrayPosition> mode = new Mode<arrayPosition>("ArrayPosition", "ArrayPosition", arrayPosition.values(), arrayPosition.TopRight);
     public static Option<Boolean> TABGUI = new Option<Boolean>("TabGui", "TabGui", true);
     public Option<Boolean> info = new Option<Boolean>("Information", "information", true);
     public Option<Boolean> hideRenderModule = new Option<Boolean>("HideRenderModule", "HideRenderModule", false);
