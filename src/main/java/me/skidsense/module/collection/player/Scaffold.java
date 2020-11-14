@@ -1,7 +1,6 @@
 package me.skidsense.module.collection.player;
 
 
-import me.skidsense.color.Colors;
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventPostUpdate;
 import me.skidsense.hooks.events.EventPreUpdate;
@@ -10,7 +9,6 @@ import me.skidsense.hooks.value.Mode;
 import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
-import me.skidsense.module.collection.combat.KillAura;
 import me.skidsense.util.MoveUtil;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.TimerUtil;
@@ -18,9 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -31,11 +27,9 @@ import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class Scaffold extends Mod {
@@ -50,39 +44,23 @@ public class Scaffold extends Mod {
            Blocks.red_flower, Blocks.red_mushroom, Blocks.brown_mushroom, Blocks.vine, Blocks.trapdoor, Blocks.yellow_flower, Blocks.ladder, Blocks.furnace,
            Blocks.sand, Blocks.cactus, Blocks.dispenser, Blocks.noteblock, Blocks.dropper, Blocks.crafting_table, Blocks.web, Blocks.pumpkin, Blocks.sapling, Blocks.cobblestone_wall, Blocks.oak_fence);
    private BlockData blockData;
-//   private Setting blockFly;
-//   private Setting tower;
-//   private Setting mode;
-//   private Setting keeprots;
-//   private Setting towermove;
-//   private Setting swing;
-//   private Setting keepY;
 
    public boolean isPlaceTick = false;
    int currentSlot;
    int slot;
    private double startY;
    public TimerUtil towerTimer = new TimerUtil();
-   public static Mode<Enum> mode = new Mode("Mode", "Mode", (Enum[]) ScaffoldMode.values(), (Enum) ScaffoldMode.Hypixel);
-   public static Option<Boolean> keeprots = new Option<Boolean>("KeepRotation", "KeepRotation", true);
-   public static Option<Boolean> tower = new Option<>("Tower", "Tower", true);
-   public static Option<Boolean> towermove = new Option<>("Towermove", "Towermove", true);
+   public Mode<ScaffoldMode> RotationMode = new Mode<ScaffoldMode>("RotationMode", "RotationMode", ScaffoldMode.values(),ScaffoldMode.Hypixel);
+   public Option<Boolean> KeepRotation = new Option<Boolean>("KeepRotation", "KeepRotation", true);
+   public Option<Boolean> tower = new Option<>("Tower", "Tower", true);
+   public Option<Boolean> towermove = new Option<>("Towermove", "Towermove", true);
    public Option<Boolean> swing = new Option<>("Swing", "Swing", false);
-   public static Option<Boolean> keepY = new Option<>("KeepY", "KeepY", false);
-   public static Option<Boolean> down = new Option<Boolean>("Downwards", "Downwards", true);
+   public Option<Boolean> keepY = new Option<>("KeepY", "KeepY", false);
+   public Option<Boolean> down = new Option<Boolean>("Downwards", "Downwards", true);
 
 
    public Scaffold() {
       super("Scaffold", new String[]{"ScaffoldWalk"}, ModuleType.Player);
-      //      targeting.add("Hypixel");
-//      targeting.add("NCP");
-//      Sight.instance.sm.rSetting(mode = new Setting("Mode", this, "Hypixel", targeting));
-//      Sight.instance.sm.rSetting(keeprots = new Setting("KeepRots", this, true));
-//      Sight.instance.sm.rSetting(blockFly = new Setting("Downwards", this, true));
-//      Sight.instance.sm.rSetting(tower = new Setting("Tower", this, true));
-//      Sight.instance.sm.rSetting(towermove = new Setting("TowerMove", this, true));
-//      Sight.instance.sm.rSetting(swing = new Setting("Swing", this, false));
-//      Sight.instance.sm.rSetting(keepY = new Setting("KeepY", this, false));
    }
 
    @Override
@@ -102,8 +80,8 @@ public class Scaffold extends Mod {
    @Sub
    public void onPreUpdate(EventPreUpdate e) {
       slot = this.getSlot();
-      this.setSuffix(mode.getValue());
-      this.isPlaceTick = keeprots.getValue() ? blockData != null && slot != -1 : blockData != null && slot != -1 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(0, -1, 0)).getBlock() == Blocks.air;
+      this.setSuffix(RotationMode.getValue());
+      this.isPlaceTick = KeepRotation.getValue() ? blockData != null && slot != -1 : blockData != null && slot != -1 && mc.theWorld.getBlockState(new BlockPos(mc.thePlayer).add(0, -1, 0)).getBlock() == Blocks.air;
       if (getBlockCount() > 0 && slot == -1) {
          for (int i = 9; i < 36; ++i) {
             Item item;
@@ -118,17 +96,10 @@ public class Scaffold extends Mod {
          }
          return;
       }
-      int NoigaY = MathHelper.floor_double(Minecraft.getMinecraft().thePlayer.posY);
-      BlockPos blockBelow = new BlockPos(Minecraft.getMinecraft().thePlayer.posX, NoigaY - 1, Minecraft.getMinecraft().thePlayer.posZ);
-      if (Math.abs(Minecraft.getMinecraft().thePlayer.motionX) > 0 && Math.abs(Minecraft.getMinecraft().thePlayer.motionZ) > 0) {
-          blockBelow = new BlockPos(Minecraft.getMinecraft().thePlayer.posX, NoigaY - 1.0, Minecraft.getMinecraft().thePlayer.posZ);
-      }
-    	  if(Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode()) && !mc.gameSettings.keyBindJump.isKeyDown() && down.getValue() && mc.thePlayer.onGround) {
-    		  KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), false);
-    		  this.blockData = this.getBlockData();
-    	  }else {
-        	  this.blockData = this.getBlockData2(blockBelow);
-		}
+	  if(Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode()) && !mc.gameSettings.keyBindJump.isKeyDown() && down.getValue() && mc.thePlayer.onGround) {
+		  KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), false);
+	  }
+	  this.blockData = this.getBlockData();
       if (this.blockData == null) {
          return;
       }
@@ -165,8 +136,7 @@ public class Scaffold extends Mod {
 
       if (this.isPlaceTick) {
          float yaw = e.yaw;
-         boolean random = MoveUtil.isMoving();
-         if (this.mode.getValue() == ScaffoldMode.Hypixel) {
+         if (this.RotationMode.getValue() == ScaffoldMode.Hypixel) {
             // float speed = (float) ThreadLocalRandom.current().nextDouble(2, 3);
             float targetYaw = 0;
             if (this.blockData.getFacing().getName().equalsIgnoreCase("north")) {
@@ -184,7 +154,7 @@ public class Scaffold extends Mod {
 
             float yawDifference = e.getYaw() - targetYaw;
             yaw = e.getYaw() - (yawDifference / 3);
-         } else if (this.mode.getValue() == ScaffoldMode.NCP) {
+         } else if (this.RotationMode.getValue() == ScaffoldMode.NCP) {
             yaw = 0;
             if (this.blockData.getFacing().getName().equalsIgnoreCase("north")) {
                yaw = 0;
@@ -248,229 +218,6 @@ public class Scaffold extends Mod {
          }
       }
          return false;
-   }
-
-   public BlockData getBlockData2(BlockPos pos) {
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       BlockPos pos1 = pos.add(-1, 0, 0);
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos1.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos1.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos1.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos1.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos1.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       BlockPos pos2 = pos.add(1, 0, 0);
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos2.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos2.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos2.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos2.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos2.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       BlockPos pos3 = pos.add(0, 0, 1);
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos3.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos3.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos3.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos3.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos3.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       BlockPos pos4 = pos.add(0, 0, -1);
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos4.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos4.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos4.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos4.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos4.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos1.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos1.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos1.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos1.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos1.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos1.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos2.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos2.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos2.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos2.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos2.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos2.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos3.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos3.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos3.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos3.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos3.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos3.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos4.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos4.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos4.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos4.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos4.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos4.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       BlockPos pos5 = pos.add(0, -1, 0);
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos5.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos5.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos5.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos5.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos5.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos5.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos5.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos5.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos5.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos5.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       BlockPos pos6 = pos5.add(1, 0, 0);
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos6.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos6.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos6.add(-1, 0, 0))).getBlock())) {
-           return new BlockData(pos6.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos6.add(1, 0, 0))).getBlock())) {
-           return new BlockData(pos6.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos6.add(0, 0, 1))).getBlock())) {
-           return new BlockData(pos6.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos6.add(0, 0, -1))).getBlock())) {
-           return new BlockData(pos6.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       BlockPos pos7 = pos5.add(-1, 0, 0);
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState((pos7.add(0, -1, 0))).getBlock())) {
-           return new BlockData(pos7.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos7.add(-1, 0, 0)).getBlock())) {
-           return new BlockData(pos7.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos7.add(1, 0, 0)).getBlock())) {
-           return new BlockData(pos7.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos7.add(0, 0, 1)).getBlock())) {
-           return new BlockData(pos7.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos7.add(0, 0, -1)).getBlock())) {
-           return new BlockData(pos7.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       BlockPos pos8 = pos5.add(0, 0, 1);
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos8.add(0, -1, 0)).getBlock())) {
-           return new BlockData(pos8.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos8.add(-1, 0, 0)).getBlock())) {
-           return new BlockData(pos8.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos8.add(1, 0, 0)).getBlock())) {
-           return new BlockData(pos8.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos8.add(0, 0, 1)).getBlock())) {
-           return new BlockData(pos8.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos8.add(0, 0, -1)).getBlock())) {
-           return new BlockData(pos8.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       BlockPos pos9 = pos5.add(0, 0, -1);
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos9.add(0, -1, 0)).getBlock())) {
-           return new BlockData(pos9.add(0, -1, 0), EnumFacing.UP);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos9.add(-1, 0, 0)).getBlock())) {
-           return new BlockData(pos9.add(-1, 0, 0), EnumFacing.EAST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos9.add(1, 0, 0)).getBlock())) {
-           return new BlockData(pos9.add(1, 0, 0), EnumFacing.WEST);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos9.add(0, 0, 1)).getBlock())) {
-           return new BlockData(pos9.add(0, 0, 1), EnumFacing.NORTH);
-       }
-       if (!invalid.contains(Minecraft.getMinecraft().theWorld.getBlockState(pos9.add(0, 0, -1)).getBlock())) {
-           return new BlockData(pos9.add(0, 0, -1), EnumFacing.SOUTH);
-       }
-       return null;
    }
    
    private BlockData getBlockData() {
