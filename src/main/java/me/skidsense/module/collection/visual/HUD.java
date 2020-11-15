@@ -228,7 +228,13 @@ extends Mod {
             	sorted.add(m);
 			}
         }
-        sorted.sort((o1, o2) -> Client.instance.fontManager.arialbold17.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName().replace(" ", "") : String.format("%s %s", o2.getName().replace(" ", ""), o2.getSuffix())) - Client.instance.fontManager.arialbold17.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName().replace(" ", "") : String.format("%s %s", o1.getName().replace(" ", ""), o1.getSuffix())));
+        sorted.sort(new Comparator<Mod>()
+        {
+            public int compare(Mod o1, Mod o2)
+            {
+                return Client.instance.fontManager.arialbold17.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName().replace(" ", "") : String.format("%s %s", o2.getName().replace(" ", ""), o2.getSuffix())) - Client.instance.fontManager.arialbold17.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName().replace(" ", "") : String.format("%s %s", o1.getName().replace(" ", ""), o1.getSuffix()));
+            }
+        });
         int y = 3;
         int rainbowTick = 0;
             for (Mod m : sorted) {

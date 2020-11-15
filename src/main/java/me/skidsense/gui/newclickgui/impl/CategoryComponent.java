@@ -72,8 +72,8 @@ public class CategoryComponent extends Component {
             }
         }
         if (getComponentHeight() >= getHeight()) {
-            GuiUtil.drawRect(getPosX() + 94, getPosY() - 6, 2, getHeight() + 6, new Color(55, 55, 55, 255).getRGB());
-            GuiUtil.drawRect(getPosX() + 94, getPosY() - 6 - (((getHeight() - (scrollbarHeight - 4)) / (getComponentHeight() - (getHeight()))) * getScrollY()), 2, scrollbarHeight, new Color(40, 40, 40, 255).getRGB());
+            GuiUtil.drawRect(getPosX() + 94, getPosY() - 6, 2, getHeight() + 6, new Color(40, 40, 40, 255).getRGB());
+            GuiUtil.drawRect(getPosX() + 94, getPosY() - 6 - (((getHeight() - (scrollbarHeight - 4)) / (getComponentHeight() - (getHeight()))) * getScrollY()), 2, scrollbarHeight, new Color(55, 55, 55, 255).getRGB());
         }
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         GL11.glPopMatrix();

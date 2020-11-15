@@ -70,9 +70,9 @@ public class MainPlane extends Plane {
         for (ModuleType category : ModuleType.values()) {
             if (getSelectedCategory() == category) {
                 GuiUtil.drawRect(getPosX(), categoryOffsetY - (Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f) / 4 - 4, 42.5f, Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f, new Color(35, 35, 35, 255).getRGB());
-                GuiUtil.drawRect(getPosX(), categoryOffsetY - (Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f) / 4 - 4, 2, Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f, new Color(0xff689FFF).getRGB());
+                GuiUtil.drawRect(getPosX(), categoryOffsetY - (Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f) / 4 - 4, 2, Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f, new Color(0xff4d4c).getRGB());
             }
-            Client.instance.fontManager.clickGuiIconFont.drawStringWithShadow(category.getCharacter(), getPosX() + 12, categoryOffsetY, getSelectedCategory() == category ? new Color(0xff689FFF).getRGB() : new Color(229, 229, 223, 255).getRGB());
+            Client.instance.fontManager.clickGuiIconFont.drawStringWithShadow(category.getCharacter(), getPosX() + 12, categoryOffsetY, getSelectedCategory() == category ? new Color(0xff4d4c).getRGB() : new Color(229, 229, 223, 255).getRGB());
             categoryOffsetY += Client.instance.fontManager.clickGuiIconFont.getHeight(category.getCharacter()) * 2.5f;
         }
         GuiUtil.drawRect(getPosX() + 42.5, getPosY(), 100, getHeight(), new Color(35, 35, 35, 255).getRGB());

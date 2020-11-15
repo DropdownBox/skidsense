@@ -198,10 +198,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
     public void onUpdateWalkingPlayer()
     {
         boolean flag = this.isSprinting();
-        EventPreUpdate e = new EventPreUpdate(this.rotationYaw, this.rotationPitch, this.posY, this.mc.thePlayer.onGround);
+        EventPreUpdate pre = new EventPreUpdate(this.rotationYaw, this.rotationPitch, this.posY, this.mc.thePlayer.onGround);
         EventPostUpdate post = new EventPostUpdate(this.rotationYaw, this.rotationPitch);
-        EventManager.getInstance().postAll(e);
-        if (e.isCancelled()) {
+        EventManager.getInstance().postAll(pre);
+        if (pre.isCancelled()) {
             EventManager.getInstance().postAll(post);
             return;
         }
@@ -210,9 +210,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
         float oldPitch = this.rotationPitch;
         float oldYaw = this.rotationYaw;
         boolean oldGround = this.onGround;
-        this.rotationPitch = e.getPitch();
-        this.rotationYaw = e.getYaw();
-        this.onGround = e.isOnGround();
+        this.rotationPitch = pre.getPitch();
+        this.rotationYaw = pre.getYaw();
+        this.onGround = pre.isOnGround();
         if (flag != this.serverSprintState)
         {
             if (flag)

@@ -84,8 +84,10 @@ implements Manager {
         addMod(new TargetHUD());
         addMod(new KidFace());
         addMod(new Waypoints());
-        
+        addMod(new StaffList());
         addMod(new Chams());
+        addMod(new InvViewer());
+        
         addMod(new AutoL());
         addMod(new ChestStealer());
         addMod(new NoRotate());
