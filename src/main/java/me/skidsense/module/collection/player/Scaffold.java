@@ -10,12 +10,15 @@ import me.skidsense.hooks.value.Option;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
 import me.skidsense.util.MoveUtil;
+import me.skidsense.util.PlayerUtil;
 import me.skidsense.util.RenderUtil;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
+import net.minecraft.block.BlockSnow;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
@@ -107,31 +110,7 @@ public class Scaffold extends Mod {
 
       // tower and towermove
       if (mc.gameSettings.keyBindJump.isKeyDown() && tower.getValue() && (this.towermove.getValue() || !MoveUtil.isMoving()) && !mc.thePlayer.isPotionActive(Potion.jump)) {
-         //mc.thePlayer.jump();
-         if (MoveUtil.isMoving()) {
-            if (MoveUtil.isOnGround(0.76) && !MoveUtil.isOnGround(0.75)
-                    && mc.thePlayer.motionY > 0.23
-                    && mc.thePlayer.motionY < 0.25) {
-               e.setY(mc.thePlayer.motionY = Math.round(mc.thePlayer.posY)
-                       - mc.thePlayer.posY);
-            }
-            if (MoveUtil.isOnGround(1.0E-4)) {
-               e.setY(mc.thePlayer.motionY = 0.41993956416514);
-               mc.thePlayer.motionX *= 0.9;
-               mc.thePlayer.motionZ *= 0.9;
-            } else if (mc.thePlayer.posY >= (double) Math
-                    .round(mc.thePlayer.posY) - 1.0E-4
-                    && mc.thePlayer.posY <= (double) Math
-                    .round(mc.thePlayer.posY) + 1.0E-4) {
-               e.setY(mc.thePlayer.motionY = 0.0);
-            }
-         } else {
-        	 if (mc.thePlayer.onGround) {
-        		 mc.thePlayer.motionY = 0.42f;	
-             } else if (mc.thePlayer.motionY < 0.17D && mc.thePlayer.motionY > 0.16D) {	
-                mc.thePlayer.motionY = -0.01f;
-        	 }
-         }
+    	  tower();
       }
 
       if (this.isPlaceTick) {
@@ -169,8 +148,12 @@ public class Scaffold extends Mod {
                yaw = 90;
             }
          }
-         e.pitch = 85;
-         e.yaw = yaw;
+         e.setPitch(85);
+         e.setYaw(yaw);
+         //Minecraft.getMinecraft().thePlayer.renderArmYaw = e.getYaw();
+         Minecraft.getMinecraft().thePlayer.rotationYawHead = e.getYaw();
+         Minecraft.getMinecraft().thePlayer.renderYawOffset = e.getYaw();
+         //Minecraft.getMinecraft().thePlayer.renderArmPitch = e.getPitch();
       }
    }
 
@@ -304,6 +287,71 @@ public class Scaffold extends Mod {
       return count;
    }
 
+   public void tower() {
+       double var38 = Minecraft.getMinecraft().thePlayer.posY - 1.0D;
+       BlockPos underPos = new BlockPos(Minecraft.getMinecraft().thePlayer.posX, var38, Minecraft.getMinecraft().thePlayer.posZ);
+       Block underBlock = Minecraft.getMinecraft().theWorld.getBlockState(underPos).getBlock();
+       BlockData data = this.getBlockData();
+       double var29;
+       if (!mc.gameSettings.keyBindJump.isKeyDown()) {
+           if (towermove.getValue() && PlayerUtil.isMoving2()) {
+               if (MoveUtil.isOnGround(0.76D) && !MoveUtil.isOnGround(0.75D)) {
+                   if (Minecraft.getMinecraft().thePlayer.motionY > 0.23D) {
+                       if (Minecraft.getMinecraft().thePlayer.motionY < 0.25D) {
+                           var29 = (double) Math.round(Minecraft.getMinecraft().thePlayer.posY);
+                           Minecraft.getMinecraft().thePlayer.motionY = var29 - Minecraft.getMinecraft().thePlayer.posY;
+                       }
+                   }
+               }
+
+               if (!MoveUtil.isOnGround(1.0E-4D)) {
+                   if (Minecraft.getMinecraft().thePlayer.motionY > 0.1D) {
+                       if (Minecraft.getMinecraft().thePlayer.posY >= (double) Math.round(Minecraft.getMinecraft().thePlayer.posY) - 1.0E-4D) {
+                           if (Minecraft.getMinecraft().thePlayer.posY <= (double) Math.round(Minecraft.getMinecraft().thePlayer.posY) + 1.0E-4D) {
+                               Minecraft.getMinecraft().thePlayer.motionY = 0.0D;
+                           }
+                       }
+                   }
+               }
+           }
+       } else if (PlayerUtil.isMoving2()) {
+           if (MoveUtil.isOnGround(0.76D) && !MoveUtil.isOnGround(0.75D)) {
+               if (Minecraft.getMinecraft().thePlayer.motionY > 0.23D) {
+                   if (Minecraft.getMinecraft().thePlayer.motionY < 0.25D) {
+                       var29 = (double) Math.round(Minecraft.getMinecraft().thePlayer.posY);
+                       Minecraft.getMinecraft().thePlayer.motionY = var29 - Minecraft.getMinecraft().thePlayer.posY;
+                   }
+               }
+           }
+
+           if (MoveUtil.isOnGround(1.0E-4D)) {
+               Minecraft.getMinecraft().thePlayer.motionY = 0.42D;
+               Minecraft.getMinecraft().thePlayer.motionX *= 0.9D;
+               Minecraft.getMinecraft().thePlayer.motionZ *= 0.9D;
+           } else {
+               if (Minecraft.getMinecraft().thePlayer.posY >= (double) Math.round(Minecraft.getMinecraft().thePlayer.posY) - 1.0E-4D) {
+                   if (Minecraft.getMinecraft().thePlayer.posY <= (double) Math.round(Minecraft.getMinecraft().thePlayer.posY) + 1.0E-4D) {
+                       Minecraft.getMinecraft().thePlayer.motionY = 0.0D;
+                   }
+               }
+           }
+       } else {
+           Minecraft.getMinecraft().thePlayer.motionX = 0.0D;
+           Minecraft.getMinecraft().thePlayer.motionZ = 0.0D;
+           Minecraft.getMinecraft().thePlayer.jumpMovementFactor = 0.0F;
+           if (this.isAirBlock(underBlock) && data != null) {
+               Minecraft.getMinecraft().thePlayer.motionY = 0.4196D;
+               Minecraft.getMinecraft().thePlayer.motionX *= 0.75D;
+               Minecraft.getMinecraft().thePlayer.motionZ *= 0.75D;
+           }
+       }
+
+   }
+   
+   public boolean isAirBlock(Block block) {
+       return block.getMaterial().isReplaceable() && (!(block instanceof BlockSnow) || block.getBlockBoundsMaxY() <= 0.125D);
+   }
+   
    public static class BlockData {
       private final BlockPos blockPos;
       private final EnumFacing enumFacing;
