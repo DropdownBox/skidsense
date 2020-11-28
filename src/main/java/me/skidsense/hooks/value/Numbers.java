@@ -21,6 +21,15 @@ extends Value<T> {
         this.inc = inc;
         this.integer = false;
     }
+    
+    public Numbers(String name, T value, T min, T max, T inc) {
+        super(name, name);
+        this.setValue(value);
+        this.min = min;
+        this.max = max;
+        this.inc = inc;
+        this.integer = false;
+    }
 
     public T getMinimum() {
         return this.min;

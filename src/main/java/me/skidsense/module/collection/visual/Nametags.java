@@ -5,454 +5,370 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import me.skidsense.hooks.Sub;
 import me.skidsense.hooks.events.EventRender3D;
+import me.skidsense.hooks.value.Numbers;
+import me.skidsense.hooks.value.Option;
+import me.skidsense.management.friend.FriendManager;
 import me.skidsense.module.Mod;
 import me.skidsense.module.ModuleType;
+import me.skidsense.util.DamageUtil;
+import me.skidsense.util.RenderUtil;
+import me.skidsense.util.TextUtil;
 import me.skidsense.util.TimerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
+import net.minecraft.nbt.NBTTagList;
+
 import org.lwjgl.opengl.GL11;
 
-public class Nametags
-		extends Mod {
-	private boolean armor = true;
-	public boolean formatting = true;
+import com.mojang.realmsclient.gui.ChatFormatting;
+
+public class Nametags extends Mod {
+
+	public Option<Boolean> health = new Option<Boolean>("Health", true);
+	public Option<Boolean> armor = new Option<Boolean>("Armor", true);
+	public Option<Boolean> invisibles = new Option<Boolean>("Invisibles", false);
+	public Option<Boolean> ping = new Option<Boolean>("Ping", false);
+	public Option<Boolean> entityID = new Option<Boolean>("EntityID", false);
+	public Option<Boolean> rect = new Option<Boolean>("Rectangle", true);
+	public Option<Boolean> sneak = new Option<Boolean>("SneakColor", true);
+	public Option<Boolean> heldStackName = new Option<Boolean>("StackName", true);
+	public Option<Boolean> whiter = new Option<Boolean>("White", false);
+	public Option<Boolean> scaleing = new Option<Boolean>("Scale", true);
+	public Option<Boolean> smartScale = new Option<Boolean>("SmartScale", false);
+	private Numbers<Double> factor = new Numbers<Double>("Factor", 1.0, 0.1, 3.0, 0.1);
+	private Numbers<Double> scaling = new Numbers<Double>("Size", 3.5, 0.1, 20.0, 0.1);
+	private FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
 	public Nametags() {
 		super("Name Tag", new String[]{"NameTag"}, ModuleType.Visual);
 		this.setColor(new Color(29, 187, 102).getRGB());
 	}
 
 	@Sub
-	private void onRender(EventRender3D render) {
-		if (Minecraft.getMinecraft().theWorld != null) {
-			boolean wasBobbing = Minecraft.getMinecraft().gameSettings.viewBobbing;
-			Iterator var4 = Minecraft.getMinecraft().theWorld.loadedEntityList.iterator();
-
-			while(var4.hasNext()) {
-				Object o = var4.next();
-				Entity ent = (Entity)o;
-				if (ent != Minecraft.getMinecraft().thePlayer && !ent.isInvisible() && ent instanceof EntityPlayer) {
-					double posX = ent.lastTickPosX + (ent.posX - ent.lastTickPosX) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosX;
-					double posY = ent.lastTickPosY + (ent.posY - ent.lastTickPosY) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosY;
-					double posZ = ent.lastTickPosZ + (ent.posZ - ent.lastTickPosZ) * (double)this.mc.timer.renderPartialTicks - mc.getRenderManager().renderPosZ;
-					renderNameTag((EntityPlayer) ent, String.valueOf(ent.getDisplayName()) , posX, posY, posZ);
-				}
-			}
-
-			Minecraft.getMinecraft().gameSettings.viewBobbing = wasBobbing;
-		}
+	private void on3DRender(EventRender3D event) {
+		for(EntityPlayer player : mc.theWorld.playerEntities) {
+            if(player != null && !player.equals(mc.thePlayer) && player.isEntityAlive() && (!player.isInvisible() || invisibles.getValue())) {
+                double x = interpolate(player.lastTickPosX, player.posX, event.getPartialTicks()) - mc.getRenderManager().renderPosX;
+                double y = interpolate(player.lastTickPosY, player.posY, event.getPartialTicks()) - mc.getRenderManager().renderPosY;
+                double z = interpolate(player.lastTickPosZ, player.posZ, event.getPartialTicks()) - mc.getRenderManager().renderPosZ;
+                renderNameTag(player, x, y, z, event.getPartialTicks());
+            }
+        }
 	}
-	public void renderNameTag(EntityPlayer entity, String tag, double pX, double pY, double pZ) {
-		FontRenderer var12 = this.mc.fontRendererObj;
-		pY += (entity.isSneaking() ? 0.5D : 0.7D);
-		float var13 = this.mc.thePlayer.getDistanceToEntity(entity) / 6.0F;
-		if (var13 < 1.2F) {
-			var13 = 1.2F;
-		}
-		int colour = 16777215;
-		if(entity.isInvisible()) {
-			colour = 16756480;
-		} else if(entity.isSneaking()) {
-			colour = 11468800;
-		}
-		if (!this.formatting == true) {
-			tag = ChatColor.stripColor(tag);
-		}
-		tag = entity.getDisplayName().getFormattedText();
-		double health = Math.ceil(entity.getHealth() + entity.getAbsorptionAmount());
-		ChatColor healthCol;
-		if (health < 10D) {
-			healthCol = ChatColor.DARK_RED;
-		} else {
-			if ((health > 10D) && (health < 13D)) {
-				healthCol = ChatColor.GOLD;
-			} else
-				healthCol = ChatColor.DARK_GREEN;
-		}
-		String distance = null;
-		if (mc.thePlayer.getDistanceToEntity(entity) > 50) {
-			distance = " \247a" + (int)mc.thePlayer.getDistanceToEntity(entity) +"m \247r";
-		} else if(mc.thePlayer.getDistanceToEntity(entity) < 50 && mc.thePlayer.getDistanceToEntity(entity) > 20) {
-			distance = " \2476" + (int)mc.thePlayer.getDistanceToEntity(entity) + "m \247r";
-		} else if(mc.thePlayer.getDistanceToEntity(entity) < 20) {
-			distance = " \247c" + (int)mc.thePlayer.getDistanceToEntity(entity) + "m \247r";
-		}
-		double hpPercentage = entity.getHealth() / entity.getMaxHealth();
-		if (hpPercentage > 1)
-			hpPercentage = 1;
-		else if (hpPercentage < 0)
-			hpPercentage = 0;
-		BigDecimal b = new BigDecimal(hpPercentage);
-		double f1 = b.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();
-		String linehealth = " ❤" + (f1 * 100) +"%";
+	
+    private void renderNameTag(EntityPlayer player, double x, double y, double z, float delta) {
+        double tempY = y;
+        tempY += (player.isSneaking() ? 0.5D : 0.7D);
+        Entity camera = mc.getRenderViewEntity();
+        assert camera != null;
+        double originalPositionX = camera.posX;
+        double originalPositionY = camera.posY;
+        double originalPositionZ = camera.posZ;
+        camera.posX = interpolate(camera.prevPosX, camera.posX, delta);
+        camera.posY = interpolate(camera.prevPosY, camera.posY, delta);
+        camera.posZ = interpolate(camera.prevPosZ, camera.posZ, delta);
 
-		if (Math.floor(health) == health) {
-			StringBuilder allstring = new StringBuilder();
-			allstring.append(distance);
-			allstring.append(tag);
-			allstring.append(healthCol);
-			allstring.append(linehealth);
-			tag = allstring.toString();
-		}
+        String displayTag = getDisplayTag(player);
+        double distance = camera.getDistance(x + mc.getRenderManager().viewerPosX, y + mc.getRenderManager().viewerPosY, z + mc.getRenderManager().viewerPosZ);
+        int width = renderer.getStringWidth(displayTag) / 2;
+        double scale = (0.0018 + scaling.getValue() * (distance * factor.getValue())) / 1000.0;
 
-		RenderManager renderManager = this.mc.getRenderManager();
-		int color = 16776960;
-		float scale = var13 * 2.0F;
-		scale /= 100.0F;
-		GL11.glPushMatrix();
-		GL11.glTranslatef((float) pX, (float) pY + 1.4F, (float) pZ);
-		GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-		GL11.glScalef(-scale, -scale, scale);
-		this.setGLCap(2896, false);
-		this.setGLCap(2929, false);
-		Tessellator var14 = Tessellator.getInstance();
-		net.minecraft.client.renderer.WorldRenderer var15 = var14.getWorldRenderer();
-		int width = this.mc.fontRendererObj.getStringWidth(tag) / 2;
-		this.setGLCap(3042, true);
-		GL11.glBlendFunc(770, 771);
+        if (distance <= 8 && smartScale.getValue()) {
+            scale = 0.0245D;
+        }
 
-		drawBorderedRect(-width - 2, -(this.mc.fontRendererObj.FONT_HEIGHT + 1), width + 2, 2.0F, 1.0F,-16777216, Integer.MIN_VALUE);
-		var12.drawString(tag, -width, -(this.mc.fontRendererObj.FONT_HEIGHT - 1), colour, false);
-		GL11.glPushMatrix();
-		if (this.armor == true) {
-			int xOffset = 0;
-			for (ItemStack armourStack : entity.inventory.armorInventory) {
-				if (armourStack != null)
-					xOffset -= 8;
-			}
-			Object renderStack;
-			if (entity.getHeldItem() != null) {
-				xOffset -= 8;
-				renderStack = entity.getHeldItem().copy();
-				if ((((ItemStack) renderStack).hasEffect())
-						&& (((((ItemStack) renderStack).getItem() instanceof ItemTool))
-						|| ((((ItemStack) renderStack).getItem() instanceof ItemArmor))))
-					((ItemStack) renderStack).stackSize = 1;
-				renderItemStack((ItemStack) renderStack, xOffset, -30);
-				xOffset += 16;
-			}
-			for (ItemStack armourStack : entity.inventory.armorInventory)
-				if (armourStack != null) {
+        if(!scaleing.getValue()) {
+            scale = scaling.getValue() / 100.0;
+        }
 
-					ItemStack renderStack1 = armourStack.copy();
-					if ((renderStack1.hasEffect()) && (((renderStack1.getItem() instanceof ItemTool))
-							|| ((renderStack1.getItem() instanceof ItemArmor))))
-						renderStack1.stackSize = 1;
-					renderItemStack(renderStack1, xOffset, -26);
-					xOffset += 16;
-				}
-		}
-		GL11.glPopMatrix();
-		this.revertAllCaps();
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glPopMatrix();
-	}
+        GlStateManager.pushMatrix();
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.enablePolygonOffset();
+        GlStateManager.doPolygonOffset(1, -1500000);
+        GlStateManager.disableLighting();
+        GlStateManager.translate((float) x, (float) tempY + 1.4F, (float) z);
+        GlStateManager.rotate(-mc.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(mc.getRenderManager().playerViewX, mc.gameSettings.thirdPersonView == 2 ? -1.0F : 1.0F, 0.0F, 0.0F);
+        GlStateManager.scale(-scale, -scale, scale);
+        GlStateManager.disableDepth();
+        GlStateManager.enableBlend();
 
-	public static void drawBorderedRect(float x, float y, float x2, float y2, float l1, int col1, int col2) {
-		drawRect(x, y, x2, y2, col2);
-		float f = (float)(col1 >> 24 & 255) / 255.0F;
-		float f1 = (float)(col1 >> 16 & 255) / 255.0F;
-		float f2 = (float)(col1 >> 8 & 255) / 255.0F;
-		float f3 = (float)(col1 & 255) / 255.0F;
-		GL11.glEnable(3042);
-		GL11.glDisable(3553);
-		GL11.glBlendFunc(770, 771);
-		GL11.glEnable(2848);
-		GL11.glPushMatrix();
-		GL11.glColor4f(f1, f2, f3, f);
-		GL11.glLineWidth(l1);
-		GL11.glBegin(1);
-		GL11.glVertex2d((double)x, (double)y);
-		GL11.glVertex2d((double)x, (double)y2);
-		GL11.glVertex2d((double)x2, (double)y2);
-		GL11.glVertex2d((double)x2, (double)y);
-		GL11.glVertex2d((double)x, (double)y);
-		GL11.glVertex2d((double)x2, (double)y);
-		GL11.glVertex2d((double)x, (double)y2);
-		GL11.glVertex2d((double)x2, (double)y2);
-		GL11.glEnd();
-		GL11.glPopMatrix();
-		GL11.glEnable(3553);
-		GL11.glDisable(3042);
-		GL11.glDisable(2848);
-	}
+        GlStateManager.enableBlend();
+        if(rect.getValue()) {
+            RenderUtil.drawRect(-width - 2, -(renderer.FONT_HEIGHT + 1), width + 2F, 1.5F, 0x55000000);
+        }
+        GlStateManager.disableBlend();
 
-	public static void drawRect(float g, float h, float i, float j, int col1) {
-		float f = (float)(col1 >> 24 & 255) / 255.0F;
-		float f1 = (float)(col1 >> 16 & 255) / 255.0F;
-		float f2 = (float)(col1 >> 8 & 255) / 255.0F;
-		float f3 = (float)(col1 & 255) / 255.0F;
-		GL11.glEnable(3042);
-		GL11.glDisable(3553);
-		GL11.glBlendFunc(770, 771);
-		GL11.glEnable(2848);
-		GL11.glPushMatrix();
-		GL11.glColor4f(f1, f2, f3, f);
-		GL11.glBegin(7);
-		GL11.glVertex2d((double)i, (double)h);
-		GL11.glVertex2d((double)g, (double)h);
-		GL11.glVertex2d((double)g, (double)j);
-		GL11.glVertex2d((double)i, (double)j);
-		GL11.glEnd();
-		GL11.glPopMatrix();
-		GL11.glEnable(3553);
-		GL11.glDisable(3042);
-		GL11.glDisable(2848);
-	}
+        ItemStack renderMainHand = player.getCurrentEquippedItem();
+        if(renderMainHand != null && renderMainHand.hasEffect() && (renderMainHand.getItem() instanceof ItemTool || renderMainHand.getItem() instanceof ItemArmor)) {
+            renderMainHand.stackSize = 1;
+        }
 
-	public void renderItemStack(ItemStack stack, int x, int y) {
-		GL11.glPushMatrix();
-		GL11.glDepthMask(true);
-		GlStateManager.clear(256);
-		net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting();
-		this.mc.getRenderItem().zLevel = -150.0F;
-		whatTheFuckOpenGLThisFixesItemGlint();
-		this.mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x, y);
-		this.mc.getRenderItem().renderItemOverlays(this.mc.fontRendererObj, stack, x, y);
-		this.mc.getRenderItem().zLevel = 0.0F;
-		net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
-		GlStateManager.disableCull();
-		GlStateManager.enableAlpha();
-		GlStateManager.disableBlend();
-		GlStateManager.disableLighting();
-		GlStateManager.scale(0.5D, 0.5D, 0.5D);
-		GlStateManager.disableDepth();
-		renderEnchantText(stack, x, y);
-		GlStateManager.enableDepth();
-		GlStateManager.scale(2.0F, 2.0F, 2.0F);
-		GL11.glPopMatrix();
-	}
+        if(heldStackName.getValue() && renderMainHand != null) {
+            String stackName = renderMainHand.getDisplayName();
+            int stackNameWidth = renderer.getStringWidth(stackName) / 2;
+            GL11.glPushMatrix();
+            GL11.glScalef(0.75f, 0.75f, 0);
+            renderer.drawStringWithShadow(stackName, -stackNameWidth, -(getBiggestArmorTag(player) + 20), 0xFFFFFFFF);
+            GL11.glScalef(1.5f, 1.5f, 1);
+            GL11.glPopMatrix();
+        }
 
-	public void renderEnchantText(ItemStack stack, int x, int y) {
-		int encY = y - 24;
-		if ((stack.getItem() instanceof ItemArmor)) {
-			int pLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.protection.effectId, stack);
-			int tLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack);
-			int uLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
-			if (pLevel > 0) {
-				this.mc.fontRendererObj.drawString("p" + pLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-			if (tLevel > 0) {
-				this.mc.fontRendererObj.drawString("t" + tLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-			if (uLevel > 0) {
-				this.mc.fontRendererObj.drawString("u" + uLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-		}
-		if ((stack.getItem() instanceof net.minecraft.item.ItemBow)) {
-			int sLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, stack);
-			int kLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, stack);
-			int fLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, stack);
-			int uLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
-			if (sLevel > 0) {
-				this.mc.fontRendererObj.drawString("d" + sLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-			if (kLevel > 0) {
-				this.mc.fontRendererObj.drawString("k" + kLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-			if (fLevel > 0) {
-				this.mc.fontRendererObj.drawString("f" + fLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-			if (uLevel > 0) {
-				this.mc.fontRendererObj.drawString("u" + uLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-		}
-		if ((stack.getItem() instanceof net.minecraft.item.ItemSword)) {
-			int sLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.sharpness.effectId, stack);
-			int kLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.knockback.effectId, stack);
-			int fLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId, stack);
-			int uLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
-			if (sLevel > 0) {
-				this.mc.fontRendererObj.drawString("s" + sLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-			if (kLevel > 0) {
-				this.mc.fontRendererObj.drawString("k" + kLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-			if (fLevel > 0) {
-				this.mc.fontRendererObj.drawString("f" + fLevel, x * 2, encY, 16777215);
-				encY += 7;
-			}
-			if (uLevel > 0) {
-				this.mc.fontRendererObj.drawString("u" + uLevel, x * 2, encY, 16777215);
-			}
-		}
-	}
+        if(renderMainHand != null && armor.getValue()) {
+            GlStateManager.pushMatrix();
+            int xOffset = -8;
+            for (ItemStack stack : player.inventory.armorInventory) {
+                if (stack != null) {
+                    xOffset -= 8;
+                }
+            }
 
-	public void whatTheFuckOpenGLThisFixesItemGlint() {
-		GlStateManager.disableLighting();
-		GlStateManager.disableDepth();
-		GlStateManager.disableBlend();
-		GlStateManager.enableLighting();
-		GlStateManager.enableDepth();
-		GlStateManager.disableLighting();
-		GlStateManager.disableDepth();
-		GlStateManager.disableTexture2D();
-		GlStateManager.disableAlpha();
-		GlStateManager.disableBlend();
-		GlStateManager.enableBlend();
-		GlStateManager.enableAlpha();
-		GlStateManager.enableTexture2D();
-		GlStateManager.enableLighting();
-		GlStateManager.enableDepth();
-	}
+            xOffset -= 8;
+            ItemStack renderOffhand = player.getCurrentEquippedItem();
+            if(renderOffhand.hasEffect() && (renderOffhand.getItem() instanceof ItemTool || renderOffhand.getItem() instanceof ItemArmor)) {
+                renderOffhand.stackSize = 1;
+            }
 
-	TimerUtil time = new TimerUtil();
+            this.renderItemStack(renderOffhand, xOffset, -26);
+            xOffset += 16;
 
-	public static double getPing(EntityPlayer player) {
-		NetworkPlayerInfo playerInfo = Minecraft.getMinecraft().thePlayer.sendQueue.getPlayerInfo(player.getName());
-		int playerPing = playerInfo != null ? playerInfo.getResponseTime() : -1;
-		return playerPing;
-	}
+            for (ItemStack stack : player.inventory.armorInventory) {
+                if (stack != null) {
+                    ItemStack armourStack = stack.copy();
+                    if (armourStack.hasEffect() && (armourStack.getItem() instanceof ItemTool || armourStack.getItem() instanceof ItemArmor)) {
+                        armourStack.stackSize = 1;
+                    }
 
+                    this.renderItemStack(armourStack, xOffset, -26);
+                    xOffset += 16;
+                }
+            }
 
-	//GLUtils start
-	public static void setGLCap(int cap, boolean flag)
-	{
-		glCapMap.put(Integer.valueOf(cap), Boolean.valueOf(GL11.glGetBoolean(cap)));
-		if (flag) {
-			GL11.glEnable(cap);
-		} else {
-			GL11.glDisable(cap);
-		}
-	}
+            this.renderItemStack(renderMainHand, xOffset, -26);
 
-	public static void revertGLCap(int cap)
-	{
-		Boolean origCap = (Boolean)glCapMap.get(Integer.valueOf(cap));
-		if (origCap != null) {
-			if (origCap.booleanValue()) {
-				GL11.glEnable(cap);
-			} else {
-				GL11.glDisable(cap);
-			}
-		}
-	}
+            GlStateManager.popMatrix();
+        }
 
-	public static void glEnable(int cap)
-	{
-		setGLCap(cap, true);
-	}
+        renderer.drawStringWithShadow(displayTag, -width, -(renderer.FONT_HEIGHT - 1), this.getDisplayColour(player));
 
-	public static void glDisable(int cap)
-	{
-		setGLCap(cap, false);
-	}
+        camera.posX = originalPositionX;
+        camera.posY = originalPositionY;
+        camera.posZ = originalPositionZ;
+        GlStateManager.enableDepth();
+        GlStateManager.disableBlend();
+        GlStateManager.disablePolygonOffset();
+        GlStateManager.doPolygonOffset(1, 1500000);
+        GlStateManager.popMatrix();
+    }
 
-	public static void revertAllCaps()
-	{
-		for (Iterator localIterator = glCapMap.keySet().iterator(); localIterator.hasNext();)
-		{
-			int cap = ((Integer)localIterator.next()).intValue();
-			revertGLCap(cap);
-		}
-	}
+    private void renderItemStack(ItemStack stack, int x, int y) {
+        GlStateManager.pushMatrix();
+        GlStateManager.depthMask(true);
+        GlStateManager.clear(GL11.GL_ACCUM);
 
-	private static Map<Integer, Boolean> glCapMap = new HashMap();
-	//GLUtils end
+        RenderHelper.enableStandardItemLighting();
+        mc.getRenderItem().zLevel = -150.0F;
+        GlStateManager.disableAlpha();
+        GlStateManager.enableDepth();
+        GlStateManager.disableCull();
 
+        mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x, y);
+        mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, stack, x, y);
 
+        mc.getRenderItem().zLevel = 0.0F;
+        RenderHelper.disableStandardItemLighting();
 
+        GlStateManager.enableCull();
+        GlStateManager.enableAlpha();
 
-	//ChatColor start
-	public enum ChatColor {
-		BLACK("BLACK", 0, '0', "black"),
-		DARK_BLUE("DARK_BLUE", 1, '1', "dark_blue"),
-		DARK_GREEN("DARK_GREEN", 2, '2', "dark_green"),
-		DARK_AQUA("DARK_AQUA", 3, '3', "dark_aqua"),
-		DARK_RED("DARK_RED", 4, '4', "dark_red"),
-		DARK_PURPLE("DARK_PURPLE", 5, '5', "dark_purple"),
-		GOLD("GOLD", 6, '6', "gold"),
-		GRAY("GRAY", 7, '7', "gray"),
-		DARK_GRAY("DARK_GRAY", 8, '8', "dark_gray"),
-		BLUE("BLUE", 9, '9', "blue"),
-		GREEN("GREEN", 10, 'a', "green"),
-		AQUA("AQUA", 11, 'b', "aqua"),
-		RED("RED", 12, 'c', "red"),
-		LIGHT_PURPLE("LIGHT_PURPLE", 13, 'd', "light_purple"),
-		YELLOW("YELLOW", 14, 'e', "yellow"),
-		WHITE("WHITE", 15, 'f', "white"),
-		MAGIC("MAGIC", 16, 'k', "obfuscated"),
-		BOLD("BOLD", 17, 'l', "bold"),
-		STRIKETHROUGH("STRIKETHROUGH", 18, 'm', "strikethrough"),
-		UNDERLINE("UNDERLINE", 19, 'n', "underline"),
-		ITALIC("ITALIC", 20, 'o', "italic"),
-		RESET("RESET", 21, 'r', "reset");
+        GlStateManager.scale(0.5F, 0.5F, 0.5F);
+        GlStateManager.disableDepth();
+        renderEnchantmentText(stack, x, y);
+        GlStateManager.enableDepth();
+        GlStateManager.scale(2F, 2F, 2F);
+        GlStateManager.popMatrix();
+    }
 
-		public static final char COLOR_CHAR = '\247';
-		public static final String ALL_CODES = "0123456789AaBbCcDdEeFfKkLlMmNnOoRr";
-		public static final Pattern STRIP_COLOR_PATTERN;
-		private static final Map<Character, ChatColor> BY_CHAR;
-		private final char code;
-		private final String toString;
-		private final String name;
+    private void renderEnchantmentText(ItemStack stack, int x, int y) {
+        int enchantmentY = y - 8;
 
-		static {
-			STRIP_COLOR_PATTERN = Pattern.compile("(?i)" + String.valueOf('\247') + "[0-9A-FK-OR]");
-			BY_CHAR = new HashMap<Character, ChatColor>();
-			ChatColor[] arrayOfChatColor;
-			for (int j = (arrayOfChatColor = values()).length, i = 0; i < j; ++i) {
-				final ChatColor colour = arrayOfChatColor[i];
-				ChatColor.BY_CHAR.put(colour.code, colour);
-			}
-		}
+        if(stack.getItem() == Items.golden_apple && stack.hasEffect()) {
+            renderer.drawStringWithShadow("god", x * 2, enchantmentY, 0xFFc34d41);
+            enchantmentY -= 8;
+        }
 
-		private ChatColor(final String s, final int n, final char code, final String name) {
-			this.code = code;
-			this.name = name;
-			this.toString = new String(new char[] { '\247', code });
-		}
+        NBTTagList enchants = stack.getEnchantmentTagList();
+        if(enchants != null) {
+            for(int index = 0; index < enchants.tagCount(); ++index) {
+                short id = enchants.getCompoundTagAt(index).getShort("id");
+                short level = enchants.getCompoundTagAt(index).getShort("lvl");
+                Enchantment enc = Enchantment.getEnchantmentById(id);
+                if (enc != null) {
+                    String encName =  enc.getTranslatedName(level).substring(0, 1).toLowerCase();
+                    encName = encName + level;
+                    renderer.drawStringWithShadow(encName, x * 2, enchantmentY, -1);
+                    enchantmentY -= 8;
+                }
+            }
+        }
+        if(DamageUtil.hasDurability(stack)) {
+            int percent = DamageUtil.getRoundedDamage(stack);
+            String color;
+            if(percent >= 60) {
+                color = TextUtil.GREEN;
+            } else if(percent >= 25) {
+                color = TextUtil.YELLOW;
+            } else {
+                color = TextUtil.RED;
+            }
+            renderer.drawStringWithShadow(color + percent + "%", x * 2, enchantmentY, 0xFFFFFFFF);
+        }
+    }
 
-		@Override
-		public String toString() {
-			return this.toString;
-		}
+    private float getBiggestArmorTag(EntityPlayer player) {
+        float enchantmentY = 0;
+        boolean arm = false;
+        for (ItemStack stack : player.inventory.armorInventory) {
+            float encY = 0;
+            if (stack != null) {
+                NBTTagList enchants = stack.getEnchantmentTagList();
+                for (int index = 0; index < enchants.tagCount(); ++index) {
+                    short id = enchants.getCompoundTagAt(index).getShort("id");
+                    Enchantment enc = Enchantment.getEnchantmentById(id);
+                    if (enc != null) {
+                        encY += 8;
+                        arm = true;
+                    }
+                }
+            }
+            if (encY > enchantmentY) enchantmentY = encY;
+        }
+        ItemStack renderMainHand = player.getCurrentEquippedItem();
+        if(renderMainHand.hasEffect()) {
+            float encY = 0;
+            NBTTagList enchants = renderMainHand.getEnchantmentTagList();
+            for (int index = 0; index < enchants.tagCount(); ++index) {
+                short id = enchants.getCompoundTagAt(index).getShort("id");
+                Enchantment enc = Enchantment.getEnchantmentById(id);
+                if (enc != null) {
+                    encY += 8;
+                    arm = true;
+                }
+            }
+            if (encY > enchantmentY) enchantmentY = encY;
+        }
+        ItemStack renderOffHand = player.getCurrentEquippedItem();
+        if(renderOffHand.hasEffect()) {
+            float encY = 0;
+            NBTTagList enchants = renderOffHand.getEnchantmentTagList();
+            for (int index = 0; index < enchants.tagCount(); ++index) {
+                short id = enchants.getCompoundTagAt(index).getShort("id");
+                Enchantment enc = Enchantment.getEnchantmentById(id);
+                if (enc != null) {
+                    encY += 8;
+                    arm = true;
+                }
+            }
+            if (encY > enchantmentY) enchantmentY = encY;
+        }
+        return (arm ? 0 : 20) + enchantmentY;
+    }
 
-		public static String stripColor(final String input) {
-			if (input == null) {
-				return null;
-			}
-			return ChatColor.STRIP_COLOR_PATTERN.matcher(input).replaceAll("");
-		}
+    private String getDisplayTag(EntityPlayer player) {
+        String name = player.getDisplayName().getFormattedText();
+        if(name.contains(mc.getSession().getUsername())) {
+            name = "You";
+        }
 
-		public static String translateAlternateColorCodes(final char altColorChar, final String textToTranslate) {
-			final char[] b = textToTranslate.toCharArray();
-			for (int i = 0; i < b.length - 1; ++i) {
-				if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
-					b[i] = '\247';
-					b[i + 1] = Character.toLowerCase(b[i + 1]);
-				}
-			}
-			return new String(b);
-		}
+        if (!health.getValue()) {
+            return name;
+        }
 
-		public static ChatColor getByChar(final char code) {
-			return ChatColor.BY_CHAR.get(code);
-		}
-	}
-	//ChatColor end
+        float health = getHealth(player);
+        String color;
+
+        if (health > 18) {
+            color = TextUtil.GREEN;
+        } else if (health > 16) {
+            color = TextUtil.DARK_GREEN;
+        } else if (health > 12) {
+            color = TextUtil.YELLOW;
+        } else if (health > 8) {
+            color = TextUtil.GOLD;
+        } else if (health > 5) {
+            color = TextUtil.RED;
+        } else {
+            color = TextUtil.DARK_RED;
+        }
+
+        String pingStr = "";
+        if(ping.getValue()) {
+            try {
+                final int responseTime = Objects.requireNonNull(Minecraft.getMinecraft().getNetHandler()).getPlayerInfo(player.getUniqueID()).getResponseTime();
+                pingStr += responseTime + "ms ";
+            } catch (Exception ignored) {}
+        }
+
+        String idString = "";
+        if(entityID.getValue()) {
+            idString += "ID: " + player.getEntityId() + " ";
+        }
+
+        if(Math.floor(health) == health) {
+            name = name + color + " " + (health > 0 ? (int) Math.floor(health) : "dead");
+        } else {
+            name = name + color + " " + (health > 0 ? (int) health : "dead");
+        }
+        return pingStr + idString + name;
+    }
+
+    private int getDisplayColour(EntityPlayer player) {
+        int colour = 0xFFAAAAAA;
+        if(whiter.getValue()) {
+            colour = 0xFFFFFFFF;
+        }
+        if(FriendManager.isFriend(player.getName())) {
+            return 0xFF55C0ED;
+        } else if (player.isInvisible()) {
+            colour = 0xFFef0147;
+        } else if (player.isSneaking() && sneak.getValue()) {
+            colour = 0xFF9d1995;
+        }
+        return colour;
+    }
+
+    private double interpolate(double previous, double current, float delta) {
+        return (previous + (current - previous) * delta);
+    }
+    
+    public static boolean isLiving(final Entity entity) {
+        return entity instanceof EntityLivingBase;
+    }
+    
+    public static float getHealth(final Entity entity) {
+        if (isLiving(entity)) {
+            final EntityLivingBase livingBase = (EntityLivingBase)entity;
+            return livingBase.getHealth() + livingBase.getAbsorptionAmount();
+        }
+        return 0.0f;
+    }
+	
 }
