@@ -36,6 +36,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.scoreboard.ScorePlayerTeam;
 
 import org.lwjgl.opengl.GL11;
 
@@ -120,16 +121,6 @@ public class Nametags extends Mod {
         ItemStack renderMainHand = player.getCurrentEquippedItem();
         if(renderMainHand != null && renderMainHand.hasEffect() && (renderMainHand.getItem() instanceof ItemTool || renderMainHand.getItem() instanceof ItemArmor)) {
             renderMainHand.stackSize = 1;
-        }
-
-        if(heldStackName.getValue() && renderMainHand != null) {
-            String stackName = renderMainHand.getDisplayName();
-            int stackNameWidth = renderer.getStringWidth(stackName) / 2;
-            GL11.glPushMatrix();
-            GL11.glScalef(0.75f, 0.75f, 0);
-            renderer.drawStringWithShadow(stackName, -stackNameWidth, -(getBiggestArmorTag(player) + 20), 0xFFFFFFFF);
-            GL11.glScalef(1.5f, 1.5f, 1);
-            GL11.glPopMatrix();
         }
 
         if(renderMainHand != null && armor.getValue()) {
@@ -241,55 +232,6 @@ public class Nametags extends Mod {
             }
             renderer.drawStringWithShadow(color + percent + "%", x * 2, enchantmentY, 0xFFFFFFFF);
         }
-    }
-
-    private float getBiggestArmorTag(EntityPlayer player) {
-        float enchantmentY = 0;
-        boolean arm = false;
-        for (ItemStack stack : player.inventory.armorInventory) {
-            float encY = 0;
-            if (stack != null) {
-                NBTTagList enchants = stack.getEnchantmentTagList();
-                for (int index = 0; index < enchants.tagCount(); ++index) {
-                    short id = enchants.getCompoundTagAt(index).getShort("id");
-                    Enchantment enc = Enchantment.getEnchantmentById(id);
-                    if (enc != null) {
-                        encY += 8;
-                        arm = true;
-                    }
-                }
-            }
-            if (encY > enchantmentY) enchantmentY = encY;
-        }
-        ItemStack renderMainHand = player.getCurrentEquippedItem();
-        if(renderMainHand.hasEffect()) {
-            float encY = 0;
-            NBTTagList enchants = renderMainHand.getEnchantmentTagList();
-            for (int index = 0; index < enchants.tagCount(); ++index) {
-                short id = enchants.getCompoundTagAt(index).getShort("id");
-                Enchantment enc = Enchantment.getEnchantmentById(id);
-                if (enc != null) {
-                    encY += 8;
-                    arm = true;
-                }
-            }
-            if (encY > enchantmentY) enchantmentY = encY;
-        }
-        ItemStack renderOffHand = player.getCurrentEquippedItem();
-        if(renderOffHand.hasEffect()) {
-            float encY = 0;
-            NBTTagList enchants = renderOffHand.getEnchantmentTagList();
-            for (int index = 0; index < enchants.tagCount(); ++index) {
-                short id = enchants.getCompoundTagAt(index).getShort("id");
-                Enchantment enc = Enchantment.getEnchantmentById(id);
-                if (enc != null) {
-                    encY += 8;
-                    arm = true;
-                }
-            }
-            if (encY > enchantmentY) enchantmentY = encY;
-        }
-        return (arm ? 0 : 20) + enchantmentY;
     }
 
     private String getDisplayTag(EntityPlayer player) {
