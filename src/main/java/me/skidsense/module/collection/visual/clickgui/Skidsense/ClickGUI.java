@@ -114,7 +114,7 @@ extends GuiScreen {
     		} 
             float y2=this.startY;
      	//button
-        for (Mod c2 : ModManager.getMods()) {
+        for (Mod c2 : Client.instance.getModuleManager().getMods()) {
             if (!c2.getType().toString().equals(category)) continue;
             this.cheat=c2;
             y2+=27; 
@@ -257,7 +257,7 @@ extends GuiScreen {
         float valueY=this.startY;
 
 
-        for (Mod c2 : ModManager.getMods()) {
+        for (Mod c2 : Client.instance.getModuleManager().getMods()) {
             if (c2.getType().toString() != category) continue;
             this.cheat=c2;
             y2+=27; 

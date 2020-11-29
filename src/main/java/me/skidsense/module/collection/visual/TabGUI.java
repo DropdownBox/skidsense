@@ -52,12 +52,12 @@ public class TabGUI
             }
             ++n2;
         }
-        for (Mod m : ModManager.getMods()) {
+        for (Mod m : Client.instance.getModuleManager().getMods()) {
             FontRenderer font = Minecraft.getMinecraft().fontRendererObj;
             if (this.maxModule > font.getStringWidth(m.getName().toUpperCase()) + 4) continue;
             this.maxModule = font.getStringWidth(m.getName().toUpperCase()) + 4;
         }
-        for (Mod m : ModManager.getMods()) {
+        for (Mod m : Client.instance.getModuleManager().getMods()) {
             if (m.getValues().isEmpty()) continue;
             for (Value val : m.getValues()) {
                 if (this.maxValue > Client.mc.fontRendererObj.getStringWidth(val.getDisplayName().toUpperCase()) + 4) continue;

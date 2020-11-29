@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.lwjgl.opengl.GL11;
 
@@ -39,6 +40,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.optifine.util.MathUtils;
 
 public class HUD
 extends Mod {
@@ -134,37 +136,39 @@ extends Mod {
     }
     
     public void drawExusiaiArrayList(EventRenderGui event) {
-    	ArrayList<Mod> sorted = new ArrayList<Mod>();
-        boolean left = mode.getValue() == arrayPosition.TopLeft;
-		for (Mod m : ModManager.getMods()) {
-            if (!m.isEnabled() || m.wasRemoved()) continue;
-            if(m.getType() == ModuleType.Visual) {
-            	if(!hideRenderModule.getValue()) {
-            		sorted.add(m);
-            	}
-            }else {
-            	sorted.add(m);
-			}
-        }
-            sorted.sort((o1, o2) -> Client_Font.getStringWidth(o2.getSuffix().isEmpty() ? o2.getName() : String.format("%s %s", o2.getName(), o2.getSuffix())) - Client_Font.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName() : String.format("%s %s", o1.getName(), o1.getSuffix())));
-        int y = left ? (TABGUI.getValue() ? 75 : 12) : 0;
-        int rainbowTick = 0;
-            for (Mod m : sorted) {
-                if (!m.isEnabled()) {
-                    m.translate.interpolate((float)event.getResolution().getScaledWidth(), -20.0F, 0.6F);
-                 }
-                String modname = m.getSuffix().isEmpty() ? m.getName() : String.format("%s\2477%s", m.getName(), m.getSuffix());
-                float x = left ? 2.0F :RenderUtil.width() - Client_Font.getStringWidth(modname);
-                Color rainbow = new Color(Color.HSBtoRGB((float)((double)mc.thePlayer.ticksExisted / 50.0 + Math.sin((double)rainbowTick / 50.0 * 1.6)) % 1.0f, 0.5f, 1.0f));
-                if (m.isEnabled()) {
-                   m.translate.interpolate(x, (float)y, 0.40F);
-                }
-                Client_Font.drawStringWithShadow(modname, m.translate.getX() - 0.1f, m.translate.getY(), this.rainbow.getValue() != false ? rainbow.getRGB() : getCategoryColor(m));
-                if (++rainbowTick > 50) {
-                    rainbowTick = 0;
-                }
-                y += 9;
+    	boolean left = mode.getValue() == arrayPosition.TopLeft;
+    	int y = left ? (TABGUI.getValue() ? 75 : 12) : 0;
+    	List<Mod> modules = new CopyOnWriteArrayList<Mod>();
+    	 List<Mod> var21 = Client.getModuleManager().getMods();
+         int rainbowTick = 0;
+         for(int i = 0; i < var21.size(); ++i) {
+        	 Mod module = var21.get(i);
+            if (module.isEnabled() || module.translate.getX() != -50.0F) {
+               modules.add(module);
             }
+            if (!module.isEnabled() || module.wasRemoved()) {
+               module.translate.interpolate(left ? -50.0F : (float)event.getResolution().getScaledWidth(), -20.0F, 0.6F);
+            }
+         }
+         modules.sort(Comparator.comparingDouble((o) -> {
+            return -MathUtils.getIncremental((double)Client_Font.getWidth(o.getSuffix() != null ? o.getName() + " " + o.getSuffix() : o.getName()), 0.5D);
+         }));
+         for (int i = 0; i < modules.size(); i++) {
+        	 Mod module = (Mod)modules.get(i);
+             String suffix = module.getSuffix() != null ? "§7" + module.getSuffix() : "";
+             float x = left ? 2.0F : (float)event.getResolution().getScaledWidth() - Client_Font.getWidth(module.getName() + suffix) + 0.5F;
+             if (module.isEnabled() && !module.wasRemoved()) {
+                module.translate.interpolate(x, (float)y, 0.35F);
+             }
+             Color rainbow = new Color(Color.HSBtoRGB((float)((double)mc.thePlayer.ticksExisted / 50.0 + Math.sin((double)rainbowTick / 50.0 * 1.6)) % 1.0f, 0.5f, 1.0f));
+             Client_Font.drawStringWithShadow(module.getName() + suffix, module.translate.getX(), module.translate.getY(), this.rainbow.getValue() != false ? rainbow.getRGB() : getCategoryColor(module));
+             if (module.isEnabled() && !module.wasRemoved()) {
+                 if (++rainbowTick > 50) {
+                     rainbowTick = 0;
+                 }
+                y += 9;
+             }
+         }
     }
     
     public void drawFluxWatermark() {
@@ -193,7 +197,7 @@ extends Mod {
 		boolean left = mode.getValue() == arrayPosition.TopLeft;
 		ArrayList<Mod> sorted = new ArrayList<Mod>();
 		int y = 32;
-		for (Mod m : ModManager.getMods()) {
+		for (Mod m : Client.instance.getModuleManager().getMods()) {
             if (!m.isEnabled() || m.wasRemoved()) continue;
             if(m.getType() == ModuleType.Visual) {
             	if(!hideRenderModule.getValue()) {
@@ -218,7 +222,7 @@ extends Mod {
 	
 	public void drawFluxArrayList() {
 		ArrayList<Mod> sorted = new ArrayList<Mod>();
-		for (Mod m : ModManager.getMods()) {
+		for (Mod m : Client.instance.getModuleManager().getMods()) {
             if (!m.isEnabled() || m.wasRemoved()) continue;
             if(m.getType() == ModuleType.Visual) {
             	if(!hideRenderModule.getValue()) {

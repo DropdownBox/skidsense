@@ -1,6 +1,10 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
+
+import me.skidsense.management.animation.Opacity;
+import me.skidsense.util.PlayerUtil;
+
 import java.util.Iterator;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -21,7 +25,9 @@ public class GuiNewChat extends Gui
     private final List<ChatLine> drawnChatLines = Lists.newArrayList();
     private int scrollPos;
     private boolean isScrolled;
-
+    public static int opacity = 255;
+    private int targetOpacity = 255;
+    
     public GuiNewChat(Minecraft mcIn)
     {
         this.mc = mcIn;
@@ -65,7 +71,10 @@ public class GuiNewChat extends Gui
                             d0 = d0 * 10.0D;
                             d0 = MathHelper.clamp_double(d0, 0.0D, 1.0D);
                             d0 = d0 * d0;
-                            int l1 = (int)(255.0D * d0);
+                            int opacityDiff = this.targetOpacity - opacity;
+                            opacity = (int)((double)opacity + (double)opacityDiff * 0.1);
+                            targetOpacity = PlayerUtil.isMoving() ? 180 : 255;
+                            int l1 = (int)(opacity * d0);
 
                             if (flag)
                             {
