@@ -1,5 +1,2 @@
-# skidsense client
-skidsense is a decent client
-
-gradlew idea
-gradlew eclipse
+# skidsense client - For educational purposes only!!!
+Do not ask for support on this.
